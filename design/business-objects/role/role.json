@@ -1,0 +1,33 @@
+{
+  "name": "Role",
+  "displayName": "Role",
+  "pluralName": "Roles",
+  "pluralDisplayName": "Roles",
+  "indefiniteArticle": "a",
+  "uuid": "550e8400-e29b-41d4-a716-446655440018",
+  "properties": [
+    {
+      "name": "name",
+      "displayName": "Name",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440006",
+        "name": "String"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440019",
+      "description": "Role name"
+    },
+    {
+      "name": "description",
+      "displayName": "Description",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440014",
+        "name": "MultilineString"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440020",
+      "description": "Role description"
+    }
+  ],
+  "description": "A role in the system"
+}

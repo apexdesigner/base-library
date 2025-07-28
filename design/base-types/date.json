@@ -1,0 +1,10 @@
+{
+  "name": "Date",
+  "displayName": "Date",
+  "pluralName": "Dates",
+  "pluralDisplayName": "Dates",
+  "indefiniteArticle": "a",
+  "description": "A date value",
+  "uuid": "550e8400-e29b-41d4-a716-446655440009",
+  "nativeType": "date"
+}

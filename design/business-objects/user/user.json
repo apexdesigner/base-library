@@ -1,0 +1,22 @@
+{
+  "name": "User",
+  "displayName": "User",
+  "pluralName": "Users",
+  "pluralDisplayName": "Users",
+  "indefiniteArticle": "a",
+  "uuid": "550e8400-e29b-41d4-a716-446655440016",
+  "properties": [
+    {
+      "name": "email",
+      "displayName": "Email",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Email"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440017",
+      "description": "User's email address"
+    }
+  ],
+  "description": "A user in the system"
+}

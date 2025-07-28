@@ -1,0 +1,36 @@
+{
+  "name": "@apexdesigner/base-library",
+  "displayName": "Base Library",
+  "version": "1.0.0",
+  "description": "Base Library containing fundamental types and user management system for Apex Designer applications",
+  "keywords": [
+    "apex-designer",
+    "apex-design-library",
+    "base-types",
+    "user-management"
+  ],
+  "author": "Dave Engberg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apexdesigner/base-library.git"
+  },
+  "homepage": "https://github.com/apexdesigner/base-library#readme",
+  "bugs": {
+    "url": "https://github.com/apexdesigner/base-library/issues"
+  },
+  "main": "design/project/project.json",
+  "files": [
+    "design/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@apexdesigner/core": "^0.3.18",
+    "@apexdesigner/schemas": "^0.2.5"
+  }
+}

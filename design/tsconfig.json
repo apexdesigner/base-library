@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "../node_modules/@types/*",
+        "../node_modules/*"
+      ],
+      "@business-objects/*": [
+        "../server/src/objects/*"
+      ],
+      "@base-types": [
+        "../server/src/objects"
+      ],
+      "@project/*": [
+        "./design/types/@project/*"
+      ]
+    },
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
+    "types": []
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "$schema": "http://json.schemastore.org/tsconfig"
+}

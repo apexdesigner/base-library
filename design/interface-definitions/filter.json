@@ -1,0 +1,83 @@
+{
+  "name": "Filter",
+  "displayName": "Filter",
+  "uuid": "550e8400-e29b-41d4-a716-446655440080",
+  "properties": [
+    {
+      "name": "where",
+      "displayName": "Where",
+      "type": {
+        "referenceType": "Interface Definition",
+        "uuid": "550e8400-e29b-41d4-a716-446655440070",
+        "name": "Where"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440081",
+      "isOptional": true,
+      "description": "Filter conditions"
+    },
+    {
+      "name": "order",
+      "displayName": "Order",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440006",
+        "name": "String"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440082",
+      "isOptional": true,
+      "isArray": true,
+      "description": "Sort order"
+    },
+    {
+      "name": "fields",
+      "displayName": "Fields",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440008",
+        "name": "Boolean"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440083",
+      "isOptional": true,
+      "isRecord": true,
+      "description": "Field selection"
+    },
+    {
+      "name": "include",
+      "displayName": "Include",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440084",
+      "isOptional": true,
+      "isRecord": true,
+      "description": "Relationship includes"
+    },
+    {
+      "name": "limit",
+      "displayName": "Limit",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440007",
+        "name": "Number"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440085",
+      "isOptional": true,
+      "description": "Result limit"
+    },
+    {
+      "name": "offset",
+      "displayName": "Offset",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440007",
+        "name": "Number"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440086",
+      "isOptional": true,
+      "description": "Pagination offset"
+    }
+  ],
+  "description": "Filter interface for querying and including related data"
+}

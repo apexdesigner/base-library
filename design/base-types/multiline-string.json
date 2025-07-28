@@ -1,0 +1,10 @@
+{
+  "name": "MultilineString",
+  "displayName": "Multiline String",
+  "pluralName": "MultilineStrings",
+  "pluralDisplayName": "Multiline Strings",
+  "indefiniteArticle": "a",
+  "description": "A multiline text string",
+  "uuid": "550e8400-e29b-41d4-a716-446655440014",
+  "nativeType": "string"
+}

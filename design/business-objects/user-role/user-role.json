@@ -1,0 +1,10 @@
+{
+  "name": "UserRole",
+  "displayName": "User Role",
+  "pluralName": "UserRoles",
+  "pluralDisplayName": "User Roles",
+  "indefiniteArticle": "a",
+  "uuid": "550e8400-e29b-41d4-a716-446655440022",
+  "properties": [],
+  "description": "Links users to their assigned roles"
+}

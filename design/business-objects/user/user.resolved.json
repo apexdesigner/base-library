@@ -1,0 +1,520 @@
+{
+  "name": "User",
+  "displayName": "User",
+  "pluralName": "Users",
+  "pluralDisplayName": "Users",
+  "indefiniteArticle": "a",
+  "uuid": "550e8400-e29b-41d4-a716-446655440016",
+  "properties": [
+    {
+      "name": "email",
+      "displayName": "Email",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Email"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440017",
+      "description": "User's email address"
+    }
+  ],
+  "description": "A user in the system",
+  "relationships": [
+    {
+      "uuid": "550e8400-e29b-41d4-a716-446655440030",
+      "name": "userRoles",
+      "type": "has many",
+      "businessObjectName": "UserRole",
+      "businessObjectUuid": "550e8400-e29b-41d4-a716-446655440022"
+    }
+  ],
+  "behaviors": [
+    {
+      "uuid": "dbe68adf-892b-4494-8710-ff725452f9af",
+      "name": "create",
+      "displayName": "Create User",
+      "type": "Class Behavior",
+      "httpMethod": "Post",
+      "path": "/api/users",
+      "description": "Creates a new user instance",
+      "parameters": [
+        {
+          "name": "data",
+          "displayName": "User Data",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "name": "User"
+          },
+          "location": "body",
+          "isPartial": true,
+          "description": "User data to create (partial input supported)"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "7b81e138-6db3-4390-b3ca-9a1ca2fdb625",
+      "name": "createMany",
+      "displayName": "Create Many Users",
+      "type": "Class Behavior",
+      "httpMethod": "Post",
+      "path": "/api/users/createMany",
+      "description": "Creates multiple user instances",
+      "parameters": [
+        {
+          "name": "data",
+          "displayName": "User Data Array",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "name": "User"
+          },
+          "location": "body",
+          "isPartial": true,
+          "isArray": true,
+          "description": "Array of user data to create (partial input supported)"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "returnTypeIsArray": true,
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "bc6e259c-30e4-43e0-b512-deb5b60ba99d",
+      "name": "find",
+      "displayName": "Find Users",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/users",
+      "description": "Retrieves a list of users with filtering and pagination",
+      "parameters": [
+        {
+          "name": "filter",
+          "displayName": "Filter",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440080",
+            "name": "Filter"
+          },
+          "location": "query",
+          "description": "Query filter with where, limit, offset, order, and include"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "returnTypeIsArray": true,
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "c7a62c17-c1e0-46f4-9fd5-e5dc25a14d28",
+      "name": "findById",
+      "displayName": "Find User By ID",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/users/{id}",
+      "description": "Retrieves a single user by ID",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "User ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the user"
+        },
+        {
+          "name": "filter",
+          "displayName": "Filter",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440080",
+            "name": "Filter"
+          },
+          "location": "query",
+          "description": "Query filter for including related data"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "3c0a7b90-3880-42f6-ba4a-bbdf2195c6f8",
+      "name": "findOne",
+      "displayName": "Find One User",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/users/findOne",
+      "description": "Retrieves a single user matching filter criteria",
+      "parameters": [
+        {
+          "name": "filter",
+          "displayName": "Filter",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440080",
+            "name": "Filter"
+          },
+          "location": "query",
+          "description": "Query filter with where, order, and include"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "072763c6-cc94-44e7-90a6-dc4fa35ed76a",
+      "name": "count",
+      "displayName": "Count Users",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/users/count",
+      "description": "Returns the count of users matching filter criteria",
+      "parameters": [
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "query",
+          "description": "Where conditions for filtering"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Base Type",
+        "uuid": "number-uuid",
+        "name": "Number"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "d07f5431-714b-4927-b42d-3a99bbeca99e",
+      "name": "exists",
+      "displayName": "User Exists",
+      "type": "Instance Behavior",
+      "httpMethod": "Get",
+      "path": "/api/users/{id}/exists",
+      "description": "Checks if a user exists by ID",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "User ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the user"
+        },
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "query",
+          "description": "Additional where conditions"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Base Type",
+        "uuid": "boolean-uuid",
+        "name": "Boolean"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "042367a0-0249-4bf6-b1f4-d8fa5216f24d",
+      "name": "updateById",
+      "displayName": "Update User By ID",
+      "type": "Class Behavior",
+      "httpMethod": "Patch",
+      "path": "/api/users/{id}",
+      "description": "Updates a user by ID with partial data",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "User ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the user"
+        },
+        {
+          "name": "updates",
+          "displayName": "Updates",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "name": "User"
+          },
+          "location": "body",
+          "isPartial": true,
+          "description": "Partial user data to update"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "b917f684-f0fe-4a02-abf1-4b8f2cf1b8db",
+      "name": "updateMany",
+      "displayName": "Update Many Users",
+      "type": "Class Behavior",
+      "httpMethod": "Patch",
+      "path": "/api/users/updateMany",
+      "description": "Updates multiple users matching where conditions",
+      "parameters": [
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "body",
+          "description": "Where conditions to match users"
+        },
+        {
+          "name": "updates",
+          "displayName": "Updates",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "name": "User"
+          },
+          "location": "body",
+          "isPartial": true,
+          "description": "Partial user data to update"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "name": "User"
+      },
+      "returnTypeIsArray": true,
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "d6c64c4d-43e6-4186-9492-35303c389d5e",
+      "name": "deleteById",
+      "displayName": "Delete User By ID",
+      "type": "Class Behavior",
+      "httpMethod": "Delete",
+      "path": "/api/users/{id}",
+      "description": "Deletes a user by ID",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "User ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the user"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "42762a62-44d6-4635-b272-d2e17746e987",
+      "name": "deleteMany",
+      "displayName": "Delete Many Users",
+      "type": "Class Behavior",
+      "httpMethod": "Delete",
+      "path": "/api/users/deleteMany",
+      "description": "Deletes multiple users matching where conditions",
+      "parameters": [
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "body",
+          "description": "Where conditions to match users for deletion"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Base Type",
+        "uuid": "number-uuid",
+        "name": "Number"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    }
+  ]
+}

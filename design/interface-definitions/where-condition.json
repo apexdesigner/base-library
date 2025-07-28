@@ -1,0 +1,107 @@
+{
+  "name": "WhereCondition",
+  "displayName": "Where Condition",
+  "uuid": "550e8400-e29b-41d4-a716-446655440060",
+  "properties": [
+    {
+      "name": "eq",
+      "displayName": "Equals",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440061",
+      "isOptional": true,
+      "description": "Equal to value"
+    },
+    {
+      "name": "neq",
+      "displayName": "Not Equals",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440062",
+      "isOptional": true,
+      "description": "Not equal to value"
+    },
+    {
+      "name": "gt",
+      "displayName": "Greater Than",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440063",
+      "isOptional": true,
+      "description": "Greater than value"
+    },
+    {
+      "name": "gte",
+      "displayName": "Greater Than Or Equal",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440064",
+      "isOptional": true,
+      "description": "Greater than or equal to value"
+    },
+    {
+      "name": "lt",
+      "displayName": "Less Than",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440065",
+      "isOptional": true,
+      "description": "Less than value"
+    },
+    {
+      "name": "lte",
+      "displayName": "Less Than Or Equal",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440066",
+      "isOptional": true,
+      "description": "Less than or equal to value"
+    },
+    {
+      "name": "in",
+      "displayName": "In Array",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440067",
+      "isOptional": true,
+      "isArray": true,
+      "description": "Value is in array"
+    },
+    {
+      "name": "nin",
+      "displayName": "Not In Array",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440068",
+      "isOptional": true,
+      "isArray": true,
+      "description": "Value is not in array"
+    }
+  ],
+  "additionalPropertiesAllowed": true,
+  "description": "Where condition operators for field filtering"
+}

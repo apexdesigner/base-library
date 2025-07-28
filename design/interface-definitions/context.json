@@ -1,0 +1,33 @@
+{
+  "name": "Context",
+  "displayName": "Context",
+  "uuid": "550e8400-e29b-41d4-a716-446655440050",
+  "properties": [
+    {
+      "name": "request",
+      "displayName": "Request",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440051",
+      "isOptional": true,
+      "description": "Request object containing HTTP request information"
+    },
+    {
+      "name": "response",
+      "displayName": "Response",
+      "type": {
+        "referenceType": "Base Type",
+        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "name": "Any"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440052",
+      "isOptional": true,
+      "description": "Response object for HTTP response handling"
+    }
+  ],
+  "additionalPropertiesAllowed": true,
+  "description": "Context object passed through the server-side call stack containing request/response and additional contextual information"
+}

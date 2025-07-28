@@ -1,0 +1,517 @@
+{
+  "name": "UserRole",
+  "displayName": "User Role",
+  "pluralName": "UserRoles",
+  "pluralDisplayName": "User Roles",
+  "indefiniteArticle": "a",
+  "uuid": "550e8400-e29b-41d4-a716-446655440022",
+  "properties": [],
+  "description": "Links users to their assigned roles",
+  "relationships": [
+    {
+      "uuid": "550e8400-e29b-41d4-a716-446655440030",
+      "name": "user",
+      "type": "belongs to",
+      "businessObjectName": "User",
+      "businessObjectUuid": "550e8400-e29b-41d4-a716-446655440016",
+      "foreignKey": "userId"
+    },
+    {
+      "uuid": "550e8400-e29b-41d4-a716-446655440031",
+      "name": "role",
+      "type": "references",
+      "businessObjectName": "Role",
+      "businessObjectUuid": "550e8400-e29b-41d4-a716-446655440018",
+      "foreignKey": "roleId"
+    }
+  ],
+  "behaviors": [
+    {
+      "uuid": "a979cc4d-8b47-43b5-939a-86a7f8d5fd48",
+      "name": "create",
+      "displayName": "Create UserRole",
+      "type": "Class Behavior",
+      "httpMethod": "Post",
+      "path": "/api/userroles",
+      "description": "Creates a new userrole instance",
+      "parameters": [
+        {
+          "name": "data",
+          "displayName": "UserRole Data",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440022",
+            "name": "UserRole"
+          },
+          "location": "body",
+          "isPartial": true,
+          "description": "UserRole data to create (partial input supported)"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "02f03bcc-57da-4d2c-99d7-0870d65e3d87",
+      "name": "createMany",
+      "displayName": "Create Many UserRoles",
+      "type": "Class Behavior",
+      "httpMethod": "Post",
+      "path": "/api/userroles/createMany",
+      "description": "Creates multiple userrole instances",
+      "parameters": [
+        {
+          "name": "data",
+          "displayName": "UserRole Data Array",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440022",
+            "name": "UserRole"
+          },
+          "location": "body",
+          "isPartial": true,
+          "isArray": true,
+          "description": "Array of userrole data to create (partial input supported)"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "returnTypeIsArray": true,
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "472a1d78-29a8-40d7-91b8-93a434ddff38",
+      "name": "find",
+      "displayName": "Find UserRoles",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/userroles",
+      "description": "Retrieves a list of userroles with filtering and pagination",
+      "parameters": [
+        {
+          "name": "filter",
+          "displayName": "Filter",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440080",
+            "name": "Filter"
+          },
+          "location": "query",
+          "description": "Query filter with where, limit, offset, order, and include"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "returnTypeIsArray": true,
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "3c7a003a-118c-4f0b-8790-4af86f233646",
+      "name": "findById",
+      "displayName": "Find UserRole By ID",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/userroles/{id}",
+      "description": "Retrieves a single userrole by ID",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "UserRole ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the userrole"
+        },
+        {
+          "name": "filter",
+          "displayName": "Filter",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440080",
+            "name": "Filter"
+          },
+          "location": "query",
+          "description": "Query filter for including related data"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "a2b345f5-bf76-4413-91fc-a54bab0b4e54",
+      "name": "findOne",
+      "displayName": "Find One UserRole",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/userroles/findOne",
+      "description": "Retrieves a single userrole matching filter criteria",
+      "parameters": [
+        {
+          "name": "filter",
+          "displayName": "Filter",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440080",
+            "name": "Filter"
+          },
+          "location": "query",
+          "description": "Query filter with where, order, and include"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "0f9f119f-902e-4c9a-b9f5-4f13c58d571c",
+      "name": "count",
+      "displayName": "Count UserRoles",
+      "type": "Class Behavior",
+      "httpMethod": "Get",
+      "path": "/api/userroles/count",
+      "description": "Returns the count of userroles matching filter criteria",
+      "parameters": [
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "query",
+          "description": "Where conditions for filtering"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Base Type",
+        "uuid": "number-uuid",
+        "name": "Number"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "2bcbe601-d081-4382-8e08-e2689e5434cb",
+      "name": "exists",
+      "displayName": "UserRole Exists",
+      "type": "Instance Behavior",
+      "httpMethod": "Get",
+      "path": "/api/userroles/{id}/exists",
+      "description": "Checks if a userrole exists by ID",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "UserRole ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the userrole"
+        },
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "query",
+          "description": "Additional where conditions"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Base Type",
+        "uuid": "boolean-uuid",
+        "name": "Boolean"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "fcb268fe-060f-4a7a-b978-c81ef225672b",
+      "name": "updateById",
+      "displayName": "Update UserRole By ID",
+      "type": "Class Behavior",
+      "httpMethod": "Patch",
+      "path": "/api/userroles/{id}",
+      "description": "Updates a userrole by ID with partial data",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "UserRole ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the userrole"
+        },
+        {
+          "name": "updates",
+          "displayName": "Updates",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440022",
+            "name": "UserRole"
+          },
+          "location": "body",
+          "isPartial": true,
+          "description": "Partial userrole data to update"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "a73e4142-77c8-4659-a507-713b11875b2f",
+      "name": "updateMany",
+      "displayName": "Update Many UserRoles",
+      "type": "Class Behavior",
+      "httpMethod": "Patch",
+      "path": "/api/userroles/updateMany",
+      "description": "Updates multiple userroles matching where conditions",
+      "parameters": [
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "body",
+          "description": "Where conditions to match userroles"
+        },
+        {
+          "name": "updates",
+          "displayName": "Updates",
+          "type": {
+            "referenceType": "Business Object",
+            "uuid": "550e8400-e29b-41d4-a716-446655440022",
+            "name": "UserRole"
+          },
+          "location": "body",
+          "isPartial": true,
+          "description": "Partial userrole data to update"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Business Object",
+        "uuid": "550e8400-e29b-41d4-a716-446655440022",
+        "name": "UserRole"
+      },
+      "returnTypeIsArray": true,
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "5973aa40-90f0-4ce9-b3e6-8a36e2b1fe4c",
+      "name": "deleteById",
+      "displayName": "Delete UserRole By ID",
+      "type": "Class Behavior",
+      "httpMethod": "Delete",
+      "path": "/api/userroles/{id}",
+      "description": "Deletes a userrole by ID",
+      "parameters": [
+        {
+          "name": "id",
+          "displayName": "UserRole ID",
+          "type": {
+            "referenceType": "Base Type",
+            "uuid": "id-uuid",
+            "name": "ID"
+          },
+          "location": "path",
+          "description": "Unique identifier for the userrole"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "roles": [
+        "Authenticated"
+      ]
+    },
+    {
+      "uuid": "4f43d0c8-0cf5-4655-aae2-3b04bc6aaa15",
+      "name": "deleteMany",
+      "displayName": "Delete Many UserRoles",
+      "type": "Class Behavior",
+      "httpMethod": "Delete",
+      "path": "/api/userroles/deleteMany",
+      "description": "Deletes multiple userroles matching where conditions",
+      "parameters": [
+        {
+          "name": "where",
+          "displayName": "Where",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440060",
+            "name": "Where"
+          },
+          "location": "body",
+          "description": "Where conditions to match userroles for deletion"
+        },
+        {
+          "name": "context",
+          "displayName": "Context",
+          "type": {
+            "referenceType": "Interface Definition",
+            "uuid": "550e8400-e29b-41d4-a716-446655440050",
+            "name": "Context"
+          },
+          "description": "Server-side context for operation execution"
+        }
+      ],
+      "returnType": {
+        "referenceType": "Base Type",
+        "uuid": "number-uuid",
+        "name": "Number"
+      },
+      "roles": [
+        "Authenticated"
+      ]
+    }
+  ]
+}

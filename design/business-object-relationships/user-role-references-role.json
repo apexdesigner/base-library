@@ -1,0 +1,19 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440031",
+  "parentBusinessObject": {
+    "referenceType": "Business Object",
+    "uuid": "550e8400-e29b-41d4-a716-446655440018",
+    "name": "Role"
+  },
+  "childBusinessObject": {
+    "referenceType": "Business Object",
+    "uuid": "550e8400-e29b-41d4-a716-446655440022",
+    "name": "UserRole"
+  },
+  "parentChildType": "has many",
+  "childParentType": "references",
+  "parentChildName": "userRoles",
+  "childParentName": "role",
+  "childParentForeignKey": "roleId",
+  "description": "Role has many user roles"
+}

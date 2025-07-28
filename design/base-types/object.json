@@ -1,0 +1,10 @@
+{
+  "name": "Object",
+  "displayName": "Object",
+  "pluralName": "Objects",
+  "pluralDisplayName": "Objects",
+  "indefiniteArticle": "an",
+  "description": "An object with properties",
+  "uuid": "550e8400-e29b-41d4-a716-446655440011",
+  "nativeType": "object"
+}

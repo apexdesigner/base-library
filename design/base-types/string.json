@@ -1,0 +1,10 @@
+{
+  "name": "String",
+  "displayName": "String",
+  "pluralName": "Strings",
+  "pluralDisplayName": "Strings",
+  "indefiniteArticle": "a",
+  "description": "A text string",
+  "uuid": "550e8400-e29b-41d4-a716-446655440006",
+  "nativeType": "string"
+}

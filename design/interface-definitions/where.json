@@ -1,0 +1,35 @@
+{
+  "name": "Where",
+  "displayName": "Where",
+  "uuid": "550e8400-e29b-41d4-a716-446655440070",
+  "properties": [
+    {
+      "name": "and",
+      "displayName": "And",
+      "type": {
+        "referenceType": "Interface Definition",
+        "uuid": "550e8400-e29b-41d4-a716-446655440070",
+        "name": "Where"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440071",
+      "isOptional": true,
+      "isArray": true,
+      "description": "Logical AND conditions"
+    },
+    {
+      "name": "or",
+      "displayName": "Or",
+      "type": {
+        "referenceType": "Interface Definition",
+        "uuid": "550e8400-e29b-41d4-a716-446655440070",
+        "name": "Where"
+      },
+      "uuid": "550e8400-e29b-41d4-a716-446655440072",
+      "isOptional": true,
+      "isArray": true,
+      "description": "Logical OR conditions"
+    }
+  ],
+  "additionalPropertiesAllowed": true,
+  "description": "Where clause supporting field conditions and logical operators"
+}

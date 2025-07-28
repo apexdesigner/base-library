@@ -1,0 +1,7 @@
+{
+  "name": "base-library",
+  "displayName": "Base Library",
+  "version": "1.0.0",
+  "description": "Base Library containing fundamental types and user management system",
+  "isLibrary": true
+}

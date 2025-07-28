@@ -1,0 +1,10 @@
+{
+  "name": "Number",
+  "displayName": "Number",
+  "pluralName": "Numbers",
+  "pluralDisplayName": "Numbers",
+  "indefiniteArticle": "a",
+  "description": "A numeric value",
+  "uuid": "550e8400-e29b-41d4-a716-446655440007",
+  "nativeType": "number"
+}
