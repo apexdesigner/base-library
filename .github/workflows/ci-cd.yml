@@ -1,0 +1,46 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        registry-url: 'https://registry.npmjs.org'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Validate Apex Designer files
+      run: |
+        echo "Validating design files structure..."
+        test -f design/project/project.json
+        test -d design/base-types
+        test -d design/business-objects
+        test -d design/interface-definitions
+        echo "✓ All required design files present"
+    
+    - name: Check package.json format
+      run: |
+        node -e "
+          const pkg = require('./package.json');
+          if (!pkg.name.startsWith('@apexdesigner/')) throw new Error('Package name must be scoped to @apexdesigner/');
+          if (!pkg.files.includes('design/')) throw new Error('Package must include design/ in files array');
+          console.log('✓ Package.json format valid');
+        "
