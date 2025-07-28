@@ -28,9 +28,5 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "devDependencies": {
-    "@apexdesigner/core": "^0.3.18",
-    "@apexdesigner/schemas": "^0.2.5"
   }
 }
