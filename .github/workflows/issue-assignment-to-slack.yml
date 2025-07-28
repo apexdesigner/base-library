@@ -1,0 +1,21 @@
+name: Issue Assignment to Slack
+
+# Trigger when someone is assigned to or unassigned from an issue
+on:
+  issues:
+    types: [assigned, unassigned]
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send issue assignment notification to Slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "👤 ${{ github.event.assignee.login }} was ${{ github.event.action }} to issue <${{ github.event.issue.html_url }}|#${{ github.event.issue.number }}: ${{ github.event.issue.title }}>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

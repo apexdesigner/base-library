@@ -1,0 +1,23 @@
+name: Publish Failure to Slack
+
+# Trigger when publish workflow completes with failure status
+on:
+  workflow_run:
+    workflows: ["Publish"]
+    types: [completed]
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    
+    steps:
+      - name: Send publish failure notification to Slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "💥 Publish workflow failed for <${{ github.event.workflow_run.html_url }}|${{ github.event.workflow_run.head_branch }}> - <${{ github.event.workflow_run.html_url }}|View workflow run>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
