@@ -50,6 +50,35 @@ This library is designed to be imported as a dependency in other Apex Designer p
 - **Role**: System roles with name and description
 - **UserRole**: Junction table linking users to roles
 
+## Publishing
+
+This package is published privately to npm under the `apexdesigner` organization.
+
+### Scripts
+
+```bash
+# Increment patch version (1.0.0 → 1.0.1)
+npm version patch
+
+# Increment minor version (1.0.0 → 1.1.0)  
+npm version minor
+
+# Increment major version (1.0.0 → 2.0.0)
+npm version major
+
+# Publish to private npm registry
+npm publish
+```
+
+### Publishing Process
+
+1. Make your changes and commit them
+2. Run the appropriate version increment command
+3. Push the version commit and tag: `git push && git push --tags`
+4. Publish to npm: `npm publish`
+
+The package will be available as `@apexdesigner/base-library` in the private npm registry.
+
 ## License
 
 MIT
