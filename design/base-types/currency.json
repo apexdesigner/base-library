@@ -1,0 +1,9 @@
+{
+  "uuid": "e7a6749b-081f-415a-94d2-aaed44474ecc",
+  "name": "Currency",
+  "displayName": "Currency",
+  "pluralName": "Currencies",
+  "pluralDisplayName": "Currencies",
+  "nativeType": "number",
+  "indefiniteArticle": "a"
+}

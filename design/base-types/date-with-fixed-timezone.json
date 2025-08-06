@@ -1,0 +1,9 @@
+{
+  "uuid": "275de895-0deb-41bd-89de-96663a0bdf32",
+  "name": "DateWithFixedTimezone",
+  "displayName": "Date With Fixed Timezone",
+  "pluralName": "DateWithFixedTimezones",
+  "pluralDisplayName": "Date With Fixed Timezones",
+  "nativeType": "date",
+  "indefiniteArticle": "a"
+}

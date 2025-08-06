@@ -1,0 +1,11 @@
+{
+  "uuid": "90d22f89-5315-4d09-acfb-ecb0b326e176",
+  "name": "EmailAddress",
+  "displayName": "Email Address",
+  "pluralName": "EmailAddresses",
+  "pluralDisplayName": "Email Addresses",
+  "nativeType": "string",
+  "indefiniteArticle": "an",
+  "pattern": "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$",
+  "patternMessage": "Please enter a valid email address."
+}
