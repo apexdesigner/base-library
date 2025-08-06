@@ -4,6 +4,6 @@
   "displayName": "Void",
   "pluralName": "Voids",
   "pluralDisplayName": "Voids",
-  "nativeType": "object",
+  "nativeType": "void",
   "indefiniteArticle": "a"
 }
