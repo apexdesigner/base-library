@@ -4,6 +4,6 @@
   "displayName": "Date With Fixed Timezone",
   "pluralName": "DateWithFixedTimezones",
   "pluralDisplayName": "Date With Fixed Timezones",
-  "nativeType": "date",
+  "nativeType": "Date",
   "indefiniteArticle": "a"
 }
