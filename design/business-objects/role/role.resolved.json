@@ -11,7 +11,7 @@
       "displayName": "Name",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440006",
+        "uuid": "628b1cf0-ad96-44f4-9c99-7b0e3a1bd404",
         "name": "String"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440019",
@@ -22,7 +22,7 @@
       "displayName": "Description",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440014",
+        "uuid": "eb235956-c470-4c9e-941f-00f0bf90482b",
         "name": "MultilineString"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440020",

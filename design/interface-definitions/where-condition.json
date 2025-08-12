@@ -8,7 +8,7 @@
       "displayName": "Equals",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440061",
@@ -20,7 +20,7 @@
       "displayName": "Not Equals",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440062",
@@ -32,7 +32,7 @@
       "displayName": "Greater Than",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440063",
@@ -44,7 +44,7 @@
       "displayName": "Greater Than Or Equal",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440064",
@@ -56,7 +56,7 @@
       "displayName": "Less Than",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440065",
@@ -68,7 +68,7 @@
       "displayName": "Less Than Or Equal",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440066",
@@ -80,7 +80,7 @@
       "displayName": "In Array",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440067",
@@ -93,7 +93,7 @@
       "displayName": "Not In Array",
       "type": {
         "referenceType": "Base Type",
-        "uuid": "550e8400-e29b-41d4-a716-446655440015",
+        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
         "name": "Any"
       },
       "uuid": "550e8400-e29b-41d4-a716-446655440068",
