@@ -13,7 +13,7 @@
       "name": "user",
       "type": "belongs to",
       "businessObjectName": "User",
-      "businessObjectUuid": "550e8400-e29b-41d4-a716-446655440016",
+      "businessObjectUuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
       "foreignKey": "userId"
     },
     {

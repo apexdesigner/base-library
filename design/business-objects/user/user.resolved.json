@@ -4,7 +4,7 @@
   "pluralName": "Users",
   "pluralDisplayName": "Users",
   "indefiniteArticle": "a",
-  "uuid": "550e8400-e29b-41d4-a716-446655440016",
+  "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
   "properties": [
     {
       "name": "email",
@@ -43,7 +43,7 @@
           "displayName": "User Data",
           "type": {
             "referenceType": "Business Object",
-            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
             "name": "User"
           },
           "location": "body",
@@ -63,7 +63,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "roles": [
@@ -84,7 +84,7 @@
           "displayName": "User Data Array",
           "type": {
             "referenceType": "Business Object",
-            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
             "name": "User"
           },
           "location": "body",
@@ -105,7 +105,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "returnTypeIsArray": true,
@@ -146,7 +146,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "returnTypeIsArray": true,
@@ -198,7 +198,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "roles": [
@@ -238,7 +238,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "roles": [
@@ -361,7 +361,7 @@
           "displayName": "Updates",
           "type": {
             "referenceType": "Business Object",
-            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
             "name": "User"
           },
           "location": "body",
@@ -381,7 +381,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "roles": [
@@ -413,7 +413,7 @@
           "displayName": "Updates",
           "type": {
             "referenceType": "Business Object",
-            "uuid": "550e8400-e29b-41d4-a716-446655440016",
+            "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
             "name": "User"
           },
           "location": "body",
@@ -433,7 +433,7 @@
       ],
       "returnType": {
         "referenceType": "Business Object",
-        "uuid": "550e8400-e29b-41d4-a716-446655440016",
+        "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
         "name": "User"
       },
       "returnTypeIsArray": true,
