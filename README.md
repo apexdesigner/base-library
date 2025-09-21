@@ -1,4 +1,4 @@
-# Apex Designer Base Library
+# Apex Designer Base Library (in clone-testing branch)
 
 A foundational library for Apex Designer applications containing essential base types, interface definitions, and user management components.
 
