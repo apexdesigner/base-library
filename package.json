@@ -1,7 +1,7 @@
 {
   "name": "@apexdesigner/base-library",
   "displayName": "Base Library",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Base Library containing fundamental types and user management system for Apex Designer applications",
   "keywords": [
     "apex-designer",
