@@ -6,11 +6,7 @@
     {
       "name": "and",
       "displayName": "And",
-      "type": {
-        "referenceType": "Interface Definition",
-        "uuid": "550e8400-e29b-41d4-a716-446655440070",
-        "name": "Where"
-      },
+      "type": "550e8400-e29b-41d4-a716-446655440070",
       "uuid": "550e8400-e29b-41d4-a716-446655440071",
       "isOptional": true,
       "isArray": true,
@@ -19,11 +15,7 @@
     {
       "name": "or",
       "displayName": "Or",
-      "type": {
-        "referenceType": "Interface Definition",
-        "uuid": "550e8400-e29b-41d4-a716-446655440070",
-        "name": "Where"
-      },
+      "type": "550e8400-e29b-41d4-a716-446655440070",
       "uuid": "550e8400-e29b-41d4-a716-446655440072",
       "isOptional": true,
       "isArray": true,

@@ -6,11 +6,7 @@
     {
       "name": "where",
       "displayName": "Where",
-      "type": {
-        "referenceType": "Interface Definition",
-        "uuid": "550e8400-e29b-41d4-a716-446655440070",
-        "name": "Where"
-      },
+      "type": "550e8400-e29b-41d4-a716-446655440070",
       "uuid": "550e8400-e29b-41d4-a716-446655440081",
       "isOptional": true,
       "description": "Filter conditions"
@@ -18,11 +14,7 @@
     {
       "name": "order",
       "displayName": "Order",
-      "type": {
-        "referenceType": "Base Type",
-        "uuid": "628b1cf0-ad96-44f4-9c99-7b0e3a1bd404",
-        "name": "String"
-      },
+      "type": "628b1cf0-ad96-44f4-9c99-7b0e3a1bd404",
       "uuid": "550e8400-e29b-41d4-a716-446655440082",
       "isOptional": true,
       "isArray": true,
@@ -31,11 +23,7 @@
     {
       "name": "fields",
       "displayName": "Fields",
-      "type": {
-        "referenceType": "Base Type",
-        "uuid": "aa6c5ea0-de2b-4f92-b271-8e2275599e7a",
-        "name": "Boolean"
-      },
+      "type": "aa6c5ea0-de2b-4f92-b271-8e2275599e7a",
       "uuid": "550e8400-e29b-41d4-a716-446655440083",
       "isOptional": true,
       "isRecord": true,
@@ -44,11 +32,7 @@
     {
       "name": "include",
       "displayName": "Include",
-      "type": {
-        "referenceType": "Base Type",
-        "uuid": "7e28756b-0749-465b-94a9-523e7b58a1eb",
-        "name": "Any"
-      },
+      "type": "7e28756b-0749-465b-94a9-523e7b58a1eb",
       "uuid": "550e8400-e29b-41d4-a716-446655440084",
       "isOptional": true,
       "isRecord": true,
@@ -57,11 +41,7 @@
     {
       "name": "limit",
       "displayName": "Limit",
-      "type": {
-        "referenceType": "Base Type",
-        "uuid": "cb5ee5ef-bb65-42f0-8fea-0f7283cd162d",
-        "name": "Number"
-      },
+      "type": "cb5ee5ef-bb65-42f0-8fea-0f7283cd162d",
       "uuid": "550e8400-e29b-41d4-a716-446655440085",
       "isOptional": true,
       "description": "Result limit"
@@ -69,11 +49,7 @@
     {
       "name": "offset",
       "displayName": "Offset",
-      "type": {
-        "referenceType": "Base Type",
-        "uuid": "cb5ee5ef-bb65-42f0-8fea-0f7283cd162d",
-        "name": "Number"
-      },
+      "type": "cb5ee5ef-bb65-42f0-8fea-0f7283cd162d",
       "uuid": "550e8400-e29b-41d4-a716-446655440086",
       "isOptional": true,
       "description": "Pagination offset"
