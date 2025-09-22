@@ -3,5 +3,6 @@
   "displayName": "Base Library",
   "version": "1.0.0",
   "description": "Base Library containing fundamental types and user management system",
-  "isLibrary": true
+  "isLibrary": true,
+  "uuid": "b813c543-ab34-478d-968a-48669c32f159"
 }
