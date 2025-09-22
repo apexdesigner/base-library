@@ -1,15 +1,7 @@
 {
   "uuid": "550e8400-e29b-41d4-a716-446655440030",
-  "parentBusinessObject": {
-    "referenceType": "Business Object",
-    "uuid": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
-    "name": "User"
-  },
-  "childBusinessObject": {
-    "referenceType": "Business Object",
-    "uuid": "550e8400-e29b-41d4-a716-446655440022",
-    "name": "UserRole"
-  },
+  "parent": "29b92fcc-c193-4acc-87e0-f87ea2e85a7e",
+  "child": "550e8400-e29b-41d4-a716-446655440022",
   "parentChildType": "has many",
   "childParentType": "belongs to",
   "parentChildName": "userRoles",
