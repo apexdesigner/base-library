@@ -1,11 +1,11 @@
 {
   "uuid": "550e8400-e29b-41d4-a716-446655440031",
-  "parentBusinessObject": "550e8400-e29b-41d4-a716-446655440018",
-  "childBusinessObject": "550e8400-e29b-41d4-a716-446655440022",
+  "parent": "550e8400-e29b-41d4-a716-446655440018",
+  "child": "550e8400-e29b-41d4-a716-446655440022",
   "parentChildType": "has many",
   "childParentType": "references",
   "parentChildName": "userRoles",
   "childParentName": "role",
   "childParentForeignKey": "roleId",
-  "description": "Role has many user roles"
+  "displayName": "User Role references Role"
 }

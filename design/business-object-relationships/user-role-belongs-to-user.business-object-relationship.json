@@ -7,5 +7,5 @@
   "parentChildName": "userRoles",
   "childParentName": "user",
   "childParentForeignKey": "userId",
-  "description": "User has many user roles"
+  "displayName": "User Role belongs to User"
 }
