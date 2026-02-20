@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.30] - 2026-02-20
+
+- 833de4d chore: apply automated fixes
+- 99e9cd7 Always generate routes/index.ts, with comment when no business objects
+- eb7a4d6 Infer autoIncrement for Postgres numeric ids without requiring decorator
+
+
 ## [1.0.29] - 2026-02-20
 
 - fb09feb Pass column decorator config through to schema for all property types
