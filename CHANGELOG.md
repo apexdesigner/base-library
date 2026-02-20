@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.19] - 2026-02-20
+
+- 6493d38 chore: apply automated fixes
+- 7a5f8c3 Add peerDependencies for generator runtime packages
+
+
 ## [1.0.18] - 2026-02-20
 
 - bd76c8c Include generators directory in published npm package
