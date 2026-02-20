@@ -6,6 +6,21 @@ import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:businessObjectSchema');
 
+function toObjectLiteral(obj: Record<string, unknown>): string {
+  const entries = Object.entries(obj).map(([k, v]) => {
+    let val: string;
+    if (typeof v === 'string') {
+      val = `"${v.replace(/"/g, '\\"')}"`;
+    } else if (typeof v === 'object' && v !== null) {
+      val = toObjectLiteral(v as Record<string, unknown>);
+    } else {
+      val = String(v);
+    }
+    return `${k}: ${val}`;
+  });
+  return `{ ${entries.join(', ')} }`;
+}
+
 const businessObjectSchemaGenerator: DesignGenerator = {
   name: 'business-object-schema',
 
@@ -66,16 +81,28 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     const idProperty = getIdProperty(metadata.sourceFile, context);
     debug('idProperty %j', idProperty);
 
+    // Get the BO class early — needed for id decorator check and property listing
+    const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');
+
     let idZodType = 'z.number()';
     let idColumnConfig = '';
     if (idProperty.type === 'string' || idProperty.type === 'String') {
       idZodType = 'z.string()';
     } else if (idProperty.type === 'Serial') {
       idColumnConfig = '.column({ autoIncrement: true })';
+    } else {
+      // Check @property() decorator for any column config on plain number/string id
+      const idPropNode = boClass?.getProperty(idProperty.name);
+      if (idPropNode) {
+        const idOpts = getPropertyDecorator(idPropNode, 'property') || {};
+        const column = idOpts.column as Record<string, unknown> | undefined;
+        if (column) {
+          idColumnConfig = `.column(${toObjectLiteral(column)})`;
+        }
+      }
     }
 
     // Get properties from the class
-    const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');
     const properties = boClass?.getProperties() || [];
     debug('properties count %j', properties.length);
 
@@ -142,6 +169,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       const chain: string[] = [zodType];
 
       if (isOptional) chain.push('.optional()');
+      if (opts.column && typeof opts.column === 'object') chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
       if (opts.hidden) chain.push('.hidden()');
       if (opts.required) chain.push('.requiredFinal()');
       if (opts.disabled) chain.push('.disabled()');
@@ -209,6 +237,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         const chain: string[] = [zodType];
 
         if (isOptional) chain.push('.optional()');
+        if (opts.column && typeof opts.column === 'object') chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
         if (opts.hidden) chain.push('.hidden()');
         if (opts.required) chain.push('.requiredFinal()');
         if (opts.disabled) chain.push('.disabled()');
