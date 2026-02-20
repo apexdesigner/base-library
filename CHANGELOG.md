@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.22] - 2026-02-20
+
+- ede3f0c chore: apply automated fixes
+- 0082c42 Fix server startup: inline dotenv loader, correct start script
+
+
 ## [1.0.21] - 2026-02-20
 
 - 847652e Fix server startup: use listening event and surface errors

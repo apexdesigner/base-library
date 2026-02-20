@@ -69,7 +69,7 @@ export class BaseLibrary extends Project {
 
   serverScripts = {
     build: "tsc",
-    start: "set -a; source .env 2>/dev/null; set +a; node dist/index.js",
+    start: "node dist/index.js",
   };
 }
 

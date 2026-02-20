@@ -47,9 +47,18 @@ const serverGenerator: DesignGenerator = {
 
     const lines: string[] = [];
 
+    lines.push('import { readFileSync } from "fs";');
     lines.push('import express from "express";');
     lines.push('import createDebug from "debug";');
     lines.push('import router from "./routes/index.js";');
+    lines.push('');
+    lines.push('// Load .env file if present (variables already in env take precedence)');
+    lines.push('try {');
+    lines.push('  for (const line of readFileSync(".env", "utf-8").split("\\n")) {');
+    lines.push('    const match = line.match(/^([^#][^=]*)=(.*)/);');
+    lines.push('    if (match) process.env[match[1].trim()] ??= match[2].trim();');
+    lines.push('  }');
+    lines.push('} catch {}');
 
     // Import After Start app behaviors
     for (const behavior of afterStartBehaviors) {
@@ -68,6 +77,7 @@ const serverGenerator: DesignGenerator = {
     lines.push('const server = app.listen(port);');
     lines.push('');
     lines.push('server.on("listening", async () => {');
+    lines.push('  console.log("Server listening on port", port);');
     lines.push('  debug("Server listening on port %d", port);');
 
     // Call After Start behaviors
@@ -84,7 +94,7 @@ const serverGenerator: DesignGenerator = {
     lines.push('');
     lines.push('server.on("error", (err) => {');
     lines.push('  console.error("Server error:", err);');
-    lines.push('  process.exit(1);');
+    lines.push('  process.exitCode = 1;');
     lines.push('});');
 
     const content = lines.join('\n');
