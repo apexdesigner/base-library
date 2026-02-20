@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.28] - 2026-02-20
+
+- 4cdd47b Throw error instead of returning empty string when DataSource missing persistenceType
+
+
 ## [1.0.27] - 2026-02-20
 
 - a3d7ba9 Error on DataSource missing persistenceType instead of silently generating empty file
