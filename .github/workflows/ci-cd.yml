@@ -2,47 +2,188 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ 'main', 'master', 'release/*' ]
 
 jobs:
-  validate:
+  test:
     runs-on: ubuntu-latest
-    
+    outputs:
+      should-publish: ${{ steps.version-check.outputs.should-publish }}
+      package-version: ${{ steps.version-check.outputs.package-version }}
+
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
-    
+        node-version: [24.x]
+
     steps:
     - uses: actions/checkout@v4
-    
+      with:
+        fetch-tags: true
+        fetch-depth: 0
+
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
-    
+
+    - name: Check for version tag
+      id: version-check
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_READ_ONLY_TOKEN }}
+      run: |
+        # Check if this is a merge commit and look for tags in merged commits
+        if git rev-parse --verify HEAD^2 > /dev/null 2>&1; then
+          echo "Detected merge commit - checking merged commits for version tags"
+          MERGE_BASE=$(git merge-base HEAD^1 HEAD^2)
+          VERSION_TAG=$(git tag --merged HEAD^2 --no-merged $MERGE_BASE 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1)
+
+          if [ -z "$VERSION_TAG" ]; then
+            echo "should-publish=false" >> $GITHUB_OUTPUT
+            echo "No version tag found in merged commits - skipping publish"
+            exit 0
+          fi
+          echo "Found version tag in merged commits: $VERSION_TAG"
+        else
+          echo "Regular commit - checking HEAD for version tag"
+          TAGS=$(git tag --points-at HEAD)
+
+          if [ -z "$TAGS" ]; then
+            echo "should-publish=false" >> $GITHUB_OUTPUT
+            echo "No tag found on current commit - skipping publish"
+            exit 0
+          fi
+
+          VERSION_TAG=$(echo "$TAGS" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+
+          if [ -z "$VERSION_TAG" ]; then
+            echo "should-publish=false" >> $GITHUB_OUTPUT
+            echo "No version tag found (expected format: v*.*.*) - skipping publish"
+            exit 0
+          fi
+          echo "Found version tag: $VERSION_TAG"
+        fi
+
+        TAG_VERSION=${VERSION_TAG#v}
+        echo "package-version=$TAG_VERSION" >> $GITHUB_OUTPUT
+
+        PACKAGE_VERSION=$(node -p "require('./package.json').version")
+        if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+          echo "❌ Tag version ($TAG_VERSION) doesn't match package.json ($PACKAGE_VERSION)"
+          exit 1
+        fi
+        echo "✅ Tag matches package.json version"
+
+        PACKAGE_NAME=$(node -p "require('./package.json').name")
+        NPM_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "")
+
+        if [ -z "$NPM_VERSION" ]; then
+          echo "❌ Package $PACKAGE_NAME not found on npm"
+          echo ""
+          echo "This workflow uses OIDC trusted publishing, which requires the package to exist."
+          echo ""
+          echo "To set up first-time publishing:"
+          echo "  1. Run 'npm publish' manually from your local machine"
+          echo "  2. Go to npmjs.com → Package Settings → Configure trusted publishing"
+          echo "  3. Add this repository as a trusted publisher"
+          echo ""
+          echo "Future version bumps will publish automatically via this workflow."
+          exit 1
+        elif [ "$TAG_VERSION" != "$NPM_VERSION" ]; then
+          echo "should-publish=true" >> $GITHUB_OUTPUT
+          echo "✅ Will publish $TAG_VERSION (npm has $NPM_VERSION)"
+        else
+          echo "should-publish=false" >> $GITHUB_OUTPUT
+          echo "⚠️ Version $TAG_VERSION already published to npm - skipping"
+        fi
+
     - name: Install dependencies
       run: npm ci
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-    
-    - name: Validate Apex Designer files
-      run: |
-        echo "Validating design files structure..."
-        test -f design/project/project.json
-        test -d design/base-types
-        test -d design/business-objects
-        test -d design/interface-definitions
-        echo "✓ All required design files present"
-    
-    - name: Check package.json format
-      run: |
-        node -e "
-          const pkg = require('./package.json');
-          if (!pkg.name.startsWith('@apexdesigner/')) throw new Error('Package name must be scoped to @apexdesigner/');
-          if (!pkg.files.includes('design/')) throw new Error('Package must include design/ in files array');
-          console.log('✓ Package.json format valid');
-        "
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_READ_ONLY_TOKEN }}
+
+    - name: Lint
+      run: npm run lint --if-present
+
+    - name: Build
+      run: npm run build --if-present
+
+    - name: Test
+      run: npm test --if-present
+
+    # Notify Slack on successful build (main branch only)
+    - name: Notify Slack of build success
+      if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "✅ CI build passed for <${{ github.event.repository.html_url }}|${{ github.repository }}> on Node.js ${{ matrix.node-version }} - Commit: <${{ github.event.head_commit.url }}|${{ github.sha }}> by ${{ github.actor }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.AD3_SLACK_WEBHOOK_URL }}
+
+    # Notify Slack on build failure
+    - name: Notify Slack of build failure
+      if: failure()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "❌ CI build failed for <${{ github.event.repository.html_url }}|${{ github.repository }}> on Node.js ${{ matrix.node-version }} - <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.AD3_SLACK_WEBHOOK_URL }}
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    if: needs.test.outputs.should-publish == 'true'
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: '24.x'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install dependencies
+      run: npm ci
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_READ_ONLY_TOKEN }}
+
+    - name: Build
+      run: npm run build --if-present
+
+    - name: Publish to npm
+      run: npm publish
+
+    # Notify Slack on successful publish
+    - name: Notify Slack of successful publish
+      if: success()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "🚀 Successfully published <${{ github.event.repository.html_url }}|${{ github.repository }}> version ${{ needs.test.outputs.package-version }} to npm! 📦 Published by ${{ github.actor }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.AD3_SLACK_WEBHOOK_URL }}
+
+    # Notify Slack on publish failure
+    - name: Notify Slack of publish failure
+      if: failure()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "💥 Failed to publish <${{ github.event.repository.html_url }}|${{ github.repository }}> version ${{ needs.test.outputs.package-version }} to npm. Published by ${{ github.actor }}. <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run details>"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.AD3_SLACK_WEBHOOK_URL }}
