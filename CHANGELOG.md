@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.27] - 2026-02-20
+
+- a3d7ba9 Error on DataSource missing persistenceType instead of silently generating empty file
+
+
 ## [1.0.26] - 2026-02-20
 
 - 3bf5f67 chore: apply automated fixes
