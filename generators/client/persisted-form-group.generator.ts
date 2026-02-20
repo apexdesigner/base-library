@@ -24,7 +24,7 @@ const persistedFormGroupGenerator: DesignGenerator = {
     const debug = Debug.extend('generate');
     debug('generating persisted-form-group base class');
 
-    const debugNamespace = pascalCase(context.listMetadata('Project')[0]?.name || 'App');
+    const debugNamespace = pascalCase(context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App');
 
     const runtimeContent = `import { SchemaFormGroup, SchemaFormArray, SchemaFormControl } from '@apexdesigner/schema-forms';
 import type { SchemaType } from '@apexdesigner/schema-forms';

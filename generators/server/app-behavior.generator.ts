@@ -87,7 +87,7 @@ const appBehaviorGenerator: DesignGenerator = {
     }
 
     // Get project name for debug namespace
-    const projectMeta = context.listMetadata('Project')[0];
+    const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
     const debugNamespace = pascalCase(projectMeta?.name || 'App');
 
     // Map design imports to generated server imports
