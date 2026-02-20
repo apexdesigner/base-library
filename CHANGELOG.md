@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.29] - 2026-02-20
+
+- fb09feb Pass column decorator config through to schema for all property types
+
+
 ## [1.0.28] - 2026-02-20
 
 - 4cdd47b Throw error instead of returning empty string when DataSource missing persistenceType
