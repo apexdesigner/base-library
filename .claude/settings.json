@@ -1,0 +1,69 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ad3:*)",
+      "Bash(ad3t:*)",
+      "Read(client/**)",
+      "Read(server/**)",
+      "Skill(debug)",
+      "Bash(.claude/skills/debug/scripts/debug-test.sh:*)",
+      "Skill(github)",
+      "Bash(.claude/skills/github/scripts/adjust-settings.cjs:*)",
+      "Bash(.claude/skills/github/scripts/common.sh:*)",
+      "Bash(.claude/skills/github/scripts/gh-auth.sh:*)",
+      "Bash(.claude/skills/github/scripts/gh-issue.sh:*)",
+      "Bash(.claude/skills/github/scripts/gh-pr.sh:*)",
+      "Bash(.claude/skills/github/scripts/session-start.cjs:*)",
+      "Skill(github-workflows)",
+      "Skill(markdown-to-pdf)",
+      "Bash(.claude/skills/markdown-to-pdf/scripts/markdown_to_pdf.cjs:*)",
+      "Skill(publish-version)",
+      "Bash(.claude/skills/publish-version/scripts/finalize.sh:*)",
+      "Bash(.claude/skills/publish-version/scripts/publish.sh:*)",
+      "Bash(.claude/skills/publish-version/scripts/validate.sh:*)",
+      "Skill(storybook)",
+      "Bash(.claude/skills/storybook/scripts/restart-storybook.sh:*)",
+      "Skill(typescript-editing)",
+      "Bash(.claude/skills/typescript-editing/scripts/add-constructor.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/add-decorator.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/add-import.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/add-method.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/add-property.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/list-imports.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/list-structure.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/remove-import.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/remove-method.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/remove-property.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/remove-unused-imports.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/rename-member.cjs:*)",
+      "Bash(.claude/skills/typescript-editing/scripts/replace-method.cjs:*)",
+      "Skill(typescript-test-management)",
+      "Bash(.claude/skills/typescript-test-management/scripts/add-afterEach.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/add-beforeEach.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/add-describe.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/add-test.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/list-tests.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/remove-describe.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/remove-test.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/replace-test-body.cjs:*)",
+      "Bash(.claude/skills/typescript-test-management/scripts/toggle-skip.cjs:*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.npmrc)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/skills/github/scripts/session-start.cjs",
+            "timeout": 300000
+          }
+        ]
+      }
+    ]
+  }
+}

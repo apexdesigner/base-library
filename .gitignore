@@ -20,3 +20,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+.apex-designer/
+.claude/settings.local.json
+.workspace.json

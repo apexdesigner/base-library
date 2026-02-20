@@ -1,0 +1,23 @@
+{
+  "name": "@apexdesigner/base-library-server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "set -a; source .env 2>/dev/null; set +a; node dist/index.js"
+  },
+  "dependencies": {
+    "@apexdesigner/schema-persistence": "^0.1.72",
+    "@apexdesigner/schema-tools": "^0.1.60",
+    "debug": "^4.4.3",
+    "express": "^5.1.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/express": "^5.0.3"
+  }
+}
