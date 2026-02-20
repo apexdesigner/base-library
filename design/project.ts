@@ -65,11 +65,13 @@ export class BaseLibrary extends Project {
     "zod": "^4.1.13",
     "@types/debug": { versionSelector: "^4.1.12", developmentOnly: true },
     "@types/express": { versionSelector: "^5.0.3", developmentOnly: true },
+    "tsx": { versionSelector: "^4.0.0", developmentOnly: true },
   };
 
   serverScripts = {
     build: "tsc",
     start: "node dist/index.js",
+    dev: "tsx watch src/index.ts",
   };
 }
 

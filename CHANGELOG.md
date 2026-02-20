@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.23] - 2026-02-20
+
+- 4400654 Add dev script and tsx devDependency to server
+
+
 ## [1.0.22] - 2026-02-20
 
 - ede3f0c chore: apply automated fixes
