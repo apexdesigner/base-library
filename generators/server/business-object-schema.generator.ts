@@ -108,7 +108,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           const dsClass = getClassByBase(ds.sourceFile, 'DataSource');
           if (dsClass) {
             const config = getObjectLiteralValue(dsClass, 'configuration');
-            if (config?.persistenceType === 'Postgres') {
+            if ((config?.persistenceType as string | undefined)?.toLowerCase() === 'postgres') {
               idColumnConfig = '.column({ autoIncrement: true })';
             }
           }
