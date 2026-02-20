@@ -17,6 +17,11 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Generated files
+/client/
+/server/
+/design/@types/
+
 # Temporary files
 *.tmp
 *.temp
