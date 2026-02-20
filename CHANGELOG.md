@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.24] - 2026-02-20
+
+- 3c301f3 Add SIGINT/SIGTERM handlers for clean shutdown
+
+
 ## [1.0.23] - 2026-02-20
 
 - 4400654 Add dev script and tsx devDependency to server
