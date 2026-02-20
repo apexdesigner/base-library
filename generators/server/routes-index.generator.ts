@@ -1,35 +1,44 @@
-import type { GeneratedFileGenerator } from '@apexdesigner/generator';
+import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
+import { isLibrary, getDataSource } from '@apexdesigner/generator';
+import { kebabCase } from 'change-case';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:routesIndex');
 
-const routesIndexGenerator: GeneratedFileGenerator = {
+const routesIndexGenerator: DesignGenerator = {
   name: 'routes-index',
 
-  isAggregate: true,
-
   triggers: [
-    { metadataType: 'generated-file', glob: 'server/src/routes/*.ts' },
+    {
+      metadataType: 'Project',
+      condition: (metadata) => !isLibrary(metadata),
+    },
+    {
+      metadataType: 'BusinessObject',
+      condition: (metadata, conditionContext) => {
+        if (isLibrary(metadata)) return false;
+        if (!conditionContext?.context) return true;
+        return !!getDataSource(metadata.sourceFile, conditionContext.context);
+      },
+    },
   ],
 
-  outputs: () => [
-    'server/src/routes/index.ts'
-  ],
+  outputs: () => ['server/src/routes/index.ts'],
 
-  async generate(filePaths: string[]) {
+  async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
-    debug('filePaths.length %j', filePaths.length);
 
-    // Collect route module names, excluding the index itself
-    const routeNames: string[] = [];
-    for (const filePath of filePaths) {
-      const filename = filePath.split('/').at(-1)!;
-      const name = filename.replace(/\.ts$/, '');
-      if (name !== 'index') {
-        routeNames.push(name);
-      }
+    const businessObjects = context.listMetadata('BusinessObject');
+    const routeNames = businessObjects
+      .filter(bo => !isLibrary(bo) && !!getDataSource(bo.sourceFile, context))
+      .map(bo => kebabCase(bo.name))
+      .sort();
+
+    debug('routeNames %j', routeNames);
+
+    if (routeNames.length === 0) {
+      return '// No business objects yet\n';
     }
-    routeNames.sort();
 
     const lines: string[] = [];
 
