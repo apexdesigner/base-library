@@ -1,17 +1,26 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [1.0.17] - 2026-02-20
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- c24ef92 chore: apply automated fixes
+- d979d1b Use PROJECT_METADATA.displayName in app component toolbar
+- 78ad648 Remove add-issue-to-project workflow
+- ccc43c7 Remove non-canonical GitHub Actions workflows
+- 81e5850 Gitignore generated client, server, and design/@types directories
+- f9f5f5a chore: bump version to 1.0.16
+- 0d07e4d chore: apply automated fixes
+- 9f3576f Update project metadata: description, displayName, license, repository
+- 0aee549 Add GitHub Actions workflows for CI/CD and issue automation
+- 39943b0 Migrate to TypeScript-based design with generators, client, and server
+- 98e8db4 Update @apexdesigner deps and fix design tsconfig path resolution
 
-## [1.0.0] - 2025-01-28
 
-### Added
-- Initial release of Apex Designer Base Library
-- Complete set of base types (Any, String, Number, Boolean, Email, Phone, URL, Date, etc.)
-- Interface definitions for query operations (Context, Filter, Where, WhereCondition)
-- User management business objects (User, Role, UserRole)
-- Full CRUD behaviors for all business objects
-- MIT license
-- GitHub Actions workflows for CI/CD and publishing
+## [1.0.16] - 2026-02-20
+
+- 0d07e4d chore: apply automated fixes
+- 9f3576f Update project metadata: description, displayName, license, repository
+- 0aee549 Add GitHub Actions workflows for CI/CD and issue automation
+- 39943b0 Migrate to TypeScript-based design with generators, client, and server
+- 98e8db4 Update @apexdesigner deps and fix design tsconfig path resolution
+
+
