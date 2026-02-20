@@ -29,16 +29,6 @@
     "node": ">=18.0.0"
   },
   "type": "module",
-  "peerDependencies": {
-    "@apexdesigner/dsl": "^0.8.31",
-    "@apexdesigner/generator": "^0.8.23",
-    "@apexdesigner/utilities": "^0.1.20",
-    "change-case": "^5.4.4",
-    "debug": "^4.4.3",
-    "htmlparser2": "^10.1.0",
-    "pluralize": "^8.0.0",
-    "ts-morph": "^27.0.2"
-  },
   "devDependencies": {
     "@apexdesigner/claude-skills": "^1.0.44",
     "@apexdesigner/dsl": "^0.8.31",
