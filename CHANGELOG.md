@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.20] - 2026-02-20
+
+- 834847d chore: apply automated fixes
+- 9b27b4b Remove peerDependencies
+
+
 ## [1.0.19] - 2026-02-20
 
 - 6493d38 chore: apply automated fixes
