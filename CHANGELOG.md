@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.32] - 2026-02-20
+
+- b1aeadf Fix case-insensitive Postgres persistenceType check for autoIncrement inference
+
+
 ## [1.0.31] - 2026-02-20
 
 - 8a3787e Fix routes-index to use plural names matching route file output
