@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.21] - 2026-02-20
+
+- 847652e Fix server startup: use listening event and surface errors
+
+
 ## [1.0.20] - 2026-02-20
 
 - 834847d chore: apply automated fixes
