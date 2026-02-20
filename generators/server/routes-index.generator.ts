@@ -1,6 +1,7 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getDataSource } from '@apexdesigner/generator';
 import { kebabCase } from 'change-case';
+import pluralize from 'pluralize';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:routesIndex');
@@ -31,7 +32,7 @@ const routesIndexGenerator: DesignGenerator = {
     const businessObjects = context.listMetadata('BusinessObject');
     const routeNames = businessObjects
       .filter(bo => !isLibrary(bo) && !!getDataSource(bo.sourceFile, context))
-      .map(bo => kebabCase(bo.name))
+      .map(bo => kebabCase(pluralize(bo.name)))
       .sort();
 
     debug('routeNames %j', routeNames);
