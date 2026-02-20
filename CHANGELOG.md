@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.18] - 2026-02-20
+
+- bd76c8c Include generators directory in published npm package
+
+
 ## [1.0.17] - 2026-02-20
 
 - c24ef92 chore: apply automated fixes

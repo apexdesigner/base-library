@@ -1,6 +1,6 @@
 {
   "name": "@apexdesigner/base-library",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Base scaffold and code generators for Apex Designer Angular/Express applications.",
   "keywords": [
     "apex-designer",
@@ -19,7 +19,8 @@
   },
   "main": "design/project/project.json",
   "files": [
-    "design/"
+    "design/",
+    "generators/"
   ],
   "publishConfig": {
     "access": "restricted"
