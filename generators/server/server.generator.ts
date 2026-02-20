@@ -97,7 +97,10 @@ const serverGenerator: DesignGenerator = {
     lines.push('  process.exitCode = 1;');
     lines.push('});');
     lines.push('');
-    lines.push('const shutdown = () => server.close(() => process.exit(0));');
+    lines.push('const shutdown = () => {');
+    lines.push('  server.closeAllConnections();');
+    lines.push('  server.close(() => process.exit(0));');
+    lines.push('};');
     lines.push('process.on("SIGINT", shutdown);');
     lines.push('process.on("SIGTERM", shutdown);');
 
