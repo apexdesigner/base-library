@@ -19,7 +19,8 @@
   },
   "main": "design/project/project.json",
   "files": [
-    "design/"
+    "design/",
+    "generators/"
   ],
   "publishConfig": {
     "access": "restricted"
