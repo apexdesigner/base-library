@@ -1,10 +1,12 @@
 {
   "name": "@apexdesigner/base-library-server",
-  "version": "0.0.1",
+  "version": "1.0.15",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "displayName": "Base Library",
+  "description": "Base scaffold and code generators for Apex Designer Angular/Express applications.",
   "scripts": {
     "build": "tsc",
     "start": "set -a; source .env 2>/dev/null; set +a; node dist/index.js"
