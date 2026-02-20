@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.26] - 2026-02-20
+
+- 3bf5f67 chore: apply automated fixes
+- 0677c88 Remove packageName, repository, and version from project.ts design
+
+
 ## [1.0.25] - 2026-02-20
 
 - aaba355 Skip server BO generation when no data source; add data source close on shutdown; bump schema-persistence to 0.1.74
