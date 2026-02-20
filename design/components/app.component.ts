@@ -10,7 +10,7 @@ export class AppComponent extends Component {}
 applyTemplate(AppComponent, `
   <flex-column>
     <mat-toolbar color="primary">
-      <span>Base Library</span>
+      <span>PROJECT_METADATA.displayName</span>
     </mat-toolbar>
     <div grow style="padding: 0 16px">
       <router-outlet></router-outlet>
