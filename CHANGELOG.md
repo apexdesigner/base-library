@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.36] - 2026-02-20
+
+- 597f02b Fix foreign key type mismatch for Postgres integer ids
+
+
 ## [1.0.35] - 2026-02-20
 
 - f6f9c29 Add debug logging to route and business object generators
