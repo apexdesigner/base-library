@@ -1,57 +1,57 @@
-import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary } from '@apexdesigner/generator';
-import { kebabCase } from 'change-case';
-import pluralize from 'pluralize';
+import type { GeneratedFileGenerator } from '@apexdesigner/generator';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:routesIndex');
 
-const routesIndexGenerator: DesignGenerator = {
+const routesIndexGenerator: GeneratedFileGenerator = {
   name: 'routes-index',
 
+  isAggregate: true,
+
   triggers: [
-    {
-      metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
-    }
+    { metadataType: 'generated-file', glob: 'server/src/routes/*.ts' },
   ],
 
   outputs: () => [
     'server/src/routes/index.ts'
   ],
 
-  async generate(metadata: DesignMetadata, context: GenerationContext) {
+  async generate(filePaths: string[]) {
     const debug = Debug.extend('generate');
-    debug('START generate for %j', metadata.name);
+    debug('filePaths.length %j', filePaths.length);
 
-    const businessObjects = context.listMetadata('BusinessObject');
-    debug('found %d business objects', businessObjects.length);
+    // Collect route module names, excluding the index itself
+    const routeNames: string[] = [];
+    for (const filePath of filePaths) {
+      const filename = filePath.split('/').at(-1)!;
+      const name = filename.replace(/\.ts$/, '');
+      if (name !== 'index') {
+        routeNames.push(name);
+      }
+    }
+    routeNames.sort();
 
     const lines: string[] = [];
 
     lines.push('import { Router } from "express";');
 
-    // Import each route module
-    for (const bo of businessObjects) {
-      const pluralKebab = kebabCase(pluralize(bo.name));
-      lines.push(`import ${pluralKebab}Router from "./${pluralKebab}.js";`);
+    for (const name of routeNames) {
+      lines.push(`import ${name.replace(/-/g, '_')}Router from "./${name}.js";`);
     }
 
     lines.push('');
     lines.push('const router = Router();');
     lines.push('');
 
-    // Mount each route
-    for (const bo of businessObjects) {
-      const pluralKebab = kebabCase(pluralize(bo.name));
-      lines.push(`router.use("/${pluralKebab}", ${pluralKebab}Router);`);
+    for (const name of routeNames) {
+      lines.push(`router.use("/${name}", ${name.replace(/-/g, '_')}Router);`);
     }
 
     lines.push('');
     lines.push('export default router;');
 
     const content = lines.join('\n');
-    debug('Generated routes index with %d routes', businessObjects.length);
+    debug('Generated routes index with %d routes', routeNames.length);
 
     return content;
   }
