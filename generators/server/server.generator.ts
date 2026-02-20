@@ -65,7 +65,9 @@ const serverGenerator: DesignGenerator = {
     lines.push('app.use(express.json());');
     lines.push('app.use("/api", router);');
     lines.push('');
-    lines.push('app.listen(port, async () => {');
+    lines.push('const server = app.listen(port);');
+    lines.push('');
+    lines.push('server.on("listening", async () => {');
     lines.push('  debug("Server listening on port %d", port);');
 
     // Call After Start behaviors
@@ -78,6 +80,11 @@ const serverGenerator: DesignGenerator = {
       lines.push(`  }`);
     }
 
+    lines.push('});');
+    lines.push('');
+    lines.push('server.on("error", (err) => {');
+    lines.push('  console.error("Server error:", err);');
+    lines.push('  process.exit(1);');
     lines.push('});');
 
     const content = lines.join('\n');
