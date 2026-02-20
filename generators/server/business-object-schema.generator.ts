@@ -1,6 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getDataSource, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getPropertyDecorator } from '@apexdesigner/utilities';
+import { getClassByBase, getDescription, getPropertyDecorator, getObjectLiteralValue } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import createDebug from 'debug';
 
@@ -91,13 +91,27 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     } else if (idProperty.type === 'Serial') {
       idColumnConfig = '.column({ autoIncrement: true })';
     } else {
-      // Check @property() decorator for any column config on plain number/string id
+      // Check @property() decorator for explicit column config first
       const idPropNode = boClass?.getProperty(idProperty.name);
+      let explicitColumn: Record<string, unknown> | undefined;
       if (idPropNode) {
         const idOpts = getPropertyDecorator(idPropNode, 'property') || {};
-        const column = idOpts.column as Record<string, unknown> | undefined;
-        if (column) {
-          idColumnConfig = `.column(${toObjectLiteral(column)})`;
+        explicitColumn = idOpts.column as Record<string, unknown> | undefined;
+      }
+
+      if (explicitColumn) {
+        idColumnConfig = `.column(${toObjectLiteral(explicitColumn)})`;
+      } else {
+        // Infer from data source: Postgres numeric ids default to autoIncrement
+        const ds = getDataSource(metadata.sourceFile, context);
+        if (ds) {
+          const dsClass = getClassByBase(ds.sourceFile, 'DataSource');
+          if (dsClass) {
+            const config = getObjectLiteralValue(dsClass, 'configuration');
+            if (config?.persistenceType === 'Postgres') {
+              idColumnConfig = '.column({ autoIncrement: true })';
+            }
+          }
         }
       }
     }
