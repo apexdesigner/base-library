@@ -84,7 +84,7 @@ const businessObjectGenerator: DesignGenerator = {
 
     // Get project name for debug namespace
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
-    const debugNamespace = pascalCase(projectMeta?.name || 'App');
+    const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Resolve which data source this BO uses
     const dsMeta = getDataSource(metadata.sourceFile, context);
@@ -144,7 +144,7 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('');
 
     // --- Debug + Data type ---
-    lines.push(`const debug = createDebug("${debugNamespace}:BusinessObject:${className}");`);
+    lines.push(`const Debug = createDebug("${debugNamespace}:BusinessObject:${className}");`);
     lines.push('');
     lines.push(`type ${dataTypeName} = z.infer<typeof ${schemaVarName}Schema>;`);
     lines.push('');
@@ -166,7 +166,12 @@ const businessObjectGenerator: DesignGenerator = {
     // find
     lines.push('');
     lines.push(`  static async find(filter?: FindFilter<${dataTypeName}>): Promise<${className}[]> {`);
+    lines.push('    const debug = Debug.extend("find");');
+    lines.push('    debug("filter %j", filter);');
+    lines.push('');
     lines.push(`    const results = await this.dataSource.find(this.entityName, filter);`);
+    lines.push('    debug("results.length %j", results.length);');
+    lines.push('');
     lines.push(`    return results.map((data: ${dataTypeName}) => new ${className}(data));`);
     lines.push('  }');
 
@@ -175,7 +180,12 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`  static async findOne(`);
     lines.push(`    filter: FindOneFilter<${dataTypeName}>,`);
     lines.push(`  ): Promise<${className} | null> {`);
+    lines.push('    const debug = Debug.extend("findOne");');
+    lines.push('    debug("filter %j", filter);');
+    lines.push('');
     lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter);`);
+    lines.push('    debug("data %j", data);');
+    lines.push('');
     lines.push(`    return data ? new ${className}(data) : null;`);
     lines.push('  }');
 
@@ -189,7 +199,12 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`      omit?: FindFilter<${dataTypeName}>["omit"];`);
     lines.push('    },');
     lines.push(`  ): Promise<${className}> {`);
+    lines.push('    const debug = Debug.extend("findById");');
+    lines.push('    debug("id %j", id);');
+    lines.push('');
     lines.push(`    const data = await this.dataSource.findById(this.entityName, id, filter);`);
+    lines.push('    debug("data %j", data);');
+    lines.push('');
     lines.push(`    if (!data) throw new Error(\`${className} not found: \${id}\`);`);
     lines.push(`    return new ${className}(data);`);
     lines.push('  }');
@@ -200,25 +215,39 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    where: WhereClause<${dataTypeName}>;`);
     lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
     lines.push(`  }): Promise<{ entity: ${className}; created: boolean }> {`);
+    lines.push('    const debug = Debug.extend("findOrCreate");');
+    lines.push('    debug("options.where %j", options.where);');
+    lines.push('');
     lines.push(`    const result = await this.dataSource.findOrCreate(`);
     lines.push(`      this.entityName,`);
     lines.push(`      options,`);
     lines.push(`    );`);
+    lines.push('    debug("result.created %j", result.created);');
+    lines.push('');
     lines.push(`    return { entity: new ${className}(result.entity), created: result.created };`);
     lines.push('  }');
 
     // count
     lines.push('');
     lines.push(`  static async count(where?: WhereClause<${dataTypeName}>): Promise<number> {`);
-    lines.push(`    return this.dataSource.count(`);
+    lines.push('    const debug = Debug.extend("count");');
+    lines.push('    debug("where %j", where);');
+    lines.push('');
+    lines.push(`    const result = await this.dataSource.count(`);
     lines.push(`      this.entityName,`);
     lines.push(`      where ? { where } : undefined,`);
     lines.push(`    );`);
+    lines.push('    debug("result %j", result);');
+    lines.push('');
+    lines.push('    return result;');
     lines.push('  }');
 
     // create
     lines.push('');
     lines.push(`  static async create(data: Omit<${dataTypeName}, "${idName}">): Promise<${className}> {`);
+    lines.push('    const debug = Debug.extend("create");');
+    lines.push('    debug("data %j", data);');
+    lines.push('');
     // Inline Before Create lifecycle behaviors
     if (beforeCreateBodies.length > 0) {
       lines.push(`    const Model = this;`);
@@ -230,6 +259,8 @@ const businessObjectGenerator: DesignGenerator = {
       }
     }
     lines.push(`    const created = await this.dataSource.create(this.entityName, data);`);
+    lines.push('    debug("created %j", created);');
+    lines.push('');
     lines.push(`    return new ${className}(created);`);
     lines.push('  }');
 
@@ -238,6 +269,9 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`  static async createMany(`);
     lines.push(`    data: Omit<${dataTypeName}, "${idName}">[],`);
     lines.push(`  ): Promise<${className}[]> {`);
+    lines.push('    const debug = Debug.extend("createMany");');
+    lines.push('    debug("data.length %j", data.length);');
+    lines.push('');
     // Inline Before Create lifecycle behaviors (data is already an array)
     if (beforeCreateBodies.length > 0) {
       lines.push(`    const Model = this;`);
@@ -249,6 +283,8 @@ const businessObjectGenerator: DesignGenerator = {
       }
     }
     lines.push(`    const results = await this.dataSource.createMany(this.entityName, data);`);
+    lines.push('    debug("results.length %j", results.length);');
+    lines.push('');
     lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
     lines.push('  }');
 
@@ -258,6 +294,10 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    filter: UpdateFilter<${dataTypeName}>,`);
     lines.push(`    data: Partial<${dataTypeName}>,`);
     lines.push(`  ): Promise<${className}[]> {`);
+    lines.push('    const debug = Debug.extend("update");');
+    lines.push('    debug("filter %j", filter);');
+    lines.push('    debug("data %j", data);');
+    lines.push('');
     // Inline Before Update lifecycle behaviors
     if (beforeUpdateBodies.length > 0) {
       lines.push(`    const Model = this;`);
@@ -274,6 +314,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`      filter,`);
     lines.push(`      data,`);
     lines.push(`    );`);
+    lines.push('    debug("results.length %j", results.length);');
+    lines.push('');
     lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
     lines.push('  }');
 
@@ -283,6 +325,10 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    id: string,`);
     lines.push(`    data: Partial<${dataTypeName}>,`);
     lines.push(`  ): Promise<${className}> {`);
+    lines.push('    const debug = Debug.extend("updateById");');
+    lines.push('    debug("id %j", id);');
+    lines.push('    debug("data %j", data);');
+    lines.push('');
     // Inline Before Update lifecycle behaviors
     if (beforeUpdateBodies.length > 0) {
       lines.push(`    const Model = this;`);
@@ -299,6 +345,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`      id,`);
     lines.push(`      data,`);
     lines.push(`    );`);
+    lines.push('    debug("updated %j", updated);');
+    lines.push('');
     lines.push(`    if (!updated) throw new Error(\`${className} not found: \${id}\`);`);
     lines.push(`    return new ${className}(updated);`);
     lines.push('  }');
@@ -310,20 +358,37 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
     lines.push(`    update: Partial<${dataTypeName}>;`);
     lines.push(`  }): Promise<${className}> {`);
+    lines.push('    const debug = Debug.extend("upsert");');
+    lines.push('    debug("options.where %j", options.where);');
+    lines.push('');
     lines.push(`    const result = await this.dataSource.upsert(this.entityName, options);`);
+    lines.push('    debug("result %j", result);');
+    lines.push('');
     lines.push(`    return new ${className}(result);`);
     lines.push('  }');
 
     // delete
     lines.push('');
     lines.push(`  static async delete(filter: DeleteFilter<${dataTypeName}>): Promise<number> {`);
-    lines.push(`    return this.dataSource.delete(this.entityName, filter);`);
+    lines.push('    const debug = Debug.extend("delete");');
+    lines.push('    debug("filter %j", filter);');
+    lines.push('');
+    lines.push(`    const result = await this.dataSource.delete(this.entityName, filter);`);
+    lines.push('    debug("result %j", result);');
+    lines.push('');
+    lines.push('    return result;');
     lines.push('  }');
 
     // deleteById
     lines.push('');
     lines.push(`  static async deleteById(id: string): Promise<boolean> {`);
-    lines.push(`    return this.dataSource.deleteById(this.entityName, id);`);
+    lines.push('    const debug = Debug.extend("deleteById");');
+    lines.push('    debug("id %j", id);');
+    lines.push('');
+    lines.push(`    const result = await this.dataSource.deleteById(this.entityName, id);`);
+    lines.push('    debug("result %j", result);');
+    lines.push('');
+    lines.push('    return result;');
     lines.push('  }');
 
     // --- Instance and Class behaviors ---
