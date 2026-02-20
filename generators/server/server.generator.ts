@@ -96,6 +96,10 @@ const serverGenerator: DesignGenerator = {
     lines.push('  console.error("Server error:", err);');
     lines.push('  process.exitCode = 1;');
     lines.push('});');
+    lines.push('');
+    lines.push('const shutdown = () => server.close(() => process.exit(0));');
+    lines.push('process.on("SIGINT", shutdown);');
+    lines.push('process.on("SIGTERM", shutdown);');
 
     const content = lines.join('\n');
     debug('Generated server entry point');
