@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.35] - 2026-02-20
+
+- f6f9c29 Add debug logging to route and business object generators
+
+
 ## [1.0.34] - 2026-02-20
 
 - adeaa7d Fix debug namespace to use main project name instead of library name
