@@ -37,8 +37,9 @@ const dataSourceGenerator: DesignGenerator = {
 
     const configProp = dsClass.getProperty('configuration');
     const initializer = configProp?.getInitializer();
+    const possibleValues = 'Postgres, Memory, File, Federated';
     if (!initializer || initializer.getKind() !== SyntaxKind.ObjectLiteralExpression) {
-      throw new Error(`DataSource "${dsName}" is missing a configuration object with persistenceType`);
+      throw new Error(`DataSource "${dsName}" is missing a configuration object with persistenceType (possible values: ${possibleValues})`);
     }
 
     const objLiteral = initializer.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
@@ -53,7 +54,7 @@ const dataSourceGenerator: DesignGenerator = {
     }
 
     if (!persistenceType) {
-      throw new Error(`DataSource "${dsName}" configuration is missing persistenceType`);
+      throw new Error(`DataSource "${dsName}" configuration is missing persistenceType (possible values: ${possibleValues})`);
     }
 
     debug('persistenceType %j', persistenceType);
