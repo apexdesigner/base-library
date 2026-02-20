@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.33] - 2026-02-20
+
+- bc71dbf Fix routes/index.ts to always export a default router
+
+
 ## [1.0.32] - 2026-02-20
 
 - b1aeadf Fix case-insensitive Postgres persistenceType check for autoIncrement inference

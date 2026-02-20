@@ -37,10 +37,6 @@ const routesIndexGenerator: DesignGenerator = {
 
     debug('routeNames %j', routeNames);
 
-    if (routeNames.length === 0) {
-      return '// No business objects yet\n';
-    }
-
     const lines: string[] = [];
 
     lines.push('import { Router } from "express";');
