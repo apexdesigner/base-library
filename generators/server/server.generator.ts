@@ -26,6 +26,14 @@ const serverGenerator: DesignGenerator = {
 
     const debugNamespace = pascalCase(metadata.name);
 
+    // Collect data sources for shutdown
+    const allDataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
+    const dataSources: { varName: string; kebab: string }[] = allDataSources.map(ds => ({
+      varName: camelCase(ds.name) + 'DataSource',
+      kebab: kebabCase(ds.name),
+    }));
+    debug('found %d data sources for shutdown', dataSources.length);
+
     // Find After Start lifecycle app behaviors
     const appBehaviors = context.listMetadata('AppBehavior');
     const afterStartBehaviors: { name: string; kebab: string }[] = [];
@@ -51,6 +59,12 @@ const serverGenerator: DesignGenerator = {
     lines.push('import express from "express";');
     lines.push('import createDebug from "debug";');
     lines.push('import router from "./routes/index.js";');
+
+    // Import data sources for shutdown
+    for (const ds of dataSources) {
+      lines.push(`import { dataSource as ${ds.varName} } from "./data-sources/${ds.kebab}.js";`);
+    }
+
     lines.push('');
     lines.push('// Load .env file if present (variables already in env take precedence)');
     lines.push('try {');
@@ -97,7 +111,13 @@ const serverGenerator: DesignGenerator = {
     lines.push('  process.exitCode = 1;');
     lines.push('});');
     lines.push('');
-    lines.push('const shutdown = () => server.close(() => process.exit(0));');
+    lines.push('const shutdown = async () => {');
+    lines.push('  server.closeAllConnections();');
+    for (const ds of dataSources) {
+      lines.push(`  await ${ds.varName}.close();`);
+    }
+    lines.push('  server.close(() => process.exit(0));');
+    lines.push('};');
     lines.push('process.on("SIGINT", shutdown);');
     lines.push('process.on("SIGTERM", shutdown);');
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.25] - 2026-02-20
+
+- aaba355 Skip server BO generation when no data source; add data source close on shutdown; bump schema-persistence to 0.1.74
+- 628fc9a Restore proper graceful shutdown with closeAllConnections
+
+
 ## [1.0.24] - 2026-02-20
 
 - 3c301f3 Add SIGINT/SIGTERM handlers for clean shutdown

@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { isLibrary, getDataSource, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
 import { getClassByBase, getDescription, getPropertyDecorator } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import createDebug from 'debug';
@@ -12,7 +12,11 @@ const businessObjectSchemaGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
+      condition: (metadata, conditionContext) => {
+        if (isLibrary(metadata)) return false;
+        if (!conditionContext?.context) return true;
+        return !!getDataSource(metadata.sourceFile, conditionContext.context);
+      },
     }
   ],
 

@@ -57,7 +57,11 @@ const businessObjectGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
+      condition: (metadata, conditionContext) => {
+        if (isLibrary(metadata)) return false;
+        if (!conditionContext?.context) return true;
+        return !!getDataSource(metadata.sourceFile, conditionContext.context);
+      },
     }
   ],
 
