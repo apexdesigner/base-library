@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.34] - 2026-02-20
+
+- adeaa7d Fix debug namespace to use main project name instead of library name
+
+
 ## [1.0.33] - 2026-02-20
 
 - bc71dbf Fix routes/index.ts to always export a default router
