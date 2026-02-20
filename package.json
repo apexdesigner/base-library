@@ -1,16 +1,14 @@
 {
   "name": "@apexdesigner/base-library",
-  "displayName": "Base Library",
   "version": "1.0.15",
-  "description": "Base Library containing fundamental types and user management system for Apex Designer applications",
+  "description": "Base scaffold and code generators for Apex Designer Angular/Express applications.",
   "keywords": [
     "apex-designer",
-    "apex-design-library",
-    "base-types",
-    "user-management"
+    "apex-designer-library",
+    "apex-designer-generators"
   ],
   "author": "Dave Engberg",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": "https://github.com/apexdesigner/base-library.git"

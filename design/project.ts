@@ -1,14 +1,19 @@
 import { Project, applyStyles } from "@apexdesigner/dsl";
 
-/**
- * Base Library
- *
- * Reusable base library for Apex Designer projects.
- */
 export class BaseLibrary extends Project {
+  displayName = "Base Library";
+
+  description =
+    "Base scaffold and code generators for Apex Designer Angular/Express applications.";
+
   packageName = "@apexdesigner/base-library";
 
-  version = "0.0.1";
+  repository = {
+    type: "git",
+    url: "https://github.com/apexdesigner/base-library.git",
+  };
+
+  version = "1.0.15";
 
   isLibrary = true;
 
