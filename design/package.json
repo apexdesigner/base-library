@@ -1,6 +1,6 @@
 {
-  "name": "@apexdesigner/base-library",
-  "version": "1.0.25",
+  "name": "BaseLibrary",
+  "version": "1.0.26",
   "publishConfig": {
     "access": "restricted"
   }

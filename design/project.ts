@@ -6,15 +6,6 @@ export class BaseLibrary extends Project {
   description =
     "Base scaffold and code generators for Apex Designer Angular/Express applications.";
 
-  packageName = "@apexdesigner/base-library";
-
-  repository = {
-    type: "git",
-    url: "https://github.com/apexdesigner/base-library.git",
-  };
-
-  version = "1.0.15";
-
   isLibrary = true;
 
   parameterValues = {
