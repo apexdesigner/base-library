@@ -77,7 +77,8 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('');
 
     // Debug and router setup
-    lines.push(`const debug = createDebug("${pascalCase(context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App')}:Routes:${className}");`);
+    const debugNamespace = pascalCase((context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App').replace(/Project$/, ''));
+    lines.push(`const Debug = createDebug("${debugNamespace}:Route:${className}");`);
     lines.push('const router = Router();');
     lines.push('');
 
@@ -93,11 +94,18 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // GET / - List
     lines.push(`// GET /${pluralKebab} - List ${pluralize(entityLabel)}`);
     lines.push('router.get("/", async (req: Request, res: Response, next: NextFunction) => {');
+    lines.push('  const debug = Debug.extend("find");');
+    lines.push('  debug("req.query.filter %j", req.query.filter);');
+    lines.push('');
     lines.push('  try {');
     lines.push('    const filter = parseFilter(req.query.filter);');
     lines.push(`    const results = await ${className}.find(filter);`);
+    lines.push('    debug("results.length %j", results.length);');
+    lines.push('');
     lines.push('    res.json(results);');
     lines.push('  } catch (error) {');
+    lines.push('    debug("error %j", error);');
+    lines.push('');
     lines.push('    next(error);');
     lines.push('  }');
     lines.push('});');
@@ -106,11 +114,18 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // GET /:id - Get by ID
     lines.push(`// GET /${pluralKebab}/:id - Get ${entityLabel} by ID`);
     lines.push('router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {');
+    lines.push('  const debug = Debug.extend("findById");');
+    lines.push('  debug("req.params.id %j", req.params.id);');
+    lines.push('');
     lines.push('  try {');
     lines.push('    const filter = parseFilter(req.query.filter);');
     lines.push(`    const ${varName} = await ${className}.findById(String(req.params.id), filter);`);
+    lines.push(`    debug("${varName} %j", ${varName});`);
+    lines.push('');
     lines.push(`    res.json(${varName});`);
     lines.push('  } catch (error) {');
+    lines.push('    debug("error %j", error);');
+    lines.push('');
     lines.push(`    if (error instanceof Error && error.message.includes("not found")) {`);
     lines.push('      res.status(404).json({ error: error.message });');
     lines.push('      return;');
@@ -123,11 +138,18 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // POST / - Create
     lines.push(`// POST /${pluralKebab} - Create ${entityLabel}`);
     lines.push('router.post("/", async (req: Request, res: Response, next: NextFunction) => {');
+    lines.push('  const debug = Debug.extend("create");');
+    lines.push('  debug("req.body %j", req.body);');
+    lines.push('');
     lines.push('  try {');
     lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idProperty.name}: true }).parse(req.body);`);
     lines.push(`    const ${varName} = await ${className}.create(validated);`);
+    lines.push(`    debug("${varName} %j", ${varName});`);
+    lines.push('');
     lines.push(`    res.status(201).json(${varName});`);
     lines.push('  } catch (error) {');
+    lines.push('    debug("error %j", error);');
+    lines.push('');
     lines.push('    if (error instanceof z.ZodError) {');
     lines.push('      res.status(422).json({ error: "Validation failed", details: error.issues });');
     lines.push('      return;');
@@ -140,11 +162,19 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // PATCH /:id - Update
     lines.push(`// PATCH /${pluralKebab}/:id - Update ${entityLabel}`);
     lines.push('router.patch("/:id", async (req: Request, res: Response, next: NextFunction) => {');
+    lines.push('  const debug = Debug.extend("updateById");');
+    lines.push('  debug("req.params.id %j", req.params.id);');
+    lines.push('  debug("req.body %j", req.body);');
+    lines.push('');
     lines.push('  try {');
     lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idProperty.name}: true }).partial().parse(req.body);`);
     lines.push(`    const ${varName} = await ${className}.updateById(String(req.params.id), validated);`);
+    lines.push(`    debug("${varName} %j", ${varName});`);
+    lines.push('');
     lines.push(`    res.json(${varName});`);
     lines.push('  } catch (error) {');
+    lines.push('    debug("error %j", error);');
+    lines.push('');
     lines.push('    if (error instanceof z.ZodError) {');
     lines.push('      res.status(422).json({ error: "Validation failed", details: error.issues });');
     lines.push('      return;');
@@ -161,14 +191,21 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // DELETE /:id - Delete
     lines.push(`// DELETE /${pluralKebab}/:id - Delete ${entityLabel}`);
     lines.push('router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {');
+    lines.push('  const debug = Debug.extend("deleteById");');
+    lines.push('  debug("req.params.id %j", req.params.id);');
+    lines.push('');
     lines.push('  try {');
     lines.push(`    const deleted = await ${className}.deleteById(String(req.params.id));`);
+    lines.push('    debug("deleted %j", deleted);');
+    lines.push('');
     lines.push('    if (!deleted) {');
     lines.push(`      res.status(404).json({ error: "${entityLabel} not found" });`);
     lines.push('      return;');
     lines.push('    }');
     lines.push('    res.status(204).send();');
     lines.push('  } catch (error) {');
+    lines.push('    debug("error %j", error);');
+    lines.push('');
     lines.push('    next(error);');
     lines.push('  }');
     lines.push('});');
@@ -203,11 +240,19 @@ const businessObjectRouteGenerator: DesignGenerator = {
           // Instance behavior: POST /:id/behavior-name
           lines.push(`// ${httpMethod.toUpperCase()} /${pluralKebab}/:id/${behaviorKebab} - ${func.name}`);
           lines.push(`router.${httpMethod}("/:id/${behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
+          lines.push(`  const debug = Debug.extend("${func.name}");`);
+          lines.push('  debug("req.params.id %j", req.params.id);');
+          lines.push('  debug("req.body %j", req.body);');
+          lines.push('');
           lines.push('  try {');
           lines.push(`    const ${varName} = await ${className}.findById(String(req.params.id));`);
           lines.push(`    const result = await ${varName}.${func.name}(req.body);`);
+          lines.push('    debug("result %j", result);');
+          lines.push('');
           lines.push('    res.json(result);');
           lines.push('  } catch (error) {');
+          lines.push('    debug("error %j", error);');
+          lines.push('');
           lines.push(`    if (error instanceof Error && error.message.includes("not found")) {`);
           lines.push('      res.status(404).json({ error: error.message });');
           lines.push('      return;');
@@ -219,10 +264,17 @@ const businessObjectRouteGenerator: DesignGenerator = {
           // Class behavior: POST /behavior-name
           lines.push(`// ${httpMethod.toUpperCase()} /${pluralKebab}/${behaviorKebab} - ${func.name}`);
           lines.push(`router.${httpMethod}("/${behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
+          lines.push(`  const debug = Debug.extend("${func.name}");`);
+          lines.push('  debug("req.body %j", req.body);');
+          lines.push('');
           lines.push('  try {');
           lines.push(`    const result = await ${className}.${func.name}(req.body);`);
+          lines.push('    debug("result %j", result);');
+          lines.push('');
           lines.push('    res.json(result);');
           lines.push('  } catch (error) {');
+          lines.push('    debug("error %j", error);');
+          lines.push('');
           lines.push('    next(error);');
           lines.push('  }');
           lines.push('});');

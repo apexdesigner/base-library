@@ -69,7 +69,7 @@ const dataSourceGenerator: DesignGenerator = {
 
     // 3. Get project name for debug namespace
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
-    const debugNamespace = pascalCase(projectMeta?.name || 'App');
+    const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // 4. Generate output
     const factoryName = `create${pascalCase(persistenceType)}Persistence`;
