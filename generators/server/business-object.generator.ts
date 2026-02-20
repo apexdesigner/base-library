@@ -83,7 +83,7 @@ const businessObjectGenerator: DesignGenerator = {
     debug('className %j, idName %j', className, idName);
 
     // Get project name for debug namespace
-    const projectMeta = context.listMetadata('Project')[0];
+    const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
     const debugNamespace = pascalCase(projectMeta?.name || 'App');
 
     // Resolve which data source this BO uses

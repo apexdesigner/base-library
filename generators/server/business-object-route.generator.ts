@@ -77,7 +77,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('');
 
     // Debug and router setup
-    lines.push(`const debug = createDebug("${pascalCase(context.listMetadata('Project')[0]?.name || 'App')}:Routes:${className}");`);
+    lines.push(`const debug = createDebug("${pascalCase(context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App')}:Routes:${className}");`);
     lines.push('const router = Router();');
     lines.push('');
 
