@@ -84,12 +84,26 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     // Get the BO class early — needed for id decorator check and property listing
     const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');
 
+    // Determine if using Postgres (used for id and foreign key column type inference)
+    let isPostgres = false;
+    const ds = getDataSource(metadata.sourceFile, context);
+    if (ds) {
+      const dsClass = getClassByBase(ds.sourceFile, 'DataSource');
+      if (dsClass) {
+        const config = getObjectLiteralValue(dsClass, 'configuration');
+        if ((config?.persistenceType as string | undefined)?.toLowerCase() === 'postgres') {
+          isPostgres = true;
+        }
+      }
+    }
+    debug('isPostgres %j', isPostgres);
+
     let idZodType = 'z.number()';
     let idColumnConfig = '';
     if (idProperty.type === 'string' || idProperty.type === 'String') {
       idZodType = 'z.string()';
     } else if (idProperty.type === 'Serial') {
-      idColumnConfig = '.column({ autoIncrement: true })';
+      idColumnConfig = '.column({ autoIncrement: true, type: "INTEGER" })';
     } else {
       // Check @property() decorator for explicit column config first
       const idPropNode = boClass?.getProperty(idProperty.name);
@@ -101,18 +115,8 @@ const businessObjectSchemaGenerator: DesignGenerator = {
 
       if (explicitColumn) {
         idColumnConfig = `.column(${toObjectLiteral(explicitColumn)})`;
-      } else {
-        // Infer from data source: Postgres numeric ids default to autoIncrement
-        const ds = getDataSource(metadata.sourceFile, context);
-        if (ds) {
-          const dsClass = getClassByBase(ds.sourceFile, 'DataSource');
-          if (dsClass) {
-            const config = getObjectLiteralValue(dsClass, 'configuration');
-            if ((config?.persistenceType as string | undefined)?.toLowerCase() === 'postgres') {
-              idColumnConfig = '.column({ autoIncrement: true })';
-            }
-          }
-        }
+      } else if (isPostgres) {
+        idColumnConfig = '.column({ autoIncrement: true, type: "INTEGER" })';
       }
     }
 
@@ -292,7 +296,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           let fkColumnConfig = '';
           if (rel.foreignKeyType === 'String' || rel.foreignKeyType === 'string') {
             fkZodType = 'z.string()';
-          } else if (rel.foreignKeyType === 'Serial') {
+          } else if (rel.foreignKeyType === 'Serial' || isPostgres) {
             fkColumnConfig = '\n      .column({ type: "INTEGER" })';
           }
 
