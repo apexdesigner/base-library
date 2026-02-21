@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.37] - 2026-02-21
+
+- 585f6be chore: update package-lock.json
+- 25b814b Throw error for unsupported AppBehavior lifecycleStage
+
+
 ## [1.0.36] - 2026-02-20
 
 - 597f02b Fix foreign key type mismatch for Postgres integer ids
