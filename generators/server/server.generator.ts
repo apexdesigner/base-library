@@ -41,7 +41,12 @@ const serverGenerator: DesignGenerator = {
     for (const behavior of appBehaviors) {
       const options = getBehaviorOptions(behavior.sourceFile);
       if (!options) continue;
-      if (options.lifecycleStage !== 'After Start') continue;
+      if (!options.lifecycleStage) continue;
+
+      const validStages = ['After Start'];
+      if (!validStages.includes(options.lifecycleStage as string)) {
+        throw new Error(`AppBehavior "${behavior.name}" has unsupported lifecycleStage "${options.lifecycleStage}" (valid values: ${validStages.join(', ')})`);
+      }
 
       const func = getBehaviorFunction(behavior.sourceFile);
       if (!func) continue;
