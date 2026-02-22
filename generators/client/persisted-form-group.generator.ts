@@ -17,7 +17,7 @@ const persistedFormGroupGenerator: DesignGenerator = {
 
   outputs: () => [
     'client/src/app/business-objects/persisted-form-group.ts',
-    'design/@types/business-objects/persisted-form-group.d.ts',
+    'design/@types/business-objects-client/persisted-form-group.d.ts',
   ],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext): Promise<Map<string, string>> {

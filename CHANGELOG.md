@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.41] - 2026-02-22
+
+- 4a89b2f Fix persisted-form-group outputs path to match generate function
+
+
 ## [1.0.40] - 2026-02-22
 
 - b4d6830 chore: apply automated fixes
