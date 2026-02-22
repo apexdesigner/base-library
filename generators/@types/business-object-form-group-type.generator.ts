@@ -17,7 +17,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
   ],
 
   outputs: (metadata: DesignMetadata) => [
-    `design/@types/business-objects/${kebabCase(metadata.name)}-form-group.d.ts`
+    `design/@types/business-objects-client/${kebabCase(metadata.name)}-form-group.d.ts`
   ],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {

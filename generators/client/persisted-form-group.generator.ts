@@ -381,7 +381,7 @@ export declare class PersistedArray<T = any> extends Array<T> {
 
     const outputs = new Map<string, string>();
     outputs.set('client/src/app/business-objects/persisted-form-group.ts', runtimeContent);
-    outputs.set('design/@types/business-objects/persisted-form-group.d.ts', typeContent);
+    outputs.set('design/@types/business-objects-client/persisted-form-group.d.ts', typeContent);
 
     return outputs;
   },
