@@ -31,7 +31,7 @@ describe('businessObjectSchemaGenerator', () => {
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
 
-      expect(result).toContain('.column({ autoIncrement: true })');
+      expect(result).toContain('.column({ autoIncrement: true, type: "INTEGER" })');
     });
 
     it('should not add autoIncrement when no data source', async () => {

@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { isLibrary, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
 import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
@@ -40,12 +40,7 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     const className = pascalCase(metadata.name);
 
     // Get id property info
-    const idProperty = getIdProperty(metadata.sourceFile, context);
-    const idName = idProperty.name;
-    let idType = 'number';
-    if (idProperty.type === 'string' || idProperty.type === 'String') {
-      idType = 'string';
-    }
+    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
 
     // Get the BO class and its properties
     const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');
@@ -147,10 +142,10 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     // CRUD methods
     lines.push('');
     lines.push(`  static find(filter?: any): Promise<${className}[]>;`);
-    lines.push(`  static findById(id: string | number, filter?: any): Promise<${className}>;`);
+    lines.push(`  static findById(id: ${idType}, filter?: any): Promise<${className}>;`);
     lines.push(`  static create(data: Partial<${className}>): Promise<${className}>;`);
-    lines.push(`  static updateById(id: string | number, data: Partial<${className}>): Promise<${className}>;`);
-    lines.push(`  static deleteById(id: string | number): Promise<boolean>;`);
+    lines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
+    lines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);
 
     // Behavior methods (BO + mixin behaviors)
     const parentNames = new Set([className, ...mixinNames]);

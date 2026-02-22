@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getIdProperty, resolveRelationships } from '@apexdesigner/generator';
+import { isLibrary, resolveIdType, resolveRelationships } from '@apexdesigner/generator';
 import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import pluralize from 'pluralize';
@@ -43,12 +43,7 @@ const businessObjectClientGenerator: DesignGenerator = {
     const plural = pluralize(boKebab);
 
     // Get id property info
-    const idProperty = getIdProperty(metadata.sourceFile, context);
-    const idName = idProperty.name;
-    let idType = 'number';
-    if (idProperty.type === 'string' || idProperty.type === 'String') {
-      idType = 'string';
-    }
+    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
     debug('className %j, idName %j, idType %j, plural %j', className, idName, idType, plural);
 
     // Get the BO class and its properties
@@ -156,7 +151,7 @@ const businessObjectClientGenerator: DesignGenerator = {
     // findById
     lines.push('');
     lines.push(`  static async findById(`);
-    lines.push(`    id: string | number,`);
+    lines.push(`    id: ${idType},`);
     lines.push(`    filter?: any,`);
     lines.push(`  ): Promise<${className}> {`);
     lines.push('    const url = `${this.baseUrl}/${this.plural}/${id}`;');
@@ -177,7 +172,7 @@ const businessObjectClientGenerator: DesignGenerator = {
     // updateById
     lines.push('');
     lines.push(`  static async updateById(`);
-    lines.push(`    id: string | number,`);
+    lines.push(`    id: ${idType},`);
     lines.push(`    data: Partial<${dataTypeName}>,`);
     lines.push(`  ): Promise<${className}> {`);
     lines.push('    const url = `${this.baseUrl}/${this.plural}/${id}`;');
@@ -187,7 +182,7 @@ const businessObjectClientGenerator: DesignGenerator = {
 
     // deleteById
     lines.push('');
-    lines.push(`  static async deleteById(id: string | number): Promise<boolean> {`);
+    lines.push(`  static async deleteById(id: ${idType}): Promise<boolean> {`);
     lines.push('    const url = `${this.baseUrl}/${this.plural}/${id}`;');
     lines.push('    try {');
     lines.push('      await this.del<void>(url);');

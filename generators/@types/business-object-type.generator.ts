@@ -1,23 +1,11 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { isLibrary, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
 import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import { Project, StructureKind } from 'ts-morph';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:businessObjectType');
-
-// Resolve the TypeScript type of a class property to a normalized string.
-// Uses the type checker to handle type aliases like Uuid = string correctly.
-function resolvePropertyType(classNode: ReturnType<typeof getClassByBase>, propertyName: string): string {
-  if (!classNode) return 'number';
-  const propNode = classNode.getProperty(propertyName);
-  if (!propNode) return 'number';
-  const resolved = propNode.getType();
-  if (resolved.isString() || resolved.isStringLiteral()) return 'string';
-  if (resolved.isNumber() || resolved.isNumberLiteral()) return 'number';
-  return resolved.getText().replace(' | undefined', '') || 'number';
-}
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
@@ -114,15 +102,12 @@ const businessObjectTypeGenerator: DesignGenerator = {
       hasDeclareKeyword: true,
     });
 
-    // Add id property
-    const idProperty = getIdProperty(metadata.sourceFile, context);
-    debug('idProperty %j', idProperty);
-
-    // Resolve id type via the TypeScript type checker so aliases like Uuid work correctly
-    const idType = resolvePropertyType(boClass, idProperty.name);
+    // Add id property — resolveIdType uses the TS type checker so aliases like Uuid work correctly
+    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    debug('idName %j, idType %j', idName, idType);
 
     classDecl.addProperty({
-      name: idProperty.name,
+      name: idName,
       type: idType,
     });
 
@@ -132,7 +117,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
 
     // Create a set of names to skip
     const skipNames = new Set<string>();
-    skipNames.add(idProperty.name);
+    skipNames.add(idName);
     relationships.forEach(rel => {
       skipNames.add(rel.relationshipName);
       if (rel.foreignKey) {
@@ -184,12 +169,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         if (rel.foreignKey) {
           // Resolve FK type from the referenced BO's id property via the type checker
           const refBOMeta = allBOs.find(m => pascalCase(m.name) === rel.businessObjectName);
-          let fkType = 'number';
-          if (refBOMeta) {
-            const refClass = getClassByBase(refBOMeta.sourceFile, 'BusinessObject');
-            const refIdProperty = getIdProperty(refBOMeta.sourceFile, context);
-            fkType = resolvePropertyType(refClass, refIdProperty.name);
-          }
+          const fkType = refBOMeta ? resolveIdType(refBOMeta.sourceFile, context).type : 'number';
 
           classDecl.addProperty({
             name: rel.foreignKey,
@@ -312,7 +292,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       name: 'findById',
       isStatic: true,
       parameters: [
-        { name: 'id', type: `${idType} | string` },
+        { name: 'id', type: idType },
         { name: 'filter?', type: `Pick<FindFilter<${className}>, 'include' | 'fields' | 'omit'>` }
       ],
       returnType: `Promise<${className}>`,
@@ -348,7 +328,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       name: 'updateById',
       isStatic: true,
       parameters: [
-        { name: 'id', type: 'string' },
+        { name: 'id', type: idType },
         { name: 'data', type: `Partial<${className}>` }
       ],
       returnType: `Promise<${className}>`,
@@ -373,7 +353,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
     classDecl.addMethod({
       name: 'deleteById',
       isStatic: true,
-      parameters: [{ name: 'id', type: 'string' }],
+      parameters: [{ name: 'id', type: idType }],
       returnType: `Promise<boolean>`,
     });
 
