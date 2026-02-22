@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getDataSource, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { isLibrary, getDataSource, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
 import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import pluralize from 'pluralize';
@@ -60,11 +60,8 @@ const businessObjectRouteGenerator: DesignGenerator = {
     debug('className %j, pluralKebab %j', className, pluralKebab);
 
     // Get id property info
-    const idProperty = getIdProperty(metadata.sourceFile, context);
-    let idType = 'number';
-    if (idProperty.type === 'string' || idProperty.type === 'String') {
-      idType = 'string';
-    }
+    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    const idCoerce = idType === 'number' ? 'Number(req.params.id)' : 'req.params.id';
 
     const lines: string[] = [];
 
@@ -119,7 +116,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('');
     lines.push('  try {');
     lines.push('    const filter = parseFilter(req.query.filter);');
-    lines.push(`    const ${varName} = await ${className}.findById(String(req.params.id), filter);`);
+    lines.push(`    const ${varName} = await ${className}.findById(${idCoerce}, filter);`);
     lines.push(`    debug("${varName} %j", ${varName});`);
     lines.push('');
     lines.push(`    res.json(${varName});`);
@@ -142,7 +139,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  debug("req.body %j", req.body);');
     lines.push('');
     lines.push('  try {');
-    lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idProperty.name}: true }).parse(req.body);`);
+    lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).parse(req.body);`);
     lines.push(`    const ${varName} = await ${className}.create(validated);`);
     lines.push(`    debug("${varName} %j", ${varName});`);
     lines.push('');
@@ -167,8 +164,8 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  debug("req.body %j", req.body);');
     lines.push('');
     lines.push('  try {');
-    lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idProperty.name}: true }).partial().parse(req.body);`);
-    lines.push(`    const ${varName} = await ${className}.updateById(String(req.params.id), validated);`);
+    lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).partial().parse(req.body);`);
+    lines.push(`    const ${varName} = await ${className}.updateById(${idCoerce}, validated);`);
     lines.push(`    debug("${varName} %j", ${varName});`);
     lines.push('');
     lines.push(`    res.json(${varName});`);
@@ -195,7 +192,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  debug("req.params.id %j", req.params.id);');
     lines.push('');
     lines.push('  try {');
-    lines.push(`    const deleted = await ${className}.deleteById(String(req.params.id));`);
+    lines.push(`    const deleted = await ${className}.deleteById(${idCoerce});`);
     lines.push('    debug("deleted %j", deleted);');
     lines.push('');
     lines.push('    if (!deleted) {');
@@ -245,7 +242,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
           lines.push('  debug("req.body %j", req.body);');
           lines.push('');
           lines.push('  try {');
-          lines.push(`    const ${varName} = await ${className}.findById(String(req.params.id));`);
+          lines.push(`    const ${varName} = await ${className}.findById(${idCoerce});`);
           lines.push(`    const result = await ${varName}.${func.name}(req.body);`);
           lines.push('    debug("result %j", result);');
           lines.push('');

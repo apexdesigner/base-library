@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getIdProperty, getDataSource, resolveMixins } from '@apexdesigner/generator';
+import { isLibrary, resolveIdType, getDataSource, resolveMixins } from '@apexdesigner/generator';
 import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { Node } from 'ts-morph';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
@@ -78,9 +78,8 @@ const businessObjectGenerator: DesignGenerator = {
     const boKebab = kebabCase(metadata.name);
 
     // Get id property info
-    const idProperty = getIdProperty(metadata.sourceFile, context);
-    const idName = idProperty.name;
-    debug('className %j, idName %j', className, idName);
+    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    debug('className %j, idName %j, idType %j', className, idName, idType);
 
     // Get project name for debug namespace
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
@@ -192,7 +191,7 @@ const businessObjectGenerator: DesignGenerator = {
     // findById
     lines.push('');
     lines.push(`  static async findById(`);
-    lines.push(`    id: string | number,`);
+    lines.push(`    id: ${idType},`);
     lines.push('    filter?: {');
     lines.push(`      include?: FindFilter<${dataTypeName}>["include"];`);
     lines.push(`      fields?: FindFilter<${dataTypeName}>["fields"];`);
@@ -322,7 +321,7 @@ const businessObjectGenerator: DesignGenerator = {
     // updateById
     lines.push('');
     lines.push(`  static async updateById(`);
-    lines.push(`    id: string,`);
+    lines.push(`    id: ${idType},`);
     lines.push(`    data: Partial<${dataTypeName}>,`);
     lines.push(`  ): Promise<${className}> {`);
     lines.push('    const debug = Debug.extend("updateById");');
@@ -381,7 +380,7 @@ const businessObjectGenerator: DesignGenerator = {
 
     // deleteById
     lines.push('');
-    lines.push(`  static async deleteById(id: string): Promise<boolean> {`);
+    lines.push(`  static async deleteById(id: ${idType}): Promise<boolean> {`);
     lines.push('    const debug = Debug.extend("deleteById");');
     lines.push('    debug("id %j", id);');
     lines.push('');
