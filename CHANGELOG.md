@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.40] - 2026-02-22
+
+- b4d6830 chore: apply automated fixes
+- 8e0245f Fix minimum version selectors for @apexdesigner/generator and @apexdesigner/utilities
+
+
 ## [1.0.39] - 2026-02-22
 
 - ef11ed9 Move form group types to business-objects-client and fix id type resolution
