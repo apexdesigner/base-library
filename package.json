@@ -1,6 +1,6 @@
 {
   "name": "@apexdesigner/base-library",
-  "version": "1.0.39",
+  "version": "1.0.40",
   "description": "Base scaffold and code generators for Apex Designer Angular/Express applications.",
   "keywords": [
     "apex-designer",
@@ -32,8 +32,8 @@
   "devDependencies": {
     "@apexdesigner/claude-skills": "^1.0.44",
     "@apexdesigner/dsl": "^0.8.31",
-    "@apexdesigner/generator": "^0.8.30",
-    "@apexdesigner/utilities": "^0.1.21",
+    "@apexdesigner/generator": "^0.8.35",
+    "@apexdesigner/utilities": "^0.1.22",
     "htmlparser2": "^10.1.0",
     "@types/node": "^25.2.3",
     "change-case": "^5.4.4",
