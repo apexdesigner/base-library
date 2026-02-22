@@ -11,6 +11,7 @@ export { mixinTypeGenerator } from "./@types/mixin-type.generator.js";
 export { designTsconfigGenerator } from "./@types/design-tsconfig.generator.js";
 export { businessObjectFormGroupTypeGenerator } from "./@types/business-object-form-group-type.generator.js";
 export { componentTypeGenerator } from "./@types/component-type.generator.js";
+export { appTypeGenerator } from "./@types/app-type.generator.js";
 
 // Client generators
 export { persistedFormGroupGenerator } from "./client/persisted-form-group.generator.js";
