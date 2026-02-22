@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.38] - 2026-02-22
+
+- 95a3829 chore: apply automated fixes
+- 7bf7cc7 Fix id and FK type resolution in @types generator for type aliases like Uuid
+
+
 ## [1.0.37] - 2026-02-21
 
 - 585f6be chore: update package-lock.json
