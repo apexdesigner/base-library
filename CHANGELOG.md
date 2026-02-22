@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.42] - 2026-02-22
+
+- 045b4f8 Add app-type generator for design/@types/app.d.ts and install @types/debug
+
+
 ## [1.0.41] - 2026-02-22
 
 - 4a89b2f Fix persisted-form-group outputs path to match generate function
