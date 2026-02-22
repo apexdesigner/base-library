@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.39] - 2026-02-22
+
+- ef11ed9 Move form group types to business-objects-client and fix id type resolution
+- 12f663a Fix id type resolution across all generators using resolveIdType
+
+
 ## [1.0.38] - 2026-02-22
 
 - 95a3829 chore: apply automated fixes
