@@ -7,6 +7,18 @@ import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:businessObjectType');
 
+// Resolve the TypeScript type of a class property to a normalized string.
+// Uses the type checker to handle type aliases like Uuid = string correctly.
+function resolvePropertyType(classNode: ReturnType<typeof getClassByBase>, propertyName: string): string {
+  if (!classNode) return 'number';
+  const propNode = classNode.getProperty(propertyName);
+  if (!propNode) return 'number';
+  const resolved = propNode.getType();
+  if (resolved.isString() || resolved.isStringLiteral()) return 'string';
+  if (resolved.isNumber() || resolved.isNumberLiteral()) return 'number';
+  return resolved.getText().replace(' | undefined', '') || 'number';
+}
+
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
   'Before Create',
@@ -106,10 +118,8 @@ const businessObjectTypeGenerator: DesignGenerator = {
     const idProperty = getIdProperty(metadata.sourceFile, context);
     debug('idProperty %j', idProperty);
 
-    let idType = 'number';
-    if (idProperty.type === 'string' || idProperty.type === 'String') {
-      idType = 'string';
-    }
+    // Resolve id type via the TypeScript type checker so aliases like Uuid work correctly
+    const idType = resolvePropertyType(boClass, idProperty.name);
 
     classDecl.addProperty({
       name: idProperty.name,
@@ -168,14 +178,17 @@ const businessObjectTypeGenerator: DesignGenerator = {
     }
 
     // Add foreign keys and relationships
+    const allBOs = context.listMetadata('BusinessObject');
     for (const rel of relationships) {
       if (rel.relationshipType === 'Belongs To' || rel.relationshipType === 'References') {
-        if (rel.foreignKey && rel.foreignKeyType) {
-          let fkType = String(rel.foreignKeyType);
-          if (fkType === 'Number' || fkType === 'number') {
-            fkType = 'number';
-          } else if (fkType === 'String' || fkType === 'string') {
-            fkType = 'string';
+        if (rel.foreignKey) {
+          // Resolve FK type from the referenced BO's id property via the type checker
+          const refBOMeta = allBOs.find(m => pascalCase(m.name) === rel.businessObjectName);
+          let fkType = 'number';
+          if (refBOMeta) {
+            const refClass = getClassByBase(refBOMeta.sourceFile, 'BusinessObject');
+            const refIdProperty = getIdProperty(refBOMeta.sourceFile, context);
+            fkType = resolvePropertyType(refClass, refIdProperty.name);
           }
 
           classDecl.addProperty({
