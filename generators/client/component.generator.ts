@@ -17,8 +17,8 @@ const componentGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Component',
-    },
+      metadataType: 'Component'
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -27,17 +27,13 @@ const componentGenerator: DesignGenerator = {
     const componentName = isAppComponent ? 'app' : kebabCase(baseName);
 
     if (isAppComponent) {
-      return [
-        `client/src/app/app.component.ts`,
-        `client/src/app/app.component.html`,
-        `client/src/app/app.component.scss`,
-      ];
+      return [`client/src/app/app.component.ts`, `client/src/app/app.component.html`, `client/src/app/app.component.scss`];
     }
 
     return [
       `client/src/app/components/${componentName}/${componentName}.component.ts`,
       `client/src/app/components/${componentName}/${componentName}.component.html`,
-      `client/src/app/components/${componentName}/${componentName}.component.scss`,
+      `client/src/app/components/${componentName}/${componentName}.component.scss`
     ];
   },
 
@@ -77,7 +73,7 @@ const componentGenerator: DesignGenerator = {
     const project = new Project({
       useInMemoryFileSystem: true,
       compilerOptions: { target: 99, module: 99 },
-      manipulationSettings: { quoteKind: QuoteKind.Single },
+      manipulationSettings: { quoteKind: QuoteKind.Single }
     });
     const writableFile = project.createSourceFile('temp.ts', sourceFile.getText());
 
@@ -143,9 +139,7 @@ const componentGenerator: DesignGenerator = {
     // Process @property decorators and content children
     const angularCoreExtras: string[] = [];
     const contentChildrenProps: { name: string; typeName: string; componentFile: string }[] = [];
-    const componentNames = new Set(
-      (context.listMetadata('Component') || []).map(m => m.name)
-    );
+    const componentNames = new Set((context.listMetadata('Component') || []).map(m => m.name));
 
     for (const prop of exportedClass.getProperties()) {
       const propertyDecorator = prop.getDecorator('property');
@@ -179,7 +173,7 @@ const componentGenerator: DesignGenerator = {
           contentChildrenProps.push({
             name: prop.getName(),
             typeName: childTypeName,
-            componentFile: childFile,
+            componentFile: childFile
           });
           debug('content children property %j: %j', prop.getName(), childTypeName);
 
@@ -192,14 +186,14 @@ const componentGenerator: DesignGenerator = {
             name: `_${propName}Components`,
             type: `QueryList<${childTypeName}>`,
             hasExclamationToken: true,
-            decorators: [{ name: 'ContentChildren', arguments: [childTypeName] }],
+            decorators: [{ name: 'ContentChildren', arguments: [childTypeName] }]
           });
 
           // Add the derived array property
           exportedClass.addProperty({
             name: propName,
             type: `${childTypeName}[]`,
-            initializer: '[]',
+            initializer: '[]'
           });
 
           angularCoreExtras.push('ContentChildren', 'QueryList', 'AfterContentInit');
@@ -208,16 +202,30 @@ const componentGenerator: DesignGenerator = {
     }
 
     // Process @method decorators
+    const callOnLoadMethods: string[] = [];
     const callAfterLoadMethods: string[] = [];
+    const callOnUnloadMethods: string[] = [];
     for (const meth of exportedClass.getMethods()) {
       const methodDecorator = meth.getDecorator('method');
       if (methodDecorator) {
         const args = methodDecorator.getArguments();
         if (args.length > 0 && Node.isObjectLiteralExpression(args[0])) {
+          const callOnLoadProp = args[0].getProperty('callOnLoad');
+          if (callOnLoadProp && Node.isPropertyAssignment(callOnLoadProp)) {
+            if (callOnLoadProp.getInitializerOrThrow().getText() === 'true') {
+              callOnLoadMethods.push(meth.getName());
+            }
+          }
           const callAfterLoadProp = args[0].getProperty('callAfterLoad');
           if (callAfterLoadProp && Node.isPropertyAssignment(callAfterLoadProp)) {
             if (callAfterLoadProp.getInitializerOrThrow().getText() === 'true') {
               callAfterLoadMethods.push(meth.getName());
+            }
+          }
+          const callOnUnloadProp = args[0].getProperty('callOnUnload');
+          if (callOnUnloadProp && Node.isPropertyAssignment(callOnUnloadProp)) {
+            if (callOnUnloadProp.getInitializerOrThrow().getText() === 'true') {
+              callOnUnloadMethods.push(meth.getName());
             }
           }
         }
@@ -225,22 +233,41 @@ const componentGenerator: DesignGenerator = {
       }
     }
 
+    // Add ngOnInit for callOnLoad methods
+    if (callOnLoadMethods.length > 0) {
+      angularCoreExtras.push('OnInit');
+      exportedClass.addImplements('OnInit');
+      exportedClass.addMethod({
+        name: 'ngOnInit',
+        returnType: 'void',
+        statements: callOnLoadMethods.map(m => `this.${m}();`)
+      });
+    }
+
     // Add ngAfterViewInit for callAfterLoad methods
     if (callAfterLoadMethods.length > 0) {
       angularCoreExtras.push('AfterViewInit');
       exportedClass.addImplements('AfterViewInit');
-      const bodyLines = callAfterLoadMethods.map(m => `this.${m}();`);
       exportedClass.addMethod({
         name: 'ngAfterViewInit',
         returnType: 'void',
-        statements: bodyLines,
+        statements: callAfterLoadMethods.map(m => `this.${m}();`)
+      });
+    }
+
+    // Add ngOnDestroy for callOnUnload methods
+    if (callOnUnloadMethods.length > 0) {
+      angularCoreExtras.push('OnDestroy');
+      exportedClass.addImplements('OnDestroy');
+      exportedClass.addMethod({
+        name: 'ngOnDestroy',
+        returnType: 'void',
+        statements: callOnUnloadMethods.map(m => `this.${m}();`)
       });
     }
 
     // Check if the source file has debug setup and rename debug -> Debug
-    const debugVarDecl = writableFile.getVariableDeclarations().find(
-      v => v.getInitializer()?.getText().includes('createDebug') ?? false
-    );
+    const debugVarDecl = writableFile.getVariableDeclarations().find(v => v.getInitializer()?.getText().includes('createDebug') ?? false);
     const hasDebug = !!debugVarDecl;
 
     // Add Debug.extend() to each method that references debug, before renaming
@@ -280,7 +307,7 @@ const componentGenerator: DesignGenerator = {
       exportedClass.addMethod({
         name: 'ngAfterContentInit',
         returnType: 'void',
-        statements: bodyLines.join('\n'),
+        statements: bodyLines.join('\n')
       });
     }
 
@@ -288,31 +315,29 @@ const componentGenerator: DesignGenerator = {
     const angularCoreImports = ['Component', ...new Set(angularCoreExtras)];
     writableFile.insertImportDeclaration(0, {
       moduleSpecifier: '@angular/core',
-      namedImports: angularCoreImports,
+      namedImports: angularCoreImports
     });
 
     // Add imports for content children component types
     for (const cp of contentChildrenProps) {
       writableFile.addImportDeclaration({
         moduleSpecifier: `../${cp.componentFile}/${cp.componentFile}.component`,
-        namedImports: [cp.typeName],
+        namedImports: [cp.typeName]
       });
     }
 
     // Add template-based imports (file-level)
     for (const templateImport of templateImports) {
-      const existingImport = writableFile.getImportDeclaration(
-        (imp) => imp.getModuleSpecifierValue() === templateImport.moduleSpecifier
-      );
+      const existingImport = writableFile.getImportDeclaration(imp => imp.getModuleSpecifierValue() === templateImport.moduleSpecifier);
 
       if (!existingImport) {
         writableFile.addImportDeclaration({
           moduleSpecifier: templateImport.moduleSpecifier,
-          namedImports: templateImport.namedImports,
+          namedImports: templateImport.namedImports
         });
       } else {
         const existingNamedImports = existingImport.getNamedImports().map(ni => ni.getName());
-        templateImport.namedImports.forEach((importName) => {
+        templateImport.namedImports.forEach(importName => {
           if (!existingNamedImports.includes(importName)) {
             existingImport.addNamedImport(importName);
           }
@@ -322,7 +347,7 @@ const componentGenerator: DesignGenerator = {
 
     // Build imports array for @Component decorator
     const componentImports: string[] = [];
-    templateImports.forEach((imp) => {
+    templateImports.forEach(imp => {
       componentImports.push(...imp.namedImports);
     });
     componentImports.sort((a, b) => a.localeCompare(b));
@@ -338,13 +363,11 @@ const componentGenerator: DesignGenerator = {
 
     exportedClass.addDecorator({
       name: 'Component',
-      arguments: [decoratorConfig],
+      arguments: [decoratorConfig]
     });
 
     // Build output paths
-    const prefix = isAppComponent
-      ? 'client/src/app/app'
-      : `client/src/app/components/${componentName}/${componentName}`;
+    const prefix = isAppComponent ? 'client/src/app/app' : `client/src/app/components/${componentName}/${componentName}`;
 
     // Build output files
     const outputs = new Map<string, string>();
@@ -353,7 +376,7 @@ const componentGenerator: DesignGenerator = {
     outputs.set(`${prefix}.component.scss`, styles);
 
     return outputs;
-  },
+  }
 };
 
 export { componentGenerator };
