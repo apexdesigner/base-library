@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.44] - 2026-02-23
+
+- efb36f5 Add callOnLoad/callOnUnload lifecycle hooks for component and page generators
+- 78f6e69 Fix app-type generator output path from index.d.ts to app.d.ts
+
+
 ## [1.0.43] - 2026-02-23
 
 - 1bb75bf Refactor shared template utilities to use @apexdesigner/generator package
