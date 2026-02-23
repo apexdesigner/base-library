@@ -260,23 +260,25 @@ const pageComponentGenerator: DesignGenerator = {
       debug('transformed %j to getter/setter calling %j', propName, methodName);
     }
 
-    // Process @method decorators — collect callOnLoad methods and remove decorators
+    // Process @method decorators — collect callOnLoad/callOnUnload methods and remove decorators
     const callOnLoadMethods: string[] = [];
+    const callOnUnloadMethods: string[] = [];
 
     for (const classMethod of exportedClass.getMethods()) {
       const methodDecorator = classMethod.getDecorator('method');
       if (!methodDecorator) continue;
 
       const args = methodDecorator.getArguments();
-      let callOnLoad = false;
       if (args.length > 0) {
         const argText = args[0].getText();
-        callOnLoad = argText.includes('callOnLoad: true') || argText.includes('callOnLoad:true');
-      }
-
-      if (callOnLoad) {
-        callOnLoadMethods.push(classMethod.getName());
-        debug('callOnLoad method %j', classMethod.getName());
+        if (argText.includes('callOnLoad: true') || argText.includes('callOnLoad:true')) {
+          callOnLoadMethods.push(classMethod.getName());
+          debug('callOnLoad method %j', classMethod.getName());
+        }
+        if (argText.includes('callOnUnload: true') || argText.includes('callOnUnload:true')) {
+          callOnUnloadMethods.push(classMethod.getName());
+          debug('callOnUnload method %j', classMethod.getName());
+        }
       }
 
       methodDecorator.remove();
@@ -319,7 +321,7 @@ const pageComponentGenerator: DesignGenerator = {
     if (needsOnInit) {
       angularCoreImports.push('OnInit');
     }
-    if (hasRouteParams) {
+    if (hasRouteParams || callOnUnloadMethods.length > 0) {
       angularCoreImports.push('OnDestroy');
     }
     if (needsInject) {
@@ -475,7 +477,11 @@ const pageComponentGenerator: DesignGenerator = {
         exportedClass.insertMember(insertIndex, initLines.join('\n  '));
 
         // Add ngOnDestroy as the last method
-        exportedClass.addMember(`\nngOnDestroy() {\n    this._routeParamsSubscription?.unsubscribe();\n  }`);
+        const onDestroyLines = [`this._routeParamsSubscription?.unsubscribe();`];
+        for (const methodName of callOnUnloadMethods) {
+          onDestroyLines.push(`this.${methodName}();`);
+        }
+        exportedClass.addMember(`\nngOnDestroy() {\n    ${onDestroyLines.join('\n    ')}\n  }`);
       } else {
         // No route params: everything goes in ngOnInit directly
         const coreInitLines: string[] = [];
@@ -514,6 +520,13 @@ const pageComponentGenerator: DesignGenerator = {
         elseInitLines.push(`${asyncPrefix}ngOnInit() {\n    ${initBody}\n  }`);
         exportedClass.insertMember(insertIndex, elseInitLines.join('\n  '));
       }
+    }
+
+    // Add ngOnDestroy for callOnUnload methods (no route-params case)
+    if (callOnUnloadMethods.length > 0 && !hasRouteParams) {
+      exportedClass.addImplements('OnDestroy');
+      const onDestroyBody = callOnUnloadMethods.map(m => `this.${m}();`).join('\n    ');
+      exportedClass.addMember(`\nngOnDestroy() {\n    ${onDestroyBody}\n  }`);
     }
 
     // Add template-based imports (file-level)
