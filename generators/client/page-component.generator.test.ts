@@ -28,6 +28,23 @@ describe('pageComponentGenerator', () => {
     });
   });
 
+  describe('callAfterLoad', () => {
+    it('should generate ngAfterViewInit and call the method', async () => {
+      const ts = await generatePage(`
+        import { Page, page, method } from '@apexdesigner/dsl/page';
+        @page({ path: '/' })
+        export class HomePage extends Page {
+          @method({ callAfterLoad: true })
+          initChart() {}
+        }
+      `);
+
+      expect(ts).toContain('AfterViewInit');
+      expect(ts).toContain('ngAfterViewInit()');
+      expect(ts).toContain('this.initChart()');
+    });
+  });
+
   describe('callOnUnload', () => {
     it('should generate ngOnDestroy and call the method', async () => {
       const ts = await generatePage(`
