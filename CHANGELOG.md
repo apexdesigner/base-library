@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.45] - 2026-02-23
+
+- 9cac351 Fix page generator missing callAfterLoad -> ngAfterViewInit lifecycle hook
+
+
 ## [1.0.44] - 2026-02-23
 
 - efb36f5 Add callOnLoad/callOnUnload lifecycle hooks for component and page generators
