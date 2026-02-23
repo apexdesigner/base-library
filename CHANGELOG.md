@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.46] - 2026-02-23
+
+- 9f6e4d9 Update @apexdesigner deps to latest; fix shared.test.ts imports
+
+
 ## [1.0.45] - 2026-02-23
 
 - 9cac351 Fix page generator missing callAfterLoad -> ngAfterViewInit lifecycle hook
