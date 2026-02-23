@@ -17,7 +17,9 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
   ],
 
   outputs: (metadata: DesignMetadata) => [
-    `client/src/app/business-objects/${kebabCase(metadata.name)}-form-group.ts`
+    `client/src/app/business-objects/${kebabCase(metadata.name)}-form-group.ts`,
+    `client/src/app/business-objects/${kebabCase(metadata.name)}-form-array.ts`,
+    `client/src/app/business-objects/${kebabCase(metadata.name)}-persisted-array.ts`,
   ],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
@@ -159,7 +161,14 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     const content = lines.join('\n') + '\n';
     debug('Generated form group client class for %j', metadata.name);
 
-    return content;
+    const outputs = new Map<string, string>();
+    outputs.set(`client/src/app/business-objects/${boKebab}-form-group.ts`, content);
+    outputs.set(`client/src/app/business-objects/${boKebab}-form-array.ts`,
+      `export { ${className}FormArray } from './${boKebab}-form-group';\n`);
+    outputs.set(`client/src/app/business-objects/${boKebab}-persisted-array.ts`,
+      `export { ${className}PersistedArray } from './${boKebab}-form-group';\n`);
+
+    return outputs;
   }
 };
 

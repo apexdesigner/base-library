@@ -30,6 +30,8 @@ export class BaseLibrary extends Project {
     "@apexdesigner/schema-forms": "^0.1.47",
     "@monaco-editor/loader": "^1.7.0",
     "debug": { versionSelector: "^4.4.3", isCommonJs: true },
+    "indefinite": { versionSelector: "^2.4.6", isCommonJs: true },
+    "pluralize": { versionSelector: "^8.0.0", isCommonJs: true },
     "luxon": "^3.0.0",
     "@apexdesigner/flex-layout": "^0.1.19",
     "rxjs": "~7.8.1",
