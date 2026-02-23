@@ -3,6 +3,13 @@ import { businessObjectClientTypeGenerator } from './business-object-client-type
 import { createSimpleMockWorkspace } from '@apexdesigner/generator';
 
 describe('businessObjectClientTypeGenerator', () => {
+  describe('triggers', () => {
+    it('should have a Behavior trigger so output regenerates when behaviors change', () => {
+      const behaviorTrigger = businessObjectClientTypeGenerator.triggers.find(t => t.metadataType === 'Behavior');
+      expect(behaviorTrigger).toBeDefined();
+    });
+  });
+
   describe('id type in method signatures', () => {
     it('should use number for number id in findById', async () => {
       const workspace = createSimpleMockWorkspace();

@@ -27,7 +27,11 @@ const businessObjectClientGenerator: DesignGenerator = {
     {
       metadataType: 'BusinessObject',
       condition: (metadata) => !isLibrary(metadata),
-    }
+    },
+    {
+      metadataType: 'Behavior',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
   outputs: (metadata: DesignMetadata) => [
