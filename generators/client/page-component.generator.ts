@@ -260,8 +260,9 @@ const pageComponentGenerator: DesignGenerator = {
       debug('transformed %j to getter/setter calling %j', propName, methodName);
     }
 
-    // Process @method decorators — collect callOnLoad/callOnUnload methods and remove decorators
+    // Process @method decorators — collect callOnLoad/callAfterLoad/callOnUnload methods and remove decorators
     const callOnLoadMethods: string[] = [];
+    const callAfterLoadMethods: string[] = [];
     const callOnUnloadMethods: string[] = [];
 
     for (const classMethod of exportedClass.getMethods()) {
@@ -274,6 +275,10 @@ const pageComponentGenerator: DesignGenerator = {
         if (argText.includes('callOnLoad: true') || argText.includes('callOnLoad:true')) {
           callOnLoadMethods.push(classMethod.getName());
           debug('callOnLoad method %j', classMethod.getName());
+        }
+        if (argText.includes('callAfterLoad: true') || argText.includes('callAfterLoad:true')) {
+          callAfterLoadMethods.push(classMethod.getName());
+          debug('callAfterLoad method %j', classMethod.getName());
         }
         if (argText.includes('callOnUnload: true') || argText.includes('callOnUnload:true')) {
           callOnUnloadMethods.push(classMethod.getName());
@@ -320,6 +325,9 @@ const pageComponentGenerator: DesignGenerator = {
     const angularCoreImports = ['Component'];
     if (needsOnInit) {
       angularCoreImports.push('OnInit');
+    }
+    if (callAfterLoadMethods.length > 0) {
+      angularCoreImports.push('AfterViewInit');
     }
     if (hasRouteParams || callOnUnloadMethods.length > 0) {
       angularCoreImports.push('OnDestroy');
@@ -520,6 +528,13 @@ const pageComponentGenerator: DesignGenerator = {
         elseInitLines.push(`${asyncPrefix}ngOnInit() {\n    ${initBody}\n  }`);
         exportedClass.insertMember(insertIndex, elseInitLines.join('\n  '));
       }
+    }
+
+    // Add ngAfterViewInit for callAfterLoad methods
+    if (callAfterLoadMethods.length > 0) {
+      exportedClass.addImplements('AfterViewInit');
+      const afterViewInitBody = callAfterLoadMethods.map(m => `this.${m}();`).join('\n    ');
+      exportedClass.addMember(`\nngAfterViewInit() {\n    ${afterViewInitBody}\n  }`);
     }
 
     // Add ngOnDestroy for callOnUnload methods (no route-params case)
