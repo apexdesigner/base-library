@@ -331,6 +331,7 @@ const pageComponentGenerator: DesignGenerator = {
           if (pa.readMode === 'Automatically') {
             const readArg = pa.order ? `{ order: ${pa.order} }` : '';
             postSubscriptionLines.push(`await this.${pa.name}.read(${readArg});`);
+            if (pa.afterReadCall) postSubscriptionLines.push(`this.${pa.afterReadCall}();`);
           }
         }
         for (const methodName of callOnLoadMethods) {
@@ -388,6 +389,7 @@ const pageComponentGenerator: DesignGenerator = {
           if (pa.readMode === 'Automatically') {
             const readArg = pa.order ? `{ order: ${pa.order} }` : '';
             coreInitLines.push(`await this.${pa.name}.read(${readArg});`);
+            if (pa.afterReadCall) coreInitLines.push(`this.${pa.afterReadCall}();`);
           }
         }
         for (const methodName of callOnLoadMethods) {

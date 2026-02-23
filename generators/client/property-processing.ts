@@ -21,6 +21,7 @@ export interface PersistedArrayProperty {
   typeName: string;
   readMode?: string;
   order?: string;
+  afterReadCall?: string;
 }
 
 export interface ProcessedProperties {
@@ -133,7 +134,7 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
     } else if (typeName.endsWith('FormGroup')) {
       formGroupProperties.push({ name: prop.getName(), typeName, readMode, saveMode, include, afterReadCall });
     } else if (typeName.endsWith('PersistedArray') || typeName.endsWith('FormArray')) {
-      persistedArrayProperties.push({ name: prop.getName(), typeName, readMode, order });
+      persistedArrayProperties.push({ name: prop.getName(), typeName, readMode, order, afterReadCall });
     } else if (readMode === 'Automatically') {
       autoReadProperties.push({ name: prop.getName(), typeName, isArray });
     }

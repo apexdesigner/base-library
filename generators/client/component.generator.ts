@@ -318,6 +318,7 @@ const componentGenerator: DesignGenerator = {
         if (pa.readMode === 'Automatically') {
           const readArg = pa.order ? `{ order: ${pa.order} }` : '';
           initLines.push(`await this.${pa.name}.read(${readArg});`);
+          if (pa.afterReadCall) initLines.push(`this.${pa.afterReadCall}();`);
         }
       }
 
