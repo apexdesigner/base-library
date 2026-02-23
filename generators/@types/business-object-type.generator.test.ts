@@ -57,4 +57,39 @@ describe('businessObjectTypeGenerator', () => {
       expect(result).toContain('id: string');
     });
   });
+
+  describe('triggers', () => {
+    it('should have a Behavior trigger so type regenerates when behaviors change', () => {
+      const behaviorTrigger = businessObjectTypeGenerator.triggers.find(t => t.metadataType === 'Behavior');
+      expect(behaviorTrigger).toBeDefined();
+    });
+  });
+
+  describe('behaviors', () => {
+    it('should include Class behavior as a static method', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ServiceTask', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ServiceTask extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ServiceTaskClaimNext', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ServiceTask } from '@business-objects';
+          addBehavior(
+            ServiceTask,
+            { type: 'Class', httpMethod: 'Post' },
+            async function claimNext(options: any): Promise<ServiceTask | null> {}
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static claimNext(');
+    });
+  });
 });

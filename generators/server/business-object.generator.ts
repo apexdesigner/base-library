@@ -62,7 +62,11 @@ const businessObjectGenerator: DesignGenerator = {
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
       },
-    }
+    },
+    {
+      metadataType: 'Behavior',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
   outputs: (metadata: DesignMetadata) => [

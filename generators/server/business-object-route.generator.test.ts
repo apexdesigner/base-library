@@ -3,6 +3,13 @@ import { businessObjectRouteGenerator } from './business-object-route.generator.
 import { createSimpleMockWorkspace } from '@apexdesigner/generator';
 
 describe('businessObjectRouteGenerator', () => {
+  describe('triggers', () => {
+    it('should have a Behavior trigger so output regenerates when behaviors change', () => {
+      const behaviorTrigger = businessObjectRouteGenerator.triggers.find(t => t.metadataType === 'Behavior');
+      expect(behaviorTrigger).toBeDefined();
+    });
+  });
+
   describe('id coercion from req.params.id', () => {
     it('should use Number() to parse id for number id BO', async () => {
       const workspace = createSimpleMockWorkspace();

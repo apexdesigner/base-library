@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.43] - 2026-02-23
+
+- 1bb75bf Refactor shared template utilities to use @apexdesigner/generator package
+- 08cbfe3 Add Behavior trigger to all generators that consume behaviors
+- a88693f Fix app-type generator output path to app/index.d.ts for correct @project resolution
+
+
 ## [1.0.42] - 2026-02-22
 
 - 045b4f8 Add app-type generator for design/@types/app.d.ts and install @types/debug

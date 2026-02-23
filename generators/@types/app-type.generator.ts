@@ -16,7 +16,7 @@ const appTypeGenerator: DesignGenerator = {
     },
   ],
 
-  outputs: () => ['design/@types/app.d.ts'],
+  outputs: () => ['design/@types/app/index.d.ts'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');

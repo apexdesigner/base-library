@@ -6,7 +6,7 @@ import {
   extractPipeNames,
   matchesDirectiveSelector,
   convertAd3Template,
-} from './shared';
+} from '@apexdesigner/generator';
 
 describe('parseTemplateHtml', () => {
   it('should extract element tag names', () => {

@@ -3,7 +3,7 @@ import { getModuleLevelCall, getTemplateString } from '@apexdesigner/utilities';
 import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
-import { getTemplateImports, convertAd3Template } from './shared.js';
+import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
 
 const Debug = createDebug('ad3:generators:component');
 
