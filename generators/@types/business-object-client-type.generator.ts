@@ -43,8 +43,13 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
 
     const className = pascalCase(metadata.name);
 
-    // Get id property info
-    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    // Get id property info — resolve to a primitive TS type
+    const resolvedId = resolveIdType(metadata.sourceFile, context);
+    const idName = resolvedId.name;
+    let idType = resolvedId.type;
+    if (idType !== 'string' && idType !== 'number') {
+      idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+    }
 
     // Get the BO class and its properties
     const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');

@@ -63,8 +63,13 @@ const businessObjectRouteGenerator: DesignGenerator = {
 
     debug('className %j, pluralKebab %j', className, pluralKebab);
 
-    // Get id property info
-    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    // Get id property info — resolve to a primitive TS type
+    const resolvedId = resolveIdType(metadata.sourceFile, context);
+    const idName = resolvedId.name;
+    let idType = resolvedId.type;
+    if (idType !== 'string' && idType !== 'number') {
+      idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+    }
     const idCoerce = idType === 'number' ? 'Number(req.params.id)' : 'req.params.id';
 
     const lines: string[] = [];

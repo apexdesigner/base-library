@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.54] - 2026-02-24
+
+- b212ab5 fix: resolve base type ids to primitive types in all generators
+
+
 ## [1.0.53] - 2026-02-24
 
 - 6567281 fix: generate z.uuid() for base type id and FK fields

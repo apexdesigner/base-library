@@ -79,6 +79,49 @@ describe('businessObjectGenerator', () => {
 
       expect(result).toContain('static async updateById(\n    id: string,');
     });
+
+    it('should use string for base type id (not inline import path)', async () => {
+      const workspace = createSimpleMockWorkspace({
+        projectSourceCode: `
+          import { Project } from '@apexdesigner/dsl';
+          export class MyProject extends Project {
+            defaultDataSource = Postgres;
+          }
+        `,
+      });
+      workspace.addMetadata('DataSource', 'Postgres', {
+        sourceCode: `
+          import { DataSource } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class Postgres extends DataSource {
+            configuration = { persistenceType: 'Postgres' };
+            defaultIdType = Uuid;
+          }
+        `,
+      });
+      workspace.addMetadata('BaseType', 'Uuid', {
+        sourceCode: `
+          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          export class Uuid extends BaseType<string> {}
+          setColumnDefaults(Uuid, 'uuid');
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class ProcessDesign extends BusinessObject {
+            id!: Uuid;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('id: string,');
+      expect(result).not.toContain('import(');
+    });
   });
 
   describe('behavior debug scoping', () => {
