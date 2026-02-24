@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.49] - 2026-02-24
+
+- 5bcbc1a Add .nullable() to optional schema fields so null can clear values
+
+
 ## [1.0.48] - 2026-02-24
 
 - 168cc6d chore: apply automated fixes
