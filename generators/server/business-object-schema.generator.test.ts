@@ -200,4 +200,66 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).toContain('.column({ type: "uuid" })');
     });
   });
+
+  describe('base type valid values', () => {
+    it('should generate z.enum() for base type with simple string valid values', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'ProcessDesignHistoryEventType', {
+        sourceCode: `
+          import { BaseType, applyValidValues } from '@apexdesigner/dsl';
+          export class ProcessDesignHistoryEventType extends BaseType<string> {}
+          applyValidValues(ProcessDesignHistoryEventType, [
+            "Deployed",
+            "Suspended",
+            "Resumed",
+            "Replaced",
+          ]);
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessDesignHistory', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { ProcessDesignHistoryEventType } from '@base-types';
+          export class ProcessDesignHistory extends BusinessObject {
+            eventType?: ProcessDesignHistoryEventType;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('z.enum(["Deployed", "Suspended", "Resumed", "Replaced"])');
+      expect(result).not.toContain('z.unknown()');
+    });
+
+    it('should generate z.enum() for base type with object valid values using value property', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Status', {
+        sourceCode: `
+          import { BaseType, applyValidValues } from '@apexdesigner/dsl';
+          export class Status extends BaseType<string> {}
+          applyValidValues(Status, [
+            { name: "Active", value: "active" },
+            { name: "Inactive", value: "inactive" },
+          ]);
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Account', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Status } from '@base-types';
+          export class Account extends BusinessObject {
+            status?: Status;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('z.enum(["active", "inactive"])');
+      expect(result).not.toContain('z.unknown()');
+    });
+  });
 });

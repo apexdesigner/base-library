@@ -135,19 +135,48 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       }
     });
 
-    // Build base type column defaults map
+    // Build base type column defaults and valid values maps
     const baseTypeColumnDefaults = new Map<string, string>();
+    const baseTypeValidValues = new Map<string, string[]>();
     for (const bt of context.listMetadata('BaseType')) {
-      const call = getModuleLevelCall(bt.sourceFile, 'setColumnDefaults');
-      if (call) {
-        const args = call.getArguments();
+      const columnCall = getModuleLevelCall(bt.sourceFile, 'setColumnDefaults');
+      if (columnCall) {
+        const args = columnCall.getArguments();
         const columnArg = args[1];
         if (columnArg && Node.isStringLiteral(columnArg)) {
           baseTypeColumnDefaults.set(bt.name, columnArg.getLiteralValue());
         }
       }
+
+      const valuesCall = getModuleLevelCall(bt.sourceFile, 'applyValidValues');
+      if (valuesCall) {
+        const args = valuesCall.getArguments();
+        const arrayArg = args[1];
+        if (arrayArg && Node.isArrayLiteralExpression(arrayArg)) {
+          const values: string[] = [];
+          for (const element of arrayArg.getElements()) {
+            if (Node.isStringLiteral(element)) {
+              // Simple string value: "Deployed"
+              values.push(element.getLiteralValue());
+            } else if (Node.isObjectLiteralExpression(element)) {
+              // Object value: { name: "Active", value: "active" }
+              const valueProp = element.getProperty('value');
+              if (valueProp && Node.isPropertyAssignment(valueProp)) {
+                const init = valueProp.getInitializer();
+                if (init && Node.isStringLiteral(init)) {
+                  values.push(init.getLiteralValue());
+                }
+              }
+            }
+          }
+          if (values.length > 0) {
+            baseTypeValidValues.set(bt.name, values);
+          }
+        }
+      }
     }
     debug('baseTypeColumnDefaults %j', Object.fromEntries(baseTypeColumnDefaults));
+    debug('baseTypeValidValues %j', Object.fromEntries(baseTypeValidValues));
 
     // Build schema object properties
     const schemaProps: string[] = [];
@@ -179,6 +208,9 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         } else if (typeText === 'DateTime') {
           zodType = 'datetime()';
           imports.add('datetime');
+        } else if (baseTypeValidValues.has(typeText)) {
+          const values = baseTypeValidValues.get(typeText)!;
+          zodType = `z.enum([${values.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ')}])`;
         } else {
           zodType = 'z.unknown()';
         }
@@ -269,6 +301,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           else if (typeText === 'boolean') zodType = 'z.boolean()';
           else if (typeText === 'Date') zodType = 'z.coerce.date()';
           else if (typeText === 'DateTime') { zodType = 'datetime()'; imports.add('datetime'); }
+          else if (baseTypeValidValues.has(typeText)) {
+            const values = baseTypeValidValues.get(typeText)!;
+            zodType = `z.enum([${values.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ')}])`;
+          }
         }
 
         // Get @property() decorator options
