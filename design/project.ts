@@ -4,7 +4,10 @@ export class BaseLibrary extends Project {
   displayName = "Base Library";
 
   description =
-    "Base scaffold and code generators for Apex Designer Angular/Express applications.";
+    "Apex Designer library that generates Angular + Express applications from strongly typed DSL design files with intellisense. " +
+    "Business objects defined in the DSL drive both server and client generation. " +
+    "The generated server includes CRUD and custom logic, exposed as REST API endpoints, Zod schema generation via schema-tools, and schema-driven persistence with multiple backend options. " +
+    "The client includes Material Design, flex layout, data tables, and schema-driven forms that auto-render based on business object schemas.";
 
   isLibrary = true;
 
