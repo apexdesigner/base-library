@@ -124,6 +124,80 @@ describe('businessObjectGenerator', () => {
     });
   });
 
+  describe('behavior imports', () => {
+    it('should import App when a behavior uses @project', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          import { App } from '@project';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function upload(options: any) {
+              const result = await App.validateProcessDesign(options);
+              return result;
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { App } from "../app.js"');
+    });
+
+    it('should import other business objects referenced by behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessDesignHistory', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesignHistory extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign, ProcessDesignHistory } from '@business-objects';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function upload(options: any) {
+              await ProcessDesignHistory.create({ processDesignId: 1 });
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessDesign')!;
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { ProcessDesignHistory } from "./process-design-history.js"');
+      // Should not import self
+      expect(result).not.toMatch(/import.*ProcessDesign.*from "\.\/process-design\.js"/);
+    });
+  });
+
   describe('behavior debug scoping', () => {
     it('should inject scoped debug into BO instance behavior methods', async () => {
       const workspace = createSimpleMockWorkspace();

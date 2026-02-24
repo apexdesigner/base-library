@@ -109,6 +109,37 @@ const businessObjectGenerator: DesignGenerator = {
     const allBehaviors = context.listMetadata('Behavior');
     const parentNames = new Set([className, ...mixinNames]);
 
+    // Collect imports from matched behavior design files
+    const behaviorBoImports = new Set<string>();
+    let needsAppImport = false;
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (!parentNames.has(parent)) continue;
+
+        for (const importDecl of behavior.sourceFile.getImportDeclarations()) {
+          const moduleSpecifier = importDecl.getModuleSpecifierValue();
+
+          if (moduleSpecifier === '@business-objects') {
+            for (const namedImport of importDecl.getNamedImports()) {
+              const name = namedImport.getName();
+              if (name !== className) {
+                behaviorBoImports.add(name);
+              }
+            }
+          } else if (moduleSpecifier === '@project') {
+            needsAppImport = true;
+          }
+        }
+      } catch (err) {
+        debug('error scanning behavior imports: %j', err);
+      }
+    }
+    debug('behaviorBoImports %j, needsAppImport %j', Array.from(behaviorBoImports), needsAppImport);
+
     // Collect lifecycle behavior bodies by type
     const lifecycleBodies = new Map<string, string[]>(); // type → body lines
     for (const behavior of allBehaviors) {
@@ -151,6 +182,15 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('import type { z } from "zod";');
     lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${boKebab}.js";`);
     lines.push(`import { dataSource } from "../data-sources/${dsKebab}.js";`);
+
+    // Add behavior-referenced imports
+    if (needsAppImport) {
+      lines.push('import { App } from "../app.js";');
+    }
+    for (const boName of Array.from(behaviorBoImports).sort()) {
+      lines.push(`import { ${boName} } from "./${kebabCase(boName)}.js";`);
+    }
+
     lines.push('');
 
     // --- Debug + Data type ---

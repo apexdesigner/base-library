@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.55] - 2026-02-24
+
+- f682107 Add behavior import scanning to business-object generator
+
+
 ## [1.0.54] - 2026-02-24
 
 - b212ab5 fix: resolve base type ids to primitive types in all generators
