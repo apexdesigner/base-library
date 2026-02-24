@@ -449,6 +449,9 @@ const businessObjectGenerator: DesignGenerator = {
           methodLines.push(`    const ${instanceParamName} = this;`);
         }
 
+        // Inject scoped debug for behavior methods
+        methodLines.push(`    const debug = Debug.extend("${func.name}");`);
+
         // Add the body lines unchanged
         const bodyLines = body.split('\n');
         for (const line of bodyLines) {
