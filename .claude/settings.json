@@ -51,10 +51,10 @@
     "deny": [
       "Read(**/.env)",
       "Read(**/.npmrc)",
-      "Write(client/**)",
-      "Write(server/**)",
-      "Edit(client/**)",
-      "Edit(server/**)"
+      "Write(/client/**)",
+      "Write(/server/**)",
+      "Edit(/client/**)",
+      "Edit(/server/**)"
     ]
   },
   "hooks": {
