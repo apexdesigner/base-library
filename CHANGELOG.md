@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.51] - 2026-02-24
+
+- 5873385 fix: inject scoped debug into generated behavior methods
+
+
 ## [1.0.50] - 2026-02-24
 
 - 7479795 chore: apply automated fixes
