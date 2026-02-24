@@ -10,6 +10,34 @@ describe('businessObjectRouteGenerator', () => {
     });
   });
 
+  describe('outputs', () => {
+    it('should resolve behavior metadata to parent BO route file', () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function upload(options: any) {}
+          );
+        `,
+      });
+
+      const behaviorMeta = workspace.context.listMetadata('Behavior')[0];
+      const outputs = businessObjectRouteGenerator.outputs(behaviorMeta);
+
+      expect(outputs).toEqual(['server/src/routes/process-designs.ts']);
+    });
+  });
+
   describe('id coercion from req.params.id', () => {
     it('should use Number() to parse id for number id BO', async () => {
       const workspace = createSimpleMockWorkspace();

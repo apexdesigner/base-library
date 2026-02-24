@@ -34,9 +34,10 @@ const businessObjectClientGenerator: DesignGenerator = {
     },
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `client/src/app/business-objects/${kebabCase(metadata.name)}.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => {
+    const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
+    return [`client/src/app/business-objects/${kebabCase(name)}.ts`];
+  },
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
