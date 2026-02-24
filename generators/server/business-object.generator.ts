@@ -81,8 +81,15 @@ const businessObjectGenerator: DesignGenerator = {
     const schemaVarName = camelCase(metadata.name);
     const boKebab = kebabCase(metadata.name);
 
-    // Get id property info
-    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    // Get id property info — resolve to a primitive TS type
+    const resolved = resolveIdType(metadata.sourceFile, context);
+    let idName = resolved.name;
+    let idType = resolved.type;
+    // If the resolved type is not a primitive (e.g. a base type class or inline import),
+    // fall back to 'string' for string-based base types, 'number' otherwise
+    if (idType !== 'string' && idType !== 'number') {
+      idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+    }
     debug('className %j, idName %j, idType %j', className, idName, idType);
 
     // Get project name for debug namespace

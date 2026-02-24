@@ -106,8 +106,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
       hasDeclareKeyword: true,
     });
 
-    // Add id property — resolveIdType uses the TS type checker so aliases like Uuid work correctly
-    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    // Add id property — resolve to a primitive TS type
+    const resolvedId = resolveIdType(metadata.sourceFile, context);
+    const idName = resolvedId.name;
+    let idType = resolvedId.type;
+    if (idType !== 'string' && idType !== 'number') {
+      idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+    }
     debug('idName %j, idType %j', idName, idType);
 
     classDecl.addProperty({
@@ -171,9 +176,12 @@ const businessObjectTypeGenerator: DesignGenerator = {
     for (const rel of relationships) {
       if (rel.relationshipType === 'Belongs To' || rel.relationshipType === 'References') {
         if (rel.foreignKey) {
-          // Resolve FK type from the referenced BO's id property via the type checker
+          // Resolve FK type from the referenced BO's id property
           const refBOMeta = allBOs.find(m => pascalCase(m.name) === rel.businessObjectName);
-          const fkType = refBOMeta ? resolveIdType(refBOMeta.sourceFile, context).type : 'number';
+          let fkType = refBOMeta ? resolveIdType(refBOMeta.sourceFile, context).type : 'number';
+          if (fkType !== 'string' && fkType !== 'number') {
+            fkType = fkType.includes('import(') || /^[A-Z]/.test(fkType) ? 'string' : fkType;
+          }
 
           classDecl.addProperty({
             name: rel.foreignKey,

@@ -46,8 +46,13 @@ const businessObjectClientGenerator: DesignGenerator = {
     const boKebab = kebabCase(metadata.name);
     const plural = pluralize(boKebab);
 
-    // Get id property info
-    const { name: idName, type: idType } = resolveIdType(metadata.sourceFile, context);
+    // Get id property info — resolve to a primitive TS type
+    const resolvedId = resolveIdType(metadata.sourceFile, context);
+    const idName = resolvedId.name;
+    let idType = resolvedId.type;
+    if (idType !== 'string' && idType !== 'number') {
+      idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+    }
     debug('className %j, idName %j, idType %j, plural %j', className, idName, idType, plural);
 
     // Get the BO class and its properties
