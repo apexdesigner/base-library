@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.57] - 2026-02-24
+
+- 8ecd9c9 Fix behavior trigger outputs resolving to wrong file paths
+
+
 ## [1.0.56] - 2026-02-24
 
 - 541c030 Replace app-behavior generator with App class generator
