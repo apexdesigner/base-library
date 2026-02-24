@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.52] - 2026-02-24
+
+- 05f8790 feat: generate z.enum() for base types with applyValidValues
+
+
 ## [1.0.51] - 2026-02-24
 
 - 5873385 fix: inject scoped debug into generated behavior methods
