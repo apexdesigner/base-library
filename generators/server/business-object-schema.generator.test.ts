@@ -262,4 +262,109 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).not.toContain('z.unknown()');
     });
   });
+
+  describe('base type id and foreign key handling', () => {
+    it('should use z.string() with column defaults for id when defaultIdType is a base type', async () => {
+      const workspace = createSimpleMockWorkspace({
+        projectSourceCode: `
+          import { Project } from '@apexdesigner/dsl';
+          export class MyProject extends Project {
+            defaultDataSource = Postgres;
+          }
+        `,
+      });
+      workspace.addMetadata('DataSource', 'Postgres', {
+        sourceCode: `
+          import { DataSource } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class Postgres extends DataSource {
+            configuration = { persistenceType: 'Postgres' };
+            defaultIdType = Uuid;
+          }
+        `,
+      });
+      workspace.addMetadata('BaseType', 'Uuid', {
+        sourceCode: `
+          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          export class Uuid extends BaseType<string> {}
+          setColumnDefaults(Uuid, 'uuid');
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class ProcessInstance extends BusinessObject {
+            id!: Uuid;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('id: z.uuid()');
+      expect(result).toContain('.column({ type: "uuid" })');
+      expect(result).not.toContain('z.number()');
+      expect(result).not.toContain('INTEGER');
+    });
+
+    it('should use z.string() with column defaults for FK when id type is a base type', async () => {
+      const workspace = createSimpleMockWorkspace({
+        projectSourceCode: `
+          import { Project } from '@apexdesigner/dsl';
+          export class MyProject extends Project {
+            defaultDataSource = Postgres;
+          }
+        `,
+      });
+      workspace.addMetadata('DataSource', 'Postgres', {
+        sourceCode: `
+          import { DataSource } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class Postgres extends DataSource {
+            configuration = { persistenceType: 'Postgres' };
+            defaultIdType = Uuid;
+          }
+        `,
+      });
+      workspace.addMetadata('BaseType', 'Uuid', {
+        sourceCode: `
+          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          export class Uuid extends BaseType<string> {}
+          setColumnDefaults(Uuid, 'uuid');
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class ProcessDesign extends BusinessObject {
+            id!: Uuid;
+          }
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          import { ProcessDesign } from '@business-objects';
+          export class ProcessInstance extends BusinessObject {
+            id!: Uuid;
+            @relationship({ type: 'Belongs To' })
+            processDesign!: ProcessDesign;
+            processDesignId!: Uuid;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('processDesignId: z.uuid()');
+      expect(result).toContain('.column({ type: "uuid" })');
+      expect(result).not.toContain('processDesignId: z.number()');
+      expect(result).not.toContain('INTEGER');
+    });
+  });
 });

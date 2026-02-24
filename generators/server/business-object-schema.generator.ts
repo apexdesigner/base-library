@@ -99,43 +99,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     }
     debug('isPostgres %j', isPostgres);
 
-    let idZodType = 'z.number()';
-    let idColumnConfig = '';
-    if (idProperty.type === 'string' || idProperty.type === 'String') {
-      idZodType = 'z.string()';
-    } else if (idProperty.type === 'Serial') {
-      idColumnConfig = '.column({ autoIncrement: true, type: "INTEGER" })';
-    } else {
-      // Check @property() decorator for explicit column config first
-      const idPropNode = boClass?.getProperty(idProperty.name);
-      let explicitColumn: Record<string, unknown> | undefined;
-      if (idPropNode) {
-        const idOpts = getPropertyDecorator(idPropNode, 'property') || {};
-        explicitColumn = idOpts.column as Record<string, unknown> | undefined;
-      }
-
-      if (explicitColumn) {
-        idColumnConfig = `.column(${toObjectLiteral(explicitColumn)})`;
-      } else if (isPostgres) {
-        idColumnConfig = '.column({ autoIncrement: true, type: "INTEGER" })';
-      }
-    }
-
-    // Get properties from the class
-    const properties = boClass?.getProperties() || [];
-    debug('properties count %j', properties.length);
-
-    // Create a set of names to skip
-    const skipNames = new Set<string>();
-    skipNames.add(idProperty.name);
-    relationships.forEach(rel => {
-      skipNames.add(rel.relationshipName);
-      if (rel.foreignKey) {
-        skipNames.add(rel.foreignKey);
-      }
-    });
-
-    // Build base type column defaults and valid values maps
+    // Build base type column defaults and valid values maps (needed for id, FK, and property handling)
     const baseTypeColumnDefaults = new Map<string, string>();
     const baseTypeValidValues = new Map<string, string[]>();
     for (const bt of context.listMetadata('BaseType')) {
@@ -177,6 +141,48 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     }
     debug('baseTypeColumnDefaults %j', Object.fromEntries(baseTypeColumnDefaults));
     debug('baseTypeValidValues %j', Object.fromEntries(baseTypeValidValues));
+
+    // Determine id Zod type and column config
+    let idZodType = 'z.number()';
+    let idColumnConfig = '';
+    if (idProperty.type === 'string' || idProperty.type === 'String') {
+      idZodType = 'z.string()';
+    } else if (idProperty.type === 'Serial') {
+      idColumnConfig = '.column({ autoIncrement: true, type: "INTEGER" })';
+    } else if (baseTypeColumnDefaults.has(idProperty.type)) {
+      // Base type id (e.g. Uuid) — use appropriate zod type and column defaults
+      idZodType = idProperty.type === 'Uuid' ? 'z.uuid()' : 'z.string()';
+      const columnType = baseTypeColumnDefaults.get(idProperty.type)!;
+      idColumnConfig = `.column({ type: "${columnType.replace(/"/g, '\\"')}" })`;
+    } else {
+      // Check @property() decorator for explicit column config first
+      const idPropNode = boClass?.getProperty(idProperty.name);
+      let explicitColumn: Record<string, unknown> | undefined;
+      if (idPropNode) {
+        const idOpts = getPropertyDecorator(idPropNode, 'property') || {};
+        explicitColumn = idOpts.column as Record<string, unknown> | undefined;
+      }
+
+      if (explicitColumn) {
+        idColumnConfig = `.column(${toObjectLiteral(explicitColumn)})`;
+      } else if (isPostgres) {
+        idColumnConfig = '.column({ autoIncrement: true, type: "INTEGER" })';
+      }
+    }
+
+    // Get properties from the class
+    const properties = boClass?.getProperties() || [];
+    debug('properties count %j', properties.length);
+
+    // Create a set of names to skip
+    const skipNames = new Set<string>();
+    skipNames.add(idProperty.name);
+    relationships.forEach(rel => {
+      skipNames.add(rel.relationshipName);
+      if (rel.foreignKey) {
+        skipNames.add(rel.foreignKey);
+      }
+    });
 
     // Build schema object properties
     const schemaProps: string[] = [];
@@ -363,6 +369,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           let fkColumnConfig = '';
           if (rel.foreignKeyType === 'String' || rel.foreignKeyType === 'string') {
             fkZodType = 'z.string()';
+          } else if (baseTypeColumnDefaults.has(rel.foreignKeyType)) {
+            fkZodType = rel.foreignKeyType === 'Uuid' ? 'z.uuid()' : 'z.string()';
+            const columnType = baseTypeColumnDefaults.get(rel.foreignKeyType)!;
+            fkColumnConfig = `\n      .column({ type: "${columnType.replace(/"/g, '\\"')}" })`;
           } else if (rel.foreignKeyType === 'Serial' || isPostgres) {
             fkColumnConfig = '\n      .column({ type: "INTEGER" })';
           }
