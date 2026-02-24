@@ -4,9 +4,9 @@ Templates define the markup for [pages](pages.md) and [components](components.md
 
 ```typescript
 applyTemplate(StudentCardComponent, `
-  <apex-flex-column>
+  <flex-column>
     <h3>{{student.firstName}} {{student.lastName}}</h3>
-  </apex-flex-column>
+  </flex-column>
 `);
 ```
 
@@ -35,7 +35,7 @@ Use `[]` to bind a property to an expression:
 
 ```html
 <apex-breadcrumb-level [label]="organization.name"></apex-breadcrumb-level>
-<apex-flex-row [grow]="true" [gap]="40"></apex-flex-row>
+<flex-row [grow]="true" [gap]="40"></flex-row>
 <apex-delete-button [object]="organization" afterDeleteRoute="/organizations"></apex-delete-button>
 ```
 
@@ -54,7 +54,7 @@ Use `()` to bind to events:
 ```html
 <button (click)="save()">Save</button>
 <input (keyup.enter)="search()" />
-<apex-flex-column (scroll)="onScroll($event)">...</apex-flex-column>
+<flex-column (scroll)="onScroll($event)">...</flex-column>
 ```
 
 ## Two-Way Binding

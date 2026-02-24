@@ -274,3 +274,40 @@ addBehavior(
   },
 );
 ```
+
+## Testing
+
+Use `addTest()` in a behavior file to define tests for the behavior. Tests can create records using `createTestData()` with the business object's [test data](business-objects.md#test-data) defaults and optional overrides, or using the normal CRUD APIs:
+
+```typescript
+// student/student.set-defaults.behavior.ts
+
+import { addBehavior, addTest, createTestData } from "@apexdesigner/dsl";
+import { Student } from "@business-objects";
+import { expect } from "vitest";
+
+addBehavior(
+  Student,
+  {
+    type: "Before Create",
+  },
+  async function setDefaults(dataItems: Partial<Student>[]) {
+    for (const dataItem of dataItems) {
+      if (!dataItem.created) {
+        dataItem.created = new Date();
+      }
+    }
+  },
+);
+
+addTest("should set created date when not provided", async () => {
+  const student = await createTestData(Student, { created: undefined });
+  expect(student.created).toBeDefined();
+});
+
+addTest("should preserve existing created date", async () => {
+  const date = new Date("2025-01-01");
+  const student = await Student.create({ firstName: "Jane", created: date });
+  expect(student.created).toEqual(date);
+});
+```

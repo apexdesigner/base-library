@@ -450,6 +450,36 @@ export class Student extends BusinessObject {
 applyDefaultRoles(Student, [Administrator, Tutor, StudentRole]);
 ```
 
+## CRUD Behaviors
+
+By default, all four CRUD behaviors (create, read, update, delete) are generated for every business object. Use `setCrudBehaviors()` to control which CRUD behaviors are generated and optionally override their roles:
+
+```typescript
+// ...
+
+import { setCrudBehaviors } from "@apexdesigner/dsl";
+import { Administrator, Student as StudentRole, Tutor } from "@roles";
+
+export class Student extends BusinessObject {
+  // ...
+}
+
+applyDefaultRoles(Student, [Administrator, Tutor, StudentRole]);
+
+setCrudBehaviors(Student, {
+  read: true,
+  update: [Administrator, Tutor],
+});
+```
+
+Each CRUD operation can be set to:
+
+- `true` — generate the behavior using the [default roles](#default-roles)
+- A [roles](roles.md) array — generate the behavior with the specified roles
+- Omitted — do not generate the behavior
+
+In the example above, only read and update are generated. Read uses the default roles (`Administrator`, `Tutor`, `StudentRole`), while update is restricted to `Administrator` and `Tutor`. Create and delete are not generated.
+
 ## Unique Constraints
 
 Use `addUniqueConstraint()` to define unique constraints. It can be called multiple times for separate constraints:
@@ -503,6 +533,26 @@ All options are optional — only specify what needs to differ from the defaults
 | `pluralName` | Plural form | `"Curriculums"` instead of `"Curricula"` |
 | `pluralDisplayName` | Plural display name | `"Purchase Orders"` |
 | `indefiniteArticle` | `"a"` or `"an"` | `"an"` for `"Order Entry"` |
+
+## Test Data
+
+Use `setTestData()` to declare default test data for a business object. This provides the defaults used by `createTestData()` in [behavior tests](behaviors.md#testing):
+
+```typescript
+// ...
+
+import { setTestData } from "@apexdesigner/dsl";
+
+export class Student extends BusinessObject {
+  // ...
+}
+
+setTestData(Student, {
+  firstName: "Jane",
+  lastName: "Smith",
+  email: "jane@example.com",
+});
+```
 
 ## Complete Example
 

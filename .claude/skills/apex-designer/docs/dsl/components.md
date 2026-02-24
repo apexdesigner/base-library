@@ -170,10 +170,10 @@ export class StudentCardComponent extends Component {
 }
 
 applyTemplate(StudentCardComponent, `
-  <apex-flex-column>
+  <flex-column>
     <h3>{{student.firstName}} {{student.lastName}}</h3>
     <span>{{student.email}}</span>
-  </apex-flex-column>
+  </flex-column>
 `);
 ```
 
@@ -225,13 +225,13 @@ export class StudentCardComponent extends Component {
 }
 
 applyTemplate(StudentCardComponent, `
-  <apex-flex-column (click)="selectStudent()">
+  <flex-column (click)="selectStudent()">
     <h3>{{student.firstName}} {{student.lastName}}</h3>
     <span>{{student.email}}</span>
     <if condition="isAdmin">
       <apex-delete-button [object]="student"></apex-delete-button>
     </if>
-  </apex-flex-column>
+  </flex-column>
 `);
 
 applyStyles(StudentCardComponent, `

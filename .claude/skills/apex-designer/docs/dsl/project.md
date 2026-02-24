@@ -16,14 +16,13 @@ export class MyApp extends Project {}
 
 The class name is the project name in PascalCase.
 
-## Display Name and Description
+## Display Name
 
-Set `displayName` for a human-readable name and `description` for a summary:
+Set `displayName` for a human-readable name:
 
 ```typescript
 export class MyApp extends Project {
   displayName = "My Application";
-  description = "A supplier management application";
 }
 ```
 
@@ -150,12 +149,6 @@ Use `from` when the import path differs from the package name:
 
 ```typescript
 { name: "provideNgxMask", from: "ngx-mask/lib", provider: "provideNgxMask()" },
-```
-
-Set `includeInSkills` to surface the dependency's content to AI when working with the project:
-
-```typescript
-"some-sdk": { versionSelector: "~2.0.0", includeInSkills: true },
 ```
 
 ## Server Dependencies

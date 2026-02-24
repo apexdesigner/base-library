@@ -250,12 +250,12 @@ applyTemplate(OrganizationPage, `
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </if>
   <if condition="!organization.reading">
-    <apex-flex-column>
+    <flex-column>
       <apex-breadcrumb-v2>
         <apex-breadcrumb-level label="Organizations" path="/organizations"></apex-breadcrumb-level>
         <apex-breadcrumb-level [label]="organization.name"></apex-breadcrumb-level>
       </apex-breadcrumb-v2>
-    </apex-flex-column>
+    </flex-column>
   </if>
 `);
 ```
@@ -324,8 +324,8 @@ applyTemplate(OrganizationPage, `
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </if>
   <if condition="!organization.reading">
-    <apex-flex-column>
-      <apex-flex-row [centerVertical]="true" gap="0">
+    <flex-column>
+      <flex-row [centerVertical]="true" gap="0">
         <apex-breadcrumb-v2 [grow]="true">
           <apex-breadcrumb-level label="Organizations" path="/organizations"></apex-breadcrumb-level>
           <apex-breadcrumb-level [label]="organization.name"></apex-breadcrumb-level>
@@ -336,12 +336,12 @@ applyTemplate(OrganizationPage, `
         <if condition="isAdmin">
           <apex-delete-button [object]="organization" afterDeleteRoute="/organizations"></apex-delete-button>
         </if>
-      </apex-flex-row>
-      <apex-flex-row [grow]="true" [gap]="40">
+      </flex-row>
+      <flex-row [grow]="true" [gap]="40">
         <terms-section [terms]="terms" [organization]="organization" [grow]="true" [scroll]="true"></terms-section>
         <students-section [students]="students" [organization]="organization" [grow]="true" [scroll]="true"></students-section>
-      </apex-flex-row>
-    </apex-flex-column>
+      </flex-row>
+    </flex-column>
   </if>
 `);
 ```
