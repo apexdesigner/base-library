@@ -186,7 +186,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       // Build the schema chain
       const chain: string[] = [zodType];
 
-      if (isOptional) chain.push('.optional()');
+      if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
       if (opts.column && typeof opts.column === 'object') chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
       if (opts.hidden) chain.push('.hidden()');
       if (opts.required) chain.push('.requiredFinal()');
@@ -254,7 +254,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
 
         const chain: string[] = [zodType];
 
-        if (isOptional) chain.push('.optional()');
+        if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
         if (opts.column && typeof opts.column === 'object') chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
         if (opts.hidden) chain.push('.hidden()');
         if (opts.required) chain.push('.requiredFinal()');
@@ -302,7 +302,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
 
           // Check if the FK property is optional on the BO class
           const fkProp = boClass?.getProperty(rel.foreignKey);
-          const fkOptional = fkProp?.hasQuestionToken() ? '\n      .optional()' : '';
+          const fkOptional = fkProp?.hasQuestionToken() ? '\n      .nullable()\n      .optional()' : '';
 
           const fkDescription = `Foreign key to ${rel.businessObjectName}`;
           schemaProps.push(`    ${rel.foreignKey}: ${fkZodType}${fkOptional}${fkColumnConfig}\n      .hidden()\n      .describe("${fkDescription}")`);
