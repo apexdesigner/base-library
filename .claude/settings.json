@@ -46,7 +46,10 @@
       "Bash(.claude/skills/typescript-test-management/scripts/remove-describe.cjs:*)",
       "Bash(.claude/skills/typescript-test-management/scripts/remove-test.cjs:*)",
       "Bash(.claude/skills/typescript-test-management/scripts/replace-test-body.cjs:*)",
-      "Bash(.claude/skills/typescript-test-management/scripts/toggle-skip.cjs:*)"
+      "Bash(.claude/skills/typescript-test-management/scripts/toggle-skip.cjs:*)",
+      "Skill(apex-designer)",
+      "Bash(.claude/skills/apex-designer/scripts/dev.sh:*)",
+      "Bash(.claude/skills/apex-designer/scripts/resolve.cjs:*)"
     ],
     "deny": [
       "Read(**/.env)",

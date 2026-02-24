@@ -1,6 +1,6 @@
 {
   "name": "@apexdesigner/base-library",
-  "version": "1.0.49",
+  "version": "1.0.50",
   "description": "Apex Designer library that generates Angular + Express applications from strongly typed DSL design files with intellisense. Business objects defined in the DSL drive both server and client generation. The generated server includes CRUD and custom logic, exposed as REST API endpoints, Zod schema generation via schema-tools, and schema-driven persistence with multiple backend options. The client includes Material Design, flex layout, data tables, and schema-driven forms that auto-render based on business object schemas.",
   "keywords": [
     "apex-designer",
@@ -34,10 +34,10 @@
   },
   "type": "module",
   "devDependencies": {
-    "@apexdesigner/claude-skills": "^1.0.44",
-    "@apexdesigner/dsl": "^0.8.40",
-    "@apexdesigner/generator": "^0.8.35",
-    "@apexdesigner/utilities": "^0.1.22",
+    "@apexdesigner/claude-skills": "^1.0.47",
+    "@apexdesigner/dsl": "^0.8.47",
+    "@apexdesigner/generator": "^0.8.40",
+    "@apexdesigner/utilities": "^0.1.23",
     "@types/debug": "^4.1.12",
     "@types/node": "^25.2.3",
     "change-case": "^5.4.4",

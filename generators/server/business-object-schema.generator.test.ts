@@ -148,4 +148,56 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).not.toContain('customerId: z.number()\n      .optional()');
     });
   });
+
+  describe('base type column defaults', () => {
+    it('should apply column config from setColumnDefaults on a base type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Json', {
+        sourceCode: `
+          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          export class Json extends BaseType<any> {}
+          setColumnDefaults(Json, 'jsonb');
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Json } from '@base-types';
+          export class Task extends BusinessObject {
+            data?: Json;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.column({ type: "jsonb" })');
+    });
+
+    it('should apply uuid column type from setColumnDefaults on Uuid base type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Uuid', {
+        sourceCode: `
+          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          export class Uuid extends BaseType<string> {}
+          setColumnDefaults(Uuid, 'uuid');
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Token', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Uuid } from '@base-types';
+          export class Token extends BusinessObject {
+            code?: Uuid;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.column({ type: "uuid" })');
+    });
+  });
 });
