@@ -118,7 +118,7 @@ describe('businessObjectSchemaGenerator', () => {
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
 
-      expect(result).toContain('parentProcessInstanceId: z.number()\n      .optional()');
+      expect(result).toContain('parentProcessInstanceId: z.number()\n      .nullable()\n      .optional()');
     });
 
     it('should not add .optional() to foreign key when the FK property is required', async () => {
