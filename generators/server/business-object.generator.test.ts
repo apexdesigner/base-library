@@ -80,4 +80,99 @@ describe('businessObjectGenerator', () => {
       expect(result).toContain('static async updateById(\n    id: string,');
     });
   });
+
+  describe('behavior debug scoping', () => {
+    it('should inject scoped debug into BO instance behavior methods', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Instance', httpMethod: 'Put' },
+            async function disable(processDesign: ProcessDesign) {
+              debug("processDesign.id %j", processDesign.id);
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('const debug = Debug.extend("disable")');
+    });
+
+    it('should inject scoped debug into BO class behavior methods', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ServiceTask', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ServiceTask extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ServiceTaskClaimNext', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ServiceTask } from '@business-objects';
+          addBehavior(
+            ServiceTask,
+            { type: 'Class', httpMethod: 'Post' },
+            async function claimNext() {
+              debug("claiming next task");
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('const debug = Debug.extend("claimNext")');
+    });
+
+    it('should inject scoped debug into behavior methods from a mixin', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Mixin', 'Claimable', {
+        sourceCode: `
+          import { Mixin } from '@apexdesigner/dsl';
+          export class Claimable extends Mixin {}
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ServiceTask', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Claimable } from '@mixins';
+          export class ServiceTask extends BusinessObject {
+            static mixins = [Claimable];
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ServiceTaskClaim', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ServiceTask } from '@business-objects';
+          addBehavior(
+            ServiceTask,
+            { type: 'Instance', httpMethod: 'Put' },
+            async function claim(serviceTask: ServiceTask) {
+              debug("claiming instance");
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('const debug = Debug.extend("claim")');
+    });
+  });
 });
