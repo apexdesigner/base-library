@@ -47,9 +47,10 @@ const businessObjectRouteGenerator: DesignGenerator = {
     },
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `server/src/routes/${kebabCase(pluralize(metadata.name))}.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => {
+    const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
+    return [`server/src/routes/${kebabCase(pluralize(name))}.ts`];
+  },
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');

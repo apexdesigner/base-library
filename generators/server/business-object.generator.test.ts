@@ -124,6 +124,34 @@ describe('businessObjectGenerator', () => {
     });
   });
 
+  describe('outputs', () => {
+    it('should resolve behavior metadata to parent BO file', () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function upload(options: any) {}
+          );
+        `,
+      });
+
+      const behaviorMeta = workspace.context.listMetadata('Behavior')[0];
+      const outputs = businessObjectGenerator.outputs(behaviorMeta);
+
+      expect(outputs).toEqual(['server/src/business-objects/process-design.ts']);
+    });
+  });
+
   describe('behavior imports', () => {
     it('should import App when a behavior uses @project', async () => {
       const workspace = createSimpleMockWorkspace();
