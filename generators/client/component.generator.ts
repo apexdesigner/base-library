@@ -4,6 +4,7 @@ import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
+import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports } from './property-processing.js';
 
 const Debug = createDebug('ad3:generators:component');
 
@@ -87,9 +88,11 @@ const componentGenerator: DesignGenerator = {
     const templateImports = await getTemplateImports(exportedClass, context, 'component', outputFilePath, template);
     debug('template requires %j import groups', templateImports.length);
 
+    // Capture @business-objects / @business-objects-client imports before removing design aliases
+    const boNamedImports = captureBoImports(writableFile);
+    debug('captured bo imports %j', boNamedImports);
+
     // Remove DSL and design-time alias imports
-    // Design aliases are single-segment (@pages, @base-types, etc.)
-    // npm scoped packages have a slash (@angular/core, @apexdesigner/dsl)
     const designImports = writableFile.getImportDeclarations().filter(imp => {
       const moduleSpec = imp.getModuleSpecifierValue();
       if (moduleSpec.startsWith('@apexdesigner/dsl')) return true;
@@ -131,37 +134,73 @@ const componentGenerator: DesignGenerator = {
       exportedClass.removeExtends();
     }
 
-    // Remove implements clauses (DSL-level, like AfterContentInit written in design)
+    // Remove implements clauses (DSL-level)
     for (const impl of exportedClass.getImplements()) {
       exportedClass.removeImplements(impl);
     }
 
-    // Process @property decorators and content children
+    // Process @property decorators
+    const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap, inputProperties, outputProperties } =
+      processPropertyDecorators(exportedClass);
+    debug('autoRead %j, formGroups %j, persistedArrays %j, inputs %j, outputs %j',
+      autoReadProperties.length, formGroupProperties.length, persistedArrayProperties.length,
+      inputProperties.length, outputProperties.length);
+
+    // Angular core extras to collect
     const angularCoreExtras: string[] = [];
+
+    // Apply @Input() to input properties
+    for (const propName of inputProperties) {
+      const prop = exportedClass.getProperty(propName);
+      if (prop) {
+        prop.addDecorator({ name: 'Input', arguments: [] });
+        if (!angularCoreExtras.includes('Input')) angularCoreExtras.push('Input');
+      }
+    }
+
+    // Apply @Output() to output properties — replace with EventEmitter
+    for (const propName of outputProperties) {
+      const prop = exportedClass.getProperty(propName);
+      if (prop) {
+        prop.setHasExclamationToken(false);
+        prop.setHasQuestionToken(false);
+        prop.setInitializer('new EventEmitter<any>()');
+        prop.setType('EventEmitter<any>');
+        prop.addDecorator({ name: 'Output', arguments: [] });
+        if (!angularCoreExtras.includes('Output')) angularCoreExtras.push('Output');
+        if (!angularCoreExtras.includes('EventEmitter')) angularCoreExtras.push('EventEmitter');
+      }
+    }
+
+    // Transform onChangeCall properties into getter/setter
+    transformOnChangeProperties(exportedClass, onChangeCallMap);
+
+    // Initialize form group properties with new instances
+    for (const fg of formGroupProperties) {
+      const prop = exportedClass.getProperty(fg.name);
+      if (!prop) continue;
+      if (prop.hasQuestionToken()) prop.setHasQuestionToken(false);
+      if (prop.hasExclamationToken()) prop.setHasExclamationToken(false);
+      prop.setInitializer(`new ${fg.typeName}()`);
+    }
+
+    // Initialize persisted array properties with new instances
+    for (const pa of persistedArrayProperties) {
+      const prop = exportedClass.getProperty(pa.name);
+      if (!prop) continue;
+      if (prop.hasQuestionToken()) prop.setHasQuestionToken(false);
+      if (prop.hasExclamationToken()) prop.setHasExclamationToken(false);
+      prop.setInitializer(`new ${pa.typeName}()`);
+    }
+
+    // Check for content children: property typed as ComponentName[] (no @property decorator)
     const contentChildrenProps: { name: string; typeName: string; componentFile: string }[] = [];
     const componentNames = new Set((context.listMetadata('Component') || []).map(m => m.name));
 
     for (const prop of exportedClass.getProperties()) {
-      const propertyDecorator = prop.getDecorator('property');
-      if (propertyDecorator) {
-        // Check for isInput
-        const args = propertyDecorator.getArguments();
-        let isInput = false;
-        if (args.length > 0 && Node.isObjectLiteralExpression(args[0])) {
-          const isInputProp = args[0].getProperty('isInput');
-          if (isInputProp && Node.isPropertyAssignment(isInputProp)) {
-            isInput = isInputProp.getInitializerOrThrow().getText() === 'true';
-          }
-        }
-        propertyDecorator.remove();
-        if (isInput) {
-          prop.addDecorator({ name: 'Input', arguments: [] });
-          if (!angularCoreExtras.includes('Input')) angularCoreExtras.push('Input');
-        }
-        continue;
-      }
+      // Skip properties that already have Angular decorators applied
+      if (prop.getDecorator('Input') || prop.getDecorator('Output')) continue;
 
-      // Check for content children: property typed as ComponentName[]
       const typeNode = prop.getTypeNode();
       if (typeNode) {
         const typeText = typeNode.getText();
@@ -177,11 +216,9 @@ const componentGenerator: DesignGenerator = {
           });
           debug('content children property %j: %j', prop.getName(), childTypeName);
 
-          // Replace the property: remove and re-add as QueryList with @ContentChildren
           const propName = prop.getName();
           prop.remove();
 
-          // Add the QueryList property with @ContentChildren
           exportedClass.addProperty({
             name: `_${propName}Components`,
             type: `QueryList<${childTypeName}>`,
@@ -189,7 +226,6 @@ const componentGenerator: DesignGenerator = {
             decorators: [{ name: 'ContentChildren', arguments: [childTypeName] }]
           });
 
-          // Add the derived array property
           exportedClass.addProperty({
             name: propName,
             type: `${childTypeName}[]`,
@@ -233,14 +269,69 @@ const componentGenerator: DesignGenerator = {
       }
     }
 
-    // Add ngOnInit for callOnLoad methods
-    if (callOnLoadMethods.length > 0) {
+    // Check if the source file has debug setup and rename debug -> Debug
+    const debugVarDecl = writableFile.getVariableDeclarations().find(v => v.getInitializer()?.getText().includes('createDebug') ?? false);
+    const hasDebug = !!debugVarDecl;
+
+    if (hasDebug) {
+      for (const meth of exportedClass.getMethods()) {
+        const body = meth.getBody();
+        if (body && body.getText().includes('debug(')) {
+          meth.insertStatements(0, `const debug = Debug.extend('${meth.getName()}');`);
+        }
+      }
+    }
+
+    if (debugVarDecl && debugVarDecl.getName() === 'debug') {
+      debugVarDecl.getNameNode().replaceWithText('Debug');
+    }
+
+    // Add ngOnInit for autoRead + persisted array reads + callOnLoad
+    const hasPersistedArrayAutoRead = persistedArrayProperties.some(pa => pa.readMode === 'Automatically');
+    const hasAutoSaveFormGroups = formGroupProperties.some(fg => fg.saveMode === 'Automatically');
+    const needsOnInit = autoReadProperties.length > 0 || hasPersistedArrayAutoRead || callOnLoadMethods.length > 0 || hasAutoSaveFormGroups;
+
+    if (needsOnInit) {
       angularCoreExtras.push('OnInit');
       exportedClass.addImplements('OnInit');
+
+      const initLines: string[] = [];
+
+      if (hasAutoSaveFormGroups) {
+        angularCoreExtras.push('inject', 'DestroyRef');
+        for (const fg of formGroupProperties) {
+          if (fg.saveMode === 'Automatically') {
+            initLines.push(`this.${fg.name}.autoSave(this.destroyRef);`);
+          }
+        }
+      }
+
+      for (const prop of autoReadProperties) {
+        if (prop.isArray) {
+          initLines.push(`this.${prop.name} = await ${prop.typeName}.find();`);
+        } else {
+          initLines.push(`// TODO: load ${prop.name}`);
+        }
+      }
+
+      for (const pa of persistedArrayProperties) {
+        if (pa.readMode === 'Automatically') {
+          const readArg = pa.order ? `{ order: ${pa.order} }` : '';
+          initLines.push(`await this.${pa.name}.read(${readArg});`);
+          if (pa.afterReadCall) initLines.push(`this.${pa.afterReadCall}();`);
+        }
+      }
+
+      for (const methodName of callOnLoadMethods) {
+        initLines.push(`this.${methodName}();`);
+      }
+
+      const isAsync = autoReadProperties.length > 0 || hasPersistedArrayAutoRead;
       exportedClass.addMethod({
         name: 'ngOnInit',
-        returnType: 'void',
-        statements: callOnLoadMethods.map(m => `this.${m}();`)
+        isAsync,
+        returnType: isAsync ? 'Promise<void>' : 'void',
+        statements: initLines,
       });
     }
 
@@ -264,25 +355,6 @@ const componentGenerator: DesignGenerator = {
         returnType: 'void',
         statements: callOnUnloadMethods.map(m => `this.${m}();`)
       });
-    }
-
-    // Check if the source file has debug setup and rename debug -> Debug
-    const debugVarDecl = writableFile.getVariableDeclarations().find(v => v.getInitializer()?.getText().includes('createDebug') ?? false);
-    const hasDebug = !!debugVarDecl;
-
-    // Add Debug.extend() to each method that references debug, before renaming
-    if (hasDebug) {
-      for (const meth of exportedClass.getMethods()) {
-        const body = meth.getBody();
-        if (body && body.getText().includes('debug(')) {
-          meth.insertStatements(0, `const debug = Debug.extend('${meth.getName()}');`);
-        }
-      }
-    }
-
-    // Rename the declaration without updating references (references are now shadowed by local const)
-    if (debugVarDecl && debugVarDecl.getName() === 'debug') {
-      debugVarDecl.getNameNode().replaceWithText('Debug');
     }
 
     // Add ngAfterContentInit if content children exist
@@ -311,6 +383,14 @@ const componentGenerator: DesignGenerator = {
       });
     }
 
+    // Add DestroyRef injection field if needed (after ngOnInit is added)
+    if (hasAutoSaveFormGroups) {
+      const members = exportedClass.getMembers();
+      const firstMethod = members.findIndex(m => m.getKind() === SyntaxKind.MethodDeclaration);
+      const insertIndex = firstMethod >= 0 ? firstMethod : members.length;
+      exportedClass.insertMember(insertIndex, `private destroyRef = inject(DestroyRef);`);
+    }
+
     // Add Angular Component import
     const angularCoreImports = ['Component', ...new Set(angularCoreExtras)];
     writableFile.insertImportDeclaration(0, {
@@ -325,6 +405,15 @@ const componentGenerator: DesignGenerator = {
         namedImports: [cp.typeName]
       });
     }
+
+    // Add business object imports
+    const boRelativePath = isAppComponent ? './business-objects' : '../../business-objects';
+    const boImports = new Set<string>();
+    for (const name of boNamedImports) boImports.add(name);
+    for (const prop of autoReadProperties) boImports.add(prop.typeName);
+    for (const pa of persistedArrayProperties) boImports.add(pa.typeName);
+    for (const fg of formGroupProperties) boImports.add(fg.typeName);
+    addBoImports(writableFile, boImports, boRelativePath);
 
     // Add template-based imports (file-level)
     for (const templateImport of templateImports) {

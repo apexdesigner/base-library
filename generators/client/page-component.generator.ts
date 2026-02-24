@@ -4,6 +4,8 @@ import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
+import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports } from './property-processing.js';
+import type { AutoReadProperty, FormGroupProperty, PersistedArrayProperty } from './property-processing.js';
 
 const Debug = createDebug('ad3:generators:pageComponent');
 
@@ -79,17 +81,9 @@ const pageComponentGenerator: DesignGenerator = {
     const templateImports = await getTemplateImports(exportedClass, context, 'page', outputFilePath, template);
     debug('template requires %j import groups', templateImports.length);
 
-    // Capture @business-objects imports before removing design aliases
-    const boNamedImports: string[] = [];
-    const boImportDecl = writableFile.getImportDeclaration(
-      (imp) => imp.getModuleSpecifierValue() === '@business-objects'
-    );
-    if (boImportDecl) {
-      for (const named of boImportDecl.getNamedImports()) {
-        boNamedImports.push(named.getName());
-      }
-      debug('captured @business-objects imports %j', boNamedImports);
-    }
+    // Capture @business-objects / @business-objects-client imports before removing design aliases
+    const boNamedImports = captureBoImports(writableFile);
+    debug('captured bo imports %j', boNamedImports);
 
     // Remove DSL and design-time alias imports
     // Design aliases are single-segment (@pages, @base-types, etc.)
@@ -116,93 +110,10 @@ const pageComponentGenerator: DesignGenerator = {
       }
     }
 
-    // Process @property decorators — collect auto-read properties, form group properties, onChangeCall mappings, and remove decorators
-    interface AutoReadProperty {
-      name: string;
-      typeName: string;
-      isArray: boolean;
-    }
-    interface FormGroupProperty {
-      name: string;
-      typeName: string;
-      readMode?: string;
-      saveMode?: string;
-      include?: string;
-      afterReadCall?: string;
-    }
-    interface PersistedArrayProperty {
-      name: string;
-      typeName: string;
-      readMode?: string;
-      order?: string;
-    }
-    const autoReadProperties: AutoReadProperty[] = [];
-    const formGroupProperties: FormGroupProperty[] = [];
-    const persistedArrayProperties: PersistedArrayProperty[] = [];
-    const onChangeCallMap = new Map<string, string>(); // propertyName → methodName
-
-    for (const prop of exportedClass.getProperties()) {
-      const propertyDecorator = prop.getDecorator('property');
-      if (!propertyDecorator) continue;
-
-      // Parse decorator options
-      const args = propertyDecorator.getArguments();
-      let readMode: string | undefined;
-      let saveMode: string | undefined;
-      let onChangeCall: string | undefined;
-      let afterReadCall: string | undefined;
-      if (args.length > 0) {
-        const argText = args[0].getText();
-        const readMatch = argText.match(/read:\s*["']([^"']+)["']/);
-        if (readMatch) readMode = readMatch[1];
-        const saveMatch = argText.match(/save:\s*["']([^"']+)["']/);
-        if (saveMatch) saveMode = saveMatch[1];
-        const onChangeMatch = argText.match(/onChangeCall:\s*["']([^"']+)["']/);
-        if (onChangeMatch) onChangeCall = onChangeMatch[1];
-        const afterReadMatch = argText.match(/afterReadCall:\s*["']([^"']+)["']/);
-        if (afterReadMatch) afterReadCall = afterReadMatch[1];
-      }
-
-      // Parse include and order options using AST (object/array values, not simple strings)
-      let include: string | undefined;
-      let order: string | undefined;
-      if (args.length > 0 && Node.isObjectLiteralExpression(args[0])) {
-        const includeProp = args[0].getProperty('include');
-        if (includeProp && Node.isPropertyAssignment(includeProp)) {
-          include = includeProp.getInitializerOrThrow().getText();
-        }
-        const orderProp = args[0].getProperty('order');
-        if (orderProp && Node.isPropertyAssignment(orderProp)) {
-          order = orderProp.getInitializerOrThrow().getText();
-        }
-      }
-
-      // Get property type info
-      const typeNode = prop.getTypeNode();
-      const typeText = typeNode?.getText() || '';
-      const isArray = typeText.endsWith('[]');
-      const typeName = isArray ? typeText.slice(0, -2) : typeText;
-
-      // Detect FormGroup types (e.g. SupplierFormGroup)
-      if (typeName.endsWith('FormGroup')) {
-        formGroupProperties.push({ name: prop.getName(), typeName, readMode, saveMode, include, afterReadCall });
-        debug('form group property %j: %j (read: %j, save: %j, afterReadCall: %j)', prop.getName(), typeName, readMode, saveMode, afterReadCall);
-      } else if (typeName.endsWith('PersistedArray')) {
-        persistedArrayProperties.push({ name: prop.getName(), typeName, readMode, order });
-        debug('persisted array property %j: %j (read: %j, order: %j)', prop.getName(), typeName, readMode, order);
-      } else if (readMode === 'Automatically') {
-        autoReadProperties.push({ name: prop.getName(), typeName, isArray });
-        debug('auto-read property %j: %j (array: %j)', prop.getName(), typeName, isArray);
-      }
-
-      if (onChangeCall) {
-        onChangeCallMap.set(prop.getName(), onChangeCall);
-        debug('onChangeCall %j → %j', prop.getName(), onChangeCall);
-      }
-
-      // Remove the @property decorator
-      propertyDecorator.remove();
-    }
+    // Process @property decorators
+    const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap } =
+      processPropertyDecorators(exportedClass);
+    debug('autoRead %j, formGroups %j, persistedArrays %j', autoReadProperties.length, formGroupProperties.length, persistedArrayProperties.length);
 
     // Extract route params from @page path before transforming properties
     // Supports :propName (simple) and :prop.field (dotted — e.g. :supplier.id)
@@ -240,25 +151,7 @@ const pageComponentGenerator: DesignGenerator = {
     }
 
     // Transform onChangeCall properties into getter/setter with private backing field
-    for (const [propName, methodName] of onChangeCallMap) {
-      const prop = exportedClass.getProperty(propName);
-      if (!prop) continue;
-
-      const typeText = prop.getTypeNode()?.getText() || 'any';
-      const hasExclamation = prop.hasExclamationToken();
-      const propIndex = exportedClass.getMembers().indexOf(prop);
-
-      // Remove the original property
-      prop.remove();
-
-      // Insert backing field + getter + setter at the same position
-      const backingField = `private _${propName}${hasExclamation ? '!' : ''}: ${typeText};`;
-      const getter = `get ${propName}(): ${typeText} { return this._${propName}; }`;
-      const setter = `set ${propName}(value: ${typeText}) { this._${propName} = value; this.${methodName}(); }`;
-
-      exportedClass.insertMember(propIndex, `\n${backingField}\n  ${getter}\n  ${setter}`);
-      debug('transformed %j to getter/setter calling %j', propName, methodName);
-    }
+    transformOnChangeProperties(exportedClass, onChangeCallMap);
 
     // Process @method decorators — collect callOnLoad/callAfterLoad/callOnUnload methods and remove decorators
     const callOnLoadMethods: string[] = [];
@@ -354,28 +247,13 @@ const pageComponentGenerator: DesignGenerator = {
       });
     }
 
-    // Add business object imports (from design @business-objects + auto-read properties)
+    // Add business object imports (from design @business-objects + auto-read + persisted array types)
     const boImports = new Set<string>();
-    for (const name of boNamedImports) {
-      boImports.add(name);
-    }
-    for (const prop of autoReadProperties) {
-      boImports.add(prop.typeName);
-    }
-    for (const boName of Array.from(boImports).sort()) {
-      // Derive file name: SupplierFormGroup → supplier-form-group, SupplierPersistedArray → supplier-form-group
-      let fileName: string;
-      if (boName.endsWith('PersistedArray')) {
-        const baseName = boName.replace(/PersistedArray$/, '');
-        fileName = `${kebabCase(baseName)}-form-group`;
-      } else {
-        fileName = kebabCase(boName);
-      }
-      writableFile.addImportDeclaration({
-        moduleSpecifier: `../../business-objects/${fileName}`,
-        namedImports: [boName],
-      });
-    }
+    for (const name of boNamedImports) boImports.add(name);
+    for (const prop of autoReadProperties) boImports.add(prop.typeName);
+    for (const pa of persistedArrayProperties) boImports.add(pa.typeName);
+    for (const fg of formGroupProperties) boImports.add(fg.typeName);
+    addBoImports(writableFile, boImports, '../../business-objects');
 
     // Initialize form group properties with new instances
     for (const fg of formGroupProperties) {
@@ -453,6 +331,7 @@ const pageComponentGenerator: DesignGenerator = {
           if (pa.readMode === 'Automatically') {
             const readArg = pa.order ? `{ order: ${pa.order} }` : '';
             postSubscriptionLines.push(`await this.${pa.name}.read(${readArg});`);
+            if (pa.afterReadCall) postSubscriptionLines.push(`this.${pa.afterReadCall}();`);
           }
         }
         for (const methodName of callOnLoadMethods) {
@@ -510,6 +389,7 @@ const pageComponentGenerator: DesignGenerator = {
           if (pa.readMode === 'Automatically') {
             const readArg = pa.order ? `{ order: ${pa.order} }` : '';
             coreInitLines.push(`await this.${pa.name}.read(${readArg});`);
+            if (pa.afterReadCall) coreInitLines.push(`this.${pa.afterReadCall}();`);
           }
         }
         for (const methodName of callOnLoadMethods) {

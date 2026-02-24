@@ -50,7 +50,11 @@
     ],
     "deny": [
       "Read(**/.env)",
-      "Read(**/.npmrc)"
+      "Read(**/.npmrc)",
+      "Write(client/**)",
+      "Write(server/**)",
+      "Edit(client/**)",
+      "Edit(server/**)"
     ]
   },
   "hooks": {
@@ -61,6 +65,18 @@
             "type": "command",
             "command": "node .claude/skills/github/scripts/session-start.cjs",
             "timeout": 300000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/skills/apex-designer/scripts/resolve.cjs",
+            "timeout": 30000
           }
         ]
       }

@@ -17,7 +17,9 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
   ],
 
   outputs: (metadata: DesignMetadata) => [
-    `design/@types/business-objects-client/${kebabCase(metadata.name)}-form-group.d.ts`
+    `design/@types/business-objects-client/${kebabCase(metadata.name)}-form-group.d.ts`,
+    `design/@types/business-objects-client/${kebabCase(metadata.name)}-form-array.d.ts`,
+    `design/@types/business-objects-client/${kebabCase(metadata.name)}-persisted-array.d.ts`,
   ],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
@@ -25,6 +27,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     debug('name %j', metadata.name);
 
     const className = pascalCase(metadata.name);
+    const boKebab = kebabCase(metadata.name);
 
     // Get id property info
     const idProperty = getIdProperty(metadata.sourceFile, context);
@@ -47,41 +50,26 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
       }
     });
 
-    // Collect referenced type imports based on relationship types
-    const refTypeImports = new Map<string, Set<string>>();
+    // Collect referenced type imports for the form-group file
+    // Has Many → import FormArray from -form-array; others → import FormGroup from -form-group
+    const formArrayImports = new Map<string, Set<string>>();
+    const formGroupImports = new Map<string, Set<string>>();
     for (const rel of relationships) {
       if (rel.businessObjectName === className) continue;
-      if (!refTypeImports.has(rel.businessObjectName)) {
-        refTypeImports.set(rel.businessObjectName, new Set());
-      }
-      const imports = refTypeImports.get(rel.businessObjectName)!;
       if (rel.relationshipType === 'Has Many') {
-        imports.add(`${rel.businessObjectName}FormArray`);
+        if (!formArrayImports.has(rel.businessObjectName)) {
+          formArrayImports.set(rel.businessObjectName, new Set());
+        }
+        formArrayImports.get(rel.businessObjectName)!.add(`${rel.businessObjectName}FormArray`);
       } else {
-        imports.add(`${rel.businessObjectName}FormGroup`);
+        if (!formGroupImports.has(rel.businessObjectName)) {
+          formGroupImports.set(rel.businessObjectName, new Set());
+        }
+        formGroupImports.get(rel.businessObjectName)!.add(`${rel.businessObjectName}FormGroup`);
       }
     }
 
-    const lines: string[] = [];
-
-    lines.push(`// Generated form group type for ${metadata.name} business object`);
-    lines.push('');
-
-    // Import the BO type
-    lines.push(`import type { ${className} } from './${kebabCase(className)}';`);
-
-    // Import referenced form group/array types (all from -form-group file)
-    for (const [refType, importNames] of Array.from(refTypeImports).sort((a, b) => a[0].localeCompare(b[0]))) {
-      const refKebab = kebabCase(refType);
-      lines.push(`import type { ${Array.from(importNames).sort().join(', ')} } from './${refKebab}-form-group';`);
-    }
-
-    // Import schema-forms types
-    lines.push(`import type { SchemaFormControl } from '@apexdesigner/schema-forms';`);
-    lines.push(`import type { PersistedFormGroup, PersistedFormGroupOptions, PersistedFormArray, PersistedFormArrayOptions, PersistedArray, PersistedArrayOptions } from '@business-objects/persisted-form-group';`);
-    lines.push('');
-
-    // Build the controls type
+    // Build controls for form-group
     const controlLines: string[] = [];
 
     // id property
@@ -107,14 +95,12 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
 
     // Foreign keys and relationship controls
     for (const rel of relationships) {
-      // FK as SchemaFormControl
       if (rel.relationshipType === 'Belongs To' || rel.relationshipType === 'References') {
         if (rel.foreignKey) {
           controlLines.push(`    ${rel.foreignKey}: SchemaFormControl;`);
         }
       }
 
-      // Relationship as form group or form array
       if (rel.relationshipType === 'Has Many') {
         controlLines.push(`    ${rel.relationshipName}: ${rel.businessObjectName}FormArray;`);
       } else {
@@ -122,30 +108,54 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
       }
     }
 
-    // Class declaration — extends PersistedFormGroup which provides
-    // reading, saving, filter, read(), save(), autoSave()
-    lines.push(`export declare class ${className}FormGroup extends PersistedFormGroup {`);
-    lines.push(`  declare controls: {`);
-    lines.push(...controlLines);
-    lines.push(`  };`);
-    lines.push('');
-    lines.push(`  declare value: Partial<${className}>;`);
-    lines.push('');
-    lines.push(`  constructor(options?: PersistedFormGroupOptions);`);
-    lines.push(`}`);
-    lines.push('');
-    lines.push(`export declare class ${className}FormArray extends PersistedFormArray {`);
-    lines.push(`  constructor(options?: PersistedFormArrayOptions);`);
-    lines.push(`}`);
-    lines.push('');
-    lines.push(`export declare class ${className}PersistedArray extends PersistedArray<${className}> {`);
-    lines.push(`  constructor(options?: PersistedArrayOptions);`);
-    lines.push(`}`);
+    // ── form-group.d.ts ───────────────────────────────────────────────────────
+    const fgLines: string[] = [];
+    fgLines.push(`// Generated form group type for ${metadata.name} business object`);
+    fgLines.push('');
+    fgLines.push(`import type { ${className} } from './${boKebab}';`);
+    for (const [refType, importNames] of Array.from(formArrayImports).sort((a, b) => a[0].localeCompare(b[0]))) {
+      fgLines.push(`import type { ${Array.from(importNames).sort().join(', ')} } from './${kebabCase(refType)}-form-array';`);
+    }
+    for (const [refType, importNames] of Array.from(formGroupImports).sort((a, b) => a[0].localeCompare(b[0]))) {
+      fgLines.push(`import type { ${Array.from(importNames).sort().join(', ')} } from './${kebabCase(refType)}-form-group';`);
+    }
+    fgLines.push(`import type { SchemaFormControl } from '@apexdesigner/schema-forms';`);
+    fgLines.push(`import type { PersistedFormGroup, PersistedFormGroupOptions } from './persisted-form-group';`);
+    fgLines.push('');
+    fgLines.push(`export declare class ${className}FormGroup extends PersistedFormGroup {`);
+    fgLines.push(`  declare controls: {`);
+    fgLines.push(...controlLines);
+    fgLines.push(`  };`);
+    fgLines.push('');
+    fgLines.push(`  declare value: Partial<${className}>;`);
+    fgLines.push('');
+    fgLines.push(`  constructor(options?: PersistedFormGroupOptions);`);
+    fgLines.push(`}`);
 
-    const content = lines.join('\n') + '\n';
-    debug('Generated form group type file for %j', metadata.name);
+    // ── form-array.d.ts ───────────────────────────────────────────────────────
+    const faLines: string[] = [];
+    faLines.push(`import type { PersistedFormArray, PersistedFormArrayOptions } from './persisted-form-group';`);
+    faLines.push('');
+    faLines.push(`export declare class ${className}FormArray extends PersistedFormArray {`);
+    faLines.push(`  constructor(options?: PersistedFormArrayOptions);`);
+    faLines.push(`}`);
 
-    return content;
+    // ── persisted-array.d.ts ──────────────────────────────────────────────────
+    const paLines: string[] = [];
+    paLines.push(`import type { ${className} } from './${boKebab}';`);
+    paLines.push(`import type { PersistedArray, PersistedArrayOptions } from './persisted-form-group';`);
+    paLines.push('');
+    paLines.push(`export declare class ${className}PersistedArray extends PersistedArray<${className}> {`);
+    paLines.push(`  constructor(options?: PersistedArrayOptions);`);
+    paLines.push(`}`);
+
+    const outputs = new Map<string, string>();
+    outputs.set(`design/@types/business-objects-client/${boKebab}-form-group.d.ts`, fgLines.join('\n') + '\n');
+    outputs.set(`design/@types/business-objects-client/${boKebab}-form-array.d.ts`, faLines.join('\n') + '\n');
+    outputs.set(`design/@types/business-objects-client/${boKebab}-persisted-array.d.ts`, paLines.join('\n') + '\n');
+
+    debug('Generated form group type files for %j', metadata.name);
+    return outputs;
   }
 };
 
