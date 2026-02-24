@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.53] - 2026-02-24
+
+- 6567281 fix: generate z.uuid() for base type id and FK fields
+
+
 ## [1.0.52] - 2026-02-24
 
 - 05f8790 feat: generate z.enum() for base types with applyValidValues
