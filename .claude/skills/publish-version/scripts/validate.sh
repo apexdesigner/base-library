@@ -105,7 +105,7 @@ cd "$PROJECT_ROOT"
 # Get all @apexdesigner/* dependencies
 APEX_DEPS=$(node -e "
   const pkg = require('./package.json');
-  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+  const deps = { ...pkg.dependencies, ...pkg.devDependencies, ...pkg.peerDependencies };
   Object.keys(deps)
     .filter(name => name.startsWith('@apexdesigner/'))
     .forEach(name => console.log(name));
@@ -114,7 +114,7 @@ APEX_DEPS=$(node -e "
 # Check for exact versions (no ^ or ~ prefix) that won't be updated
 EXACT_VERSIONS=$(node -e "
   const pkg = require('./package.json');
-  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+  const deps = { ...pkg.dependencies, ...pkg.devDependencies, ...pkg.peerDependencies };
   Object.entries(deps)
     .filter(([name, ver]) => name.startsWith('@apexdesigner/') && /^\d/.test(ver))
     .forEach(([name, ver]) => console.log('  ' + name + ': ' + ver));
@@ -129,7 +129,7 @@ fi
 
 if [ -n "$APEX_DEPS" ]; then
   echo "Updating: $APEX_DEPS"
-  npm update $APEX_DEPS
+  npm update --save $APEX_DEPS
   echo -e "${GREEN}✓${NC} @apexdesigner/* dependencies updated"
 else
   echo -e "${GREEN}✓${NC} No @apexdesigner/* dependencies found"

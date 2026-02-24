@@ -1,7 +1,8 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getDataSource, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getPropertyDecorator, getObjectLiteralValue } from '@apexdesigner/utilities';
+import { getClassByBase, getDescription, getPropertyDecorator, getObjectLiteralValue, getModuleLevelCall } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
+import { Node } from 'ts-morph';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:businessObjectSchema');
@@ -134,6 +135,20 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       }
     });
 
+    // Build base type column defaults map
+    const baseTypeColumnDefaults = new Map<string, string>();
+    for (const bt of context.listMetadata('BaseType')) {
+      const call = getModuleLevelCall(bt.sourceFile, 'setColumnDefaults');
+      if (call) {
+        const args = call.getArguments();
+        const columnArg = args[1];
+        if (columnArg && Node.isStringLiteral(columnArg)) {
+          baseTypeColumnDefaults.set(bt.name, columnArg.getLiteralValue());
+        }
+      }
+    }
+    debug('baseTypeColumnDefaults %j', Object.fromEntries(baseTypeColumnDefaults));
+
     // Build schema object properties
     const schemaProps: string[] = [];
 
@@ -187,7 +202,15 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       const chain: string[] = [zodType];
 
       if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
-      if (opts.column && typeof opts.column === 'object') chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
+      if (opts.column && typeof opts.column === 'object') {
+        chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
+      } else if (typeNode) {
+        const typeText = typeNode.getText();
+        const baseTypeDefault = baseTypeColumnDefaults.get(typeText);
+        if (baseTypeDefault) {
+          chain.push(`.column({ type: "${baseTypeDefault.replace(/"/g, '\\"')}" })`);
+        }
+      }
       if (opts.hidden) chain.push('.hidden()');
       if (opts.required) chain.push('.requiredFinal()');
       if (opts.disabled) chain.push('.disabled()');
@@ -255,7 +278,15 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         const chain: string[] = [zodType];
 
         if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
-        if (opts.column && typeof opts.column === 'object') chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
+        if (opts.column && typeof opts.column === 'object') {
+          chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
+        } else if (typeNode) {
+          const typeText = typeNode.getText();
+          const baseTypeDefault = baseTypeColumnDefaults.get(typeText);
+          if (baseTypeDefault) {
+            chain.push(`.column({ type: "${baseTypeDefault.replace(/"/g, '\\"')}" })`);
+          }
+        }
         if (opts.hidden) chain.push('.hidden()');
         if (opts.required) chain.push('.requiredFinal()');
         if (opts.disabled) chain.push('.disabled()');
