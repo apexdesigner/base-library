@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.56] - 2026-02-24
+
+- 541c030 Replace app-behavior generator with App class generator
+
+
 ## [1.0.55] - 2026-02-24
 
 - f682107 Add behavior import scanning to business-object generator
