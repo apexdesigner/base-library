@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.50] - 2026-02-24
+
+- 7479795 chore: apply automated fixes
+- b8ac8ea feat: apply base type column defaults to generated schemas
+
+
 ## [1.0.49] - 2026-02-24
 
 - 5bcbc1a Add .nullable() to optional schema fields so null can clear values
