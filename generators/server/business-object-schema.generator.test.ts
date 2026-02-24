@@ -100,4 +100,52 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).toContain('.column({ type: "DECIMAL" })');
     });
   });
+
+  describe('optional foreign keys', () => {
+    it('should add .optional() to foreign key when the FK property has a question token', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          export class ProcessInstance extends BusinessObject {
+            @relationship({ type: 'References' })
+            parentProcessInstance?: ProcessInstance;
+            parentProcessInstanceId?: number;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('parentProcessInstanceId: z.number()\n      .optional()');
+    });
+
+    it('should not add .optional() to foreign key when the FK property is required', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Customer } from '@business-objects';
+          export class Order extends BusinessObject {
+            @relationship({ type: 'Belongs To' })
+            customer!: Customer;
+            customerId!: number;
+          }
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Customer', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Customer extends BusinessObject {}
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('customerId: z.number()');
+      expect(result).not.toContain('customerId: z.number()\n      .optional()');
+    });
+  });
 });

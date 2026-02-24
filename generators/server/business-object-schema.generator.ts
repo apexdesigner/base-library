@@ -300,8 +300,12 @@ const businessObjectSchemaGenerator: DesignGenerator = {
             fkColumnConfig = '\n      .column({ type: "INTEGER" })';
           }
 
+          // Check if the FK property is optional on the BO class
+          const fkProp = boClass?.getProperty(rel.foreignKey);
+          const fkOptional = fkProp?.hasQuestionToken() ? '\n      .optional()' : '';
+
           const fkDescription = `Foreign key to ${rel.businessObjectName}`;
-          schemaProps.push(`    ${rel.foreignKey}: ${fkZodType}${fkColumnConfig}\n      .hidden()\n      .describe("${fkDescription}")`);
+          schemaProps.push(`    ${rel.foreignKey}: ${fkZodType}${fkOptional}${fkColumnConfig}\n      .hidden()\n      .describe("${fkDescription}")`);
         }
       }
     }
