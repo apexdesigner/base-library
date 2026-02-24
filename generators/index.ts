@@ -39,4 +39,4 @@ export { businessObjectSchemaGenerator } from "./server/business-object-schema.g
 export { businessObjectGenerator } from "./server/business-object.generator.js";
 export { businessObjectRouteGenerator } from "./server/business-object-route.generator.js";
 export { routesIndexGenerator } from "./server/routes-index.generator.js";
-export { appBehaviorGenerator } from "./server/app-behavior.generator.js";
+export { appGenerator } from "./server/app.generator.js";
