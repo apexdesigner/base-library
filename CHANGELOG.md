@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.48] - 2026-02-24
+
+- 168cc6d chore: apply automated fixes
+- 42bd4dd Fix schema generator not emitting .optional() for optional foreign keys
+
+
 ## [1.0.47] - 2026-02-24
 
 - 763e789 chore: apply automated fixes
