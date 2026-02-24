@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.47] - 2026-02-24
+
+- 763e789 chore: apply automated fixes
+- 8c04aac Move description to root package.json; update base-types.md
+- 61b2c58 Fix description to use single string literal so getStringPropertyValue reads it correctly
+- cee032c Expand project description for better Claude context
+- 2156ecf Remove includeInSkills from project.ts; include docs/ in published package
+- 741ad0e Restructure docs: split patterns into individual files, update root README
+- 0e0b788 Split form-group type generator into separate files; fix PersistedArray typecheck
+- 1594c11 Fix afterReadCall not being called for PersistedArray/FormArray properties
+- cf7cc71 Add shared property-processing utility and fix BO import handling
+
+
 ## [1.0.46] - 2026-02-23
 
 - 9f6e4d9 Update @apexdesigner deps to latest; fix shared.test.ts imports
