@@ -58,6 +58,25 @@ describe('businessObjectTypeGenerator', () => {
     });
   });
 
+  describe('static properties', () => {
+    it('should include static dataSource property', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static dataSource: any');
+    });
+  });
+
   describe('triggers', () => {
     it('should have a Behavior trigger so type regenerates when behaviors change', () => {
       const behaviorTrigger = businessObjectTypeGenerator.triggers.find(t => t.metadataType === 'Behavior');

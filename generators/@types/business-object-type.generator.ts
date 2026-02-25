@@ -119,6 +119,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
       hasDeclareKeyword: true,
     });
 
+    // Add static dataSource property
+    classDecl.addProperty({
+      name: 'dataSource',
+      type: 'any',
+      isStatic: true,
+    });
+
     // Add id property — resolve to a primitive TS type
     const resolvedId = resolveIdType(metadata.sourceFile, context);
     const idName = resolvedId.name;

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.61] - 2026-02-25
+
+- 6444f10 fix: include static dataSource property in generated BO type declarations
+
+
 ## [1.0.60] - 2026-02-25
 
 - 3659a95 feat: add lifecycle app behavior generator
