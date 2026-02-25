@@ -143,13 +143,12 @@ const appTestGenerator: DesignGenerator = {
 
     lines.push('');
 
-    // Pick a BO for afterEach truncateAll, or use first BO import
-    const truncateClass = boImports.size > 0
-      ? Array.from(boImports).sort()[0]
-      : 'App';
-
     lines.push('describe("App", () => {');
-    lines.push(`  afterEach(() => ${truncateClass}.dataSource.truncateAll());`);
+    lines.push('  afterEach(async () => {');
+    lines.push('    for (const ds of Object.values(App.dataSources)) {');
+    lines.push('      await ds.truncateAll();');
+    lines.push('    }');
+    lines.push('  });');
 
     for (const group of groups) {
       lines.push('');
