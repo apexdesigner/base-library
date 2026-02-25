@@ -83,7 +83,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     if (idType !== 'string' && idType !== 'number') {
       idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
     }
-    const idCoerce = idType === 'number' ? 'Number(req.params.id)' : 'req.params.id';
+    const idCoerce = idType === 'number' ? 'Number(req.params.id)' : 'String(req.params.id)';
 
     const lines: string[] = [];
 
@@ -253,6 +253,12 @@ const businessObjectRouteGenerator: DesignGenerator = {
         const httpMethod = BEHAVIOR_HTTP_METHODS[options.httpMethod || 'Post'] || 'post';
         const behaviorKebab = kebabCase(func.name);
 
+        // Determine if the behavior method accepts parameters
+        const params = func.parameters || [];
+        const methodParams = isInstance ? params.slice(1) : params;
+        const hasParams = methodParams.length > 0;
+        const callArg = hasParams ? 'req.body' : '';
+
         lines.push('');
 
         if (isInstance) {
@@ -261,11 +267,11 @@ const businessObjectRouteGenerator: DesignGenerator = {
           lines.push(`router.${httpMethod}("/:id/${behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
           lines.push(`  const debug = Debug.extend("${func.name}");`);
           lines.push('  debug("req.params.id %j", req.params.id);');
-          lines.push('  debug("req.body %j", req.body);');
+          if (hasParams) lines.push('  debug("req.body %j", req.body);');
           lines.push('');
           lines.push('  try {');
           lines.push(`    const ${varName} = await ${className}.findById(${idCoerce});`);
-          lines.push(`    const result = await ${varName}.${func.name}(req.body);`);
+          lines.push(`    const result = await ${varName}.${func.name}(${callArg});`);
           lines.push('    debug("result %j", result);');
           lines.push('');
           lines.push('    res.json(result);');
@@ -284,10 +290,10 @@ const businessObjectRouteGenerator: DesignGenerator = {
           lines.push(`// ${httpMethod.toUpperCase()} /${pluralKebab}/${behaviorKebab} - ${func.name}`);
           lines.push(`router.${httpMethod}("/${behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
           lines.push(`  const debug = Debug.extend("${func.name}");`);
-          lines.push('  debug("req.body %j", req.body);');
+          if (hasParams) lines.push('  debug("req.body %j", req.body);');
           lines.push('');
           lines.push('  try {');
-          lines.push(`    const result = await ${className}.${func.name}(req.body);`);
+          lines.push(`    const result = await ${className}.${func.name}(${callArg});`);
           lines.push('    debug("result %j", result);');
           lines.push('');
           lines.push('    res.json(result);');

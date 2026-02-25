@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.59] - 2026-02-25
+
+- 458c82f Fix route generator type errors for string ids and no-param behaviors
+
+
 ## [1.0.58] - 2026-02-24
 
 - f427faf Fix generate using behavior metadata instead of parent BO metadata

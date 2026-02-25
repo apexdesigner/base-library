@@ -57,7 +57,39 @@ describe('businessObjectRouteGenerator', () => {
       expect(result).toContain('Number(req.params.id)');
     });
 
-    it('should use req.params.id directly for string id BO', async () => {
+    it('should not pass req.body to behaviors with no parameters', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessInstance extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'ProcessInstancePause', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessInstance } from '@business-objects';
+          addBehavior(
+            ProcessInstance,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function pause(processInstance: ProcessInstance) {
+              debug("pausing");
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should call pause() with no args, not pause(req.body)
+      expect(result).toContain('.pause()');
+      expect(result).not.toContain('.pause(req.body)');
+    });
+
+    it('should use String() to coerce id for string id BO', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -73,7 +105,7 @@ describe('businessObjectRouteGenerator', () => {
       const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
 
       expect(result).not.toContain('Number(req.params.id)');
-      expect(result).toContain('req.params.id');
+      expect(result).toContain('String(req.params.id)');
     });
   });
 });
