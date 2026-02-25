@@ -20,7 +20,7 @@ describe('businessObjectTestGenerator', () => {
     });
     workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
       sourceCode: `
-        import { addBehavior, addTest, createTestData } from '@apexdesigner/dsl';
+        import { addBehavior, addTest } from '@apexdesigner/dsl';
         import { ProcessDesign } from '@business-objects';
         import { expect } from 'vitest';
         addBehavior(
@@ -31,7 +31,7 @@ describe('businessObjectTestGenerator', () => {
           }
         );
         addTest("should set suspended to true", async () => {
-          const design = await createTestData(ProcessDesign);
+          const design = await ProcessDesign.testFixtures.simple();
           expect(design).toBeDefined();
         });
       `,
@@ -41,7 +41,6 @@ describe('businessObjectTestGenerator', () => {
     const result = (await businessObjectTestGenerator.generate(metadata, workspace.context)) as string;
 
     expect(result).toContain('import { describe, it, expect, afterEach } from "vitest"');
-    expect(result).toContain('import { createTestData } from "../create-test-data.js"');
     expect(result).toContain('import { ProcessDesign } from "./process-design.js"');
     expect(result).toContain('describe("ProcessDesign", () => {');
     expect(result).toContain('afterEach(() => ProcessDesign.dataSource.truncateAll())');
@@ -92,7 +91,7 @@ describe('businessObjectTestGenerator', () => {
     workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
       sourceCode: `
         import createDebug from 'debug';
-        import { addBehavior, addTest, createTestData } from '@apexdesigner/dsl';
+        import { addBehavior, addTest } from '@apexdesigner/dsl';
         import { ProcessDesign } from '@business-objects';
         import { expect } from 'vitest';
         const debug = createDebug('Test');
@@ -102,7 +101,7 @@ describe('businessObjectTestGenerator', () => {
           async function disable(pd: ProcessDesign) { return; }
         );
         addTest("should work", async () => {
-          const d = await createTestData(ProcessDesign);
+          const d = await ProcessDesign.testFixtures.simple();
           debug("d.id %j", d.id);
           expect(d).toBeDefined();
         });

@@ -226,6 +226,110 @@ describe('businessObjectGenerator', () => {
     });
   });
 
+  describe('test fixtures', () => {
+    it('should have a TestFixture trigger', () => {
+      const trigger = businessObjectGenerator.triggers.find(t => t.metadataType === 'TestFixture');
+      expect(trigger).toBeDefined();
+    });
+
+    it('should inline test fixtures as static testFixtures property', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('TestFixture', 'ProcessDesignSimple', {
+        sourceCode: `
+          import { addTestFixture } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addTestFixture(
+            ProcessDesign,
+            async function simple() {
+              const design = await ProcessDesign.create({ name: "Test" });
+              return design;
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static testFixtures = {');
+      expect(result).toContain('async simple()');
+    });
+
+    it('should collect imports from fixture files', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessInstance extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+      workspace.addMetadata('TestFixture', 'ProcessInstanceStarted', {
+        sourceCode: `
+          import { addTestFixture } from '@apexdesigner/dsl';
+          import { ProcessInstance, ProcessDesign } from '@business-objects';
+          addTestFixture(
+            ProcessInstance,
+            async function started() {
+              const design = await ProcessDesign.testFixtures.simpleUserTask();
+              const instance = await ProcessInstance.create({ designId: design.id });
+              return instance;
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { ProcessDesign } from "./process-design.js"');
+    });
+
+    it('should resolve TestFixture metadata to parent BO output path', () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('TestFixture', 'ProcessDesignSimple', {
+        sourceCode: `
+          import { addTestFixture } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addTestFixture(
+            ProcessDesign,
+            async function simple() {
+              return ProcessDesign.create({ name: "Test" });
+            }
+          );
+        `,
+      });
+
+      const fixtureMeta = workspace.context.listMetadata('TestFixture')[0];
+      const outputs = businessObjectGenerator.outputs(fixtureMeta);
+
+      expect(outputs).toEqual(['server/src/business-objects/process-design.ts']);
+    });
+  });
+
   describe('behavior debug scoping', () => {
     it('should inject scoped debug into BO instance behavior methods', async () => {
       const workspace = createSimpleMockWorkspace();

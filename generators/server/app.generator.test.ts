@@ -139,6 +139,62 @@ describe('appGenerator', () => {
     });
   });
 
+  describe('test fixtures', () => {
+    it('should have a TestFixture trigger', () => {
+      const trigger = appGenerator.triggers.find(t => t.metadataType === 'TestFixture');
+      expect(trigger).toBeDefined();
+    });
+
+    it('should inline app test fixtures as static testFixtures property', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('TestFixture', 'SeedAdminUser', {
+        sourceCode: `
+          import { addAppTestFixture } from '@apexdesigner/dsl';
+          import { AppUser } from '@business-objects';
+          addAppTestFixture(
+            async function seedAdminUser() {
+              const user = await AppUser.create({ email: "admin@example.com", role: "admin" });
+              return user;
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static testFixtures = {');
+      expect(result).toContain('async seedAdminUser()');
+    });
+
+    it('should collect imports from app fixture files', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'AppUser', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class AppUser extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('TestFixture', 'SeedAdminUser', {
+        sourceCode: `
+          import { addAppTestFixture } from '@apexdesigner/dsl';
+          import { AppUser } from '@business-objects';
+          addAppTestFixture(
+            async function seedAdminUser() {
+              const user = await AppUser.create({ email: "admin@example.com" });
+              return user;
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { AppUser } from "./business-objects/app-user.js"');
+    });
+  });
+
   describe('behavior imports', () => {
     it('should pass through external package imports', async () => {
       const workspace = createSimpleMockWorkspace();

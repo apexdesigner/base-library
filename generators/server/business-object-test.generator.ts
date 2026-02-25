@@ -104,7 +104,6 @@ const businessObjectTestGenerator: DesignGenerator = {
     const groups: BehaviorGroup[] = [];
     const boImports = new Set<string>();
     const projectImports = new Set<string>();
-    let needsCreateTestData = false;
     let needsDebug = false;
 
     for (const behavior of allBehaviors) {
@@ -130,12 +129,6 @@ const businessObjectTestGenerator: DesignGenerator = {
           if (moduleSpec === '@business-objects') {
             for (const namedImport of importDecl.getNamedImports()) {
               boImports.add(namedImport.getName());
-            }
-          } else if (moduleSpec === '@apexdesigner/dsl') {
-            for (const namedImport of importDecl.getNamedImports()) {
-              if (namedImport.getName() === 'createTestData') {
-                needsCreateTestData = true;
-              }
             }
           } else if (moduleSpec === '@project') {
             for (const namedImport of importDecl.getNamedImports()) {
@@ -171,10 +164,6 @@ const businessObjectTestGenerator: DesignGenerator = {
 
     if (needsDebug) {
       lines.push('import createDebug from "debug";');
-    }
-
-    if (needsCreateTestData) {
-      lines.push('import { createTestData } from "../create-test-data.js";');
     }
 
     // BO imports (sorted)

@@ -65,7 +65,7 @@ describe('appTestGenerator', () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('AppBehavior', 'SomeBehavior', {
       sourceCode: `
-        import { addAppBehavior, addTest, createTestData } from '@apexdesigner/dsl';
+        import { addAppBehavior, addTest } from '@apexdesigner/dsl';
         import { ProcessDesign } from '@business-objects';
         import { expect } from 'vitest';
         addAppBehavior(
@@ -73,7 +73,7 @@ describe('appTestGenerator', () => {
           async function someBehavior() { return; }
         );
         addTest("should work", async () => {
-          const d = await createTestData(ProcessDesign);
+          const d = await ProcessDesign.testFixtures.simple();
           expect(d).toBeDefined();
         });
       `,
@@ -82,7 +82,6 @@ describe('appTestGenerator', () => {
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
     const result = (await appTestGenerator.generate(metadata, workspace.context)) as string;
 
-    expect(result).toContain('import { createTestData } from "./create-test-data.js"');
     expect(result).toContain('import { ProcessDesign } from "./business-objects/process-design.js"');
     expect(result).toContain('afterEach(() => ProcessDesign.dataSource.truncateAll())');
   });

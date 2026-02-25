@@ -77,6 +77,30 @@ describe('businessObjectTypeGenerator', () => {
     });
   });
 
+  describe('test fixtures', () => {
+    it('should have a TestFixture trigger', () => {
+      const trigger = businessObjectTypeGenerator.triggers.find(t => t.metadataType === 'TestFixture');
+      expect(trigger).toBeDefined();
+    });
+
+    it('should include static testFixtures property', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static testFixtures');
+    });
+  });
+
   describe('triggers', () => {
     it('should have a Behavior trigger so type regenerates when behaviors change', () => {
       const behaviorTrigger = businessObjectTypeGenerator.triggers.find(t => t.metadataType === 'Behavior');

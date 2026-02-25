@@ -51,6 +51,62 @@ function getBehaviorBody(sourceFile: DesignMetadata['sourceFile']): string | und
   return undefined;
 }
 
+/**
+ * Extract the target class name from an addTestFixture(Target, fn) call.
+ */
+function getTestFixtureTarget(sourceFile: DesignMetadata['sourceFile']): string | undefined {
+  for (const statement of sourceFile.getStatements()) {
+    if (!Node.isExpressionStatement(statement)) continue;
+
+    const expr = statement.getExpression();
+    if (!Node.isCallExpression(expr)) continue;
+
+    const callee = expr.getExpression();
+    if (!Node.isIdentifier(callee)) continue;
+    if (callee.getText() !== 'addTestFixture') continue;
+
+    const args = expr.getArguments();
+    if (args.length < 1) continue;
+
+    if (Node.isIdentifier(args[0])) {
+      return args[0].getText();
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Extract the function name and body from an addTestFixture(Target, fn) call.
+ */
+function getTestFixtureFunction(sourceFile: DesignMetadata['sourceFile']): { name: string; body: string; isAsync: boolean } | undefined {
+  for (const statement of sourceFile.getStatements()) {
+    if (!Node.isExpressionStatement(statement)) continue;
+
+    const expr = statement.getExpression();
+    if (!Node.isCallExpression(expr)) continue;
+
+    const callee = expr.getExpression();
+    if (!Node.isIdentifier(callee)) continue;
+    if (callee.getText() !== 'addTestFixture') continue;
+
+    const args = expr.getArguments();
+    if (args.length < 2) continue;
+
+    const fnArg = args[1];
+    if (Node.isFunctionExpression(fnArg)) {
+      const fnName = fnArg.getName();
+      if (!fnName) continue;
+
+      const body = fnArg.getBody();
+      if (!Node.isBlock(body)) continue;
+
+      const text = body.getText();
+      return { name: fnName, body: text.slice(1, -1), isAsync: fnArg.isAsync() };
+    }
+  }
+  return undefined;
+}
+
 const businessObjectGenerator: DesignGenerator = {
   name: 'business-object',
 
@@ -67,10 +123,14 @@ const businessObjectGenerator: DesignGenerator = {
       metadataType: 'Behavior',
       condition: (metadata) => !isLibrary(metadata),
     },
+    {
+      metadataType: 'TestFixture',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
   outputs: (metadata: DesignMetadata) => {
-    const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
+    const name = getBehaviorParent(metadata.sourceFile) || getTestFixtureTarget(metadata.sourceFile) || metadata.name;
     return [`server/src/business-objects/${kebabCase(name)}.ts`];
   },
 
@@ -151,6 +211,43 @@ const businessObjectGenerator: DesignGenerator = {
         debug('error scanning behavior imports: %j', err);
       }
     }
+    // Collect imports and bodies from matched test fixture design files
+    const allFixtures = context.listMetadata('TestFixture');
+    interface FixtureEntry { name: string; body: string; isAsync: boolean }
+    const fixtureEntries: FixtureEntry[] = [];
+
+    for (const fixture of allFixtures) {
+      try {
+        const target = getTestFixtureTarget(fixture.sourceFile);
+        if (!target || !parentNames.has(target)) continue;
+
+        const func = getTestFixtureFunction(fixture.sourceFile);
+        if (!func) continue;
+
+        fixtureEntries.push(func);
+
+        // Collect imports from fixture file
+        for (const importDecl of fixture.sourceFile.getImportDeclarations()) {
+          const moduleSpecifier = importDecl.getModuleSpecifierValue();
+
+          if (moduleSpecifier === '@business-objects') {
+            for (const namedImport of importDecl.getNamedImports()) {
+              const name = namedImport.getName();
+              if (name !== className) {
+                behaviorBoImports.add(name);
+              }
+            }
+          } else if (moduleSpecifier === '@project') {
+            needsAppImport = true;
+          }
+        }
+
+        debug('collected test fixture %j for %j', func.name, target);
+      } catch (err) {
+        debug('error scanning fixture imports: %j', err);
+      }
+    }
+
     debug('behaviorBoImports %j, needsAppImport %j', Array.from(behaviorBoImports), needsAppImport);
 
     // Collect lifecycle behavior bodies by type
@@ -532,6 +629,26 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('');
       lines.push('  // --- Behaviors ---');
       lines.push(behaviorMethods.join(''));
+    }
+
+    // --- Test fixtures ---
+    if (fixtureEntries.length > 0) {
+      fixtureEntries.sort((a, b) => a.name.localeCompare(b.name));
+      lines.push('');
+      lines.push('  static testFixtures = {');
+
+      for (const fixture of fixtureEntries) {
+        const asyncPrefix = fixture.isAsync ? 'async ' : '';
+        lines.push(`    ${asyncPrefix}${fixture.name}() {`);
+
+        for (const line of fixture.body.split('\n')) {
+          lines.push(`    ${line}`);
+        }
+
+        lines.push('    },');
+      }
+
+      lines.push('  };');
     }
 
     // Close class

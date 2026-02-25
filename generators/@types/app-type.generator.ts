@@ -74,6 +74,10 @@ const appTypeGenerator: DesignGenerator = {
 
     lines.push('');
 
+    // testFixtures
+    lines.push('  static testFixtures: Record<string, (...args: any[]) => any>;');
+    lines.push('');
+
     // emit
     lines.push('  static emit(name: string, value: any): void;');
 

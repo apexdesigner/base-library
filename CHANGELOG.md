@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.63] - 2026-02-25
+
+- 67a18ec chore: apply automated fixes
+- e79d7e4 feat: replace setTestData/createTestData with test fixture support
+
+
 ## [1.0.62] - 2026-02-25
 
 - c5bdfc2 feat: add test generators, App dataSources/businessObjects, convert static generators to files

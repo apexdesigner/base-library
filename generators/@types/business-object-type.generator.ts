@@ -32,6 +32,10 @@ const businessObjectTypeGenerator: DesignGenerator = {
       metadataType: 'Behavior',
       condition: (metadata) => !isLibrary(metadata),
     },
+    {
+      metadataType: 'TestFixture',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -123,6 +127,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
     classDecl.addProperty({
       name: 'dataSource',
       type: 'any',
+      isStatic: true,
+    });
+
+    // Add static testFixtures property
+    classDecl.addProperty({
+      name: 'testFixtures',
+      type: 'Record<string, (...args: any[]) => any>',
       isStatic: true,
     });
 
