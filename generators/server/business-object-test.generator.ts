@@ -150,7 +150,7 @@ const businessObjectTestGenerator: DesignGenerator = {
 
     if (groups.length === 0) {
       debug('no test cases found for %s', className);
-      return undefined;
+      return new Map();
     }
 
     // Get project name for debug namespace
