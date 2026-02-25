@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.62] - 2026-02-25
+
+- c5bdfc2 feat: add test generators, App dataSources/businessObjects, convert static generators to files
+
+
 ## [1.0.61] - 2026-02-25
 
 - 6444f10 fix: include static dataSource property in generated BO type declarations
