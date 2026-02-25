@@ -439,8 +439,8 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     lines.push(`  .describe("${entityDescription.replace(/"/g, '\\"')}")`);
     if (viewSql) {
       const escapedSql = viewSql.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-      lines.push(`  .as("${className}")`);
-      lines.push(`  .view({ sql: \`${escapedSql}\` });`);
+      lines.push(`  .view({ sql: \`${escapedSql}\` })`);
+      lines.push(`  .as("${className}");`);
     } else {
       lines.push(`  .as("${className}");`);
     }

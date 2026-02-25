@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.70] - 2026-02-25
+
+- 87b4ffb fix: chain .view() before .as() in generated schema for view-backed BOs
+
+
 ## [1.0.69] - 2026-02-25
 
 - 5dfe66f feat: support view-backed business objects via setView()
