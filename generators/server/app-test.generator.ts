@@ -114,7 +114,7 @@ const appTestGenerator: DesignGenerator = {
 
     if (groups.length === 0) {
       debug('no app test cases found');
-      return '';
+      return undefined;
     }
 
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
