@@ -424,4 +424,39 @@ describe('businessObjectGenerator', () => {
       expect(result).toContain('const debug = Debug.extend("claim")');
     });
   });
+
+  describe('view-backed business objects', () => {
+    it('should only generate read-only methods when setView is present', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'LatestProcessDesign', {
+        sourceCode: `
+          import { BusinessObject, setView } from '@apexdesigner/dsl';
+          export class LatestProcessDesign extends BusinessObject {
+            id!: number;
+            name?: string;
+          }
+          setView(LatestProcessDesign, \`SELECT * FROM process_design\`);
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should have read methods
+      expect(result).toContain('static async find(');
+      expect(result).toContain('static async findOne(');
+      expect(result).toContain('static async findById(');
+      expect(result).toContain('static async count(');
+
+      // Should NOT have write methods
+      expect(result).not.toContain('static async create(');
+      expect(result).not.toContain('static async createMany(');
+      expect(result).not.toContain('static async update(');
+      expect(result).not.toContain('static async updateById(');
+      expect(result).not.toContain('static async upsert(');
+      expect(result).not.toContain('static async delete(');
+      expect(result).not.toContain('static async deleteById(');
+      expect(result).not.toContain('static async findOrCreate(');
+    });
+  });
 });

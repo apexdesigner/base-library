@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.69] - 2026-02-25
+
+- 5dfe66f feat: support view-backed business objects via setView()
+
+
 ## [1.0.68] - 2026-02-25
 
 - 7869787 fix: use lazy getter for App.businessObjects to avoid circular import TDZ

@@ -367,4 +367,33 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).not.toContain('INTEGER');
     });
   });
+
+  describe('view-backed business objects', () => {
+    it('should chain .view() with SQL on the schema when setView is present', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'LatestProcessDesign', {
+        sourceCode: `
+          import { BusinessObject, setView } from '@apexdesigner/dsl';
+          export class LatestProcessDesign extends BusinessObject {
+            id!: number;
+            name?: string;
+            version?: number;
+          }
+          setView(LatestProcessDesign, \`
+            SELECT DISTINCT ON (pd.design_uuid)
+              pd.id, pd.name, pd.version
+            FROM process_design pd
+            ORDER BY pd.design_uuid, pd.version DESC
+          \`);
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.view({');
+      expect(result).toContain('sql:');
+      expect(result).toContain('SELECT DISTINCT ON');
+    });
+  });
 });

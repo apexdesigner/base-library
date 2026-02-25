@@ -1,6 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, resolveIdType, getDataSource, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
+import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent, getModuleLevelCall } from '@apexdesigner/utilities';
 import { Node } from 'ts-morph';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import createDebug from 'debug';
@@ -169,6 +169,10 @@ const businessObjectGenerator: DesignGenerator = {
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
+    // Detect view-backed BO
+    const isView = !!getModuleLevelCall(metadata.sourceFile, 'setView');
+    debug('isView %j', isView);
+
     // Resolve which data source this BO uses
     const dsMeta = getDataSource(metadata.sourceFile, context);
     const dsKebab = dsMeta ? kebabCase(dsMeta.name) : 'unknown';
@@ -282,13 +286,21 @@ const businessObjectGenerator: DesignGenerator = {
 
     // --- Imports ---
     lines.push('import createDebug from "debug";');
-    lines.push('import type {');
-    lines.push('  FindFilter,');
-    lines.push('  FindOneFilter,');
-    lines.push('  UpdateFilter,');
-    lines.push('  DeleteFilter,');
-    lines.push('  WhereClause,');
-    lines.push('} from "@apexdesigner/schema-persistence";');
+    if (isView) {
+      lines.push('import type {');
+      lines.push('  FindFilter,');
+      lines.push('  FindOneFilter,');
+      lines.push('  WhereClause,');
+      lines.push('} from "@apexdesigner/schema-persistence";');
+    } else {
+      lines.push('import type {');
+      lines.push('  FindFilter,');
+      lines.push('  FindOneFilter,');
+      lines.push('  UpdateFilter,');
+      lines.push('  DeleteFilter,');
+      lines.push('  WhereClause,');
+      lines.push('} from "@apexdesigner/schema-persistence";');
+    }
     lines.push('import type { z } from "zod";');
     lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${boKebab}.js";`);
     lines.push(`import { dataSource } from "../data-sources/${dsKebab}.js";`);
@@ -369,6 +381,22 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    return new ${className}(data);`);
     lines.push('  }');
 
+    // count
+    lines.push('');
+    lines.push(`  static async count(where?: WhereClause<${dataTypeName}>): Promise<number> {`);
+    lines.push('    const debug = Debug.extend("count");');
+    lines.push('    debug("where %j", where);');
+    lines.push('');
+    lines.push(`    const result = await this.dataSource.count(`);
+    lines.push(`      this.entityName,`);
+    lines.push(`      where ? { where } : undefined,`);
+    lines.push(`    );`);
+    lines.push('    debug("result %j", result);');
+    lines.push('');
+    lines.push('    return result;');
+    lines.push('  }');
+
+    if (!isView) {
     // findOrCreate
     lines.push('');
     lines.push(`  static async findOrCreate(options: {`);
@@ -385,21 +413,6 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    debug("result.created %j", result.created);');
     lines.push('');
     lines.push(`    return { entity: new ${className}(result.entity), created: result.created };`);
-    lines.push('  }');
-
-    // count
-    lines.push('');
-    lines.push(`  static async count(where?: WhereClause<${dataTypeName}>): Promise<number> {`);
-    lines.push('    const debug = Debug.extend("count");');
-    lines.push('    debug("where %j", where);');
-    lines.push('');
-    lines.push(`    const result = await this.dataSource.count(`);
-    lines.push(`      this.entityName,`);
-    lines.push(`      where ? { where } : undefined,`);
-    lines.push(`    );`);
-    lines.push('    debug("result %j", result);');
-    lines.push('');
-    lines.push('    return result;');
     lines.push('  }');
 
     // create
@@ -550,6 +563,7 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('');
     lines.push('    return result;');
     lines.push('  }');
+    } // end if (!isView)
 
     // --- Instance and Class behaviors ---
     debug('total behaviors in project %j', allBehaviors.length);
