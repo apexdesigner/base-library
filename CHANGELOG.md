@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.66] - 2026-02-25
+
+- 224a645 fix: return empty Map instead of undefined when test generators have no output
+
+
 ## [1.0.65] - 2026-02-25
 
 - 46b2502 fix: return undefined instead of empty string when no tests exist
