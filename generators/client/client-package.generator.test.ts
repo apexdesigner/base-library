@@ -394,7 +394,7 @@ describe('clientPackageGenerator', () => {
   });
 
   it('should have correct output path', () => {
-    const outputs = clientPackageGenerator.outputs({} as any, 'Project');
+    const outputs = (clientPackageGenerator.outputs as () => string[])();
     expect(outputs).toEqual(['client/package.json']);
   });
 
