@@ -135,4 +135,39 @@ describe('businessObjectTypeGenerator', () => {
       expect(result).toContain('static claimNext(');
     });
   });
+
+  describe('view-backed business objects', () => {
+    it('should only generate read-only method signatures when setView is present', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'LatestProcessDesign', {
+        sourceCode: `
+          import { BusinessObject, setView } from '@apexdesigner/dsl';
+          export class LatestProcessDesign extends BusinessObject {
+            id!: number;
+            name?: string;
+          }
+          setView(LatestProcessDesign, \`SELECT * FROM process_design\`);
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should have read methods
+      expect(result).toContain('static find(');
+      expect(result).toContain('static findOne(');
+      expect(result).toContain('static findById(');
+      expect(result).toContain('static count(');
+
+      // Should NOT have write methods
+      expect(result).not.toContain('static create(');
+      expect(result).not.toContain('static createMany(');
+      expect(result).not.toContain('static update(');
+      expect(result).not.toContain('static updateById(');
+      expect(result).not.toContain('static upsert(');
+      expect(result).not.toContain('static delete(');
+      expect(result).not.toContain('static deleteById(');
+      expect(result).not.toContain('static findOrCreate(');
+    });
+  });
 });

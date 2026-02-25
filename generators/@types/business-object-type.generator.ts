@@ -1,6 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
+import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent, getModuleLevelCall } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import { Project, StructureKind } from 'ts-morph';
 import createDebug from 'debug';
@@ -61,7 +61,8 @@ const businessObjectTypeGenerator: DesignGenerator = {
     debug('sourceFile path %j', metadata.sourceFile.getFilePath());
 
     const className = pascalCase(metadata.name);
-    debug('className %j', className);
+    const isView = !!getModuleLevelCall(metadata.sourceFile, 'setView');
+    debug('className %j, isView %j', className, isView);
 
     // Create a ts-morph project and source file
     debug('Creating ts-morph project');
@@ -106,7 +107,9 @@ const businessObjectTypeGenerator: DesignGenerator = {
       kind: StructureKind.ImportDeclaration,
       isTypeOnly: true,
       moduleSpecifier: '@apexdesigner/schema-persistence',
-      namedImports: ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter'],
+      namedImports: isView
+        ? ['FindFilter', 'FindOneFilter']
+        : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter'],
     });
 
     // Get description and add as comment
@@ -301,6 +304,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
 
     // Add CRUD static methods based on @apexdesigner/schema-persistence API
 
+    if (!isView) {
     // Create methods
     classDecl.addMethod({
       name: 'create',
@@ -315,6 +319,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       parameters: [{ name: 'data', type: `Partial<${className}>[]` }],
       returnType: `Promise<${className}[]>`,
     });
+    }
 
     // Find methods
     classDecl.addMethod({
@@ -341,12 +346,14 @@ const businessObjectTypeGenerator: DesignGenerator = {
       returnType: `Promise<${className}>`,
     });
 
+    if (!isView) {
     classDecl.addMethod({
       name: 'findOrCreate',
       isStatic: true,
       parameters: [{ name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}> }` }],
       returnType: `Promise<{ entity: ${className}; created: boolean }>`,
     });
+    }
 
     // Count method
     classDecl.addMethod({
@@ -356,6 +363,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       returnType: `Promise<number>`,
     });
 
+    if (!isView) {
     // Update methods
     classDecl.addMethod({
       name: 'update',
@@ -399,6 +407,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       parameters: [{ name: 'id', type: idType }],
       returnType: `Promise<boolean>`,
     });
+    }
 
     const content = sourceFile.getText();
     debug('Generated type file for %j', metadata.name);

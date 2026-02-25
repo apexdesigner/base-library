@@ -1,6 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getDataSource, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getPropertyDecorator, getObjectLiteralValue, getModuleLevelCall } from '@apexdesigner/utilities';
+import { getClassByBase, getDescription, getPropertyDecorator, getObjectLiteralValue, getModuleLevelCall, getTemplateString } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
@@ -427,12 +427,23 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     const description = boClass ? getDescription(boClass) : undefined;
     const entityDescription = description || className;
 
+    // Detect setView() for view-backed BOs
+    const viewCall = getModuleLevelCall(metadata.sourceFile, 'setView');
+    const viewSql = viewCall ? getTemplateString(viewCall) : undefined;
+    debug('viewSql %j', viewSql);
+
     lines.push(`export const ${schemaVarName} = z`);
     lines.push('  .object({');
     lines.push(schemaProps.join(',\n\n'));
     lines.push('  })');
     lines.push(`  .describe("${entityDescription.replace(/"/g, '\\"')}")`);
-    lines.push(`  .as("${className}");`);
+    if (viewSql) {
+      const escapedSql = viewSql.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+      lines.push(`  .as("${className}")`);
+      lines.push(`  .view({ sql: \`${escapedSql}\` });`);
+    } else {
+      lines.push(`  .as("${className}");`);
+    }
     lines.push('');
     lines.push(`export { ${schemaVarName} as ${schemaVarName}Schema };`);
 
