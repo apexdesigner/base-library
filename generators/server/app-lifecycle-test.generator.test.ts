@@ -12,7 +12,7 @@ describe('appLifecycleTestGenerator', () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('AppBehavior', 'LoadSampleDesigns', {
       sourceCode: `
-        import { addAppBehavior, addTest, createTestData } from '@apexdesigner/dsl';
+        import { addAppBehavior, addTest } from '@apexdesigner/dsl';
         import { ProcessDesign } from '@business-objects';
         import { expect } from 'vitest';
         addAppBehavior(
@@ -83,27 +83,4 @@ describe('appLifecycleTestGenerator', () => {
     expect(result).toBe('');
   });
 
-  it('should include createTestData import when referenced', async () => {
-    const workspace = createSimpleMockWorkspace();
-    workspace.addMetadata('AppBehavior', 'LoadDesigns', {
-      sourceCode: `
-        import { addAppBehavior, addTest, createTestData } from '@apexdesigner/dsl';
-        import { ProcessDesign } from '@business-objects';
-        import { expect } from 'vitest';
-        addAppBehavior(
-          { lifecycleStage: 'After Start' },
-          async function loadDesigns() { return; }
-        );
-        addTest("should create test data", async () => {
-          const d = await createTestData(ProcessDesign);
-          expect(d).toBeDefined();
-        });
-      `,
-    });
-
-    const metadata = workspace.context.listMetadata('AppBehavior')[0];
-    const result = (await appLifecycleTestGenerator.generate(metadata, workspace.context)) as string;
-
-    expect(result).toContain('import { createTestData } from "../create-test-data.js"');
-  });
 });

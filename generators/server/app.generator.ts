@@ -16,6 +16,38 @@ const SKIP_MODULES = new Set([
 ]);
 
 /**
+ * Extract the function name and body from an addAppTestFixture(fn) call.
+ */
+function getAppTestFixtureFunction(sourceFile: DesignMetadata['sourceFile']): { name: string; body: string; isAsync: boolean } | undefined {
+  for (const statement of sourceFile.getStatements()) {
+    if (!Node.isExpressionStatement(statement)) continue;
+
+    const expr = statement.getExpression();
+    if (!Node.isCallExpression(expr)) continue;
+
+    const callee = expr.getExpression();
+    if (!Node.isIdentifier(callee)) continue;
+    if (callee.getText() !== 'addAppTestFixture') continue;
+
+    const args = expr.getArguments();
+    if (args.length < 1) continue;
+
+    const fnArg = args[0];
+    if (Node.isFunctionExpression(fnArg)) {
+      const fnName = fnArg.getName();
+      if (!fnName) continue;
+
+      const body = fnArg.getBody();
+      if (!Node.isBlock(body)) continue;
+
+      const text = body.getText();
+      return { name: fnName, body: text.slice(1, -1), isAsync: fnArg.isAsync() };
+    }
+  }
+  return undefined;
+}
+
+/**
  * Extract the function body text from an addAppBehavior() call.
  */
 function getAppBehaviorBody(sourceFile: DesignMetadata['sourceFile']): string | undefined {
@@ -60,6 +92,10 @@ const appGenerator: DesignGenerator = {
     },
     {
       metadataType: 'BusinessObject',
+      condition: (metadata) => !isLibrary(metadata),
+    },
+    {
+      metadataType: 'TestFixture',
       condition: (metadata) => !isLibrary(metadata),
     },
   ],
@@ -122,6 +158,41 @@ const appGenerator: DesignGenerator = {
             namedImports.get(moduleSpecifier)!.add(name);
           }
         }
+      }
+    }
+
+    // Collect app test fixtures
+    const allFixtures = context.listMetadata('TestFixture');
+    interface FixtureEntry { name: string; body: string; isAsync: boolean }
+    const appFixtureEntries: FixtureEntry[] = [];
+
+    for (const fixture of allFixtures) {
+      try {
+        const func = getAppTestFixtureFunction(fixture.sourceFile);
+        if (!func) continue;
+
+        appFixtureEntries.push(func);
+
+        // Collect imports from fixture file
+        for (const importDecl of fixture.sourceFile.getImportDeclarations()) {
+          const moduleSpecifier = importDecl.getModuleSpecifierValue();
+
+          if (SKIP_MODULES.has(moduleSpecifier)) continue;
+
+          for (const named of importDecl.getNamedImports()) {
+            const name = named.getName();
+
+            if (moduleSpecifier === '@business-objects') {
+              const boModule = `./business-objects/${kebabCase(name)}.js`;
+              if (!namedImports.has(boModule)) namedImports.set(boModule, new Set());
+              namedImports.get(boModule)!.add(name);
+            }
+          }
+        }
+
+        debug('collected app test fixture %j', func.name);
+      } catch (err) {
+        debug('error processing app test fixture: %j', err);
       }
     }
 
@@ -231,6 +302,26 @@ const appGenerator: DesignGenerator = {
 
     if (behaviorMethods.length > 0) {
       lines.push(behaviorMethods.join(''));
+    }
+
+    // --- Test fixtures ---
+    if (appFixtureEntries.length > 0) {
+      appFixtureEntries.sort((a, b) => a.name.localeCompare(b.name));
+      lines.push('');
+      lines.push('  static testFixtures = {');
+
+      for (const fixture of appFixtureEntries) {
+        const asyncPrefix = fixture.isAsync ? 'async ' : '';
+        lines.push(`    ${asyncPrefix}${fixture.name}() {`);
+
+        for (const line of fixture.body.split('\n')) {
+          lines.push(`    ${line}`);
+        }
+
+        lines.push('    },');
+      }
+
+      lines.push('  };');
     }
 
     // Close class

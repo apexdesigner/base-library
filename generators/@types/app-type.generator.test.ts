@@ -17,6 +17,17 @@ describe('appTypeGenerator', () => {
     });
   });
 
+  describe('test fixtures', () => {
+    it('should include static testFixtures property', async () => {
+      const workspace = createSimpleMockWorkspace();
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static testFixtures');
+    });
+  });
+
   describe('dataSources', () => {
     it('should generate typed dataSources property for each data source', async () => {
       const workspace = createSimpleMockWorkspace();

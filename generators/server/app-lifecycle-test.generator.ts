@@ -87,7 +87,6 @@ const appLifecycleTestGenerator: DesignGenerator = {
     // Collect imports from the behavior file
     const boImports = new Set<string>();
     const projectImports = new Set<string>();
-    let needsCreateTestData = false;
     let needsDebug = false;
 
     for (const importDecl of metadata.sourceFile.getImportDeclarations()) {
@@ -96,12 +95,6 @@ const appLifecycleTestGenerator: DesignGenerator = {
       if (moduleSpec === '@business-objects') {
         for (const namedImport of importDecl.getNamedImports()) {
           boImports.add(namedImport.getName());
-        }
-      } else if (moduleSpec === '@apexdesigner/dsl') {
-        for (const namedImport of importDecl.getNamedImports()) {
-          if (namedImport.getName() === 'createTestData') {
-            needsCreateTestData = true;
-          }
         }
       } else if (moduleSpec === '@project') {
         for (const namedImport of importDecl.getNamedImports()) {
@@ -126,10 +119,6 @@ const appLifecycleTestGenerator: DesignGenerator = {
 
     if (needsDebug) {
       lines.push('import createDebug from "debug";');
-    }
-
-    if (needsCreateTestData) {
-      lines.push('import { createTestData } from "../create-test-data.js";');
     }
 
     // Import the lifecycle function itself

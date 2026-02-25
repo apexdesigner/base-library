@@ -36,7 +36,6 @@ export { businessObjectRouteGenerator } from "./server/business-object-route.gen
 export { routesIndexGenerator } from "./server/routes-index.generator.js";
 export { appGenerator } from "./server/app.generator.js";
 export { appLifecycleGenerator } from "./server/app-lifecycle.generator.js";
-export { testDataGenerator } from "./server/test-data.generator.js";
 export { businessObjectTestGenerator } from "./server/business-object-test.generator.js";
 export { appTestGenerator } from "./server/app-test.generator.js";
 export { appLifecycleTestGenerator } from "./server/app-lifecycle-test.generator.js";
