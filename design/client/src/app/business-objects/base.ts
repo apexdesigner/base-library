@@ -1,26 +1,4 @@
-import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary } from '@apexdesigner/generator';
-import createDebug from 'debug';
-
-const Debug = createDebug('ad3:generators:businessObjectBase');
-
-const businessObjectBaseGenerator: DesignGenerator = {
-  name: 'business-object-base',
-
-  triggers: [
-    {
-      metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
-    },
-  ],
-
-  outputs: () => ['client/src/app/business-objects/base.ts'],
-
-  async generate(_metadata: DesignMetadata, _context: GenerationContext) {
-    const debug = Debug.extend('generate');
-    debug('generating BusinessObjectBase');
-
-    return `import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 export class BusinessObjectBase {
@@ -57,8 +35,3 @@ export class BusinessObjectBase {
     return firstValueFrom(this.httpClient.delete<T>(url));
   }
 }
-`;
-  },
-};
-
-export { businessObjectBaseGenerator };
