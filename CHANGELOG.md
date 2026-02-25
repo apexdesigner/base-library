@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.60] - 2026-02-25
+
+- 3659a95 feat: add lifecycle app behavior generator
+
+
 ## [1.0.59] - 2026-02-25
 
 - 458c82f Fix route generator type errors for string ids and no-param behaviors
