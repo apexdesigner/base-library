@@ -1,10 +1,23 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase } from '@apexdesigner/utilities';
+import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:businessObjectFormGroup');
+
+// Lifecycle behavior types to exclude
+const LIFECYCLE_TYPES = new Set([
+  'Before Create',
+  'After Create',
+  'Before Update',
+  'After Update',
+  'Before Delete',
+  'After Delete',
+  'Before Read',
+  'After Read',
+  'After Start',
+]);
 
 const businessObjectFormGroupGenerator: DesignGenerator = {
   name: 'business-object-form-group',
@@ -13,17 +26,36 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     {
       metadataType: 'BusinessObject',
       condition: (metadata) => !isLibrary(metadata),
-    }
+    },
+    {
+      metadataType: 'Behavior',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `client/src/app/business-objects/${kebabCase(metadata.name)}-form-group.ts`,
-    `client/src/app/business-objects/${kebabCase(metadata.name)}-form-array.ts`,
-    `client/src/app/business-objects/${kebabCase(metadata.name)}-persisted-array.ts`,
-  ],
+  outputs: (metadata: DesignMetadata) => {
+    const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
+    return [
+      `client/src/app/business-objects/${kebabCase(name)}-form-group.ts`,
+      `client/src/app/business-objects/${kebabCase(name)}-form-array.ts`,
+      `client/src/app/business-objects/${kebabCase(name)}-persisted-array.ts`,
+    ];
+  },
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
+
+    // If triggered by a Behavior, resolve to the parent BO metadata
+    const parentName = getBehaviorParent(metadata.sourceFile);
+    if (parentName) {
+      const boMeta = context.listMetadata('BusinessObject')
+        .find(bo => pascalCase(bo.name) === parentName);
+      if (boMeta) {
+        debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
+        metadata = boMeta;
+      }
+    }
+
     debug('name %j', metadata.name);
 
     const className = pascalCase(metadata.name);
@@ -144,6 +176,61 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
       }
     }
     lines.push(`  }`);
+
+    // --- Instance behavior delegation ---
+    const allBehaviors = context.listMetadata('Behavior');
+    const behaviorMethods: string[] = [];
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (parent !== className) continue;
+
+        // Only delegate instance behaviors
+        if (options.type !== 'Instance') continue;
+
+        // Skip lifecycle behaviors
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
+
+        const func = getBehaviorFunction(behavior.sourceFile);
+        if (!func) continue;
+
+        // Get parameters: skip first for instance behaviors (it's the instance itself)
+        const params = func.parameters || [];
+        const methodParams = params.slice(1);
+
+        // Build parameter signature
+        const paramStr = methodParams
+          .map(p => {
+            const optional = p.isOptional ? '?' : '';
+            return `${p.name}${optional}: ${p.type || 'any'}`;
+          })
+          .join(', ');
+
+        // Build argument list for delegation call
+        const argStr = methodParams.map(p => p.name).join(', ');
+
+        const returnType = func.returnType || 'any';
+
+        behaviorMethods.push('');
+        behaviorMethods.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
+        behaviorMethods.push(`    const instance = new ${className}(this.value);`);
+        behaviorMethods.push(`    return instance.${func.name}(${argStr});`);
+        behaviorMethods.push('  }');
+
+        debug('added delegating behavior method %j', func.name);
+      } catch (err) {
+        debug('error processing behavior %j: %j', behavior.name, err);
+      }
+    }
+
+    if (behaviorMethods.length > 0) {
+      lines.push(...behaviorMethods);
+    }
+
     lines.push('}');
     lines.push('');
     lines.push(`export class ${className}FormArray extends PersistedFormArray {`);
