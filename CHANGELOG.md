@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.58] - 2026-02-24
+
+- f427faf Fix generate using behavior metadata instead of parent BO metadata
+
+
 ## [1.0.57] - 2026-02-24
 
 - 8ecd9c9 Fix behavior trigger outputs resolving to wrong file paths
