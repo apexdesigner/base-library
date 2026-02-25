@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.65] - 2026-02-25
+
+- 46b2502 fix: return undefined instead of empty string when no tests exist
+
+
 ## [1.0.64] - 2026-02-25
 
 - 896e82d fix: use App.dataSources for afterEach truncateAll in app test generator

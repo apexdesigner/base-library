@@ -71,13 +71,13 @@ const appLifecycleTestGenerator: DesignGenerator = {
     const func = getBehaviorFunction(metadata.sourceFile);
     if (!func) {
       debug('no function found for lifecycle behavior %j', metadata.name);
-      return '';
+      return undefined;
     }
 
     const tests = getTestCases(metadata.sourceFile);
     if (tests.length === 0) {
       debug('no test cases for lifecycle behavior %j', metadata.name);
-      return '';
+      return undefined;
     }
 
     const funcName = func.name;

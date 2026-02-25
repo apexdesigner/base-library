@@ -56,9 +56,9 @@ describe('appTestGenerator', () => {
     });
 
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
-    const result = (await appTestGenerator.generate(metadata, workspace.context)) as string;
+    const result = await appTestGenerator.generate(metadata, workspace.context);
 
-    expect(result).toBe('');
+    expect(result).toBeUndefined();
   });
 
   it('should truncate all App dataSources in afterEach', async () => {
