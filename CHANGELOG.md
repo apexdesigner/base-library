@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.71] - 2026-02-25
+
+- dcda63e feat: delegate instance behavior methods on FormGroup classes
+
+
 ## [1.0.70] - 2026-02-25
 
 - 87b4ffb fix: chain .view() before .as() in generated schema for view-backed BOs

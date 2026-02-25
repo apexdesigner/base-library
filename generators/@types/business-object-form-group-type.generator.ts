@@ -1,10 +1,23 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase } from '@apexdesigner/utilities';
+import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:businessObjectFormGroupType');
+
+// Lifecycle behavior types to exclude
+const LIFECYCLE_TYPES = new Set([
+  'Before Create',
+  'After Create',
+  'Before Update',
+  'After Update',
+  'Before Delete',
+  'After Delete',
+  'Before Read',
+  'After Read',
+  'After Start',
+]);
 
 const businessObjectFormGroupTypeGenerator: DesignGenerator = {
   name: 'business-object-form-group-type',
@@ -13,17 +26,36 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     {
       metadataType: 'BusinessObject',
       condition: (metadata) => !isLibrary(metadata),
-    }
+    },
+    {
+      metadataType: 'Behavior',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `design/@types/business-objects-client/${kebabCase(metadata.name)}-form-group.d.ts`,
-    `design/@types/business-objects-client/${kebabCase(metadata.name)}-form-array.d.ts`,
-    `design/@types/business-objects-client/${kebabCase(metadata.name)}-persisted-array.d.ts`,
-  ],
+  outputs: (metadata: DesignMetadata) => {
+    const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
+    return [
+      `design/@types/business-objects-client/${kebabCase(name)}-form-group.d.ts`,
+      `design/@types/business-objects-client/${kebabCase(name)}-form-array.d.ts`,
+      `design/@types/business-objects-client/${kebabCase(name)}-persisted-array.d.ts`,
+    ];
+  },
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
+
+    // If triggered by a Behavior, resolve to the parent BO metadata
+    const parentName = getBehaviorParent(metadata.sourceFile);
+    if (parentName) {
+      const boMeta = context.listMetadata('BusinessObject')
+        .find(bo => pascalCase(bo.name) === parentName);
+      if (boMeta) {
+        debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
+        metadata = boMeta;
+      }
+    }
+
     debug('name %j', metadata.name);
 
     const className = pascalCase(metadata.name);
@@ -130,6 +162,43 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     fgLines.push(`  declare value: Partial<${className}>;`);
     fgLines.push('');
     fgLines.push(`  constructor(options?: PersistedFormGroupOptions);`);
+
+    // Instance behavior method declarations
+    const allBehaviors = context.listMetadata('Behavior');
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (parent !== className) continue;
+
+        if (options.type !== 'Instance') continue;
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
+
+        const func = getBehaviorFunction(behavior.sourceFile);
+        if (!func) continue;
+
+        const params = func.parameters || [];
+        const methodParams = params.slice(1);
+
+        const paramStr = methodParams
+          .map(p => {
+            const optional = p.isOptional ? '?' : '';
+            return `${p.name}${optional}: ${p.type || 'any'}`;
+          })
+          .join(', ');
+
+        const returnType = func.returnType || 'any';
+
+        fgLines.push(`  ${func.name}(${paramStr}): Promise<${returnType}>;`);
+        debug('added behavior type declaration %j', func.name);
+      } catch (err) {
+        debug('error processing behavior %j: %j', behavior.name, err);
+      }
+    }
+
     fgLines.push(`}`);
 
     // ── form-array.d.ts ───────────────────────────────────────────────────────
