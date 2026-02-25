@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.64] - 2026-02-25
+
+- 896e82d fix: use App.dataSources for afterEach truncateAll in app test generator
+
+
 ## [1.0.63] - 2026-02-25
 
 - 67a18ec chore: apply automated fixes

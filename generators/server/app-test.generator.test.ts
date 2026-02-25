@@ -61,7 +61,7 @@ describe('appTestGenerator', () => {
     expect(result).toBe('');
   });
 
-  it('should use first imported BO for afterEach truncateAll', async () => {
+  it('should truncate all App dataSources in afterEach', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('AppBehavior', 'SomeBehavior', {
       sourceCode: `
@@ -83,6 +83,7 @@ describe('appTestGenerator', () => {
     const result = (await appTestGenerator.generate(metadata, workspace.context)) as string;
 
     expect(result).toContain('import { ProcessDesign } from "./business-objects/process-design.js"');
-    expect(result).toContain('afterEach(() => ProcessDesign.dataSource.truncateAll())');
+    expect(result).toContain('for (const ds of Object.values(App.dataSources))');
+    expect(result).toContain('await ds.truncateAll()');
   });
 });
