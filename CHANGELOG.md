@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.67] - 2026-02-25
+
+- 2b83128 fix: generate skip test file for BOs/behaviors without addTest() calls
+
+
 ## [1.0.66] - 2026-02-25
 
 - 224a645 fix: return empty Map instead of undefined when test generators have no output

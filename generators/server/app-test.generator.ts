@@ -114,7 +114,7 @@ const appTestGenerator: DesignGenerator = {
 
     if (groups.length === 0) {
       debug('no app test cases found');
-      return new Map();
+      return `import { describe, it } from "vitest";\n\ndescribe("App", () => {\n  it.skip("no tests defined");\n});\n`;
     }
 
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));

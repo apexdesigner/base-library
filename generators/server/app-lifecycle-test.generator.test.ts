@@ -80,7 +80,7 @@ describe('appLifecycleTestGenerator', () => {
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
     const result = await appLifecycleTestGenerator.generate(metadata, workspace.context);
 
-    expect(result).toEqual(new Map());
+    expect(result).toContain('it.skip("no tests defined")');
   });
 
 });

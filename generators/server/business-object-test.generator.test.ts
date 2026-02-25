@@ -75,7 +75,7 @@ describe('businessObjectTestGenerator', () => {
     const metadata = workspace.context.listMetadata('BusinessObject')[0];
     const result = await businessObjectTestGenerator.generate(metadata, workspace.context);
 
-    expect(result).toEqual(new Map());
+    expect(result).toContain('it.skip("no tests defined")');
   });
 
   it('should include debug setup when test body references debug', async () => {
