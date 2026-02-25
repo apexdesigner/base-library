@@ -22,6 +22,7 @@ Design files live in the `design/` directory and are written in TypeScript.
 - [Directive Interfaces](directive-interfaces.md) — template API for attribute directives (auto-generated)
 - [Pipe Interfaces](pipe-interfaces.md) — template pipes (auto-generated)
 - [External Types](external-types.md) — injectable services and importable types (auto-generated)
+- [Test Fixtures](test-fixtures.md) — reusable test data setup functions
 - [Roles](roles.md) — access control definitions
 - [Project](project.md) — application settings and dependencies
 - [Validators](validators.md) — design source checks and auto-fixes

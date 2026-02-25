@@ -27,6 +27,12 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 
+  // Skip static files in design/client/ and design/server/ — these are copied
+  // to the generated directories, not DSL design objects
+  if (/(?:^|\/design\/)(?:client|server)\//.test(filePath)) {
+    process.exit(0);
+  }
+
   // Extract the design-relative path for targeted resolve
   const designIndex = filePath.indexOf('/design/');
   const designPath = designIndex >= 0 ? filePath.slice(designIndex + 1) : filePath;

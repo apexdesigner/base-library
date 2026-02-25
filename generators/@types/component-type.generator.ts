@@ -34,7 +34,26 @@ const componentTypeGenerator: DesignGenerator = {
       lines.push('');
     }
 
-    lines.push(`export declare class ${metadata.name} {}`);
+    // Check if component has isDialog option
+    let isDialog = false;
+    if (componentClass) {
+      const componentDecorator = componentClass.getDecorator('component');
+      if (componentDecorator) {
+        const args = componentDecorator.getArguments();
+        if (args.length > 0 && /isDialog:\s*true/.test(args[0].getText())) {
+          isDialog = true;
+        }
+      }
+    }
+
+    if (isDialog) {
+      lines.push(`export declare class ${metadata.name} {`);
+      lines.push('  open(): void;');
+      lines.push('  close(): void;');
+      lines.push('}');
+    } else {
+      lines.push(`export declare class ${metadata.name} {}`);
+    }
 
     const content = lines.join('\n');
     debug('Generated type file for %j', metadata.name);

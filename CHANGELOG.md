@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.72] - 2026-02-25
+
+- 5d53f33 fix: update dialog input test to match getter/setter backing field
+- 1a7df75 chore: apply automated fixes from dependency updates
+- 2bf5602 fix: skip mixin behaviors in BO generator triggers and fix type errors
+- 2657c27 docs: add client-side and server-side debug pattern docs
+- a90cf59 feat: add isDialog component generation, ViewChild support, and input getter/setter forwarding
+
+
 ## [1.0.71] - 2026-02-25
 
 - dcda63e feat: delegate instance behavior methods on FormGroup classes

@@ -1,5 +1,5 @@
 ---
-generated-from: design/project.ts
+generated-from: design/base-types/router-link-query-params-handling-type.base-type.ts
 generated-by: base-types.doc.md
 ---
 # Base Types

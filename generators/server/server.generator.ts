@@ -17,7 +17,8 @@ const serverGenerator: DesignGenerator = {
   ],
 
   outputs: () => [
-    'server/src/index.ts'
+    'server/src/env.ts',
+    'server/src/index.ts',
   ],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
@@ -58,9 +59,22 @@ const serverGenerator: DesignGenerator = {
       debug('found After Start behavior: %j', func.name);
     }
 
+    // --- env.ts ---
+    const envLines: string[] = [];
+    envLines.push('import { readFileSync } from "fs";');
+    envLines.push('');
+    envLines.push('// Load .env file if present (variables already in env take precedence)');
+    envLines.push('try {');
+    envLines.push('  for (const line of readFileSync(".env", "utf-8").split("\\n")) {');
+    envLines.push('    const match = line.match(/^([^#][^=]*)=(.*)/);');
+    envLines.push('    if (match) process.env[match[1].trim()] ??= match[2].trim();');
+    envLines.push('  }');
+    envLines.push('} catch {}');
+
+    // --- index.ts ---
     const lines: string[] = [];
 
-    lines.push('import { readFileSync } from "fs";');
+    lines.push('import "./env.js";');
     lines.push('import express from "express";');
     lines.push('import createDebug from "debug";');
     lines.push('import router from "./routes/index.js";');
@@ -69,15 +83,6 @@ const serverGenerator: DesignGenerator = {
     for (const ds of dataSources) {
       lines.push(`import { dataSource as ${ds.varName} } from "./data-sources/${ds.kebab}.js";`);
     }
-
-    lines.push('');
-    lines.push('// Load .env file if present (variables already in env take precedence)');
-    lines.push('try {');
-    lines.push('  for (const line of readFileSync(".env", "utf-8").split("\\n")) {');
-    lines.push('    const match = line.match(/^([^#][^=]*)=(.*)/);');
-    lines.push('    if (match) process.env[match[1].trim()] ??= match[2].trim();');
-    lines.push('  }');
-    lines.push('} catch {}');
 
     // Import After Start app behaviors
     for (const behavior of afterStartBehaviors) {
@@ -126,10 +131,12 @@ const serverGenerator: DesignGenerator = {
     lines.push('process.on("SIGINT", shutdown);');
     lines.push('process.on("SIGTERM", shutdown);');
 
-    const content = lines.join('\n');
     debug('Generated server entry point');
 
-    return content;
+    const outputs = new Map<string, string>();
+    outputs.set('server/src/env.ts', envLines.join('\n') + '\n');
+    outputs.set('server/src/index.ts', lines.join('\n') + '\n');
+    return outputs;
   }
 };
 

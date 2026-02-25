@@ -30,7 +30,14 @@ const businessObjectTypeGenerator: DesignGenerator = {
     },
     {
       metadataType: 'Behavior',
-      condition: (metadata) => !isLibrary(metadata),
+      condition: (metadata, conditionContext) => {
+        const parentName = getBehaviorParent(metadata.sourceFile);
+        if (!parentName) return false;
+        if (!conditionContext?.context) return true;
+        const boMeta = conditionContext.context.listMetadata('BusinessObject')
+          .find(bo => pascalCase(bo.name) === parentName);
+        return !!boMeta && !isLibrary(boMeta);
+      },
     },
     {
       metadataType: 'TestFixture',
@@ -93,7 +100,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       const importDecls = Array.from(referencedTypes)
         .sort()
         .map(typeName => ({
-          kind: StructureKind.ImportDeclaration,
+          kind: StructureKind.ImportDeclaration as const,
           isTypeOnly: true,
           moduleSpecifier: `./${kebabCase(typeName)}`,
           namedImports: [typeName],
@@ -261,7 +268,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         // Check if this behavior belongs to this business object or its mixins
         const parent = getBehaviorParent(behavior.sourceFile);
         debug('behavior parent %j, looking for %j', parent, Array.from(parentNames));
-        if (!parentNames.has(parent)) {
+        if (!parent || !parentNames.has(parent)) {
           debug('parent mismatch, skipping');
           continue;
         }
@@ -274,7 +281,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         }
 
         // Skip lifecycle behaviors
-        if (LIFECYCLE_TYPES.has(options.type)) {
+        if (LIFECYCLE_TYPES.has(options.type as string)) {
           debug('skipping lifecycle behavior %j', func.name);
           continue;
         }

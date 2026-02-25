@@ -43,7 +43,14 @@ const businessObjectRouteGenerator: DesignGenerator = {
     },
     {
       metadataType: 'Behavior',
-      condition: (metadata) => !isLibrary(metadata),
+      condition: (metadata, conditionContext) => {
+        const parentName = getBehaviorParent(metadata.sourceFile);
+        if (!parentName) return false;
+        if (!conditionContext?.context) return true;
+        const boMeta = conditionContext.context.listMetadata('BusinessObject')
+          .find(bo => pascalCase(bo.name) === parentName);
+        return !!boMeta && !isLibrary(boMeta);
+      },
     },
   ],
 
@@ -241,16 +248,16 @@ const businessObjectRouteGenerator: DesignGenerator = {
         if (!options) continue;
 
         const parent = getBehaviorParent(behavior.sourceFile);
-        if (!parentNames.has(parent)) continue;
+        if (!parent || !parentNames.has(parent)) continue;
 
         const func = getBehaviorFunction(behavior.sourceFile);
         if (!func) continue;
 
         // Skip lifecycle behaviors
-        if (LIFECYCLE_TYPES.has(options.type)) continue;
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
 
         const isInstance = options.type === 'Instance';
-        const httpMethod = BEHAVIOR_HTTP_METHODS[options.httpMethod || 'Post'] || 'post';
+        const httpMethod = BEHAVIOR_HTTP_METHODS[(options.httpMethod as string) || 'Post'] || 'post';
         const behaviorKebab = kebabCase(func.name);
 
         // Determine if the behavior method accepts parameters

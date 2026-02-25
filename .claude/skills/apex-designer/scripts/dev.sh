@@ -4,12 +4,22 @@ set -euo pipefail
 SERVER_PORT="${PORT:-3000}"
 CLIENT_PORT="${CLIENT_PORT:-4200}"
 DEBUG_STR=""
+SERVER_ONLY=false
+STOP_ONLY=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --debug)
       DEBUG_STR="$2"
       shift 2
+      ;;
+    --server-only)
+      SERVER_ONLY=true
+      shift
+      ;;
+    --stop)
+      STOP_ONLY=true
+      shift
       ;;
     *)
       echo "Unknown option: $1"
@@ -33,6 +43,18 @@ kill_port() {
   pids=$(lsof -ti :"$port" 2>/dev/null || true)
   if [ -n "$pids" ]; then
     echo "Killing processes on port $port: $pids"
+    echo "$pids" | xargs kill -9 2>/dev/null || true
+    sleep 1
+  fi
+}
+
+kill_project_processes() {
+  local dir=$1
+  local label=$2
+  local pids
+  pids=$(pgrep -f "$dir" 2>/dev/null || true)
+  if [ -n "$pids" ]; then
+    echo "Killing stale $label processes: $pids"
     echo "$pids" | xargs kill -9 2>/dev/null || true
     sleep 1
   fi
@@ -86,15 +108,36 @@ wait_for_log() {
 
 # --- main ---
 
+# --stop: kill everything and exit
+if [ "$STOP_ONLY" = true ]; then
+  echo "=== Stopping dev environment ==="
+  kill_project_processes "$PROJECT_DIR/server" "server"
+  kill_project_processes "$PROJECT_DIR/client" "client"
+  kill_port "$SERVER_PORT"
+  kill_port "$CLIENT_PORT"
+  echo "Done."
+  exit 0
+fi
+
 echo "=== Dev startup ==="
 
-# Kill anything on the ports
+# Kill any stale processes from previous runs of this project
+kill_project_processes "$PROJECT_DIR/server" "server"
+if [ "$SERVER_ONLY" = false ]; then
+  kill_project_processes "$PROJECT_DIR/client" "client"
+fi
+
+# Kill anything on the ports (catches non-project processes too)
 kill_port "$SERVER_PORT"
-kill_port "$CLIENT_PORT"
+if [ "$SERVER_ONLY" = false ]; then
+  kill_port "$CLIENT_PORT"
+fi
 
 # Clear previous logs
 > "$LOG_DIR/server.log"
-> "$LOG_DIR/client.log"
+if [ "$SERVER_ONLY" = false ]; then
+  > "$LOG_DIR/client.log"
+fi
 
 # Start server
 echo "Starting server..."
@@ -104,19 +147,28 @@ SERVER_PID=$!
 
 wait_for_log "$LOG_DIR/server.log" "Server listening on port" "server" 30 "Failed running"
 
-# Start client
-echo "Starting client..."
-(cd "$PROJECT_DIR/client" && npx ng serve --port "$CLIENT_PORT") \
-  >> "$LOG_DIR/client.log" 2>&1 &
-CLIENT_PID=$!
+if [ "$SERVER_ONLY" = false ]; then
+  # Start client
+  echo "Starting client..."
+  (cd "$PROJECT_DIR/client" && npx ng serve --port "$CLIENT_PORT") \
+    >> "$LOG_DIR/client.log" 2>&1 &
+  CLIENT_PID=$!
 
-wait_for_log "$LOG_DIR/client.log" "Compiled successfully" "client" 120 "Failed to compile"
+  wait_for_log "$LOG_DIR/client.log" "Compiled successfully" "client" 120 "Failed to compile"
 
-echo ""
-echo "=== Dev environment ready ==="
-echo "  Server: http://localhost:$SERVER_PORT  (PID $SERVER_PID)"
-echo "  Client: http://localhost:$CLIENT_PORT  (PID $CLIENT_PID)"
-echo "  Logs:   $LOG_DIR/server.log"
-echo "          $LOG_DIR/client.log"
-echo ""
-echo "To stop: kill $SERVER_PID $CLIENT_PID"
+  echo ""
+  echo "=== Dev environment ready ==="
+  echo "  Server: http://localhost:$SERVER_PORT  (PID $SERVER_PID)"
+  echo "  Client: http://localhost:$CLIENT_PORT  (PID $CLIENT_PID)"
+  echo "  Logs:   $LOG_DIR/server.log"
+  echo "          $LOG_DIR/client.log"
+  echo ""
+  echo "To stop: kill $SERVER_PID $CLIENT_PID"
+else
+  echo ""
+  echo "=== Server ready ==="
+  echo "  Server: http://localhost:$SERVER_PORT  (PID $SERVER_PID)"
+  echo "  Logs:   $LOG_DIR/server.log"
+  echo ""
+  echo "To stop: kill $SERVER_PID"
+fi

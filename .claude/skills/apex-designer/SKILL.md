@@ -35,6 +35,7 @@ All design artifacts are TypeScript files in the `/design` directory using the A
 | Role | Access control for objects and pages | `.claude/skills/apex-designer/docs/dsl/roles.md` |
 | Service | Shared injectable logic | `.claude/skills/apex-designer/docs/dsl/services.md` |
 | Template | Markup for pages and components | `.claude/skills/apex-designer/docs/dsl/templates.md` |
+| Test Fixture | Reusable test data setup functions | `.claude/skills/apex-designer/docs/dsl/test-fixtures.md` |
 | Validator | Source file checkers with auto-fix | `.claude/skills/apex-designer/docs/dsl/validators.md` |
 
 ## Libraries
@@ -65,6 +66,10 @@ You don't need to include these in design files — resolve will add them automa
 
 The resolve hook handles the full resolve/gen/resolve cycle automatically, including new types with relationships. No manual `ad3 gen` or extra `ad3 resolve` steps are needed.
 
+### Static files
+
+Files placed in `design/client/` or `design/server/` are copied into the corresponding generated directory using the same relative path. For example, `design/client/assets/logo.png` is copied to `client/assets/logo.png`. Use this for assets, configuration files, or any file that should be included in the generated output without modification.
+
 ## CLI
 
 See `.claude/skills/apex-designer/docs/cli.md` for the full ad3 command reference.
@@ -80,6 +85,8 @@ Key commands:
 See `.claude/skills/apex-designer/docs/dev-sh.md` for usage. The script is at `.claude/skills/apex-designer/scripts/dev.sh` (relative to the project root).
 
 - `bash .claude/skills/apex-designer/scripts/dev.sh` — starts server and client in background, then exits
+- `bash .claude/skills/apex-designer/scripts/dev.sh --server-only` — starts only the server (faster, useful for API testing)
+- `bash .claude/skills/apex-designer/scripts/dev.sh --stop` — stops all dev processes
 - `bash .claude/skills/apex-designer/scripts/dev.sh --debug "AppName:*"` — enables debug output
 - Running it again automatically kills existing processes on the ports
 - Fire-and-forget: the server uses `tsx --watch` and will auto-restart as files change. If startup fails or times out, check `logs/server.log` and fix the issue (e.g., run `ad3 gen`) — do NOT re-run dev.sh

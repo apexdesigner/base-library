@@ -21,4 +21,7 @@ Base scaffold and code generators for Apex Designer Angular/Express applications
 
 - [**Generated Types**](./docs/patterns/generated-types.md) - Typed classes produced for each business object
 - [**List + Detail Page Pair**](./docs/patterns/list-detail-pages.md) - The most common page structure
+- [**Dialog Components**](./docs/patterns/dialog-components.md) - Modal dialogs with inputs, outputs, and programmatic open/close
+- [**Client-Side Debug**](./docs/patterns/client-side-debug.md) - Conditional logging in components, pages, and services
+- [**Server-Side Debug**](./docs/patterns/server-side-debug.md) - Conditional logging in behaviors and app behaviors
 - [**Seeding Test Data**](./docs/patterns/seeding-test-data.md) - Server-side lifecycle logic for seeding data
