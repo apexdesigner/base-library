@@ -40,6 +40,18 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
+
+    // If triggered by a Behavior, resolve to the parent BO metadata
+    const parentName = getBehaviorParent(metadata.sourceFile);
+    if (parentName) {
+      const boMeta = context.listMetadata('BusinessObject')
+        .find(bo => pascalCase(bo.name) === parentName);
+      if (boMeta) {
+        debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
+        metadata = boMeta;
+      }
+    }
+
     debug('name %j', metadata.name);
 
     const className = pascalCase(metadata.name);
