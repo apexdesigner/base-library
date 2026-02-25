@@ -20,6 +20,7 @@
   "main": "design/project/project.json",
   "files": [
     "design/",
+    "!design/testing/",
     "generators/",
     "docs/"
   ],

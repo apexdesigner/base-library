@@ -153,6 +153,27 @@ const pageComponentGenerator: DesignGenerator = {
     // Transform onChangeCall properties into getter/setter with private backing field
     transformOnChangeProperties(exportedClass, onChangeCallMap);
 
+    // Detect properties typed as component classes and convert to @ViewChild
+    const componentNames = new Set((context.listMetadata('Component') || []).map(m => m.name));
+    const viewChildProps: { name: string; typeName: string; componentFile: string }[] = [];
+
+    for (const prop of exportedClass.getProperties()) {
+      // Skip properties that already have decorators
+      if (prop.getDecorators().length > 0) continue;
+
+      const typeNode = prop.getTypeNode();
+      if (!typeNode) continue;
+      const typeText = typeNode.getText();
+      if (componentNames.has(typeText)) {
+        const childBaseName = typeText.replace(/Component$/, '');
+        const childFile = kebabCase(childBaseName);
+        viewChildProps.push({ name: prop.getName(), typeName: typeText, componentFile: childFile });
+        debug('viewChild property %j: %j', prop.getName(), typeText);
+
+        prop.addDecorator({ name: 'ViewChild', arguments: [`'${prop.getName()}'`] });
+      }
+    }
+
     // Process @method decorators — collect callOnLoad/callAfterLoad/callOnUnload methods and remove decorators
     const callOnLoadMethods: string[] = [];
     const callAfterLoadMethods: string[] = [];
@@ -216,6 +237,9 @@ const pageComponentGenerator: DesignGenerator = {
     const needsOnInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasRouteParams || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
     const needsInject = hasRouteParams || hasAutoSaveFormGroups;
     const angularCoreImports = ['Component'];
+    if (viewChildProps.length > 0) {
+      angularCoreImports.push('ViewChild');
+    }
     if (needsOnInit) {
       angularCoreImports.push('OnInit');
     }
@@ -441,6 +465,19 @@ const pageComponentGenerator: DesignGenerator = {
           if (!existingNamedImports.includes(importName)) {
             existingImport.addNamedImport(importName);
           }
+        });
+      }
+    }
+
+    // Add imports for ViewChild component types (after template imports to avoid duplicates)
+    for (const vc of viewChildProps) {
+      const alreadyImported = writableFile.getImportDeclarations().some(imp =>
+        imp.getNamedImports().some(ni => ni.getName() === vc.typeName)
+      );
+      if (!alreadyImported) {
+        writableFile.addImportDeclaration({
+          moduleSpecifier: `../../components/${vc.componentFile}/${vc.componentFile}.component`,
+          namedImports: [vc.typeName],
         });
       }
     }

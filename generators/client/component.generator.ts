@@ -1,7 +1,7 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { getModuleLevelCall, getTemplateString } from '@apexdesigner/utilities';
 import { kebabCase } from 'change-case';
-import { Node, Project, QuoteKind, SyntaxKind } from 'ts-morph';
+import { Node, Project, QuoteKind, Scope, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports } from './property-processing.js';
@@ -31,11 +31,26 @@ const componentGenerator: DesignGenerator = {
       return [`client/src/app/app.component.ts`, `client/src/app/app.component.html`, `client/src/app/app.component.scss`];
     }
 
-    return [
+    const paths = [
       `client/src/app/components/${componentName}/${componentName}.component.ts`,
       `client/src/app/components/${componentName}/${componentName}.component.html`,
       `client/src/app/components/${componentName}/${componentName}.component.scss`
     ];
+
+    // Check if component has isDialog option
+    const exportedClass = metadata.sourceFile.getClasses().find(cls => cls.isExported());
+    const componentDecorator = exportedClass?.getDecorator('component');
+    if (componentDecorator) {
+      const args = componentDecorator.getArguments();
+      if (args.length > 0) {
+        const configText = args[0].getText();
+        if (/isDialog:\s*true/.test(configText)) {
+          paths.push(`client/src/app/components/${componentName}/${componentName}-content.component.ts`);
+        }
+      }
+    }
+
+    return paths;
   },
 
   async generate(metadata: DesignMetadata, context: GenerationContext): Promise<Map<string, string>> {
@@ -88,6 +103,25 @@ const componentGenerator: DesignGenerator = {
     const templateImports = await getTemplateImports(exportedClass, context, 'component', outputFilePath, template);
     debug('template requires %j import groups', templateImports.length);
 
+    // Extract options from @component decorator (before import removal, so isDialog is known)
+    let isDialog = false;
+    const componentDecorator = exportedClass.getDecorator('component');
+    if (componentDecorator) {
+      const decoratorArgs = componentDecorator.getArguments();
+      if (decoratorArgs.length > 0) {
+        const configText = decoratorArgs[0].getText();
+        const selectorMatch = configText.match(/selector:\s*["']([^"']+)["']/);
+        if (selectorMatch) {
+          debug('extracted selector override: %j', selectorMatch[1]);
+        }
+        if (/isDialog:\s*true/.test(configText)) {
+          isDialog = true;
+          debug('component is a dialog');
+        }
+      }
+      componentDecorator.remove();
+    }
+
     // Capture @business-objects / @business-objects-client imports before removing design aliases
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
@@ -97,6 +131,8 @@ const componentGenerator: DesignGenerator = {
       const moduleSpec = imp.getModuleSpecifierValue();
       if (moduleSpec.startsWith('@apexdesigner/dsl')) return true;
       if (moduleSpec.startsWith('@') && !moduleSpec.includes('/')) return true;
+      // For dialog components, also remove @angular imports (generator rebuilds them)
+      if (isDialog && moduleSpec.startsWith('@angular/')) return true;
       return false;
     });
     for (const imp of designImports) {
@@ -113,20 +149,6 @@ const componentGenerator: DesignGenerator = {
           statement.remove();
         }
       }
-    }
-
-    // Extract selector override from @component decorator before removing it
-    const componentDecorator = exportedClass.getDecorator('component');
-    if (componentDecorator) {
-      const decoratorArgs = componentDecorator.getArguments();
-      if (decoratorArgs.length > 0) {
-        const configText = decoratorArgs[0].getText();
-        const selectorMatch = configText.match(/selector:\s*["']([^"']+)["']/);
-        if (selectorMatch) {
-          debug('extracted selector override: %j', selectorMatch[1]);
-        }
-      }
-      componentDecorator.remove();
     }
 
     // Remove extends Component
@@ -193,7 +215,8 @@ const componentGenerator: DesignGenerator = {
       prop.setInitializer(`new ${pa.typeName}()`);
     }
 
-    // Check for content children: property typed as ComponentName[] (no @property decorator)
+    // Check for ViewChild / ContentChildren: properties typed as component classes
+    const viewChildProps: { name: string; typeName: string; componentFile: string }[] = [];
     const contentChildrenProps: { name: string; typeName: string; componentFile: string }[] = [];
     const componentNames = new Set((context.listMetadata('Component') || []).map(m => m.name));
 
@@ -204,6 +227,18 @@ const componentGenerator: DesignGenerator = {
       const typeNode = prop.getTypeNode();
       if (typeNode) {
         const typeText = typeNode.getText();
+
+        // Singular component type → @ViewChild
+        if (componentNames.has(typeText)) {
+          const childBaseName = getBaseName(typeText);
+          const childFile = kebabCase(childBaseName);
+          viewChildProps.push({ name: prop.getName(), typeName: typeText, componentFile: childFile });
+          debug('viewChild property %j: %j', prop.getName(), typeText);
+          prop.addDecorator({ name: 'ViewChild', arguments: [`'${prop.getName()}'`] });
+          angularCoreExtras.push('ViewChild');
+        }
+
+        // Array component type → @ContentChildren
         const arrayMatch = typeText.match(/^(\w+)\[\]$/);
         if (arrayMatch && componentNames.has(arrayMatch[1])) {
           const childTypeName = arrayMatch[1];
@@ -434,6 +469,19 @@ const componentGenerator: DesignGenerator = {
       }
     }
 
+    // Add imports for ViewChild component types (after template imports to avoid duplicates)
+    for (const vc of viewChildProps) {
+      const alreadyImported = writableFile.getImportDeclarations().some(imp =>
+        imp.getNamedImports().some(ni => ni.getName() === vc.typeName)
+      );
+      if (!alreadyImported) {
+        writableFile.addImportDeclaration({
+          moduleSpecifier: `../${vc.componentFile}/${vc.componentFile}.component`,
+          namedImports: [vc.typeName]
+        });
+      }
+    }
+
     // Build imports array for @Component decorator
     const componentImports: string[] = [];
     templateImports.forEach(imp => {
@@ -460,7 +508,165 @@ const componentGenerator: DesignGenerator = {
 
     // Build output files
     const outputs = new Map<string, string>();
-    outputs.set(`${prefix}.component.ts`, writableFile.getText());
+
+    if (isDialog) {
+      // --- Dialog mode: generate wrapper + content components ---
+      const className = exportedClass.getName()!;
+      const contentClassName = className.replace(/Component$/, 'ContentComponent');
+
+      // Rename the processed class to the content class name
+      exportedClass.rename(contentClassName);
+
+      // Change selector to add -content suffix
+      const existingDecorator = exportedClass.getDecorator('Component');
+      if (existingDecorator) {
+        existingDecorator.remove();
+      }
+
+      // Re-add decorator with content selector and templateUrl pointing to content files
+      let contentDecoratorConfig = `{\n  selector: '${selector}-content',\n  templateUrl: './${componentName}.component.html',\n  styleUrls: ['./${componentName}.component.scss']`;
+      if (componentImports.length > 0) {
+        contentDecoratorConfig += `,\n  imports: [${componentImports.join(', ')}]`;
+      }
+      contentDecoratorConfig += `\n}`;
+
+      exportedClass.addDecorator({
+        name: 'Component',
+        arguments: [contentDecoratorConfig]
+      });
+
+      // Handle dialog property: remove user-declared `dialog` property and inject via constructor
+      const dialogProp = exportedClass.getProperty('dialog');
+      if (dialogProp) {
+        dialogProp.remove();
+      }
+
+      // Add MatDialogRef import (merge with existing if present)
+      const existingMatDialogImport = writableFile.getImportDeclaration(
+        imp => imp.getModuleSpecifierValue() === '@angular/material/dialog'
+      );
+      if (existingMatDialogImport) {
+        const existingNames = existingMatDialogImport.getNamedImports().map(ni => ni.getName());
+        if (!existingNames.includes('MatDialogRef')) {
+          existingMatDialogImport.addNamedImport('MatDialogRef');
+        }
+      } else {
+        writableFile.addImportDeclaration({
+          moduleSpecifier: '@angular/material/dialog',
+          namedImports: ['MatDialogRef']
+        });
+      }
+
+      // Add constructor with MatDialogRef injection
+      const existingCtor = exportedClass.getConstructors()[0];
+      if (existingCtor) {
+        existingCtor.addParameter({
+          name: 'dialog',
+          type: `MatDialogRef<${contentClassName}>`,
+          scope: Scope.Public,
+        });
+      } else {
+        exportedClass.insertConstructor(0, {
+          parameters: [{
+            name: 'dialog',
+            type: `MatDialogRef<${contentClassName}>`,
+            scope: Scope.Public,
+          }],
+          statements: [],
+        });
+      }
+
+      // Content component output
+      outputs.set(`${prefix}-content.component.ts`, writableFile.getText());
+
+      // --- Generate wrapper component ---
+      const wrapperLines: string[] = [];
+
+      // Wrapper imports
+      const wrapperAngularImports = ['Component', 'Input'];
+      if (outputProperties.length > 0) {
+        wrapperAngularImports.push('Output', 'EventEmitter');
+      }
+      wrapperLines.push(`import { ${wrapperAngularImports.join(', ')} } from '@angular/core';`);
+      wrapperLines.push(`import { MatDialog, MatDialogConfig } from '@angular/material/dialog';`);
+      wrapperLines.push(`import { ${contentClassName} } from './${componentName}-content.component';`);
+      wrapperLines.push('');
+
+      // Wrapper class
+      wrapperLines.push(`@Component({`);
+      wrapperLines.push(`  selector: '${selector}',`);
+      wrapperLines.push(`  template: '',`);
+      wrapperLines.push(`})`);
+      wrapperLines.push(`export class ${className} {`);
+
+      // Options property
+      wrapperLines.push(`  @Input() options: MatDialogConfig = { autoFocus: true };`);
+      wrapperLines.push('');
+
+      // Forward @Input properties as getter/setter pairs
+      for (const propName of inputProperties) {
+        wrapperLines.push(`  private _${propName}: any;`);
+        wrapperLines.push(`  @Input() set ${propName}(value: any) {`);
+        wrapperLines.push(`    this._${propName} = value;`);
+        wrapperLines.push(`    if (this.dialogRef) {`);
+        wrapperLines.push(`      this.dialogRef.componentInstance['${propName}'] = value;`);
+        wrapperLines.push(`    }`);
+        wrapperLines.push(`  }`);
+        wrapperLines.push(`  get ${propName}(): any { return this._${propName}; }`);
+        wrapperLines.push('');
+      }
+
+      // Forward @Output properties
+      for (const propName of outputProperties) {
+        wrapperLines.push(`  @Output() ${propName}: EventEmitter<any> = new EventEmitter<any>();`);
+      }
+
+      if (inputProperties.length > 0 || outputProperties.length > 0) {
+        wrapperLines.push('');
+      }
+
+      // dialogRef field
+      wrapperLines.push(`  dialogRef: any;`);
+      wrapperLines.push('');
+
+      // Constructor
+      wrapperLines.push(`  constructor(private dialog: MatDialog) {}`);
+      wrapperLines.push('');
+
+      // open() method
+      wrapperLines.push(`  open() {`);
+      wrapperLines.push(`    const dialogRef = this.dialog.open(${contentClassName}, this.options);`);
+      wrapperLines.push(`    const instance = dialogRef.componentInstance;`);
+
+      // Forward current input values to instance
+      for (const propName of inputProperties) {
+        wrapperLines.push(`    instance['${propName}'] = this._${propName};`);
+      }
+
+      // Subscribe to outputs
+      for (const propName of outputProperties) {
+        wrapperLines.push(`    instance['${propName}'].subscribe((value: any) => {`);
+        wrapperLines.push(`      this.${propName}.emit(value);`);
+        wrapperLines.push(`    });`);
+      }
+
+      wrapperLines.push(`    this.dialogRef = dialogRef;`);
+      wrapperLines.push(`    dialogRef.afterClosed().subscribe(() => { this.dialogRef = null; });`);
+      wrapperLines.push(`  }`);
+      wrapperLines.push('');
+
+      // close() method
+      wrapperLines.push(`  close() {`);
+      wrapperLines.push(`    if (this.dialogRef) this.dialogRef.close();`);
+      wrapperLines.push(`  }`);
+
+      wrapperLines.push(`}`);
+
+      outputs.set(`${prefix}.component.ts`, wrapperLines.join('\n'));
+    } else {
+      outputs.set(`${prefix}.component.ts`, writableFile.getText());
+    }
+
     outputs.set(`${prefix}.component.html`, convertedTemplate.trim());
     outputs.set(`${prefix}.component.scss`, styles);
 
