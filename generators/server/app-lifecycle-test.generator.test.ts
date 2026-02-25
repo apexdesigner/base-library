@@ -63,7 +63,7 @@ describe('appLifecycleTestGenerator', () => {
     expect(trigger.condition!(metadata, {} as any)).toBe(false);
   });
 
-  it('should return empty string when no addTest calls', async () => {
+  it('should return empty Map when no addTest calls', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('AppBehavior', 'AfterStart', {
       sourceCode: `
@@ -80,7 +80,7 @@ describe('appLifecycleTestGenerator', () => {
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
     const result = await appLifecycleTestGenerator.generate(metadata, workspace.context);
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual(new Map());
   });
 
 });
