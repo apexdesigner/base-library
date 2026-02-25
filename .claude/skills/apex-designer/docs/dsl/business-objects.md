@@ -288,6 +288,29 @@ export class Session extends BusinessObject {
 }
 ```
 
+When a related record is deleted, `onDelete` controls what happens to this record. Each relationship type has a default:
+
+| Relationship Type | Default | Description |
+|---|---|---|
+| `"Belongs To"` | `"Cascade"` | When the parent is deleted, this record is automatically deleted too |
+| `"References"` | `"No Action"` | The referenced record cannot be deleted while this record points to it, checked at end of transaction |
+
+Use `onDelete` to override the default:
+
+```typescript
+@relationship({ onDelete: "Restrict" })
+organization?: Organization;
+```
+
+Available `onDelete` actions:
+
+| Action | Description |
+|---|---|
+| `"Cascade"` | Automatically delete this record when the related record is deleted |
+| `"Restrict"` | Prevent the delete immediately — the related record cannot be deleted while this record points to it |
+| `"No Action"` | Prevent the delete at the end of the transaction — like Restrict, but other operations in the same transaction (such as cascading deletes) can resolve the reference first |
+| `"Set Null"` | Clear the link — set the foreign key to null when the related record is deleted |
+
 Use `"Embedded"` for objects or arrays stored within the parent record:
 
 ```typescript
@@ -533,26 +556,6 @@ All options are optional — only specify what needs to differ from the defaults
 | `pluralName` | Plural form | `"Curriculums"` instead of `"Curricula"` |
 | `pluralDisplayName` | Plural display name | `"Purchase Orders"` |
 | `indefiniteArticle` | `"a"` or `"an"` | `"an"` for `"Order Entry"` |
-
-## Test Data
-
-Use `setTestData()` to declare default test data for a business object. This provides the defaults used by `createTestData()` in [behavior tests](behaviors.md#testing):
-
-```typescript
-// ...
-
-import { setTestData } from "@apexdesigner/dsl";
-
-export class Student extends BusinessObject {
-  // ...
-}
-
-setTestData(Student, {
-  firstName: "Jane",
-  lastName: "Smith",
-  email: "jane@example.com",
-});
-```
 
 ## Complete Example
 

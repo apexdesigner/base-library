@@ -150,12 +150,12 @@ createServiceTask(sendConfirmationEmail({ order: this.order, customer: this.cust
 
 ## Testing
 
-Use `addTest()` in an app behavior file to define tests. Tests can create records using `createTestData()` or the normal CRUD APIs, with vitest assertions:
+Use `addTest()` in an app behavior file to define tests. Tests use [test fixtures](test-fixtures.md) and CRUD APIs to set up data, with vitest assertions:
 
 ```typescript
 // get-active-orders.app-behavior.ts
 
-import { addAppBehavior, addTest, createTestData } from "@apexdesigner/dsl";
+import { addAppBehavior, addTest } from "@apexdesigner/dsl";
 import { Order } from "@business-objects";
 import { expect } from "vitest";
 
@@ -170,8 +170,8 @@ addAppBehavior(
 );
 
 addTest("should return only active orders", async () => {
-  await createTestData(Order, { status: "active" });
-  await createTestData(Order, { status: "cancelled" });
+  await Order.testFixtures.active();
+  await Order.create({ status: "cancelled" });
 
   const result = await getActiveOrders();
   expect(result).toHaveLength(1);

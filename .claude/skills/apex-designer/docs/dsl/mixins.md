@@ -174,7 +174,7 @@ applyAuditMixin(Student, { excludeProperties: ["created"] });
 Mixin behavior tests work the same as [business object behavior tests](behaviors.md#testing). The `Model` parameter represents whichever business object the mixin is applied to:
 
 ```typescript
-import { addBehavior, addTest, createTestData } from "@apexdesigner/dsl";
+import { addBehavior, addTest } from "@apexdesigner/dsl";
 import { PreventChanges } from "@mixins";
 import { expect } from "vitest";
 
@@ -188,7 +188,7 @@ addBehavior(
 );
 
 addTest("should set locked to false", async () => {
-  const instance = await createTestData(Model, { locked: true });
+  const instance = await Model.testFixtures.locked();
 
   await instance.unlock();
 

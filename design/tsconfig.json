@@ -28,9 +28,17 @@
       "@roles": ["./@types/roles"],
       "@components": ["./@types/components"],
       "@pages": ["./@types/pages"],
-      "@schemas/*": ["../server/src/schemas/*"],
-      "@services": ["./@types/user-interface-services"],
-      "*": ["../client/node_modules/@types/*", "../server/node_modules/@types/*", "../client/node_modules/*", "../server/node_modules/*"]
+      "@services": ["./@types/services"],
+      "*": [
+        "./node_modules/@types/*",
+        "../client/node_modules/@types/*",
+        "../server/node_modules/@types/*",
+        "../node_modules/@types/*",
+        "./node_modules/*",
+        "../client/node_modules/*",
+        "../server/node_modules/*",
+        "../node_modules/*"
+      ]
     }
   },
   "include": ["**/*"],
