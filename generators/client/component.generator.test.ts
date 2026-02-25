@@ -119,7 +119,7 @@ describe('componentGenerator', () => {
 
       expect(wrapper).toContain('@Input()');
       expect(wrapper).toContain('title');
-      expect(wrapper).toContain("instance['title'] = this.title");
+      expect(wrapper).toContain("instance['title'] = this._title");
     });
 
     it('should subscribe to @Output events from the dialog instance', async () => {
