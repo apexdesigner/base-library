@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.68] - 2026-02-25
+
+- 7869787 fix: use lazy getter for App.businessObjects to avoid circular import TDZ
+
+
 ## [1.0.67] - 2026-02-25
 
 - 2b83128 fix: generate skip test file for BOs/behaviors without addTest() calls
