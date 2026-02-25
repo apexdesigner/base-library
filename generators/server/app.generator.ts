@@ -2,7 +2,7 @@ import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexde
 import { isLibrary } from '@apexdesigner/generator';
 import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
 import { Node } from 'ts-morph';
-import { kebabCase, pascalCase } from 'change-case';
+import { kebabCase, pascalCase, camelCase } from 'change-case';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:app');
@@ -54,6 +54,14 @@ const appGenerator: DesignGenerator = {
       metadataType: 'AppBehavior',
       condition: (metadata) => !isLibrary(metadata),
     },
+    {
+      metadataType: 'DataSource',
+      condition: (metadata) => !isLibrary(metadata),
+    },
+    {
+      metadataType: 'BusinessObject',
+      condition: (metadata) => !isLibrary(metadata),
+    },
   ],
 
   outputs: () => ['server/src/app.ts'],
@@ -64,6 +72,13 @@ const appGenerator: DesignGenerator = {
     // Get project name for debug namespace
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
+
+    // Collect data sources and business objects
+    const dataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
+    const businessObjects = context.listMetadata('BusinessObject')
+      .filter(bo => !isLibrary(bo))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    debug('dataSources count %j, businessObjects count %j', dataSources.length, businessObjects.length);
 
     // Collect class app behaviors (exclude lifecycle)
     const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
@@ -115,6 +130,21 @@ const appGenerator: DesignGenerator = {
     // --- Imports ---
     lines.push('import createDebug from "debug";');
 
+    // Data source imports
+    for (const ds of dataSources) {
+      const dsName = camelCase(ds.name);
+      lines.push(`import { dataSource as ${dsName}DataSource } from "./data-sources/${kebabCase(ds.name)}.js";`);
+    }
+
+    // Business object imports
+    for (const bo of businessObjects) {
+      const boName = pascalCase(bo.name);
+      const boModule = `./business-objects/${kebabCase(bo.name)}.js`;
+      // Add to namedImports so behavior imports don't duplicate
+      if (!namedImports.has(boModule)) namedImports.set(boModule, new Set());
+      namedImports.get(boModule)!.add(boName);
+    }
+
     // Default imports from external packages
     for (const [module, name] of Array.from(defaultImports.entries()).sort((a, b) => a[0].localeCompare(b[0]))) {
       lines.push(`import ${name} from "${module}";`);
@@ -134,6 +164,26 @@ const appGenerator: DesignGenerator = {
 
     // --- Class declaration ---
     lines.push('export class App {');
+
+    // --- dataSources ---
+    if (dataSources.length > 0) {
+      lines.push('  static dataSources = {');
+      for (const ds of dataSources) {
+        lines.push(`    ${camelCase(ds.name)}: ${camelCase(ds.name)}DataSource,`);
+      }
+      lines.push('  };');
+      lines.push('');
+    }
+
+    // --- businessObjects ---
+    if (businessObjects.length > 0) {
+      lines.push('  static businessObjects = {');
+      for (const bo of businessObjects) {
+        lines.push(`    ${pascalCase(bo.name)},`);
+      }
+      lines.push('  };');
+      lines.push('');
+    }
 
     // --- Behavior methods ---
     const behaviorMethods: string[] = [];

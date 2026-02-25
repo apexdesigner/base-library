@@ -21,6 +21,80 @@ describe('appGenerator', () => {
     });
   });
 
+  describe('dataSources', () => {
+    it('should include static dataSources property with data source imports', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('DataSource', 'Postgres', {
+        sourceCode: `
+          import { DataSource } from '@apexdesigner/dsl';
+          export class Postgres extends DataSource {}
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { dataSource as postgresDataSource } from "./data-sources/postgres.js"');
+      expect(result).toContain('static dataSources = {');
+      expect(result).toContain('postgres: postgresDataSource,');
+    });
+  });
+
+  describe('businessObjects', () => {
+    it('should include static businessObjects property with BO imports', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Token', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Token extends BusinessObject {}
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { ProcessDesign } from "./business-objects/process-design.js"');
+      expect(result).toContain('import { Token } from "./business-objects/token.js"');
+      expect(result).toContain('static businessObjects = {');
+      expect(result).toContain('ProcessDesign,');
+      expect(result).toContain('Token,');
+    });
+
+    it('should not duplicate BO imports when behavior also references them', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {}
+        `,
+      });
+      workspace.addMetadata('AppBehavior', 'SomeBehavior', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addAppBehavior(
+            { type: 'Class Behavior' },
+            async function someBehavior() {
+              return ProcessDesign.find();
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appGenerator.generate(metadata, workspace.context)) as string;
+
+      const matches = result.match(/import \{ ProcessDesign \}/g);
+      expect(matches).toHaveLength(1);
+    });
+  });
+
   describe('class behaviors', () => {
     it('should inline class behavior as static method', async () => {
       const workspace = createSimpleMockWorkspace();
