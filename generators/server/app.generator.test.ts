@@ -61,7 +61,7 @@ describe('appGenerator', () => {
 
       expect(result).toContain('import { ProcessDesign } from "./business-objects/process-design.js"');
       expect(result).toContain('import { Token } from "./business-objects/token.js"');
-      expect(result).toContain('static businessObjects = {');
+      expect(result).toContain('static get businessObjects()');
       expect(result).toContain('ProcessDesign,');
       expect(result).toContain('Token,');
     });

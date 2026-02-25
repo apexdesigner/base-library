@@ -246,13 +246,15 @@ const appGenerator: DesignGenerator = {
       lines.push('');
     }
 
-    // --- businessObjects ---
+    // --- businessObjects (lazy getter to avoid circular import TDZ errors) ---
     if (businessObjects.length > 0) {
-      lines.push('  static businessObjects = {');
+      lines.push('  static get businessObjects() {');
+      lines.push('    return {');
       for (const bo of businessObjects) {
-        lines.push(`    ${pascalCase(bo.name)},`);
+        lines.push(`      ${pascalCase(bo.name)},`);
       }
-      lines.push('  };');
+      lines.push('    };');
+      lines.push('  }');
       lines.push('');
     }
 
