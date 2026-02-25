@@ -69,18 +69,15 @@ const appLifecycleTestGenerator: DesignGenerator = {
     const debug = Debug.extend('generate');
 
     const func = getBehaviorFunction(metadata.sourceFile);
-    if (!func) {
-      debug('no function found for lifecycle behavior %j', metadata.name);
-      return new Map();
+    const funcName = func?.name || kebabCase(metadata.name);
+
+    if (!func || getTestCases(metadata.sourceFile).length === 0) {
+      debug('no test cases for lifecycle behavior %j', metadata.name);
+      return `import { describe, it } from "vitest";\n\ndescribe("${funcName}", () => {\n  it.skip("no tests defined");\n});\n`;
     }
 
     const tests = getTestCases(metadata.sourceFile);
-    if (tests.length === 0) {
-      debug('no test cases for lifecycle behavior %j', metadata.name);
-      return new Map();
-    }
 
-    const funcName = func.name;
     const funcKebab = kebabCase(metadata.name);
     debug('generating tests for lifecycle behavior %j (%s)', funcName, funcKebab);
 

@@ -150,7 +150,7 @@ const businessObjectTestGenerator: DesignGenerator = {
 
     if (groups.length === 0) {
       debug('no test cases found for %s', className);
-      return new Map();
+      return `import { describe, it } from "vitest";\n\ndescribe("${className}", () => {\n  it.skip("no tests defined");\n});\n`;
     }
 
     // Get project name for debug namespace
