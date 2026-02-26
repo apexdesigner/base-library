@@ -19,7 +19,7 @@ describe('businessObjectClientGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -36,7 +36,7 @@ describe('businessObjectClientGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -53,7 +53,7 @@ describe('businessObjectClientGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -71,7 +71,7 @@ describe('businessObjectClientGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -90,7 +90,7 @@ describe('businessObjectClientGenerator', () => {
           export class ProcessInstance extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessInstanceStart', {
         sourceCode: `
@@ -101,7 +101,7 @@ describe('businessObjectClientGenerator', () => {
             { type: 'Class', httpMethod: 'Post' },
             async function start(options: { designId: string; variables?: Record<string, unknown> }) {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -120,7 +120,7 @@ describe('businessObjectClientGenerator', () => {
           export class ProcessInstance extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessInstanceSignal', {
         sourceCode: `
@@ -131,7 +131,7 @@ describe('businessObjectClientGenerator', () => {
             { type: 'Instance', httpMethod: 'Post' },
             async function signal(instance: ProcessInstance, data: { name: string }) {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -140,6 +140,39 @@ describe('businessObjectClientGenerator', () => {
       // Should pass data directly, not { data }
       expect(result).toContain('return BusinessObjectBase.post<any>(url, data)');
       expect(result).not.toContain('{ data }');
+    });
+  });
+
+  describe('base type resolution in data interface', () => {
+    it('should be implemented', () => {
+      // TODO: Add test implementation
+    });
+
+    it('should resolve base type to native type in scalar properties', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Email', {
+        sourceCode: `
+          import { BaseType } from '@apexdesigner/dsl';
+          export class Email extends BaseType<string> {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessAdmin', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Email } from '@base-types';
+          export class ProcessAdmin extends BusinessObject {
+            id!: number;
+            email?: Email;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should emit 'string' not 'Email' since Email extends BaseType<string>
+      expect(result).toContain('readonly email?: string;');
+      expect(result).not.toContain('readonly email?: Email;');
     });
   });
 });

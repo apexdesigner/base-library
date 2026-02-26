@@ -10,6 +10,7 @@ generated-by: business-object.doc.md
 |------|------|----------|-------------|
 | id | `number` | Always |  |
 | name | `string` | No |  |
+| email | [`Email`](../base-types.md#email) | No |  |
 | testSettingId | [`Uuid`](../base-types.md#uuid) | No |  |
 
 ## Relationships
