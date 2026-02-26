@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SERVER_PORT="${PORT:-3000}"
-CLIENT_PORT="${CLIENT_PORT:-4200}"
 DEBUG_STR=""
 SERVER_ONLY=false
 STOP_ONLY=false
@@ -32,6 +30,16 @@ done
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 LOG_DIR="$PROJECT_DIR/logs"
+
+# Read ports from .workspace.json, fall back to env vars, then defaults
+WS_SERVER_PORT=""
+WS_CLIENT_PORT=""
+if [ -f "$PROJECT_DIR/.workspace.json" ]; then
+  WS_SERVER_PORT=$(node -pe "try{JSON.parse(require('fs').readFileSync('$PROJECT_DIR/.workspace.json','utf8')).serverPort||''}catch(e){''}" 2>/dev/null || true)
+  WS_CLIENT_PORT=$(node -pe "try{JSON.parse(require('fs').readFileSync('$PROJECT_DIR/.workspace.json','utf8')).clientPort||''}catch(e){''}" 2>/dev/null || true)
+fi
+SERVER_PORT="${WS_SERVER_PORT:-${PORT:-3000}}"
+CLIENT_PORT="${WS_CLIENT_PORT:-${CLIENT_PORT:-4200}}"
 
 mkdir -p "$LOG_DIR"
 

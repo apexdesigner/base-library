@@ -22,6 +22,9 @@ Thumbs.db
 /server/
 /design/@types/
 
+# Runtime data
+/data/
+
 # Temporary files
 *.tmp
 *.temp

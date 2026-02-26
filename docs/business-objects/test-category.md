@@ -10,7 +10,7 @@ generated-by: business-object.doc.md
 |------|------|----------|-------------|
 | id | `number` | Always |  |
 | name | `string` | No |  |
-| parentCategoryId | `number` | No |  |
+| parentCategoryId | `number` | Always |  |
 
 ## Relationships
 

@@ -9,8 +9,7 @@ export class TestCategory extends BusinessObject {
   parentCategory?: TestCategory;
 
   childCategories?: TestCategory[];
-
-  parentCategoryId?: number;
+  parentCategoryId!: number;
 }
 
 applyTestPostgresDataSource(TestCategory);

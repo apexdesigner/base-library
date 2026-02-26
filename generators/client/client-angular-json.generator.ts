@@ -95,7 +95,7 @@ const clientAngularJsonGenerator: DesignGenerator = {
               builder: '@angular-devkit/build-angular:dev-server',
               options: {
                 buildTarget: 'angular:build',
-                proxyConfig: 'proxy.conf.json',
+                proxyConfig: 'proxy.conf.js',
               },
               configurations: {
                 production: {

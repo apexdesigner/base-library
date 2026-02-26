@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.74] - 2026-02-26
+
+- 66f194a feat: cross-data-source relationship pages and test improvements
+- a836101 feat: federated data source generator and file persistence support
+
+
 ## [1.0.73] - 2026-02-26
 
 - f201608 chore: apply automated fixes from dependency updates

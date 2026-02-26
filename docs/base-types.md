@@ -8,6 +8,7 @@ Base types are reusable property types with validation, constrained values, and 
 
 | Name | Native Type | Description |
 |------|-------------|-------------|
+| <span id="uuid">Uuid</span> | `string` |  |
 
 ---
 
