@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.77] - 2026-02-26
+
+- 3ac2776 chore: apply automated fixes
+- 9184730 feat: add service generators and page service injection
+- b350c56 feat: validate rootDir is required for File data sources
+
+
 ## [1.0.76] - 2026-02-26
 
 - fb4b727 fix: resolve base types to native types in client generators

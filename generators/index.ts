@@ -10,6 +10,7 @@ export { businessObjectClientTypeGenerator } from "./@types/business-object-clie
 export { mixinTypeGenerator } from "./@types/mixin-type.generator.js";
 export { businessObjectFormGroupTypeGenerator } from "./@types/business-object-form-group-type.generator.js";
 export { componentTypeGenerator } from "./@types/component-type.generator.js";
+export { serviceTypeGenerator } from "./@types/service-type.generator.js";
 export { appTypeGenerator } from "./@types/app-type.generator.js";
 
 // Client generators
@@ -24,6 +25,7 @@ export { componentGenerator } from "./client/component.generator.js";
 export { clientAppConfigGenerator } from "./client/client-app-config.generator.js";
 export { clientStylesGenerator } from "./client/client-styles.generator.js";
 export { businessObjectFormGroupGenerator } from "./client/business-object-form-group.generator.js";
+export { serviceGenerator } from "./client/service.generator.js";
 
 // Server generators
 export { serverGenerator } from "./server/server.generator.js";

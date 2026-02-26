@@ -1,5 +1,5 @@
 ---
-generated-from: design/testing/business-objects/test-setting/test-setting.business-object.ts
+generated-from: design/testing/business-objects/test-category/test-category.business-object.ts
 generated-by: business-objects-index.md
 ---
 # Business Objects
