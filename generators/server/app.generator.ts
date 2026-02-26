@@ -2,7 +2,7 @@ import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexde
 import { isLibrary } from '@apexdesigner/generator';
 import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
 import { Node } from 'ts-morph';
-import { kebabCase, pascalCase, camelCase } from 'change-case';
+import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:app');
@@ -201,10 +201,9 @@ const appGenerator: DesignGenerator = {
     // --- Imports ---
     lines.push('import createDebug from "debug";');
 
-    // Data source imports
-    for (const ds of dataSources) {
-      const dsName = camelCase(ds.name);
-      lines.push(`import { dataSource as ${dsName}DataSource } from "./data-sources/${kebabCase(ds.name)}.js";`);
+    // Data source import
+    if (dataSources.length > 0) {
+      lines.push('import { dataSource } from "./data-sources/index.js";');
     }
 
     // Business object imports
@@ -236,13 +235,9 @@ const appGenerator: DesignGenerator = {
     // --- Class declaration ---
     lines.push('export class App {');
 
-    // --- dataSources ---
+    // --- dataSource ---
     if (dataSources.length > 0) {
-      lines.push('  static dataSources = {');
-      for (const ds of dataSources) {
-        lines.push(`    ${camelCase(ds.name)}: ${camelCase(ds.name)}DataSource,`);
-      }
-      lines.push('  };');
+      lines.push('  static dataSource = dataSource;');
       lines.push('');
     }
 

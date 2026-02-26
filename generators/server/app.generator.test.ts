@@ -21,8 +21,8 @@ describe('appGenerator', () => {
     });
   });
 
-  describe('dataSources', () => {
-    it('should include static dataSources property with data source imports', async () => {
+  describe('dataSource', () => {
+    it('should include static dataSource property with unified import', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
@@ -34,9 +34,8 @@ describe('appGenerator', () => {
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appGenerator.generate(metadata, workspace.context)) as string;
 
-      expect(result).toContain('import { dataSource as postgresDataSource } from "./data-sources/postgres.js"');
-      expect(result).toContain('static dataSources = {');
-      expect(result).toContain('postgres: postgresDataSource,');
+      expect(result).toContain('import { dataSource } from "./data-sources/index.js"');
+      expect(result).toContain('static dataSource = dataSource;');
     });
   });
 
