@@ -50,6 +50,10 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     throw new Error(`DataSource "${dsName}" configuration is missing persistenceType (possible values: ${possibleValues})`);
   }
 
+  if (persistenceType === 'File' && !configOptions.some(opt => opt.startsWith('rootDir:'))) {
+    throw new Error(`DataSource "${dsName}" with persistenceType "File" requires a rootDir configuration option`);
+  }
+
   // Find BOs that use this data source
   const businessObjects = context.listMetadata('BusinessObject');
   const myBOs = businessObjects.filter(bo => {
