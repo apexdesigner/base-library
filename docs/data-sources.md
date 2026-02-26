@@ -1,5 +1,5 @@
 ---
-generated-from: design/testing/business-objects/test-setting/test-setting.business-object.ts
+generated-from: design/project.ts
 generated-by: data-sources.doc.md
 ---
 # Data Sources

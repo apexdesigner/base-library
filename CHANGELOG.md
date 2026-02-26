@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.75] - 2026-02-26
+
+- 319ff2b fix: app generator uses unified data source import
+
+
 ## [1.0.74] - 2026-02-26
 
 - 66f194a feat: cross-data-source relationship pages and test improvements
