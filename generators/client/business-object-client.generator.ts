@@ -256,9 +256,13 @@ const businessObjectClientGenerator: DesignGenerator = {
           .join(', ');
 
         // Build the body arg from parameters
-        const bodyArg = methodParams.length > 0
-          ? `{ ${methodParams.map(p => p.name).join(', ')} }`
-          : '{}';
+        // Single param: pass directly (server passes req.body as the argument)
+        // Multiple params: wrap in object
+        const bodyArg = methodParams.length === 0
+          ? '{}'
+          : methodParams.length === 1
+            ? methodParams[0].name
+            : `{ ${methodParams.map(p => p.name).join(', ')} }`;
 
         const behaviorKebab = kebabCase(func.name);
         const returnType = func.returnType || 'any';

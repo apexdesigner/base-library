@@ -82,6 +82,11 @@ h1, h2, h3, h4, h5, h6, p {
   margin: 0;
 }
 
+mat-form-field {
+  padding-top: 4px;
+  width: 100%;
+}
+
 // Make disabled form field text more readable
 .mat-mdc-form-field input[disabled],
 .mat-mdc-form-field textarea[disabled],

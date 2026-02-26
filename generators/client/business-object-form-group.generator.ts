@@ -174,15 +174,26 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push('');
     lines.push(`  constructor(options?: PersistedFormGroupOptions) {`);
     lines.push(`    super(${schemaVarName}, ${className}, options);`);
-    // Add nested controls for relationships
+    lines.push(`  }`);
+
+    // Generate createControl factory for lazy initialization of relationship controls
+    const relCases: string[] = [];
     for (const rel of relationships) {
       if (rel.relationshipType === 'Has Many') {
-        lines.push(`    this.setControl('${rel.relationshipName}', new ${rel.businessObjectName}FormArray());`);
+        relCases.push(`      case '${rel.relationshipName}': return new ${rel.businessObjectName}FormArray();`);
       } else {
-        lines.push(`    this.setControl('${rel.relationshipName}', new ${rel.businessObjectName}FormGroup());`);
+        relCases.push(`      case '${rel.relationshipName}': return new ${rel.businessObjectName}FormGroup();`);
       }
     }
-    lines.push(`  }`);
+    if (relCases.length > 0) {
+      lines.push('');
+      lines.push('  protected override createControl(name: string) {');
+      lines.push('    switch (name) {');
+      lines.push(...relCases);
+      lines.push('      default: return undefined;');
+      lines.push('    }');
+      lines.push('  }');
+    }
 
     // --- Instance behavior delegation ---
     const allBehaviors = context.listMetadata('Behavior');

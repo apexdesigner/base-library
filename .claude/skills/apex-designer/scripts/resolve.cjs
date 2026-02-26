@@ -58,9 +58,9 @@ process.stdin.on('end', () => {
     respond('ad3 server is not running. Run `ad3 start` to start it.');
   }
 
-  // Call the resolve API
+  // Call the validate API (validate-only, no fix — use `ad3 resolve` to fix)
   const start = Date.now();
-  const url = `http://localhost:${port}/api/validate?fix=true&path=${encodeURIComponent(designPath)}`;
+  const url = `http://localhost:${port}/api/validate?path=${encodeURIComponent(designPath)}`;
 
   const req = http.request(url, { method: 'POST', headers: { Authorization: `Bearer ${token}`, Accept: 'application/x-ndjson' } }, (res) => {
     let data = '';
@@ -74,17 +74,13 @@ process.stdin.on('end', () => {
 
       // Parse NDJSON response
       const diagLines = [];
-      let diagnosticCount = 0;
-      let fixedCount = 0;
       let objectCount = 0;
       for (const line of data.split('\n').filter(Boolean)) {
         try {
           const event = JSON.parse(line);
           if (event.type === 'result') {
-            diagnosticCount = event.diagnostics?.length || 0;
-            fixedCount = event.summary?.fixed || 0;
             objectCount = event.summary?.total || 0;
-            if (diagnosticCount > 0) {
+            if (event.diagnostics) {
               for (const d of event.diagnostics) {
                 diagLines.push(`${d.severity}: ${d.path} - ${d.message}`);
               }
@@ -93,9 +89,16 @@ process.stdin.on('end', () => {
         } catch {}
       }
 
-      const summary = `Resolved: ${objectCount} objects, ${fixedCount} fixed, ${diagnosticCount} diagnostics  ${timing}`;
-      const output = diagLines.length > 0 ? summary + '\n' + diagLines.join('\n') : summary;
-      respond(output);
+      // Clean — no output needed
+      if (diagLines.length === 0) {
+        process.exit(0);
+      }
+
+      respond(
+        `Validated: ${objectCount} objects, ${diagLines.length} diagnostics  ${timing}\n` +
+        diagLines.join('\n') +
+        '\nRun `ad3 resolve` after completing edits to auto-fix'
+      );
     });
   });
 
