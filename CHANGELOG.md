@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.76] - 2026-02-26
+
+- fb4b727 fix: resolve base types to native types in client generators
+
+
 ## [1.0.75] - 2026-02-26
 
 - 319ff2b fix: app generator uses unified data source import
