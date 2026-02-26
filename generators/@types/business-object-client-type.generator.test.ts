@@ -19,7 +19,7 @@ describe('businessObjectClientTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -36,7 +36,7 @@ describe('businessObjectClientTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -53,7 +53,7 @@ describe('businessObjectClientTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -71,13 +71,45 @@ describe('businessObjectClientTypeGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = (await businessObjectClientTypeGenerator.generate(metadata, workspace.context)) as string;
 
       expect(result).toContain('static findById(id: string,');
+    });
+  });
+
+  describe('base type resolution in data interface', () => {
+    it('should be implemented', () => {
+      // TODO: Add test implementation
+    });
+
+    it('should resolve base type to native type in scalar properties', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Email', {
+        sourceCode: `
+          import { BaseType } from '@apexdesigner/dsl';
+          export class Email extends BaseType<string> {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessAdmin', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Email } from '@base-types';
+          export class ProcessAdmin extends BusinessObject {
+            id!: number;
+            email?: Email;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('readonly email?: string;');
+      expect(result).not.toContain('readonly email?: Email;');
     });
   });
 });

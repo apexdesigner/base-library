@@ -149,7 +149,7 @@ fi
 
 # Start server
 echo "Starting server..."
-(cd "$PROJECT_DIR/server" && DEBUG="$DEBUG_STR" npx tsx --watch src/index.ts) \
+(cd "$PROJECT_DIR/server" && PORT="$SERVER_PORT" DEBUG="$DEBUG_STR" npx tsx --watch src/index.ts) \
   >> "$LOG_DIR/server.log" 2>&1 &
 SERVER_PID=$!
 
@@ -158,7 +158,7 @@ wait_for_log "$LOG_DIR/server.log" "Server listening on port" "server" 30 "Faile
 if [ "$SERVER_ONLY" = false ]; then
   # Start client
   echo "Starting client..."
-  (cd "$PROJECT_DIR/client" && npx ng serve --port "$CLIENT_PORT") \
+  (cd "$PROJECT_DIR/client" && PORT="$SERVER_PORT" npx ng serve --port "$CLIENT_PORT") \
     >> "$LOG_DIR/client.log" 2>&1 &
   CLIENT_PID=$!
 

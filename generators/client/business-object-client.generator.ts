@@ -75,6 +75,20 @@ const businessObjectClientGenerator: DesignGenerator = {
     }
     debug('className %j, idName %j, idType %j, plural %j', className, idName, idType, plural);
 
+    // Build base type name → native type map (e.g. Email → string, Uuid → string)
+    const baseTypeMap = new Map<string, string>();
+    for (const bt of context.listMetadata('BaseType')) {
+      const btClass = getClassByBase(bt.sourceFile, 'BaseType');
+      if (!btClass) continue;
+      const heritage = btClass.getExtends();
+      if (!heritage) continue;
+      const typeArgs = heritage.getTypeArguments();
+      if (typeArgs.length > 0) {
+        baseTypeMap.set(pascalCase(bt.name), typeArgs[0].getText());
+      }
+    }
+    debug('baseTypeMap %O', Object.fromEntries(baseTypeMap));
+
     // Get the BO class and its properties
     const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');
     const properties = boClass?.getProperties() || [];
@@ -125,8 +139,9 @@ const businessObjectClientGenerator: DesignGenerator = {
       const propName = prop.getName();
       if (skipNames.has(propName)) continue;
 
-      let propType = prop.getType().getText();
+      let propType = prop.getTypeNode()?.getText() || prop.getType().getText();
       propType = propType.replace(' | undefined', '');
+      propType = baseTypeMap.get(propType) || propType;
 
       const optional = prop.hasQuestionToken() ? '?' : '';
       lines.push(`  readonly ${propName}${optional}: ${propType};`);

@@ -22,6 +22,7 @@ applyTemplate(TestItemsPage, `
     <if condition="!testItems.reading">
       <dt-table [dataSource]="testItems" routerLinkTemplate="/test-items/{id}">
         <dt-column property="name" header="Name"></dt-column>
+        <dt-column property="email" header="Email"></dt-column>
         <dt-column property="testSetting.name" header="Setting"></dt-column>
       </dt-table>
       <else>
