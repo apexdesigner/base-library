@@ -10,12 +10,13 @@ generated-by: business-object.doc.md
 |------|------|----------|-------------|
 | id | `number` | Always |  |
 | name | `string` | No |  |
+| testSettingId | [`Uuid`](../base-types.md#uuid) | No |  |
 
 ## Relationships
 
 | Name | Type | Relationship | Description |
 |------|------|--------------|-------------|
-| testSetting | [`TestSetting`](./test-setting.md) | Belongs To |  |
+| testSetting | [`TestSetting`](./test-setting.md) | References |  |
 
 **Data Source:** [TestPostgres](../data-sources.md)
 

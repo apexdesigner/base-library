@@ -8,7 +8,11 @@ import { TestSettingsPage } from "@pages";
 })
 export class TestSettingPage extends Page {
 
-  @property({ read: "Automatically", save: "Automatically" })
+  @property({
+    read: "Automatically",
+    save: "Automatically",
+    include: { testItems: {} },
+  })
   testSetting!: TestSettingFormGroup;
 }
 
@@ -17,6 +21,13 @@ applyTemplate(TestSettingPage, `
     <flex-column>
       <h1>{{testSetting.value.name}}</h1>
       <sf-fields [group]="testSetting"></sf-fields>
+      <h3>Test Items</h3>
+      <for const="item" of="testSetting.value.testItems">
+        <a [routerLink]="'/test-items/' + item.id">{{item.name}}</a>
+        <when-empty>
+          <div>No test items</div>
+        </when-empty>
+      </for>
     </flex-column>
     <else>
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
