@@ -85,6 +85,24 @@ const pageComponentGenerator: DesignGenerator = {
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
 
+    // Capture @services imports before removal (for service injection)
+    const serviceImports: { name: string; typeName: string }[] = [];
+    const servicesImportDecl = writableFile.getImportDeclaration(
+      imp => imp.getModuleSpecifierValue() === '@services'
+    );
+    if (servicesImportDecl) {
+      for (const named of servicesImportDecl.getNamedImports()) {
+        serviceImports.push({ name: named.getName(), typeName: named.getName() });
+      }
+    }
+    debug('captured service imports %j', serviceImports);
+
+    // Build set of service type names for identifying service-typed properties
+    const serviceTypeNames = new Set(serviceImports.map(s => s.typeName));
+    for (const m of (context.listMetadata('Service') || [])) {
+      serviceTypeNames.add(m.name);
+    }
+
     // Remove DSL and design-time alias imports
     // Design aliases are single-segment (@pages, @base-types, etc.)
     // npm scoped packages have a slash (@angular/core, @apexdesigner/dsl)
@@ -230,12 +248,28 @@ const pageComponentGenerator: DesignGenerator = {
       exportedClass.removeExtends();
     }
 
+    // Convert service-typed properties to inject() calls
+    const injectedServices: { propName: string; typeName: string; serviceFile: string }[] = [];
+    for (const prop of exportedClass.getProperties()) {
+      const typeNode = prop.getTypeNode();
+      if (!typeNode) continue;
+      const typeText = typeNode.getText();
+      if (serviceTypeNames.has(typeText)) {
+        const propName = prop.getName();
+        const svcBaseName = typeText.replace(/Service$/, '');
+        const svcFile = kebabCase(svcBaseName);
+        injectedServices.push({ propName, typeName: typeText, serviceFile: svcFile });
+        prop.replaceWithText(`${propName} = inject(${typeText})`);
+        debug('injected service %j: %j', propName, typeText);
+      }
+    }
+
     // Add Angular imports
     const hasRouteParams = routeParams.length > 0;
     const hasAutoSaveFormGroups = formGroupProperties.some(fg => fg.saveMode === 'Automatically');
     const hasPersistedArrayAutoRead = persistedArrayProperties.some(pa => pa.readMode === 'Automatically');
     const needsOnInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasRouteParams || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
-    const needsInject = hasRouteParams || hasAutoSaveFormGroups;
+    const needsInject = hasRouteParams || hasAutoSaveFormGroups || injectedServices.length > 0;
     const angularCoreImports = ['Component'];
     if (viewChildProps.length > 0) {
       angularCoreImports.push('ViewChild');
@@ -480,6 +514,14 @@ const pageComponentGenerator: DesignGenerator = {
           namedImports: [vc.typeName],
         });
       }
+    }
+
+    // Add service imports (re-map @services -> relative paths)
+    for (const svc of injectedServices) {
+      writableFile.addImportDeclaration({
+        moduleSpecifier: `../../services/${svc.serviceFile}/${svc.serviceFile}.service`,
+        namedImports: [svc.typeName],
+      });
     }
 
     // Build imports array for @Component decorator
