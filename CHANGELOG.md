@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.73] - 2026-02-26
+
+- f201608 chore: apply automated fixes from dependency updates
+- d17d51f feat: lazy relationship control initialization and client behavior fixes
+
+
 ## [1.0.72] - 2026-02-25
 
 - 5d53f33 fix: update dialog input test to match getter/setter backing field
