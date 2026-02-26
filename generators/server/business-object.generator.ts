@@ -310,7 +310,7 @@ const businessObjectGenerator: DesignGenerator = {
     }
     lines.push('import type { z } from "zod";');
     lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${boKebab}.js";`);
-    lines.push(`import { dataSource } from "../data-sources/${dsKebab}.js";`);
+    lines.push('import { dataSource } from "../data-sources/index.js";');
 
     // Add behavior-referenced imports
     if (needsAppImport) {

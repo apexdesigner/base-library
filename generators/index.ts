@@ -23,7 +23,6 @@ export { pageComponentGenerator } from "./client/page-component.generator.js";
 export { componentGenerator } from "./client/component.generator.js";
 export { clientAppConfigGenerator } from "./client/client-app-config.generator.js";
 export { clientStylesGenerator } from "./client/client-styles.generator.js";
-export { clientProxyConfigGenerator } from "./client/client-proxy-config.generator.js";
 export { businessObjectFormGroupGenerator } from "./client/business-object-form-group.generator.js";
 
 // Server generators

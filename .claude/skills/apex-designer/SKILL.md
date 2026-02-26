@@ -93,3 +93,8 @@ See `.claude/skills/apex-designer/docs/dev-sh.md` for usage. The script is at `.
 - `bash .claude/skills/apex-designer/scripts/dev.sh --debug "AppName:*"` — enables debug output
 - Running it again automatically kills existing processes on the ports
 - Fire-and-forget: the server uses `tsx --watch` and will auto-restart as files change. If startup fails or times out, check `logs/server.log` and fix the issue (e.g., run `ad3 gen`) — do NOT re-run dev.sh
+- Ports can be pinned per project via `.workspace.json`:
+  ```json
+  { "serverPort": 3000, "clientPort": 4200 }
+  ```
+  Priority: `.workspace.json` → `PORT`/`CLIENT_PORT` env vars → defaults (3000/4200)

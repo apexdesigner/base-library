@@ -1,7 +1,7 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary } from '@apexdesigner/generator';
 import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
-import { kebabCase, pascalCase, camelCase } from 'change-case';
+import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:server');
@@ -27,13 +27,10 @@ const serverGenerator: DesignGenerator = {
 
     const debugNamespace = pascalCase(metadata.name);
 
-    // Collect data sources for shutdown
+    // Check if any data sources exist (for shutdown handler)
     const allDataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
-    const dataSources: { varName: string; kebab: string }[] = allDataSources.map(ds => ({
-      varName: camelCase(ds.name) + 'DataSource',
-      kebab: kebabCase(ds.name),
-    }));
-    debug('found %d data sources for shutdown', dataSources.length);
+    const hasDataSources = allDataSources.length > 0;
+    debug('found %d data sources', allDataSources.length);
 
     // Find After Start lifecycle app behaviors
     const appBehaviors = context.listMetadata('AppBehavior');
@@ -79,9 +76,9 @@ const serverGenerator: DesignGenerator = {
     lines.push('import createDebug from "debug";');
     lines.push('import router from "./routes/index.js";');
 
-    // Import data sources for shutdown
-    for (const ds of dataSources) {
-      lines.push(`import { dataSource as ${ds.varName} } from "./data-sources/${ds.kebab}.js";`);
+    // Import data source for shutdown
+    if (hasDataSources) {
+      lines.push('import { dataSource } from "./data-sources/index.js";');
     }
 
     // Import After Start app behaviors
@@ -123,8 +120,8 @@ const serverGenerator: DesignGenerator = {
     lines.push('');
     lines.push('const shutdown = async () => {');
     lines.push('  server.closeAllConnections();');
-    for (const ds of dataSources) {
-      lines.push(`  await ${ds.varName}.close();`);
+    if (hasDataSources) {
+      lines.push('  await dataSource.close();');
     }
     lines.push('  server.close(() => process.exit(0));');
     lines.push('};');

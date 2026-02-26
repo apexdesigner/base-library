@@ -32,9 +32,21 @@ lsof -ti :3000   # Server
 lsof -ti :4200   # Client
 ```
 
-## Environment Variables
+## Port Configuration
 
-| Variable | Default | Description |
+Ports can be pinned per project in `.workspace.json`:
+
+```json
+{
+  "serverPort": 3000,
+  "clientPort": 4200
+}
+```
+
+Priority: `.workspace.json` → environment variables → defaults (3000/4200).
+
+| Source | Server Port | Client Port |
 |---|---|---|
-| `PORT` | `3000` | Server port |
-| `CLIENT_PORT` | `4200` | Client port |
+| `.workspace.json` | `serverPort` | `clientPort` |
+| Environment variable | `PORT` | `CLIENT_PORT` |
+| Default | `3000` | `4200` |

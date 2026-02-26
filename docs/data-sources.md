@@ -1,8 +1,14 @@
 ---
-generated-from: design/testing/business-objects/test-item/test-item.business-object.ts
+generated-from: design/testing/business-objects/test-setting/test-setting.business-object.ts
 generated-by: data-sources.doc.md
 ---
 # Data Sources
+
+## TestFile
+
+### Business Objects
+
+- [TestSetting](./business-objects/test-setting.md)
 
 ## TestPostgres
 

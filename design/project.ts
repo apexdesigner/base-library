@@ -48,8 +48,8 @@ export class BaseLibrary extends Project {
   };
 
   serverDependencies = {
-    "@apexdesigner/schema-persistence": "^0.1.74",
-    "@apexdesigner/schema-tools": "^0.1.60",
+    "@apexdesigner/schema-persistence": "^0.1.79",
+    "@apexdesigner/schema-tools": "^0.1.75",
     "debug": "^4.4.3",
     "express": "^5.1.0",
     "zod": "^4.1.13",
