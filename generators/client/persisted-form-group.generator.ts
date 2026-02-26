@@ -86,8 +86,19 @@ export class PersistedFormGroup extends SchemaFormGroup {
       const id = mergedFilter.where?.[this._idProperty];
       const data = await this._entityClass.findById(id, mergedFilter);
       debug('data', data);
+      // Lazily create controls for included relationships
+      for (const key of Object.keys(data)) {
+        if (data[key] != null && typeof data[key] === 'object' && !this.controls[key]) {
+          const control = this.createControl(key);
+          if (control) {
+            debug('lazy-creating control %s', key);
+            this.setControl(key, control);
+          }
+        }
+      }
+
       this.patchValue(data);
-      // Populate nested PersistedFormArray controls (patchValue can't add to empty arrays)
+      // Populate nested relationship controls
       for (const [name, control] of Object.entries(this.controls)) {
         debug('control', name, control.constructor.name, control instanceof PersistedFormArray, Array.isArray(data[name]));
         if (control instanceof PersistedFormArray && Array.isArray(data[name])) {
@@ -108,6 +119,10 @@ export class PersistedFormGroup extends SchemaFormGroup {
     } finally {
       this.reading = false;
     }
+  }
+
+  protected createControl(_name: string): any {
+    return undefined;
   }
 
   override async save(): Promise<any> {
@@ -341,6 +356,7 @@ export declare class PersistedFormGroup extends SchemaFormGroup {
 
   constructor(schema: any, entityClass: any, options?: PersistedFormGroupOptions, idProperty?: string);
 
+  protected createControl(name: string): any;
   read(filter?: Record<string, any>): Promise<void>;
   save(): Promise<any>;
   autoSave(destroyRef: any, debounceMs?: number): void;

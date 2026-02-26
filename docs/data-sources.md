@@ -1,10 +1,15 @@
 ---
-generated-from: design/project.ts
+generated-from: design/testing/business-objects/test-item/test-item.business-object.ts
 generated-by: data-sources.doc.md
 ---
 # Data Sources
 
-_No data sources are defined in this project._
+## TestPostgres
+
+### Business Objects
+
+- [TestCategory](./business-objects/test-category.md)
+- [TestItem](./business-objects/test-item.md)
 
 ---
 

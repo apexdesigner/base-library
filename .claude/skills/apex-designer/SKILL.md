@@ -48,14 +48,17 @@ This project includes the following libraries:
 
 If you discover a useful pattern or convention while working with this project, suggest adding it to the library documentation so it can benefit other projects.
 
+If this project is itself a library, see `.claude/skills/apex-designer/docs/library-development.md` for library-specific patterns.
+
 ## Workflow
 
 1. Read the relevant doc before creating or modifying a design type
 2. Create or edit design files in `design/` — use the Write tool to create new files (it auto-creates directories)
-3. `ad3 resolve <path>` runs automatically after Edit/Write to `design/` files (via post-tool hook at `.claude/skills/apex-designer/scripts/resolve.cjs`) — do not run it manually after these operations
-4. If resolve reports diagnostics, stop and ask the user for help — do not attempt workarounds
-5. `ad3` is installed globally — do not use `npx`
-6. After deleting a design file, run `ad3 resolve` manually — the hook only triggers on Edit/Write, not file deletions
+3. A validation hook runs automatically after Edit/Write to `design/` files (via `.claude/skills/apex-designer/scripts/resolve.cjs`) — it checks for errors but does not auto-fix
+4. After completing a set of related edits, run `ad3 resolve` to auto-fix issues (adds inverse relationships, foreign keys, etc.) and regenerate code
+5. If diagnostics remain after resolve, stop and ask the user for help — do not attempt workarounds
+6. `ad3` is installed globally — do not use `npx`
+7. After deleting a design file, run `ad3 resolve` manually — the hook only triggers on Edit/Write, not file deletions
 
 ### What resolve adds automatically
 
@@ -64,7 +67,7 @@ You don't need to include these in design files — resolve will add them automa
 - Foreign key properties (e.g., `locationId` for a `location` belongs-to relationship)
 - Inverse relationships (e.g., `contacts?: Contact[]` on Location when Contact has `location?: Location`)
 
-The resolve hook handles the full resolve/gen/resolve cycle automatically, including new types with relationships. No manual `ad3 gen` or extra `ad3 resolve` steps are needed.
+`ad3 resolve` handles the full validate/fix/generate cycle, looping until stable. No manual `ad3 gen` steps are needed.
 
 ### Static files
 
