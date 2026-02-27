@@ -11,7 +11,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class MyProject extends Project {
             defaultDataSource = Postgres;
           }
-        `,
+        `
       });
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
@@ -19,13 +19,13 @@ describe('businessObjectSchemaGenerator', () => {
           export class Postgres extends DataSource {
             configuration = { persistenceType: 'Postgres' };
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'User', {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class User extends BusinessObject {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -40,7 +40,7 @@ describe('businessObjectSchemaGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class Tag extends BusinessObject {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -56,7 +56,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class MyProject extends Project {
             defaultDataSource = Postgres;
           }
-        `,
+        `
       });
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
@@ -64,7 +64,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Postgres extends DataSource {
             configuration = { persistenceType: 'Postgres' };
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Order', {
         sourceCode: `
@@ -73,7 +73,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ isId: true, column: { type: 'BIGINT', autoIncrement: true } })
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -91,7 +91,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ column: { type: 'DECIMAL' } })
             price?: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -112,7 +112,7 @@ describe('businessObjectSchemaGenerator', () => {
             parentProcessInstance?: ProcessInstance;
             parentProcessInstanceId?: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -132,13 +132,13 @@ describe('businessObjectSchemaGenerator', () => {
             customer!: Customer;
             customerId!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Customer', {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class Customer extends BusinessObject {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
@@ -157,7 +157,7 @@ describe('businessObjectSchemaGenerator', () => {
           import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
           export class Json extends BaseType<any> {}
           setColumnDefaults(Json, 'jsonb');
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Task', {
         sourceCode: `
@@ -166,7 +166,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Task extends BusinessObject {
             data?: Json;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -182,7 +182,7 @@ describe('businessObjectSchemaGenerator', () => {
           import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
           setColumnDefaults(Uuid, 'uuid');
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Token', {
         sourceCode: `
@@ -191,7 +191,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Token extends BusinessObject {
             code?: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -214,7 +214,7 @@ describe('businessObjectSchemaGenerator', () => {
             "Resumed",
             "Replaced",
           ]);
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesignHistory', {
         sourceCode: `
@@ -223,7 +223,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class ProcessDesignHistory extends BusinessObject {
             eventType?: ProcessDesignHistoryEventType;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -243,7 +243,7 @@ describe('businessObjectSchemaGenerator', () => {
             { name: "Active", value: "active" },
             { name: "Inactive", value: "inactive" },
           ]);
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Account', {
         sourceCode: `
@@ -252,13 +252,42 @@ describe('businessObjectSchemaGenerator', () => {
           export class Account extends BusinessObject {
             status?: Status;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
 
       expect(result).toContain('z.enum(["active", "inactive"])');
+      expect(result).not.toContain('z.unknown()');
+    });
+
+    it('should resolve base type to native zod type when no valid values or column defaults are set', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Email', {
+        sourceCode: `
+          import { BaseType, applyValidation } from '@apexdesigner/dsl';
+          export class Email extends BaseType<string> {}
+          applyValidation(Email, {
+            pattern: "^[^@]+@[^@]+\\\\.[^@]+$",
+            patternMessage: "Must be a valid email address",
+          });
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessAdmin', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Email } from '@base-types';
+          export class ProcessAdmin extends BusinessObject {
+            email!: Email;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('email: z.string()');
       expect(result).not.toContain('z.unknown()');
     });
   });
@@ -271,7 +300,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class MyProject extends Project {
             defaultDataSource = Postgres;
           }
-        `,
+        `
       });
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
@@ -281,14 +310,14 @@ describe('businessObjectSchemaGenerator', () => {
             configuration = { persistenceType: 'Postgres' };
             defaultIdType = Uuid;
           }
-        `,
+        `
       });
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
           import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
           setColumnDefaults(Uuid, 'uuid');
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessInstance', {
         sourceCode: `
@@ -297,7 +326,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class ProcessInstance extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -316,7 +345,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class MyProject extends Project {
             defaultDataSource = Postgres;
           }
-        `,
+        `
       });
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
@@ -326,14 +355,14 @@ describe('businessObjectSchemaGenerator', () => {
             configuration = { persistenceType: 'Postgres' };
             defaultIdType = Uuid;
           }
-        `,
+        `
       });
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
           import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
           setColumnDefaults(Uuid, 'uuid');
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -342,7 +371,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessInstance', {
         sourceCode: `
@@ -355,7 +384,7 @@ describe('businessObjectSchemaGenerator', () => {
             processDesign!: ProcessDesign;
             processDesignId!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
@@ -385,7 +414,7 @@ describe('businessObjectSchemaGenerator', () => {
             FROM process_design pd
             ORDER BY pd.design_uuid, pd.version DESC
           \`);
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];

@@ -138,8 +138,22 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         }
       }
     }
+    // Build base type name → native type map (e.g. Email → string, Uuid → string)
+    const baseTypeNativeMap = new Map<string, string>();
+    for (const bt of context.listMetadata('BaseType')) {
+      const btClass = getClassByBase(bt.sourceFile, 'BaseType');
+      if (!btClass) continue;
+      const heritage = btClass.getExtends();
+      if (!heritage) continue;
+      const typeArgs = heritage.getTypeArguments();
+      if (typeArgs.length > 0) {
+        baseTypeNativeMap.set(pascalCase(bt.name), typeArgs[0].getText());
+      }
+    }
+
     debug('baseTypeColumnDefaults %j', Object.fromEntries(baseTypeColumnDefaults));
     debug('baseTypeValidValues %j', Object.fromEntries(baseTypeValidValues));
+    debug('baseTypeNativeMap %j', Object.fromEntries(baseTypeNativeMap));
 
     // Determine id Zod type and column config
     let idZodType = 'z.number()';
@@ -216,6 +230,11 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         } else if (baseTypeValidValues.has(typeText)) {
           const values = baseTypeValidValues.get(typeText)!;
           zodType = `z.enum([${values.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ')}])`;
+        } else if (baseTypeNativeMap.has(typeText)) {
+          const native = baseTypeNativeMap.get(typeText)!;
+          if (native === 'string') zodType = 'z.string()';
+          else if (native === 'number') zodType = 'z.number()';
+          else if (native === 'boolean') zodType = 'z.boolean()';
         } else {
           zodType = 'z.unknown()';
         }
@@ -309,6 +328,11 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           else if (baseTypeValidValues.has(typeText)) {
             const values = baseTypeValidValues.get(typeText)!;
             zodType = `z.enum([${values.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ')}])`;
+          } else if (baseTypeNativeMap.has(typeText)) {
+            const native = baseTypeNativeMap.get(typeText)!;
+            if (native === 'string') zodType = 'z.string()';
+            else if (native === 'number') zodType = 'z.number()';
+            else if (native === 'boolean') zodType = 'z.boolean()';
           }
         }
 
