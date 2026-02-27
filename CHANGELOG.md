@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.79] - 2026-02-27
+
+- 312c60a fix: remove isLibrary conditions from type generators
+
+
 ## [1.0.78] - 2026-02-27
 
 - 611ef60 feat: generate App.dataSources as plural map and add Uuid base type
