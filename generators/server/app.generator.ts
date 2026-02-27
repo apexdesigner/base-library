@@ -235,9 +235,9 @@ const appGenerator: DesignGenerator = {
     // --- Class declaration ---
     lines.push('export class App {');
 
-    // --- dataSource ---
+    // --- dataSources ---
     if (dataSources.length > 0) {
-      lines.push('  static dataSource = dataSource;');
+      lines.push('  static dataSources = { default: dataSource };');
       lines.push('');
     }
 

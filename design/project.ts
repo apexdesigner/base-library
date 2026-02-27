@@ -23,8 +23,8 @@ export class BaseLibrary extends Project {
     "@angular/cdk": "~19.2.0",
     "@angular/material": "~19.2.0",
     "@angular/router": "~19.2.0",
-    "@apexdesigner/declarative-tables": "^0.1.0",
-    "@apexdesigner/schema-forms": "^0.1.47",
+    "@apexdesigner/declarative-tables": "^0.1.10",
+    "@apexdesigner/schema-forms": "^0.1.53",
     "@monaco-editor/loader": "^1.7.0",
     "debug": { versionSelector: "^4.4.3", isCommonJs: true },
     "indefinite": { versionSelector: "^2.4.6", isCommonJs: true },
@@ -48,7 +48,7 @@ export class BaseLibrary extends Project {
   };
 
   serverDependencies = {
-    "@apexdesigner/schema-persistence": "^0.1.79",
+    "@apexdesigner/schema-persistence": "^0.1.83",
     "@apexdesigner/schema-tools": "^0.1.75",
     "debug": "^4.4.3",
     "express": "^5.1.0",

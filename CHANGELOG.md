@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.78] - 2026-02-27
+
+- 611ef60 feat: generate App.dataSources as plural map and add Uuid base type
+- ad75923 chore: bump schema-persistence and generator to latest
+- 9f168bd docs: add design doc for add-button dialog component
+- 3497972 chore: update @apexdesigner package version selectors to latest
+
+
 ## [1.0.77] - 2026-02-26
 
 - 3ac2776 chore: apply automated fixes

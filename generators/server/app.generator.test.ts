@@ -35,7 +35,7 @@ describe('appGenerator', () => {
       const result = (await appGenerator.generate(metadata, workspace.context)) as string;
 
       expect(result).toContain('import { dataSource } from "./data-sources/index.js"');
-      expect(result).toContain('static dataSource = dataSource;');
+      expect(result).toContain('static dataSources = { default: dataSource };');
     });
   });
 
