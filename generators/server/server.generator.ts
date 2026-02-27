@@ -1,6 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary } from '@apexdesigner/generator';
-import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
+import { getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
@@ -13,7 +13,14 @@ const serverGenerator: DesignGenerator = {
     {
       metadataType: 'Project',
       condition: (metadata) => !isLibrary(metadata),
-    }
+    },
+    {
+      metadataType: 'Behavior',
+      condition: (metadata) => {
+        const options = getBehaviorOptions(metadata.sourceFile);
+        return options?.type === 'After Start';
+      },
+    },
   ],
 
   outputs: () => [
@@ -25,7 +32,8 @@ const serverGenerator: DesignGenerator = {
     const debug = Debug.extend('generate');
     debug('START generate for %j', metadata.name);
 
-    const debugNamespace = pascalCase(metadata.name);
+    const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
+    const debugNamespace = pascalCase((projectMeta?.name || metadata.name).replace(/Project$/, ''));
 
     // Check if any data sources exist (for shutdown handler)
     const allDataSources = context.listMetadata('DataSource');
@@ -54,6 +62,26 @@ const serverGenerator: DesignGenerator = {
         kebab: kebabCase(behavior.name),
       });
       debug('found After Start behavior: %j', func.name);
+    }
+
+    // Find After Start lifecycle BO behaviors
+    const allBehaviors = context.listMetadata('Behavior');
+    const afterStartBoBehaviors: { name: string; importPath: string }[] = [];
+
+    for (const behavior of allBehaviors) {
+      const options = getBehaviorOptions(behavior.sourceFile);
+      if (!options) continue;
+      if (options.type !== 'After Start') continue;
+
+      const parent = getBehaviorParent(behavior.sourceFile);
+      const func = getBehaviorFunction(behavior.sourceFile);
+      if (!parent || !func) continue;
+
+      afterStartBoBehaviors.push({
+        name: func.name,
+        importPath: `./business-objects/${kebabCase(parent)}.${kebabCase(func.name)}.js`,
+      });
+      debug('found After Start BO behavior: %j', func.name);
     }
 
     // --- env.ts ---
@@ -86,6 +114,11 @@ const serverGenerator: DesignGenerator = {
       lines.push(`import { ${behavior.name} } from "./app-behaviors/${behavior.kebab}.js";`);
     }
 
+    // Import After Start BO behaviors
+    for (const behavior of afterStartBoBehaviors) {
+      lines.push(`import { ${behavior.name} } from "${behavior.importPath}";`);
+    }
+
     lines.push('');
     lines.push(`const debug = createDebug("${debugNamespace}:Server");`);
     lines.push('');
@@ -101,8 +134,17 @@ const serverGenerator: DesignGenerator = {
     lines.push('  console.log("Server listening on port", port);');
     lines.push('  debug("Server listening on port %d", port);');
 
-    // Call After Start behaviors
+    // Call After Start behaviors (app + BO)
     for (const behavior of afterStartBehaviors) {
+      lines.push('');
+      lines.push(`  try {`);
+      lines.push(`    await ${behavior.name}();`);
+      lines.push(`  } catch (err) {`);
+      lines.push(`    debug("Error in ${behavior.name}: %O", err);`);
+      lines.push(`  }`);
+    }
+
+    for (const behavior of afterStartBoBehaviors) {
       lines.push('');
       lines.push(`  try {`);
       lines.push(`    await ${behavior.name}();`);

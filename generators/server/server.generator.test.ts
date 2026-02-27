@@ -1,0 +1,87 @@
+import { describe, it, expect } from 'vitest';
+import { serverGenerator } from './server.generator.js';
+import { createSimpleMockWorkspace } from '@apexdesigner/generator';
+
+describe('serverGenerator', () => {
+  it('should import and call BO After Start behaviors', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('Behavior', 'TestItemStartup', {
+      sourceCode: `
+        import { addBehavior } from '@apexdesigner/dsl';
+        import { TestItem } from '@business-objects';
+        addBehavior(
+          TestItem,
+          { type: 'After Start' },
+          async function startup() {
+            await TestItem.find();
+          }
+        );
+      `,
+    });
+
+    const metadata = workspace.context.listMetadata('Project')[0];
+    const result = (await serverGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+
+    const indexTs = result.get('server/src/index.ts')!;
+
+    expect(indexTs).toContain('import { startup } from "./business-objects/test-item.startup.js"');
+    expect(indexTs).toContain('await startup()');
+  });
+
+  it('should import and call app After Start behaviors', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('AppBehavior', 'LoadSampleDesigns', {
+      sourceCode: `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { lifecycleStage: 'After Start' },
+          async function loadSampleDesigns() {
+            console.log('loading');
+          }
+        );
+      `,
+    });
+
+    const metadata = workspace.context.listMetadata('Project')[0];
+    const result = (await serverGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+
+    const indexTs = result.get('server/src/index.ts')!;
+
+    expect(indexTs).toContain('import { loadSampleDesigns } from "./app-behaviors/load-sample-designs.js"');
+    expect(indexTs).toContain('await loadSampleDesigns()');
+  });
+
+  it('should import both app and BO After Start behaviors', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('AppBehavior', 'LoadSampleDesigns', {
+      sourceCode: `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { lifecycleStage: 'After Start' },
+          async function loadSampleDesigns() {}
+        );
+      `,
+    });
+    workspace.addMetadata('Behavior', 'TestItemStartup', {
+      sourceCode: `
+        import { addBehavior } from '@apexdesigner/dsl';
+        import { TestItem } from '@business-objects';
+        addBehavior(
+          TestItem,
+          { type: 'After Start' },
+          async function startup() {}
+        );
+      `,
+    });
+
+    const metadata = workspace.context.listMetadata('Project')[0];
+    const result = (await serverGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+
+    const indexTs = result.get('server/src/index.ts')!;
+
+    expect(indexTs).toContain('import { loadSampleDesigns } from "./app-behaviors/load-sample-designs.js"');
+    expect(indexTs).toContain('import { startup } from "./business-objects/test-item.startup.js"');
+    expect(indexTs).toContain('await loadSampleDesigns()');
+    expect(indexTs).toContain('await startup()');
+  });
+});
