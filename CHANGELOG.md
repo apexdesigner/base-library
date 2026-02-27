@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.82] - 2026-02-27
+
+- d96bdba fix: resolve base type properties to native zod types in schema generator
+
+
 ## [1.0.81] - 2026-02-27
 
 - f5bd4f2 feat: remove isLibrary filters so generators include library items
