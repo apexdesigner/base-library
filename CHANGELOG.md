@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.81] - 2026-02-27
+
+- f5bd4f2 feat: remove isLibrary filters so generators include library items
+
+
 ## [1.0.80] - 2026-02-27
 
 - 3fb928d fix: restore BO check in Behavior trigger conditions

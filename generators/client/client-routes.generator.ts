@@ -21,7 +21,6 @@ const clientRoutesGenerator: DesignGenerator = {
     },
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
     },
   ],
 

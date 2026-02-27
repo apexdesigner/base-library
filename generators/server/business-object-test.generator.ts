@@ -58,7 +58,6 @@ const businessObjectTestGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'Behavior',
@@ -68,7 +67,7 @@ const businessObjectTestGenerator: DesignGenerator = {
         if (!conditionContext?.context) return true;
         const boMeta = conditionContext.context.listMetadata('BusinessObject')
           .find(bo => pascalCase(bo.name) === parentName);
-        return !!boMeta && !isLibrary(boMeta);
+        return !!boMeta;
       },
     },
   ],

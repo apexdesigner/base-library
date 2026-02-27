@@ -36,7 +36,6 @@ const businessObjectRouteGenerator: DesignGenerator = {
     {
       metadataType: 'BusinessObject',
       condition: (metadata, conditionContext) => {
-        if (isLibrary(metadata)) return false;
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
       },
@@ -49,7 +48,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
         if (!conditionContext?.context) return true;
         const boMeta = conditionContext.context.listMetadata('BusinessObject')
           .find(bo => pascalCase(bo.name) === parentName);
-        return !!boMeta && !isLibrary(boMeta);
+        return !!boMeta;
       },
     },
   ],

@@ -28,7 +28,7 @@ const serverGenerator: DesignGenerator = {
     const debugNamespace = pascalCase(metadata.name);
 
     // Check if any data sources exist (for shutdown handler)
-    const allDataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
+    const allDataSources = context.listMetadata('DataSource');
     const hasDataSources = allDataSources.length > 0;
     debug('found %d data sources', allDataSources.length);
 

@@ -12,12 +12,10 @@ const routesIndexGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'BusinessObject',
       condition: (metadata, conditionContext) => {
-        if (isLibrary(metadata)) return false;
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
       },
@@ -31,7 +29,7 @@ const routesIndexGenerator: DesignGenerator = {
 
     const businessObjects = context.listMetadata('BusinessObject');
     const routeNames = businessObjects
-      .filter(bo => !isLibrary(bo) && !!getDataSource(bo.sourceFile, context))
+      .filter(bo => !!getDataSource(bo.sourceFile, context))
       .map(bo => kebabCase(pluralize(bo.name)))
       .sort();
 

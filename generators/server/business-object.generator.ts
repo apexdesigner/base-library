@@ -114,7 +114,6 @@ const businessObjectGenerator: DesignGenerator = {
     {
       metadataType: 'BusinessObject',
       condition: (metadata, conditionContext) => {
-        if (isLibrary(metadata)) return false;
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
       },
@@ -127,12 +126,11 @@ const businessObjectGenerator: DesignGenerator = {
         if (!conditionContext?.context) return true;
         const boMeta = conditionContext.context.listMetadata('BusinessObject')
           .find(bo => pascalCase(bo.name) === parentName);
-        return !!boMeta && !isLibrary(boMeta);
+        return !!boMeta;
       },
     },
     {
       metadataType: 'TestFixture',
-      condition: (metadata) => !isLibrary(metadata),
     },
   ],
 
