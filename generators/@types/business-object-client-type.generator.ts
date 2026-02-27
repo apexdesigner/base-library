@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
 import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
@@ -25,17 +25,12 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'Behavior',
-      condition: (metadata, conditionContext) => {
+      condition: (metadata) => {
         const parentName = getBehaviorParent(metadata.sourceFile);
-        if (!parentName) return false;
-        if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
-        return !!boMeta && !isLibrary(boMeta);
+        return !!parentName;
       },
     },
   ],

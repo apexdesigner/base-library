@@ -1,5 +1,4 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary } from '@apexdesigner/generator';
 import { getClassByBase, getDescription } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
@@ -12,7 +11,6 @@ const dataSourceTypeGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'DataSource',
-      condition: (metadata) => !isLibrary(metadata),
     }
   ],
 

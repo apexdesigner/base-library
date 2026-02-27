@@ -1,5 +1,4 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary } from '@apexdesigner/generator';
 import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
 import { kebabCase, camelCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
@@ -12,7 +11,6 @@ const appTypeGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
     },
   ],
 
@@ -21,9 +19,8 @@ const appTypeGenerator: DesignGenerator = {
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
-    const dataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
+    const dataSources = context.listMetadata('DataSource');
     const businessObjects = context.listMetadata('BusinessObject')
-      .filter(bo => !isLibrary(bo))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     // Class app behaviors — those without a lifecycleStage
