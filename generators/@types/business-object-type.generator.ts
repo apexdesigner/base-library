@@ -29,9 +29,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
     },
     {
       metadataType: 'Behavior',
-      condition: (metadata) => {
+      condition: (metadata, conditionContext) => {
         const parentName = getBehaviorParent(metadata.sourceFile);
-        return !!parentName;
+        if (!parentName) return false;
+        if (!conditionContext?.context) return true;
+        const boMeta = conditionContext.context.listMetadata('BusinessObject')
+          .find(bo => pascalCase(bo.name) === parentName);
+        return !!boMeta;
       },
     },
     {
