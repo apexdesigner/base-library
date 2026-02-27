@@ -1,5 +1,5 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { getClassByBase } from '@apexdesigner/utilities';
+import { getClassByBase, getClassDecorator } from '@apexdesigner/utilities';
 import { kebabCase } from 'change-case';
 import { Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
@@ -176,11 +176,46 @@ const serviceGenerator: DesignGenerator = {
       }
     }
 
+    // Build set of injectable external type names (Router, HttpClient, MatDialog, etc.)
+    const injectableExternalTypes = new Map<string, string>();
+    for (const et of (context.listMetadata('ExternalType') || [])) {
+      const etClass = et.sourceFile.getClasses()[0];
+      if (!etClass) continue;
+      const opts = getClassDecorator(etClass, 'externalType');
+      if (!opts?.injectable) continue;
+      for (const imp of et.sourceFile.getImportDeclarations()) {
+        const moduleSpec = imp.getModuleSpecifierValue();
+        if (moduleSpec.includes('@apexdesigner/dsl')) continue;
+        for (const named of imp.getNamedImports()) {
+          injectableExternalTypes.set(named.getName(), moduleSpec);
+        }
+      }
+    }
+    debug('injectable external types %j', Object.fromEntries(injectableExternalTypes));
+
+    // Convert injectable external-type properties to inject() calls
+    const injectedExternalTypes: { propName: string; typeName: string; moduleSpecifier: string }[] = [];
+    for (const prop of exportedClass.getProperties()) {
+      if (!prop.hasExclamationToken()) continue;
+      if (prop.getDecorators().length > 0) continue;
+      const typeNode = prop.getTypeNode();
+      if (!typeNode) continue;
+      const typeText = typeNode.getText();
+
+      const moduleSpecifier = injectableExternalTypes.get(typeText);
+      if (moduleSpecifier) {
+        const propName = prop.getName();
+        injectedExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
+        prop.replaceWithText(`private ${propName} = inject(${typeText})`);
+        debug('injected external type %j: %j from %j', propName, typeText, moduleSpecifier);
+      }
+    }
+
     // Determine what Angular imports are needed
     const angularCoreImports: string[] = ['Injectable'];
     const hasAutoSaveFormGroups = formGroupProperties.some(fg => fg.saveMode === 'Automatically');
     const hasPersistedArrayAutoRead = persistedArrayProperties.some(pa => pa.readMode === 'Automatically');
-    const needsInject = injectedServices.length > 0 || hasAutoSaveFormGroups;
+    const needsInject = injectedServices.length > 0 || hasAutoSaveFormGroups || injectedExternalTypes.length > 0;
     if (needsInject) {
       angularCoreImports.push('inject');
     }
