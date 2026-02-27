@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.80] - 2026-02-27
+
+- 3fb928d fix: restore BO check in Behavior trigger conditions
+
+
 ## [1.0.79] - 2026-02-27
 
 - 312c60a fix: remove isLibrary conditions from type generators
