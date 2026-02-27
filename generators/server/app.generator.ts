@@ -80,23 +80,18 @@ const appGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'DataSource',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'TestFixture',
-      condition: (metadata) => !isLibrary(metadata),
     },
   ],
 
@@ -110,9 +105,8 @@ const appGenerator: DesignGenerator = {
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Collect data sources and business objects
-    const dataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
+    const dataSources = context.listMetadata('DataSource');
     const businessObjects = context.listMetadata('BusinessObject')
-      .filter(bo => !isLibrary(bo))
       .sort((a, b) => a.name.localeCompare(b.name));
     debug('dataSources count %j, businessObjects count %j', dataSources.length, businessObjects.length);
 

@@ -11,7 +11,6 @@ const persistedFormGroupGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
     },
   ],
 

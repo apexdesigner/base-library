@@ -26,7 +26,6 @@ const businessObjectClientGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'Behavior',
@@ -36,7 +35,7 @@ const businessObjectClientGenerator: DesignGenerator = {
         if (!conditionContext?.context) return true;
         const boMeta = conditionContext.context.listMetadata('BusinessObject')
           .find(bo => pascalCase(bo.name) === parentName);
-        return !!boMeta && !isLibrary(boMeta);
+        return !!boMeta;
       },
     },
   ],

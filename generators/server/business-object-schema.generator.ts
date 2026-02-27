@@ -29,7 +29,6 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     {
       metadataType: 'BusinessObject',
       condition: (metadata, conditionContext) => {
-        if (isLibrary(metadata)) return false;
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
       },

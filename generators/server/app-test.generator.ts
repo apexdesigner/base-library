@@ -54,7 +54,6 @@ const appTestGenerator: DesignGenerator = {
     {
       metadataType: 'AppBehavior',
       condition: (metadata) => {
-        if (isLibrary(metadata)) return false;
         const options = getBehaviorOptions(metadata.sourceFile);
         return !!options && !options.lifecycleStage;
       },

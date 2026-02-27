@@ -78,11 +78,9 @@ const dataSourceGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'DataSource',
-      condition: (metadata) => !isLibrary(metadata),
     },
     {
       metadataType: 'BusinessObject',
-      condition: (metadata) => !isLibrary(metadata),
     },
   ],
 
@@ -91,8 +89,8 @@ const dataSourceGenerator: DesignGenerator = {
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
-    // Collect all non-library data sources
-    const allDataSources = context.listMetadata('DataSource').filter(ds => !isLibrary(ds));
+    // Collect all data sources
+    const allDataSources = context.listMetadata('DataSource');
     if (allDataSources.length === 0) return '';
 
     const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context));
