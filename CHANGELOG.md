@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.85] - 2026-02-28
+
+- 3a85c16 chore: apply automated fixes
+- f0371bb chore: remove stale local doc-generators dev dependency
+
+
 ## [1.0.84] - 2026-02-28
 
 - 0da554c chore: apply automated fixes
