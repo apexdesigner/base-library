@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.89] - 2026-02-28
+
+- 061e502 feat: support required and disabled options on form group properties
+
+
 ## [1.0.88] - 2026-02-28
 
 - d3ca76c feat: add all lifecycle behavior types to BO generator

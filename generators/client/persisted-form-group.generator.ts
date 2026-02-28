@@ -29,6 +29,7 @@ const persistedFormGroupGenerator: DesignGenerator = {
 import type { SchemaType } from '@apexdesigner/schema-forms';
 import { z } from 'zod';
 import type { DestroyRef } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, filter } from 'rxjs';
 import createDebug from 'debug';
@@ -43,6 +44,8 @@ export interface EntityClass {
 
 export interface PersistedFormGroupOptions {
   filter?: Record<string, any>;
+  required?: string[];
+  disabled?: string[];
 }
 
 export class PersistedFormGroup extends SchemaFormGroup {
@@ -63,6 +66,18 @@ export class PersistedFormGroup extends SchemaFormGroup {
     this._entityClass = entityClass;
     this._idProperty = idProperty;
     if (options?.filter) this._filter = options.filter;
+    if (options?.required) {
+      for (const name of options.required) {
+        const control = this.controls[name];
+        if (control) control.addValidators(Validators.required);
+      }
+    }
+    if (options?.disabled) {
+      for (const name of options.disabled) {
+        const control = this.controls[name];
+        if (control) control.disable();
+      }
+    }
   }
 
   get readFilter(): Record<string, any> {
@@ -349,6 +364,8 @@ export class PersistedArray<T = any> extends Array<T> {
 
 export interface PersistedFormGroupOptions {
   filter?: Record<string, any>;
+  required?: string[];
+  disabled?: string[];
 }
 
 export declare class PersistedFormGroup extends SchemaFormGroup {
