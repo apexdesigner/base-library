@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.90] - 2026-02-28
+
+- 056d86e feat: use BO-specific form groups for array items to populate nested objects
+
+
 ## [1.0.89] - 2026-02-28
 
 - 061e502 feat: support required and disabled options on form group properties
