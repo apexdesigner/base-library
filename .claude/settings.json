@@ -70,6 +70,15 @@
             "timeout": 300000
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat .claude/skills/apex-designer/SKILL.md",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "PostToolUse": [
