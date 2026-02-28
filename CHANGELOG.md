@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.87] - 2026-02-28
+
+- 6c99255 feat: include config interface and options parameter in mixin type declarations
+
+
 ## [1.0.86] - 2026-02-28
 
 - 76d2650 feat: add optional queryParams input to breadcrumb level

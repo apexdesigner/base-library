@@ -34,7 +34,7 @@ export class BaseLibrary extends Project {
     "indefinite": { versionSelector: "^2.4.6", isCommonJs: true },
     "pluralize": { versionSelector: "^8.0.0", isCommonJs: true },
     "luxon": "^3.0.0",
-    "@apexdesigner/flex-layout": "^0.1.19",
+    "@apexdesigner/flex-layout": "^0.1.20",
     "rxjs": "~7.8.1",
     "tslib": "~2.8.0",
     "zone.js": "~0.15.0",

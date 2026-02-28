@@ -37,6 +37,25 @@ const mixinTypeGenerator: DesignGenerator = {
       lines.push('');
     }
 
+    // Add exported interfaces (e.g. config interfaces)
+    const configInterfaceName = `${className}Config`;
+    let hasConfig = false;
+    for (const iface of metadata.sourceFile.getInterfaces()) {
+      if (!iface.isExported()) continue;
+      const ifaceName = iface.getName();
+      if (ifaceName === configInterfaceName) hasConfig = true;
+      lines.push(`export interface ${ifaceName} {`);
+      for (const prop of iface.getProperties()) {
+        const propName = prop.getName();
+        const isOptional = prop.hasQuestionToken();
+        const typeNode = prop.getTypeNode();
+        const propType = typeNode ? typeNode.getText() : 'any';
+        lines.push(`  ${propName}${isOptional ? '?' : ''}: ${propType};`);
+      }
+      lines.push('}');
+      lines.push('');
+    }
+
     lines.push(`export declare class ${className} {`);
 
     // Add properties
@@ -55,7 +74,11 @@ const mixinTypeGenerator: DesignGenerator = {
     lines.push('');
 
     // Add apply function declaration
-    lines.push(`export declare function ${applyFunctionName}(target: any): void;`);
+    if (hasConfig) {
+      lines.push(`export declare function ${applyFunctionName}(target: any, options: ${configInterfaceName}): void;`);
+    } else {
+      lines.push(`export declare function ${applyFunctionName}(target: any): void;`);
+    }
 
     const content = lines.join('\n');
 
