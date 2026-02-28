@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.88] - 2026-02-28
+
+- d3ca76c feat: add all lifecycle behavior types to BO generator
+
+
 ## [1.0.87] - 2026-02-28
 
 - 6c99255 feat: include config interface and options parameter in mixin type declarations
