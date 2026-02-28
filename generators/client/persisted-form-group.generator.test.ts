@@ -57,6 +57,43 @@ describe('persistedFormGroupGenerator', () => {
     });
   });
 
+  describe('array item group creation', () => {
+    it('should have a createItemGroup method on PersistedFormArray', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('createItemGroup(): any');
+    });
+
+    it('should have an addItem override that calls createItemGroup', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('override addItem(data?: any): void');
+      expect(code).toContain('this.createItemGroup()');
+    });
+
+    it('should call _populate on the group when it is a PersistedFormGroup', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('group._populate(data)');
+    });
+
+    it('should fall back to super.addItem when createItemGroup returns undefined', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('super.addItem(data)');
+    });
+
+    it('should include createItemGroup and addItem in the type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
+
+      expect(dts).toContain('createItemGroup(): any');
+      expect(dts).toContain('addItem(data?: any): void');
+    });
+  });
+
   describe('required and disabled options', () => {
     it('should include required and disabled in PersistedFormGroupOptions', async () => {
       const code = await generateRuntime();
