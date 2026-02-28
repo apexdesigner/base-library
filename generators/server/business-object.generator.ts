@@ -107,6 +107,59 @@ function getTestFixtureFunction(sourceFile: DesignMetadata['sourceFile']): { nam
   return undefined;
 }
 
+interface LifecycleEntry {
+  body: string;
+  parentName: string;
+}
+
+/**
+ * Extract the mixin options argument from an apply*Mixin(Target, options) call.
+ */
+function getMixinApplyOptions(boSourceFile: DesignMetadata['sourceFile'], mixinName: string): string | undefined {
+  const applyFnName = `apply${pascalCase(mixinName)}Mixin`;
+  for (const statement of boSourceFile.getStatements()) {
+    if (!Node.isExpressionStatement(statement)) continue;
+    const expr = statement.getExpression();
+    if (!Node.isCallExpression(expr)) continue;
+    const callee = expr.getExpression();
+    if (!Node.isIdentifier(callee) || callee.getText() !== applyFnName) continue;
+    const args = expr.getArguments();
+    if (args.length >= 2) {
+      return args[1].getText();
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Emit inline lifecycle behavior code wrapped in a scope block.
+ * Provides Model, optional mixinOptions, and context variables.
+ */
+function emitLifecycleInline(
+  entries: LifecycleEntry[],
+  lines: string[],
+  contextVars: Record<string, string>,
+  mixinNames: string[],
+  mixinOptionsMap: Map<string, string>,
+): void {
+  if (entries.length === 0) return;
+  for (const entry of entries) {
+    lines.push(`    {`);
+    lines.push(`      const Model = this;`);
+    const isMixin = mixinNames.includes(entry.parentName);
+    if (isMixin && mixinOptionsMap.has(entry.parentName)) {
+      lines.push(`      const mixinOptions = ${mixinOptionsMap.get(entry.parentName)};`);
+    }
+    for (const [varName, value] of Object.entries(contextVars)) {
+      lines.push(`      const ${varName} = ${value};`);
+    }
+    for (const line of entry.body.split('\n')) {
+      lines.push(`    ${line}`);
+    }
+    lines.push(`    }`);
+  }
+}
+
 const businessObjectGenerator: DesignGenerator = {
   name: 'business-object',
 
@@ -260,7 +313,7 @@ const businessObjectGenerator: DesignGenerator = {
     debug('behaviorBoImports %j, needsAppImport %j', Array.from(behaviorBoImports), needsAppImport);
 
     // Collect lifecycle behavior bodies by type
-    const lifecycleBodies = new Map<string, string[]>(); // type → body lines
+    const lifecycleBodies = new Map<string, LifecycleEntry[]>();
     for (const behavior of allBehaviors) {
       try {
         const options = getBehaviorOptions(behavior.sourceFile);
@@ -274,18 +327,54 @@ const businessObjectGenerator: DesignGenerator = {
 
         const type = options.type as string;
         if (!lifecycleBodies.has(type)) lifecycleBodies.set(type, []);
-        lifecycleBodies.get(type)!.push(body);
+        lifecycleBodies.get(type)!.push({ body, parentName: parent });
         debug('collected lifecycle %j from %j', type, parent);
       } catch (err) {
         debug('error collecting lifecycle behavior: %j', err);
       }
     }
 
+    // Pre-compute mixin options map for lifecycle behaviors that need config
+    const mixinOptionsMap = new Map<string, string>();
+    for (const [, entries] of lifecycleBodies) {
+      for (const entry of entries) {
+        if (!mixinNames.includes(entry.parentName)) continue;
+        if (mixinOptionsMap.has(entry.parentName)) continue;
+
+        const mixinMeta = context.listMetadata('Mixin').find(m => pascalCase(m.name) === entry.parentName);
+        if (!mixinMeta) continue;
+
+        const configName = `${entry.parentName}Config`;
+        const hasConfig = mixinMeta.sourceFile.getInterfaces().some(
+          i => i.getName() === configName && i.isExported()
+        );
+        if (!hasConfig) continue;
+
+        const optionsText = getMixinApplyOptions(metadata.sourceFile, mixinMeta.name);
+        if (optionsText) {
+          mixinOptionsMap.set(entry.parentName, optionsText);
+          // Collect BO imports referenced in mixin options
+          for (const bo of context.listMetadata('BusinessObject')) {
+            const boName = pascalCase(bo.name);
+            if (boName !== className && optionsText.includes(boName)) {
+              behaviorBoImports.add(boName);
+            }
+          }
+        }
+      }
+    }
+
     const dataTypeName = `${className}Data`;
 
     // Collect lifecycle behavior bodies
-    const beforeCreateBodies = lifecycleBodies.get('Before Create') || [];
-    const beforeUpdateBodies = lifecycleBodies.get('Before Update') || [];
+    const beforeCreateBodies = (lifecycleBodies.get('Before Create') || []).map(e => e.body);
+    const beforeUpdateBodies = (lifecycleBodies.get('Before Update') || []).map(e => e.body);
+    const afterCreateEntries = lifecycleBodies.get('After Create') || [];
+    const afterUpdateEntries = lifecycleBodies.get('After Update') || [];
+    const beforeDeleteEntries = lifecycleBodies.get('Before Delete') || [];
+    const afterDeleteEntries = lifecycleBodies.get('After Delete') || [];
+    const beforeReadEntries = lifecycleBodies.get('Before Read') || [];
+    const afterReadEntries = lifecycleBodies.get('After Read') || [];
 
     const lines: string[] = [];
 
@@ -346,9 +435,13 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    const debug = Debug.extend("find");');
     lines.push('    debug("filter %j", filter);');
     lines.push('');
+    // Inline Before Read lifecycle behaviors
+    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter?.where' }, mixinNames, mixinOptionsMap);
     lines.push(`    const results = await this.dataSource.find(this.entityName, filter);`);
     lines.push('    debug("results.length %j", results.length);');
     lines.push('');
+    // Inline After Read lifecycle behaviors
+    emitLifecycleInline(afterReadEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
     lines.push(`    return results.map((data: ${dataTypeName}) => new ${className}(data));`);
     lines.push('  }');
 
@@ -439,6 +532,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    const created = await this.dataSource.create(this.entityName, data);`);
     lines.push('    debug("created %j", created);');
     lines.push('');
+    // Inline After Create lifecycle behaviors
+    emitLifecycleInline(afterCreateEntries, lines, { instances: '[created]' }, mixinNames, mixinOptionsMap);
     lines.push(`    return new ${className}(created);`);
     lines.push('  }');
 
@@ -463,6 +558,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    const results = await this.dataSource.createMany(this.entityName, data);`);
     lines.push('    debug("results.length %j", results.length);');
     lines.push('');
+    // Inline After Create lifecycle behaviors
+    emitLifecycleInline(afterCreateEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
     lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
     lines.push('  }');
 
@@ -494,6 +591,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    );`);
     lines.push('    debug("results.length %j", results.length);');
     lines.push('');
+    // Inline After Update lifecycle behaviors
+    emitLifecycleInline(afterUpdateEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
     lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
     lines.push('  }');
 
@@ -526,6 +625,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    debug("updated %j", updated);');
     lines.push('');
     lines.push(`    if (!updated) throw new Error(\`${className} not found: \${id}\`);`);
+    // Inline After Update lifecycle behaviors
+    emitLifecycleInline(afterUpdateEntries, lines, { instances: '[updated]' }, mixinNames, mixinOptionsMap);
     lines.push(`    return new ${className}(updated);`);
     lines.push('  }');
 
@@ -551,9 +652,17 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    const debug = Debug.extend("delete");');
     lines.push('    debug("filter %j", filter);');
     lines.push('');
+    // Inline Before Delete lifecycle behaviors
+    emitLifecycleInline(beforeDeleteEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
+    // Pre-fetch instances for After Delete (if needed)
+    if (afterDeleteEntries.length > 0) {
+      lines.push(`    const deletedInstances = await this.find({ where: filter.where });`);
+    }
     lines.push(`    const result = await this.dataSource.delete(this.entityName, filter);`);
     lines.push('    debug("result %j", result);');
     lines.push('');
+    // Inline After Delete lifecycle behaviors
+    emitLifecycleInline(afterDeleteEntries, lines, { instances: 'deletedInstances' }, mixinNames, mixinOptionsMap);
     lines.push('    return result;');
     lines.push('  }');
 
@@ -563,9 +672,17 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    const debug = Debug.extend("deleteById");');
     lines.push('    debug("id %j", id);');
     lines.push('');
+    // Inline Before Delete lifecycle behaviors
+    emitLifecycleInline(beforeDeleteEntries, lines, { where: '{ id }' }, mixinNames, mixinOptionsMap);
+    // Pre-fetch instance for After Delete (if needed)
+    if (afterDeleteEntries.length > 0) {
+      lines.push(`    const deletedInstance = await this.findById(id);`);
+    }
     lines.push(`    const result = await this.dataSource.deleteById(this.entityName, id);`);
     lines.push('    debug("result %j", result);');
     lines.push('');
+    // Inline After Delete lifecycle behaviors
+    emitLifecycleInline(afterDeleteEntries, lines, { instances: '[deletedInstance]' }, mixinNames, mixinOptionsMap);
     lines.push('    return result;');
     lines.push('  }');
     } // end if (!isView)
