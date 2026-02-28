@@ -332,10 +332,20 @@ const pageComponentGenerator: DesignGenerator = {
     });
 
     if (hasRouteParams) {
-      writableFile.addImportDeclaration({
-        moduleSpecifier: '@angular/router',
-        namedImports: ['ActivatedRoute'],
-      });
+      const existingRouterImport = writableFile.getImportDeclaration(
+        (imp) => imp.getModuleSpecifierValue() === '@angular/router'
+      );
+      if (existingRouterImport) {
+        const existingNames = existingRouterImport.getNamedImports().map(ni => ni.getName());
+        if (!existingNames.includes('ActivatedRoute')) {
+          existingRouterImport.addNamedImport('ActivatedRoute');
+        }
+      } else {
+        writableFile.addImportDeclaration({
+          moduleSpecifier: '@angular/router',
+          namedImports: ['ActivatedRoute'],
+        });
+      }
       writableFile.addImportDeclaration({
         moduleSpecifier: 'rxjs',
         namedImports: ['Subscription'],
