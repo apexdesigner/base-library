@@ -6,7 +6,7 @@ export class BaseLibrary extends Project {
   isLibrary = true;
 
   designDependencies = [
-    { package: "@apexdesigner/doc-generators", versionSelector: "^0.0.7" },
+    { package: "@apexdesigner/doc-generators", versionSelector: '^0.0.8' },
   ];
 
   parameterValues = {
