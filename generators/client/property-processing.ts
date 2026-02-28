@@ -14,6 +14,8 @@ export interface FormGroupProperty {
   saveMode?: string;
   include?: string;
   afterReadCall?: string;
+  required?: string;
+  disabled?: string;
 }
 
 export interface PersistedArrayProperty {
@@ -103,6 +105,8 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
 
     let include: string | undefined;
     let order: string | undefined;
+    let required: string | undefined;
+    let disabled: string | undefined;
     if (args.length > 0 && Node.isObjectLiteralExpression(args[0])) {
       const includeProp = args[0].getProperty('include');
       if (includeProp && Node.isPropertyAssignment(includeProp)) {
@@ -120,6 +124,14 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
       if (isOutputProp && Node.isPropertyAssignment(isOutputProp)) {
         isOutput = isOutputProp.getInitializerOrThrow().getText() === 'true';
       }
+      const requiredProp = args[0].getProperty('required');
+      if (requiredProp && Node.isPropertyAssignment(requiredProp)) {
+        required = requiredProp.getInitializerOrThrow().getText();
+      }
+      const disabledProp = args[0].getProperty('disabled');
+      if (disabledProp && Node.isPropertyAssignment(disabledProp)) {
+        disabled = disabledProp.getInitializerOrThrow().getText();
+      }
     }
 
     const typeNode = prop.getTypeNode();
@@ -132,7 +144,7 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
     } else if (isOutput) {
       outputProperties.push(prop.getName());
     } else if (typeName.endsWith('FormGroup')) {
-      formGroupProperties.push({ name: prop.getName(), typeName, readMode, saveMode, include, afterReadCall });
+      formGroupProperties.push({ name: prop.getName(), typeName, readMode, saveMode, include, afterReadCall, required, disabled });
     } else if (typeName.endsWith('PersistedArray') || typeName.endsWith('FormArray')) {
       persistedArrayProperties.push({ name: prop.getName(), typeName, readMode, order, afterReadCall });
     } else if (readMode === 'Automatically') {

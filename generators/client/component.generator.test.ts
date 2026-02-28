@@ -165,4 +165,36 @@ describe('componentGenerator', () => {
       expect(wrapper).toContain('MatDialogConfig');
     });
   });
+
+  describe('required and disabled form group options', () => {
+    it('should pass required and disabled to form group constructor', async () => {
+      const ts = await generateComponent(`
+        import { Component, component, property } from '@apexdesigner/dsl/component';
+        import { TaskFormGroup } from '@business-objects-client';
+        @component({})
+        export class DashboardComponent extends Component {
+          @property({ required: ['userId'], disabled: ['name'] })
+          task!: TaskFormGroup;
+        }
+      `);
+
+      expect(ts).toContain("required: ['userId']");
+      expect(ts).toContain("disabled: ['name']");
+      expect(ts).toContain('new TaskFormGroup(');
+    });
+
+    it('should initialize with no options when neither required nor disabled specified', async () => {
+      const ts = await generateComponent(`
+        import { Component, component, property } from '@apexdesigner/dsl/component';
+        import { TaskFormGroup } from '@business-objects-client';
+        @component({})
+        export class DashboardComponent extends Component {
+          @property({})
+          task!: TaskFormGroup;
+        }
+      `);
+
+      expect(ts).toContain('new TaskFormGroup()');
+    });
+  });
 });

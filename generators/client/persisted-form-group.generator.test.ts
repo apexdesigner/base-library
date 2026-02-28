@@ -56,4 +56,44 @@ describe('persistedFormGroupGenerator', () => {
       expect(dts).toContain('_populate(data: Record<string, any>): void');
     });
   });
+
+  describe('required and disabled options', () => {
+    it('should include required and disabled in PersistedFormGroupOptions', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('required?: string[]');
+      expect(code).toContain('disabled?: string[]');
+    });
+
+    it('should apply Validators.required to required controls in constructor', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('Validators.required');
+      expect(code).toContain('options?.required');
+    });
+
+    it('should disable controls specified in disabled option', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('.disable()');
+      expect(code).toContain('options?.disabled');
+    });
+
+    it('should import Validators from @angular/forms', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain("from '@angular/forms'");
+      expect(code).toContain('Validators');
+    });
+
+    it('should include required and disabled in the type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
+
+      expect(dts).toContain('required?: string[]');
+      expect(dts).toContain('disabled?: string[]');
+    });
+  });
 });

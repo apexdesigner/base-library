@@ -121,4 +121,66 @@ describe('pageComponentGenerator', () => {
       expect(routerImportLines[0]).toContain('ActivatedRoute');
     });
   });
+
+  describe('required and disabled form group options', () => {
+    it('should pass required array to form group constructor', async () => {
+      const ts = await generatePage(`
+        import { Page, page, property } from '@apexdesigner/dsl/page';
+        import { TaskFormGroup } from '@business-objects-client';
+        @page({ path: '/tasks/:task.id' })
+        export class TaskPage extends Page {
+          @property({ read: 'Automatically', required: ['userId', 'userName'] })
+          task!: TaskFormGroup;
+        }
+      `);
+
+      expect(ts).toContain("required: ['userId', 'userName']");
+      expect(ts).toContain('new TaskFormGroup(');
+    });
+
+    it('should pass disabled array to form group constructor', async () => {
+      const ts = await generatePage(`
+        import { Page, page, property } from '@apexdesigner/dsl/page';
+        import { TaskFormGroup } from '@business-objects-client';
+        @page({ path: '/tasks/:task.id' })
+        export class TaskPage extends Page {
+          @property({ read: 'Automatically', disabled: ['referenceNumber', 'name'] })
+          task!: TaskFormGroup;
+        }
+      `);
+
+      expect(ts).toContain("disabled: ['referenceNumber', 'name']");
+      expect(ts).toContain('new TaskFormGroup(');
+    });
+
+    it('should pass both required and disabled to form group constructor', async () => {
+      const ts = await generatePage(`
+        import { Page, page, property } from '@apexdesigner/dsl/page';
+        import { TaskFormGroup } from '@business-objects-client';
+        @page({ path: '/tasks/:task.id' })
+        export class TaskPage extends Page {
+          @property({ read: 'Automatically', required: ['userId'], disabled: ['name'] })
+          task!: TaskFormGroup;
+        }
+      `);
+
+      expect(ts).toContain("required: ['userId']");
+      expect(ts).toContain("disabled: ['name']");
+      expect(ts).toContain('new TaskFormGroup(');
+    });
+
+    it('should initialize with no options when neither required nor disabled specified', async () => {
+      const ts = await generatePage(`
+        import { Page, page, property } from '@apexdesigner/dsl/page';
+        import { TaskFormGroup } from '@business-objects-client';
+        @page({ path: '/tasks/:task.id' })
+        export class TaskPage extends Page {
+          @property({ read: 'Automatically' })
+          task!: TaskFormGroup;
+        }
+      `);
+
+      expect(ts).toContain('new TaskFormGroup()');
+    });
+  });
 });

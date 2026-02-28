@@ -366,7 +366,14 @@ const pageComponentGenerator: DesignGenerator = {
       if (!prop) continue;
       if (prop.hasQuestionToken()) prop.setHasQuestionToken(false);
       if (prop.hasExclamationToken()) prop.setHasExclamationToken(false);
-      prop.setInitializer(`new ${fg.typeName}()`);
+      const optsParts: string[] = [];
+      if (fg.required) optsParts.push(`required: ${fg.required}`);
+      if (fg.disabled) optsParts.push(`disabled: ${fg.disabled}`);
+      if (optsParts.length > 0) {
+        prop.setInitializer(`new ${fg.typeName}({ ${optsParts.join(', ')} })`);
+      } else {
+        prop.setInitializer(`new ${fg.typeName}()`);
+      }
     }
 
     // Initialize persisted array properties with new instances
