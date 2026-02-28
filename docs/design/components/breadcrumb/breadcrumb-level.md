@@ -12,3 +12,4 @@ A single level inside a Breadcrumb. Renders as a link when path is set, plain te
 |------|------|----------|-------------|
 | label | `string` | Always | Text displayed for this breadcrumb level. |
 | path | `string` | No | Router path to navigate to when clicked. When not set, the level renders as plain text. |
+| queryParams | `any` | No | Optional query parameters to include in the navigation link. |
