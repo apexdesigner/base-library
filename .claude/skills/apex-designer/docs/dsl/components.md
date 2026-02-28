@@ -65,6 +65,28 @@ export class BreadcrumbComponent extends Component {
 }
 ```
 
+### Parent Scope
+
+Use `parentPage` or `parentComponent` to declare the intended scope of a component. This is for documentation and tooling — it indicates where the component is designed to be used:
+
+```typescript
+import { Component, component } from "@apexdesigner/dsl/component";
+import { StudentDetailPage } from "@pages";
+
+@component({ parentPage: StudentDetailPage })
+export class StudentGradesComponent extends Component {}
+```
+
+```typescript
+import { Component, component } from "@apexdesigner/dsl/component";
+import { DataTableComponent } from "@components";
+
+@component({ parentComponent: DataTableComponent })
+export class DataTableRowComponent extends Component {}
+```
+
+Only one of `parentPage` or `parentComponent` should be set. Components without a parent scope are considered shared/global.
+
 ## Properties
 
 Properties are declared as class members. Use `@property()` only when configuration is needed.

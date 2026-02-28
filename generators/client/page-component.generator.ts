@@ -103,6 +103,25 @@ const pageComponentGenerator: DesignGenerator = {
       serviceTypeNames.add(m.name);
     }
 
+    // Build set of injectable external type names (e.g. Router, HttpClient, MatDialog)
+    // and map each to its module specifier (e.g. Router → @angular/router)
+    const injectableExternalTypes = new Map<string, string>();
+    for (const et of (context.listMetadata('ExternalType') || [])) {
+      const etClass = et.sourceFile.getClasses()[0];
+      if (!etClass) continue;
+      const opts = getClassDecorator(etClass, 'externalType');
+      if (!opts?.injectable) continue;
+      // The real type + module come from the non-DSL import
+      for (const imp of et.sourceFile.getImportDeclarations()) {
+        const moduleSpec = imp.getModuleSpecifierValue();
+        if (moduleSpec.includes('@apexdesigner/dsl')) continue;
+        for (const named of imp.getNamedImports()) {
+          injectableExternalTypes.set(named.getName(), moduleSpec);
+        }
+      }
+    }
+    debug('injectable external types %j', Object.fromEntries(injectableExternalTypes));
+
     // Remove DSL and design-time alias imports
     // Design aliases are single-segment (@pages, @base-types, etc.)
     // npm scoped packages have a slash (@angular/core, @apexdesigner/dsl)
@@ -264,12 +283,30 @@ const pageComponentGenerator: DesignGenerator = {
       }
     }
 
+    // Convert injectable external-type properties (Router, HttpClient, MatDialog, etc.) to inject() calls
+    const injectedExternalTypes: { propName: string; typeName: string; moduleSpecifier: string }[] = [];
+    for (const prop of exportedClass.getProperties()) {
+      if (!prop.hasExclamationToken()) continue;
+      if (prop.getDecorators().length > 0) continue;
+      const typeNode = prop.getTypeNode();
+      if (!typeNode) continue;
+      const typeText = typeNode.getText();
+
+      const moduleSpecifier = injectableExternalTypes.get(typeText);
+      if (moduleSpecifier) {
+        const propName = prop.getName();
+        injectedExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
+        prop.replaceWithText(`private ${propName} = inject(${typeText})`);
+        debug('injected external type %j: %j from %j', propName, typeText, moduleSpecifier);
+      }
+    }
+
     // Add Angular imports
     const hasRouteParams = routeParams.length > 0;
     const hasAutoSaveFormGroups = formGroupProperties.some(fg => fg.saveMode === 'Automatically');
     const hasPersistedArrayAutoRead = persistedArrayProperties.some(pa => pa.readMode === 'Automatically');
     const needsOnInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasRouteParams || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
-    const needsInject = hasRouteParams || hasAutoSaveFormGroups || injectedServices.length > 0;
+    const needsInject = hasRouteParams || hasAutoSaveFormGroups || injectedServices.length > 0 || injectedExternalTypes.length > 0;
     const angularCoreImports = ['Component'];
     if (viewChildProps.length > 0) {
       angularCoreImports.push('ViewChild');
