@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.83] - 2026-02-28
+
+- 3bd39e1 docs: add parent scope section and boundary diagram to component docs
+- 77c7b3c feat: generate BO After Start lifecycle behaviors as standalone files
+- 3d0d427 feat: inject external types marked injectable in page, component, and service generators
+
+
 ## [1.0.82] - 2026-02-27
 
 - d96bdba fix: resolve base type properties to native zod types in schema generator
