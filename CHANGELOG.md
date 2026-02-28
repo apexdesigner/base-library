@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.84] - 2026-02-28
+
+- 0da554c chore: apply automated fixes
+- ae0490b chore: update doc-generators to 0.0.8
+- cb3a08e feat: add breadcrumb components and doc-generators design dependency
+- 4e597f2 fix: prevent duplicate ActivatedRoute import when design file already imports from @angular/router
+- ab87117 fix: recursively create lazy controls in nested PersistedFormGroup
+
+
 ## [1.0.83] - 2026-02-28
 
 - 3bd39e1 docs: add parent scope section and boundary diagram to component docs

@@ -44,7 +44,7 @@ Libraries provide reusable design assets, client and server npm packages, and co
 Read the library README for available components, patterns, and conventions.
 This project includes the following libraries:
 
-- Libraries go here
+- **@apexdesigner/doc-generators** — Design documentation generators for Apex Designer projects (see `design/node_modules/@apexdesigner/doc-generators/README.md`)
 
 If you discover a useful pattern or convention while working with this project, suggest adding it to the library documentation so it can benefit other projects.
 
