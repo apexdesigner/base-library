@@ -85,34 +85,7 @@ export class PersistedFormGroup extends SchemaFormGroup {
       const id = mergedFilter.where?.[this._idProperty];
       const data = await this._entityClass.findById(id, mergedFilter);
       debug('data', data);
-      // Lazily create controls for included relationships
-      for (const key of Object.keys(data)) {
-        if (data[key] != null && typeof data[key] === 'object' && !this.controls[key]) {
-          const control = this.createControl(key);
-          if (control) {
-            debug('lazy-creating control %s', key);
-            this.setControl(key, control);
-          }
-        }
-      }
-
-      this.patchValue(data);
-      // Populate nested relationship controls
-      for (const [name, control] of Object.entries(this.controls)) {
-        debug('control', name, control.constructor.name, control instanceof PersistedFormArray, Array.isArray(data[name]));
-        if (control instanceof PersistedFormArray && Array.isArray(data[name])) {
-          debug('populating array', name, 'with', data[name].length, 'items');
-          control.clear();
-          for (const item of data[name]) {
-            control.addItem(item);
-          }
-          debug('array value after addItem', name, control.value);
-        }
-        if (control instanceof PersistedFormGroup && data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
-          debug('populating nested form group', name);
-          control.patchValue(data[name]);
-        }
-      }
+      this._populate(data);
       debug('value after read', this.value);
       this.updateOriginalValue();
     } finally {
@@ -122,6 +95,37 @@ export class PersistedFormGroup extends SchemaFormGroup {
 
   protected createControl(_name: string): any {
     return undefined;
+  }
+
+  _populate(data: Record<string, any>): void {
+    const debug = Debug.extend('_populate');
+    // Lazily create controls for included relationships
+    for (const key of Object.keys(data)) {
+      if (data[key] != null && typeof data[key] === 'object' && !this.controls[key]) {
+        const control = this.createControl(key);
+        if (control) {
+          debug('lazy-creating control %s', key);
+          this.setControl(key, control);
+        }
+      }
+    }
+
+    this.patchValue(data);
+
+    // Populate nested relationship controls (recursively)
+    for (const [name, control] of Object.entries(this.controls)) {
+      if (control instanceof PersistedFormArray && Array.isArray(data[name])) {
+        debug('populating array', name, 'with', data[name].length, 'items');
+        control.clear();
+        for (const item of data[name]) {
+          control.addItem(item);
+        }
+      }
+      if (control instanceof PersistedFormGroup && data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
+        debug('populating nested form group', name);
+        control._populate(data[name]);
+      }
+    }
   }
 
   override async save(): Promise<any> {
@@ -356,6 +360,7 @@ export declare class PersistedFormGroup extends SchemaFormGroup {
   constructor(schema: any, entityClass: any, options?: PersistedFormGroupOptions, idProperty?: string);
 
   protected createControl(name: string): any;
+  _populate(data: Record<string, any>): void;
   read(filter?: Record<string, any>): Promise<void>;
   save(): Promise<any>;
   autoSave(destroyRef: any, debounceMs?: number): void;
