@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.86] - 2026-02-28
+
+- 76d2650 feat: add optional queryParams input to breadcrumb level
+
+
 ## [1.0.85] - 2026-02-28
 
 - 3a85c16 chore: apply automated fixes

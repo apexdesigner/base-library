@@ -21,13 +21,17 @@ export class BreadcrumbLevelComponent extends Component {
   /** Router path to navigate to when clicked. When not set, the level renders as plain text. */
   @property({ isInput: true })
   path?: string;
+
+  /** Optional query parameters to include in the navigation link. */
+  @property({ isInput: true })
+  queryParams?: any;
 }
 
 applyTemplate(
   BreadcrumbLevelComponent,
   `
   <if condition="path">
-    <a [routerLink]="path">{{label}}</a>
+    <a [routerLink]="path" [queryParams]="queryParams">{{label}}</a>
   </if>
   <if condition="!path">
     <span class="current">{{label}}</span>
