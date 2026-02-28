@@ -240,6 +240,24 @@ export class PersistedFormArray extends SchemaFormArray {
     if (options?.filter) this._filter = options.filter;
   }
 
+  protected createItemGroup(): any {
+    return undefined;
+  }
+
+  override addItem(data?: any): void {
+    const group = this.createItemGroup();
+    if (group) {
+      if (data && group instanceof PersistedFormGroup) {
+        group._populate(data);
+      } else if (data) {
+        group.patchValue(data);
+      }
+      this.push(group);
+    } else {
+      super.addItem(data);
+    }
+  }
+
   get readFilter(): Record<string, any> {
     return this._filter;
   }
@@ -394,6 +412,8 @@ export declare class PersistedFormArray extends SchemaFormArray {
 
   constructor(itemSchema: any, entityClass: any, options?: PersistedFormArrayOptions, idProperty?: string);
 
+  protected createItemGroup(): any;
+  addItem(data?: any): void;
   read(filter?: Record<string, any>): Promise<void>;
   add(data?: Record<string, any>): Promise<any>;
   remove(indexOrItem: number | Record<string, any>): Promise<void>;

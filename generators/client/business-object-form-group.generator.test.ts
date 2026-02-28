@@ -134,6 +134,27 @@ describe('businessObjectFormGroupGenerator', () => {
       expect(content).not.toContain('beforeCreate');
     });
 
+    it('should generate createItemGroup override in FormArray class', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
+      const content = result instanceof Map
+        ? result.get('client/src/app/business-objects/process-design-form-group.ts')!
+        : result as string;
+
+      expect(content).toContain('protected override createItemGroup()');
+      expect(content).toContain('return new ProcessDesignFormGroup()');
+    });
+
     it('should pass parameters through to the delegated method', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {

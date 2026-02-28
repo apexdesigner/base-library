@@ -254,6 +254,10 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push(`  constructor(options?: PersistedFormArrayOptions) {`);
     lines.push(`    super(${schemaVarName}, ${className}, options);`);
     lines.push(`  }`);
+    lines.push('');
+    lines.push(`  protected override createItemGroup() {`);
+    lines.push(`    return new ${className}FormGroup();`);
+    lines.push(`  }`);
     lines.push(`}`);
     lines.push('');
     lines.push(`export class ${className}PersistedArray extends PersistedArray<${className}> {`);
