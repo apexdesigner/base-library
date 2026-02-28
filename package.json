@@ -37,7 +37,6 @@
   "type": "module",
   "devDependencies": {
     "@apexdesigner/claude-skills": "^1.0.47",
-    "@apexdesigner/doc-generators": "file:../doc-generators/apexdesigner-doc-generators-0.0.7.tgz",
     "@apexdesigner/dsl": "^0.8.51",
     "@apexdesigner/generator": "^0.8.47",
     "@apexdesigner/utilities": "^0.1.24",
