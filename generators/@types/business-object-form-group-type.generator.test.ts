@@ -17,7 +17,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignEnable', {
         sourceCode: `
@@ -28,7 +28,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
             { type: 'Instance', httpMethod: 'Post' },
             async function enable(processDesign: ProcessDesign) {}
           );
-        `,
+        `
       });
 
       const behaviorMeta = workspace.context.listMetadata('Behavior')[0];
@@ -47,7 +47,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignEnable', {
         sourceCode: `
@@ -58,14 +58,13 @@ describe('businessObjectFormGroupTypeGenerator', () => {
             { type: 'Instance', httpMethod: 'Post' },
             async function enable(processDesign: ProcessDesign) {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
-      const content = result instanceof Map
-        ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')!
-        : result as string;
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')! : (result as string);
 
       expect(content).toContain('enable(): Promise<any>');
     });
@@ -78,7 +77,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
         sourceCode: `
@@ -89,14 +88,13 @@ describe('businessObjectFormGroupTypeGenerator', () => {
             { type: 'Class', httpMethod: 'Post' },
             async function upload(options: any) {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
-      const content = result instanceof Map
-        ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')!
-        : result as string;
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')! : (result as string);
 
       expect(content).not.toContain('upload');
     });
@@ -109,7 +107,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignAssign', {
         sourceCode: `
@@ -120,16 +118,53 @@ describe('businessObjectFormGroupTypeGenerator', () => {
             { type: 'Instance', httpMethod: 'Put' },
             async function assign(processDesign: ProcessDesign, userId: string, role?: string) {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
-      const content = result instanceof Map
-        ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')!
-        : result as string;
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')! : (result as string);
 
       expect(content).toContain('assign(userId: string, role?: string): Promise<any>');
+    });
+
+    it('should include object getter in type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')! : (result as string);
+
+      expect(content).toContain('get object(): ProcessDesign');
+    });
+
+    it('should include array getter in FormArray type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-array.d.ts')! : (result as string);
+
+      expect(content).toContain('get array(): ProcessDesign[]');
     });
   });
 });
