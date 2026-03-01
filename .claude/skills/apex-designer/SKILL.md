@@ -83,6 +83,13 @@ Key commands:
 - `ad3 stop` / `ad3 start` — manage the ad3 server
 - Any ad3 command starts the server if it isn't already running
 
+## Rules
+
+- **Simple commands only** — Don't chain commands with `&&` or `;`. Run each `ad3` command as a separate Bash call. Compound commands trigger approval prompts.
+- **Don't edit generated code** — Never edit files in `/server`, `/client`, or `/docs/design`. These are generated and will be overwritten. Only edit files in `/design`.
+- **No `git -C`** — Don't use `git -C <path>`. Run git commands from the current working directory. The `-C` flag triggers approval prompts.
+- **No `cd` with commands** — Don't combine `cd <path> && command` or `cd <path>; command`. If you need to verify the working directory, run `pwd` as a separate step, then run the command on its own.
+
 ## Dev Server
 
 See `.claude/skills/apex-designer/docs/dev-sh.md` for usage. The script is at `.claude/skills/apex-designer/scripts/dev.sh` (relative to the project root).

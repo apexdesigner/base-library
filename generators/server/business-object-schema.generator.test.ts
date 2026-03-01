@@ -149,14 +149,14 @@ describe('businessObjectSchemaGenerator', () => {
     });
   });
 
-  describe('base type column defaults', () => {
-    it('should apply column config from setColumnDefaults on a base type', async () => {
+  describe('base type property defaults', () => {
+    it('should apply column config from setPropertyDefaults on a base type', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BaseType', 'Json', {
         sourceCode: `
-          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class Json extends BaseType<any> {}
-          setColumnDefaults(Json, 'jsonb');
+          setPropertyDefaults(Json, { column: 'jsonb' });
         `
       });
       workspace.addMetadata('BusinessObject', 'Task', {
@@ -175,13 +175,13 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).toContain('.column({ type: "jsonb" })');
     });
 
-    it('should apply uuid column type from setColumnDefaults on Uuid base type', async () => {
+    it('should apply uuid column type from setPropertyDefaults on Uuid base type', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
-          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
-          setColumnDefaults(Uuid, 'uuid');
+          setPropertyDefaults(Uuid, { column: 'uuid' });
         `
       });
       workspace.addMetadata('BusinessObject', 'Token', {
@@ -198,6 +198,31 @@ describe('businessObjectSchemaGenerator', () => {
       const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
 
       expect(result).toContain('.column({ type: "uuid" })');
+    });
+
+    it('should apply presentAs from setPropertyDefaults on a base type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Json', {
+        sourceCode: `
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
+          export class Json extends BaseType<any> {}
+          setPropertyDefaults(Json, { column: 'jsonb', presentAs: 'json' });
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Json } from '@base-types';
+          export class Task extends BusinessObject {
+            config?: Json;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.presentAs("json")');
     });
   });
 
@@ -314,9 +339,9 @@ describe('businessObjectSchemaGenerator', () => {
       });
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
-          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
-          setColumnDefaults(Uuid, 'uuid');
+          setPropertyDefaults(Uuid, { column: 'uuid' });
         `
       });
       workspace.addMetadata('BusinessObject', 'ProcessInstance', {
@@ -359,9 +384,9 @@ describe('businessObjectSchemaGenerator', () => {
       });
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
-          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
-          setColumnDefaults(Uuid, 'uuid');
+          setPropertyDefaults(Uuid, { column: 'uuid' });
         `
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {

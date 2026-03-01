@@ -98,16 +98,45 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     }
     debug('isPostgres %j', isPostgres);
 
-    // Build base type column defaults and valid values maps (needed for id, FK, and property handling)
+    // Build base type property defaults and valid values maps (needed for id, FK, and property handling)
     const baseTypeColumnDefaults = new Map<string, string>();
+    const baseTypePropertyDefaults = new Map<string, Record<string, string | boolean>>();
     const baseTypeValidValues = new Map<string, string[]>();
     for (const bt of context.listMetadata('BaseType')) {
-      const columnCall = getModuleLevelCall(bt.sourceFile, 'setColumnDefaults');
-      if (columnCall) {
-        const args = columnCall.getArguments();
-        const columnArg = args[1];
-        if (columnArg && Node.isStringLiteral(columnArg)) {
-          baseTypeColumnDefaults.set(bt.name, columnArg.getLiteralValue());
+      const propDefaultsCall = getModuleLevelCall(bt.sourceFile, 'setPropertyDefaults');
+      if (propDefaultsCall) {
+        const args = propDefaultsCall.getArguments();
+        const optsArg = args[1];
+        if (optsArg && Node.isObjectLiteralExpression(optsArg)) {
+          const defaults: Record<string, string | boolean> = {};
+          const columnProp = optsArg.getProperty('column');
+          if (columnProp && Node.isPropertyAssignment(columnProp)) {
+            const init = columnProp.getInitializer();
+            if (init && Node.isStringLiteral(init)) {
+              baseTypeColumnDefaults.set(bt.name, init.getLiteralValue());
+            }
+          }
+          for (const key of ['presentAs', 'displayName', 'placeholder', 'helpText'] as const) {
+            const prop = optsArg.getProperty(key);
+            if (prop && Node.isPropertyAssignment(prop)) {
+              const init = prop.getInitializer();
+              if (init && Node.isStringLiteral(init)) {
+                defaults[key] = init.getLiteralValue();
+              }
+            }
+          }
+          for (const key of ['hidden', 'disabled'] as const) {
+            const prop = optsArg.getProperty(key);
+            if (prop && Node.isPropertyAssignment(prop)) {
+              const init = prop.getInitializer();
+              if (init && init.getText() === 'true') {
+                defaults[key] = true;
+              }
+            }
+          }
+          if (Object.keys(defaults).length > 0) {
+            baseTypePropertyDefaults.set(bt.name, defaults);
+          }
         }
       }
 
@@ -267,13 +296,15 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           chain.push(`.column({ type: "${baseTypeDefault.replace(/"/g, '\\"')}" })`);
         }
       }
-      if (opts.hidden) chain.push('.hidden()');
+      // Resolve base type property defaults as fallbacks
+      const btDefaults = typeNode ? baseTypePropertyDefaults.get(typeNode.getText()) : undefined;
+      if (opts.hidden || btDefaults?.hidden) chain.push('.hidden()');
       if (opts.required) chain.push('.requiredFinal()');
-      if (opts.disabled) chain.push('.disabled()');
-      if (opts.displayName) chain.push(`.displayName("${String(opts.displayName).replace(/"/g, '\\"')}")`);
-      if (opts.placeholder) chain.push(`.placeholder("${String(opts.placeholder).replace(/"/g, '\\"')}")`);
-      if (opts.helpText) chain.push(`.helpText("${String(opts.helpText).replace(/"/g, '\\"')}")`);
-      if (opts.presentAs) chain.push(`.presentAs("${String(opts.presentAs).replace(/"/g, '\\"')}")`);
+      if (opts.disabled || btDefaults?.disabled) chain.push('.disabled()');
+      for (const key of ['displayName', 'placeholder', 'helpText', 'presentAs'] as const) {
+        const val = opts[key] || btDefaults?.[key];
+        if (val) chain.push(`.${key}("${String(val).replace(/"/g, '\\"')}")`);
+      }
 
       // Conditional rules — direct arrow fn or { condition, message } object
       for (const rule of ['requiredWhen', 'excludeWhen', 'disabledWhen'] as const) {
@@ -352,13 +383,15 @@ const businessObjectSchemaGenerator: DesignGenerator = {
             chain.push(`.column({ type: "${baseTypeDefault.replace(/"/g, '\\"')}" })`);
           }
         }
-        if (opts.hidden) chain.push('.hidden()');
+        // Resolve base type property defaults as fallbacks
+        const mixinBtDefaults = typeNode ? baseTypePropertyDefaults.get(typeNode.getText()) : undefined;
+        if (opts.hidden || mixinBtDefaults?.hidden) chain.push('.hidden()');
         if (opts.required) chain.push('.requiredFinal()');
-        if (opts.disabled) chain.push('.disabled()');
-        if (opts.displayName) chain.push(`.displayName("${String(opts.displayName).replace(/"/g, '\\"')}")`);
-        if (opts.placeholder) chain.push(`.placeholder("${String(opts.placeholder).replace(/"/g, '\\"')}")`);
-        if (opts.helpText) chain.push(`.helpText("${String(opts.helpText).replace(/"/g, '\\"')}")`);
-        if (opts.presentAs) chain.push(`.presentAs("${String(opts.presentAs).replace(/"/g, '\\"')}")`);
+        if (opts.disabled || mixinBtDefaults?.disabled) chain.push('.disabled()');
+        for (const key of ['displayName', 'placeholder', 'helpText', 'presentAs'] as const) {
+          const val = opts[key] || mixinBtDefaults?.[key];
+          if (val) chain.push(`.${key}("${String(val).replace(/"/g, '\\"')}")`);
+        }
 
         for (const rule of ['requiredWhen', 'excludeWhen', 'disabledWhen'] as const) {
           const val = opts[rule];

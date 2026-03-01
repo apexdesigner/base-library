@@ -58,6 +58,23 @@ process.stdin.on('end', () => {
     respond('ad3 server is not running. Run `ad3 start` to start it.');
   }
 
+  // Regenerate design type definitions before validating
+  // (ensures types/barrels are up to date after edits)
+  const designFilesUrl = `http://localhost:${port}/api/generate/design-files`;
+  const dfReq = http.request(designFilesUrl, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }, (dfRes) => {
+    let dfData = '';
+    dfRes.on('data', (chunk) => { dfData += chunk; });
+    dfRes.on('end', () => {
+      runValidate();
+    });
+  });
+  dfReq.on('error', () => {
+    // If design-files fails, still run validate
+    runValidate();
+  });
+  dfReq.end();
+
+  function runValidate() {
   // Call the validate API (validate-only, no fix — use `ad3 resolve` to fix)
   const start = Date.now();
   const url = `http://localhost:${port}/api/validate?path=${encodeURIComponent(designPath)}`;
@@ -94,11 +111,22 @@ process.stdin.on('end', () => {
         process.exit(0);
       }
 
-      respond(
-        `Validated: ${objectCount} objects, ${diagLines.length} diagnostics  ${timing}\n` +
-        diagLines.join('\n') +
-        '\nRun `ad3 resolve` after completing edits to auto-fix'
-      );
+      const MAX_DIAGS = 20;
+      const total = diagLines.length;
+      const shown = diagLines.slice(0, MAX_DIAGS);
+      const truncated = total > MAX_DIAGS;
+
+      let message = `Validated: ${objectCount} objects, ${total} diagnostics  ${timing}\n` +
+        shown.join('\n');
+
+      if (truncated) {
+        message += `\n... (${MAX_DIAGS} of ${total} shown)` +
+          `\n...and ${total - MAX_DIAGS} more diagnostics not shown — run \`ad3 resolve\` to auto-fix before continuing edits`;
+      } else {
+        message += '\nRun `ad3 resolve` after completing edits to auto-fix';
+      }
+
+      respond(message);
     });
   });
 
@@ -107,4 +135,5 @@ process.stdin.on('end', () => {
   });
 
   req.end();
+  } // end runValidate
 });
