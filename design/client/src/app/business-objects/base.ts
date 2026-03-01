@@ -9,8 +9,8 @@ export class BusinessObjectBase {
     BusinessObjectBase.httpClient = httpClient;
   }
 
-  constructor(data: any) {
-    Object.assign(this, data);
+  constructor(data?: any) {
+    if (data) Object.assign(this, data);
   }
 
   protected static get<T>(url: string, params?: Record<string, string>): Promise<T> {
