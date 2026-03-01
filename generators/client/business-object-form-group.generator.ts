@@ -174,6 +174,10 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push(`  constructor(options?: PersistedFormGroupOptions) {`);
     lines.push(`    super(${schemaVarName}, ${className}, options);`);
     lines.push(`  }`);
+    lines.push('');
+    lines.push(`  get object(): ${className} {`);
+    lines.push(`    return new ${className}(this.getRawValue());`);
+    lines.push(`  }`);
 
     // Generate createControl factory for lazy initialization of relationship controls
     const relCases: string[] = [];
@@ -257,6 +261,10 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push('');
     lines.push(`  protected override createItemGroup() {`);
     lines.push(`    return new ${className}FormGroup();`);
+    lines.push(`  }`);
+    lines.push('');
+    lines.push(`  get array(): ${className}[] {`);
+    lines.push(`    return this.controls.map((group: ${className}FormGroup) => group.object);`);
     lines.push(`  }`);
     lines.push(`}`);
     lines.push('');

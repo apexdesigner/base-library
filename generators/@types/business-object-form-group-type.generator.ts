@@ -168,6 +168,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     fgLines.push(`  declare value: Partial<${className}>;`);
     fgLines.push('');
     fgLines.push(`  constructor(options?: PersistedFormGroupOptions);`);
+    fgLines.push(`  get object(): ${className};`);
 
     // Instance behavior method declarations
     const allBehaviors = context.listMetadata('Behavior');
@@ -210,9 +211,11 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     // ── form-array.d.ts ───────────────────────────────────────────────────────
     const faLines: string[] = [];
     faLines.push(`import type { PersistedFormArray, PersistedFormArrayOptions } from './persisted-form-group';`);
+    faLines.push(`import type { ${className} } from './${boKebab}';`);
     faLines.push('');
     faLines.push(`export declare class ${className}FormArray extends PersistedFormArray {`);
     faLines.push(`  constructor(options?: PersistedFormArrayOptions);`);
+    faLines.push(`  get array(): ${className}[];`);
     faLines.push(`}`);
 
     // ── persisted-array.d.ts ──────────────────────────────────────────────────

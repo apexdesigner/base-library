@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.93] - 2026-03-01
+
+- a966de7 feat: add object getter on FormGroup and array getter on FormArray
+
+
 ## [1.0.92] - 2026-03-01
 
 - 943ff00 feat: replace setColumnDefaults with setPropertyDefaults for base types
