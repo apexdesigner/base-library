@@ -5,7 +5,7 @@ The most common pattern is a list page showing all records and a detail page for
 The list and detail pages follow a plural/singular naming convention — both for the class name and the path:
 
 - **List page**: `SuppliersPage`, path `/suppliers` (plural)
-- **Detail page**: `SupplierPage`, path `/suppliers/:supplier.id` (singular)
+- **Detail page**: `SupplierPage`, path `/suppliers/:supplierFormGroup.id` (singular)
 
 ## List Page
 
@@ -56,23 +56,30 @@ Key points:
 ```typescript
 import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
 import { SupplierFormGroup } from "@business-objects-client";
+import { Supplier } from "@business-objects-client";
 import { SuppliersPage } from "@pages";
 
 @page({
-  path: "/suppliers/:supplier.id",
+  path: "/suppliers/:supplierFormGroup.id",
   parentPage: SuppliersPage,
 })
 export class SupplierPage extends Page {
 
-  @property({ read: "Automatically", save: "Automatically" })
-  supplier!: SupplierFormGroup;
+  @property({ read: "Automatically", save: "Automatically", afterRead: "afterRead" })
+  supplierFormGroup!: SupplierFormGroup;
+
+  supplier: Supplier = new Supplier();
+
+  afterRead() {
+    this.supplier = this.supplierFormGroup.object;
+  }
 }
 
 applyTemplate(SupplierPage, `
-  <if condition="!supplier.reading">
+  <if condition="!supplierFormGroup.reading">
     <flex-column>
-      <h1>{{supplier.value.name}}</h1>
-      <sf-fields [group]="supplier"></sf-fields>
+      <h1>{{supplier.name}}</h1>
+      <sf-fields [group]="supplierFormGroup"></sf-fields>
     </flex-column>
     <else>
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -82,13 +89,14 @@ applyTemplate(SupplierPage, `
 ```
 
 Key points:
-- Type is `SupplierFormGroup` (singular name + `FormGroup`)
-- `read: "Automatically"` reads the record by ID from the path parameter
-- `save: "Automatically"` saves changes as the user edits
-- Path parameter `:supplier.id` links the property name (`supplier`) to the URL parameter
+- `supplierFormGroup` is the `SupplierFormGroup` used for form binding and persistence
+- `supplier` is a typed `Supplier` BO instance for clean property access in the template
+- `afterRead` updates `supplier` from `supplierFormGroup.object` after data is loaded
+- `new Supplier()` initializes with no data (constructor parameter is optional)
+- Use `supplier.name` instead of `supplierFormGroup.value.name` for cleaner template expressions
+- `sf-fields [group]="supplierFormGroup"` binds to the form group for editing
+- Path parameter `:supplierFormGroup.id` links the form group property to the URL parameter
 - `parentPage` establishes navigation hierarchy (back button, breadcrumbs)
-- `sf-fields [group]="supplier"` auto-renders form fields for all properties
-- Access values via `supplier.value.name` (reactive form value access)
 
 ---
 

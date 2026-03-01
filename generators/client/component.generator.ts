@@ -131,7 +131,9 @@ const componentGenerator: DesignGenerator = {
       const moduleSpec = imp.getModuleSpecifierValue();
       if (moduleSpec.startsWith('@apexdesigner/dsl')) return true;
       if (moduleSpec.startsWith('@') && !moduleSpec.includes('/')) return true;
-      // For dialog components, also remove @angular imports (generator rebuilds them)
+      // Remove @angular/core imports (generator rebuilds them)
+      if (moduleSpec === '@angular/core') return true;
+      // For dialog components, also remove other @angular imports (generator rebuilds them)
       if (isDialog && moduleSpec.startsWith('@angular/')) return true;
       return false;
     });
