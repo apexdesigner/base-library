@@ -166,6 +166,25 @@ describe('componentGenerator', () => {
     });
   });
 
+  describe('duplicate @angular/core imports', () => {
+    it('should not produce duplicate EventEmitter import when design file also imports it', async () => {
+      const ts = await generateComponent(`
+        import { Component, component, property } from '@apexdesigner/dsl/component';
+        import { EventEmitter } from '@angular/core';
+        @component({})
+        export class DashboardComponent extends Component {
+          @property({ isOutput: true })
+          claimed!: EventEmitter<any>;
+        }
+      `);
+
+      const matches = ts.match(/EventEmitter/g) || [];
+      // EventEmitter should appear in: import, type annotation, initializer — but NOT in a second import
+      const importMatches = ts.match(/import\s*\{[^}]*EventEmitter[^}]*\}\s*from\s*['"]@angular\/core['"]/g) || [];
+      expect(importMatches.length).toBe(1);
+    });
+  });
+
   describe('required and disabled form group options', () => {
     it('should pass required and disabled to form group constructor', async () => {
       const ts = await generateComponent(`

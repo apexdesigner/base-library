@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.95] - 2026-03-01
+
+- 8a00965 fix: remove duplicate EventEmitter import in generated non-dialog components
+
+
 ## [1.0.94] - 2026-03-01
 
 - 70c64fd feat: make BusinessObjectBase constructor data parameter optional
