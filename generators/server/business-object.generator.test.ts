@@ -101,9 +101,9 @@ describe('businessObjectGenerator', () => {
       });
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
-          import { BaseType, setColumnDefaults } from '@apexdesigner/dsl';
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
-          setColumnDefaults(Uuid, 'uuid');
+          setPropertyDefaults(Uuid, { column: 'uuid' });
         `,
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {

@@ -1,6 +1,6 @@
 import { BusinessObject } from "@apexdesigner/dsl";
 import { applyTestFileDataSource } from "@data-sources";
-import { Uuid } from "@base-types";
+import { Uuid, Json } from "@base-types";
 import { TestItem } from "@business-objects";
 
 export class TestSetting extends BusinessObject {
@@ -15,6 +15,8 @@ export class TestSetting extends BusinessObject {
   category?: string;
 
   isActive?: boolean;
+
+  config?: Json;
 
   testItems?: TestItem[];
 }

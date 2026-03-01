@@ -1,5 +1,5 @@
-import { BaseType, setColumnDefaults } from "@apexdesigner/dsl";
+import { BaseType, setPropertyDefaults } from "@apexdesigner/dsl";
 
 export class Uuid extends BaseType<string> {}
 
-setColumnDefaults(Uuid, "UUID");
+setPropertyDefaults(Uuid, { column: "UUID" });

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.92] - 2026-03-01
+
+- 943ff00 feat: replace setColumnDefaults with setPropertyDefaults for base types
+
+
 ## [1.0.91] - 2026-03-01
 
 - d23f803 feat: add @types/luxon as client dev dependency
