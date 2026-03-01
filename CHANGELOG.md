@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.94] - 2026-03-01
+
+- 70c64fd feat: make BusinessObjectBase constructor data parameter optional
+
+
 ## [1.0.93] - 2026-03-01
 
 - a966de7 feat: add object getter on FormGroup and array getter on FormArray
