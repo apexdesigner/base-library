@@ -23,11 +23,17 @@ export class TestCategoryPage extends Page {
   category: TestCategory = new TestCategory();
 
   afterRead() {
-    console.log('afterRead called');
+    console.log('afterRead called', this.testCategory.value);
     this.category = this.testCategory.object;
   }
 
-  async refresh() {
+  async setName() {
+    await TestCategory.updateById(this.testCategory.value.id, { name: 'Hello World' });
+    await this.testCategory.read();
+  }
+
+  async clearName() {
+    await TestCategory.updateById(this.testCategory.value.id, { name: null });
     await this.testCategory.read();
   }
 }
@@ -40,29 +46,19 @@ applyTemplate(TestCategoryPage, `
     <flex-column>
       <flex-row [centerVertical]="true">
         <h2>{{category.name}}</h2>
-        <button mat-icon-button (click)="refresh()" matTooltip="Refresh">
-          <mat-icon>refresh</mat-icon>
+        <button mat-icon-button (click)="setName()" matTooltip="Set Name">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="clearName()" matTooltip="Clear Name">
+          <mat-icon>clear</mat-icon>
         </button>
       </flex-row>
+      <div>category.name: "{{category.name}}"</div>
+      <div>testCategory.value.name: "{{testCategory.value.name}}"</div>
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput [formControl]="testCategory.controls.name">
       </mat-form-field>
-      <if condition="testCategory.value.parentCategory">
-        <div>
-          <strong>Parent Category:</strong>
-          <a [routerLink]="'/test-categories/' + testCategory.value.parentCategory.id">
-            {{testCategory.value.parentCategory.name}}
-          </a>
-        </div>
-      </if>
-      <h3>Child Categories</h3>
-      <for const="child" of="testCategory.value.childCategories">
-        <a [routerLink]="'/test-categories/' + child.id">{{child.name}}</a>
-        <when-empty>
-          <div>No child categories</div>
-        </when-empty>
-      </for>
     </flex-column>
   </if>
 `);

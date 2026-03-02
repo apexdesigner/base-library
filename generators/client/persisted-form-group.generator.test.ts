@@ -25,6 +25,14 @@ describe('persistedFormGroupGenerator', () => {
       expect(code).toContain('this.setControl(key, control)');
     });
 
+    it('should null out scalar controls not present in server data', async () => {
+      const code = await generateRuntime();
+
+      // When the API omits null fields, _populate must reset those controls
+      expect(code).toContain('!(key in data)');
+      expect(code).toContain('control.reset(null');
+    });
+
     it('should recursively call _populate on nested PersistedFormGroup controls', async () => {
       const code = await generateRuntime();
 

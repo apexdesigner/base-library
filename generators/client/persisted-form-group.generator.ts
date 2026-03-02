@@ -127,6 +127,13 @@ export class PersistedFormGroup extends SchemaFormGroup {
       }
     }
 
+    // Reset scalar controls not present in data (API omits null fields)
+    for (const [key, control] of Object.entries(this.controls)) {
+      if (control instanceof SchemaFormControl && !(key in data)) {
+        control.reset(null, { emitEvent: false });
+      }
+    }
+
     this.patchValue(data);
 
     // Populate nested relationship controls (recursively)
