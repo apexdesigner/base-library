@@ -131,10 +131,6 @@ const componentGenerator: DesignGenerator = {
       const moduleSpec = imp.getModuleSpecifierValue();
       if (moduleSpec.startsWith('@apexdesigner/dsl')) return true;
       if (moduleSpec.startsWith('@') && !moduleSpec.includes('/')) return true;
-      // Remove @angular/core imports (generator rebuilds them)
-      if (moduleSpec === '@angular/core') return true;
-      // For dialog components, also remove other @angular imports (generator rebuilds them)
-      if (isDialog && moduleSpec.startsWith('@angular/')) return true;
       return false;
     });
     for (const imp of designImports) {
@@ -474,12 +470,24 @@ const componentGenerator: DesignGenerator = {
       exportedClass.insertMember(insertIndex, `private destroyRef = inject(DestroyRef);`);
     }
 
-    // Add Angular Component import
+    // Add Angular Component import (merge with existing if design file imported from @angular/core)
     const angularCoreImports = ['Component', ...new Set(angularCoreExtras)];
-    writableFile.insertImportDeclaration(0, {
-      moduleSpecifier: '@angular/core',
-      namedImports: angularCoreImports
-    });
+    const existingAngularCoreImport = writableFile.getImportDeclaration(
+      imp => imp.getModuleSpecifierValue() === '@angular/core'
+    );
+    if (existingAngularCoreImport) {
+      const existingNames = existingAngularCoreImport.getNamedImports().map(ni => ni.getName());
+      for (const name of angularCoreImports) {
+        if (!existingNames.includes(name)) {
+          existingAngularCoreImport.addNamedImport(name);
+        }
+      }
+    } else {
+      writableFile.insertImportDeclaration(0, {
+        moduleSpecifier: '@angular/core',
+        namedImports: angularCoreImports
+      });
+    }
 
     // Add imports for content children component types
     for (const cp of contentChildrenProps) {
