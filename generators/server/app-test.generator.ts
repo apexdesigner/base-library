@@ -69,7 +69,7 @@ const appTestGenerator: DesignGenerator = {
     const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
       const options = getBehaviorOptions(behavior.sourceFile);
       return options && !options.lifecycleStage;
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name));
 
     interface BehaviorGroup {
       funcName: string;

@@ -105,7 +105,8 @@ const appGenerator: DesignGenerator = {
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Collect data sources and business objects
-    const dataSources = context.listMetadata('DataSource');
+    const dataSources = context.listMetadata('DataSource')
+      .sort((a, b) => a.name.localeCompare(b.name));
     const businessObjects = context.listMetadata('BusinessObject')
       .sort((a, b) => a.name.localeCompare(b.name));
     debug('dataSources count %j, businessObjects count %j', dataSources.length, businessObjects.length);
@@ -114,7 +115,7 @@ const appGenerator: DesignGenerator = {
     const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
       const options = getBehaviorOptions(behavior.sourceFile);
       return options && !options.lifecycleStage;
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name));
     debug('classBehaviors count %j', classBehaviors.length);
 
     // Collect imports from all class behavior design files
