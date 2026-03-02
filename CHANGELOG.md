@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.99] - 2026-03-02
+
+- 23e4959 chore: apply automated fixes
+- 9815fd3 fix: sort aggregate generator output for deterministic code generation
+- 73a492d feat: move Email and Json base types from testing to real base-types
+
+
 ## [1.0.98] - 2026-03-02
 
 - acd1001 feat: add has-one child autoSave with FK initialization
