@@ -147,28 +147,28 @@ setView(OrganizationStudentCount, `
 
 ## Base Type Column
 
-Use `setColumnDefaults()` in a [base type](base-types.md) to set the default column for all properties that use that type:
+Use `setPropertyDefaults()` in a [base type](base-types.md) to set the default column for all properties that use that type:
 
 ```typescript
-import { setColumnDefaults } from "@apexdesigner/dsl";
+import { BaseType, setPropertyDefaults } from "@apexdesigner/dsl";
 
-export type Currency = number;
+export class Currency extends BaseType<number> {}
 
-setColumnDefaults(Currency, {
-  type: "decimal",
-  precision: 18,
-  scale: 4,
+setPropertyDefaults(Currency, {
+  column: { type: "decimal", precision: 18, scale: 4 },
 });
 ```
 
 Or as a shorthand string:
 
 ```typescript
-import { setColumnDefaults } from "@apexdesigner/dsl";
+import { BaseType, setPropertyDefaults } from "@apexdesigner/dsl";
 
-export type Currency = number;
+export class Currency extends BaseType<number> {}
 
-setColumnDefaults(Currency, "decimal(18,4)");
+setPropertyDefaults(Currency, {
+  column: "decimal(18,4)",
+});
 ```
 
 Properties can override the base type default using `@property()`:

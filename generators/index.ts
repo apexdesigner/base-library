@@ -34,6 +34,7 @@ export { dataSourceGenerator } from "./server/data-source.generator.js";
 export { businessObjectSchemaGenerator } from "./server/business-object-schema.generator.js";
 export { businessObjectGenerator } from "./server/business-object.generator.js";
 export { businessObjectRouteGenerator } from "./server/business-object-route.generator.js";
+export { appBehaviorRouteGenerator } from "./server/app-behavior-route.generator.js";
 export { routesIndexGenerator } from "./server/routes-index.generator.js";
 export { appGenerator } from "./server/app.generator.js";
 export { appLifecycleGenerator } from "./server/app-lifecycle.generator.js";

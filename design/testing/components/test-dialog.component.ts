@@ -1,6 +1,7 @@
 import { Component, component, property, applyTemplate } from "@apexdesigner/dsl/component";
 import { MatDialogRef } from "@angular/material/dialog";
 import { EventEmitter } from "@angular/core";
+import { Validators } from "@angular/forms";
 
 @component({ isDialog: true })
 export class TestDialogComponent extends Component {
