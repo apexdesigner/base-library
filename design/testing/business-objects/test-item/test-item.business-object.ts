@@ -1,6 +1,6 @@
 import { BusinessObject, relationship } from "@apexdesigner/dsl";
 import { applyTestPostgresDataSource } from "@data-sources";
-import { TestSetting } from "@business-objects";
+import { TestSetting, TestItemDetail } from "@business-objects";
 import { Uuid, Email } from "@base-types";
 
 export class TestItem extends BusinessObject {
@@ -14,6 +14,9 @@ export class TestItem extends BusinessObject {
   testSetting?: TestSetting;
 
   testSettingId?: Uuid;
+
+  @relationship({ type: "Has One" })
+  testItemDetail?: TestItemDetail;
 }
 
 applyTestPostgresDataSource(TestItem);

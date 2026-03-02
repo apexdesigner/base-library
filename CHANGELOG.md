@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.98] - 2026-03-02
+
+- acd1001 feat: add has-one child autoSave with FK initialization
+- 2cf458b chore: update dev.sh workspace port config to ports.server/ports.client
+- 7fefbef feat: add common base types for dates, currency, validation, and more
+- ffb2a86 feat: pass all persisted array read options through and extract buildReadArgs helper
+- 0c458db feat: add service injection to component generator
+
+
 ## [1.0.97] - 2026-03-02
 
 - 116b002 fix: always generate app-behaviors route file even with no qualifying behaviors

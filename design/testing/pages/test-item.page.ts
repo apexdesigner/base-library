@@ -11,7 +11,7 @@ export class TestItemPage extends Page {
   @property({
     read: "Automatically",
     save: "Automatically",
-    include: { testSetting: {} },
+    include: { testSetting: {}, testItemDetail: {} },
   })
   testItem!: TestItemFormGroup;
 }
@@ -21,6 +21,10 @@ applyTemplate(TestItemPage, `
     <flex-column>
       <h1>{{testItem.value.name}}</h1>
       <sf-fields [group]="testItem"></sf-fields>
+      <if condition="testItem.controls.testItemDetail">
+        <h2>Detail</h2>
+        <sf-fields [group]="testItem.controls.testItemDetail"></sf-fields>
+      </if>
       <if condition="testItem.value.testSetting">
         <div>
           <strong>Setting:</strong>

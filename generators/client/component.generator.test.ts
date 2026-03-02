@@ -224,6 +224,73 @@ describe('componentGenerator', () => {
     });
   });
 
+  describe('service injection', () => {
+    it('should inject services and add imports', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PersonService', {
+        sourceCode: `
+          import { Service, service } from '@apexdesigner/dsl/service';
+          @service()
+          export class PersonService extends Service {}
+        `
+      });
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+          import { PersonService } from '@services';
+          export class DashboardComponent extends Component {
+            personService!: PersonService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).toContain('personService = inject(PersonService)');
+      expect(ts).toContain("from '../../services/person/person.service'");
+      expect(ts).toContain('inject');
+    });
+  });
+
+  describe('persisted array read options', () => {
+    it('should pass all read options through to .read() call', async () => {
+      const ts = await generateComponent(`
+        import { Component, component, property } from '@apexdesigner/dsl/component';
+        import { TaskPersistedArray } from '@business-objects-client';
+        @component({})
+        export class DashboardComponent extends Component {
+          @property({ read: 'Automatically', where: { active: true }, include: { assignee: true }, order: { name: 'ASC' }, fields: ['id', 'name'], omit: ['description'], limit: 10, offset: 0 })
+          tasks!: TaskPersistedArray;
+        }
+      `);
+
+      expect(ts).toContain('await this.tasks.read(');
+      expect(ts).toContain('where: { active: true }');
+      expect(ts).toContain('include: { assignee: true }');
+      expect(ts).toContain("order: { name: 'ASC' }");
+      expect(ts).toContain("fields: ['id', 'name']");
+      expect(ts).toContain("omit: ['description']");
+      expect(ts).toContain('limit: 10');
+      expect(ts).toContain('offset: 0');
+    });
+
+    it('should generate .read() with no args when no options specified', async () => {
+      const ts = await generateComponent(`
+        import { Component, component, property } from '@apexdesigner/dsl/component';
+        import { TaskPersistedArray } from '@business-objects-client';
+        @component({})
+        export class DashboardComponent extends Component {
+          @property({ read: 'Automatically' })
+          tasks!: TaskPersistedArray;
+        }
+      `);
+
+      expect(ts).toContain('await this.tasks.read()');
+    });
+  });
+
   describe('required and disabled form group options', () => {
     it('should pass required and disabled to form group constructor', async () => {
       const ts = await generateComponent(`

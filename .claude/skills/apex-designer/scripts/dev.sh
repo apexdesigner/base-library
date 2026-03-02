@@ -35,8 +35,8 @@ LOG_DIR="$PROJECT_DIR/logs"
 WS_SERVER_PORT=""
 WS_CLIENT_PORT=""
 if [ -f "$PROJECT_DIR/.workspace.json" ]; then
-  WS_SERVER_PORT=$(node -pe "try{JSON.parse(require('fs').readFileSync('$PROJECT_DIR/.workspace.json','utf8')).serverPort||''}catch(e){''}" 2>/dev/null || true)
-  WS_CLIENT_PORT=$(node -pe "try{JSON.parse(require('fs').readFileSync('$PROJECT_DIR/.workspace.json','utf8')).clientPort||''}catch(e){''}" 2>/dev/null || true)
+  WS_SERVER_PORT=$(node -pe "try{var w=JSON.parse(require('fs').readFileSync('$PROJECT_DIR/.workspace.json','utf8'));w.ports&&w.ports.server||''}catch(e){''}" 2>/dev/null || true)
+  WS_CLIENT_PORT=$(node -pe "try{var w=JSON.parse(require('fs').readFileSync('$PROJECT_DIR/.workspace.json','utf8'));w.ports&&w.ports.client||''}catch(e){''}" 2>/dev/null || true)
 fi
 SERVER_PORT="${WS_SERVER_PORT:-${PORT:-3000}}"
 CLIENT_PORT="${WS_CLIENT_PORT:-${CLIENT_PORT:-4200}}"

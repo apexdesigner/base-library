@@ -1,0 +1,8 @@
+import { BaseType, applyValidation } from "@apexdesigner/dsl";
+
+export class SemanticVersion extends BaseType<string> {}
+
+applyValidation(SemanticVersion, {
+  pattern: "^\\d+\\.\\d+\\.\\d+(-[\\w.]+)?(\\+[\\w.]+)?$",
+  patternMessage: "Must be a valid semantic version (e.g. 1.2.3)",
+});

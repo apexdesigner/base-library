@@ -1,6 +1,4 @@
-import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary } from '@apexdesigner/generator';
-import { pascalCase } from 'change-case';
+import type { DesignGenerator, DesignMetadata } from '@apexdesigner/generator';
 import createDebug from 'debug';
 
 const Debug = createDebug('ad3:generators:persistedFormGroup');
@@ -23,8 +21,6 @@ const persistedFormGroupGenerator: DesignGenerator = {
     const debug = Debug.extend('generate');
     debug('generating persisted-form-group base class');
 
-    const debugNamespace = pascalCase((context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App').replace(/Project$/, ''));
-
     const runtimeContent = `import { SchemaFormGroup, SchemaFormArray, SchemaFormControl } from '@apexdesigner/schema-forms';
 import type { SchemaType } from '@apexdesigner/schema-forms';
 import { z } from 'zod';
@@ -33,8 +29,9 @@ import { Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, filter } from 'rxjs';
 import createDebug from 'debug';
+import { getRelationshipMetadata } from '@apexdesigner/schema-tools';
 
-const Debug = createDebug('${debugNamespace}:PersistedForm');
+const Debug = createDebug('PersistedForm');
 
 export interface EntityClass {
   findById(id: any, filter?: any): Promise<any>;
@@ -56,6 +53,9 @@ export class PersistedFormGroup extends SchemaFormGroup {
   private _entityClass: EntityClass;
   private _idProperty: string;
   private _savePromise: Promise<any> | null = null;
+  private _autoSaveDestroyRef: DestroyRef | null = null;
+  private _autoSaveDebounceMs = 300;
+  _parentForeignKey: string | null = null;
 
   constructor(
     schema: SchemaType,
@@ -79,6 +79,7 @@ export class PersistedFormGroup extends SchemaFormGroup {
         if (control) control.disable();
       }
     }
+    this.updateOriginalValue();
   }
 
   get readFilter(): Record<string, any> {
@@ -116,13 +117,26 @@ export class PersistedFormGroup extends SchemaFormGroup {
 
   _populate(data: Record<string, any>): void {
     const debug = Debug.extend('_populate');
-    // Lazily create controls for included relationships
+    // Lazily create controls for included relationships (including null has-one)
     for (const key of Object.keys(data)) {
-      if (data[key] != null && typeof data[key] === 'object' && !this.controls[key]) {
+      if (typeof data[key] === 'object' && !this.controls[key]) {
         const control = this.createControl(key);
         if (control) {
           debug('lazy-creating control %s', key);
           this.setControl(key, control);
+          if (this._autoSaveDestroyRef && control instanceof PersistedFormGroup) {
+            const fieldSchema = this.schema?.shape?.[key];
+            if (fieldSchema) {
+              const relMeta = getRelationshipMetadata(fieldSchema as any);
+              if (relMeta?.relationshipType === 'hasOne' && relMeta.foreignKey && data[this._idProperty]) {
+                debug('setting FK %s=%o on child %s', relMeta.foreignKey, data[this._idProperty], key);
+                control.patchValue({ [relMeta.foreignKey]: data[this._idProperty] });
+                control._parentForeignKey = relMeta.foreignKey;
+              }
+            }
+            control.autoSave(this._autoSaveDestroyRef, this._autoSaveDebounceMs);
+            control.updateOriginalValue();
+          }
         }
       }
     }
@@ -148,11 +162,14 @@ export class PersistedFormGroup extends SchemaFormGroup {
       if (control instanceof PersistedFormGroup && data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
         debug('populating nested form group', name);
         control._populate(data[name]);
+        control.updateOriginalValue();
       }
     }
   }
 
   override async save(): Promise<any> {
+    const debug = Debug.extend('save');
+    debug('save called');
     this.saving = true;
     this._savePromise = this._doSave();
     try {
@@ -174,11 +191,14 @@ export class PersistedFormGroup extends SchemaFormGroup {
   }
 
   private async _doSave(): Promise<any> {
+    const debug = Debug.extend('_doSave');
     const id = this.value?.[this._idProperty];
     if (id) {
       const changes = this.getChanges();
+      debug('changes %j', changes);
       if (!changes) return null;
       const scalar = this._scalarOnly(changes);
+      debug('scalar changes %j', scalar);
       if (Object.keys(scalar).length === 0) return null;
       const result = await this._entityClass.updateById(id, scalar);
       // Patch back only server-computed fields that actually changed (e.g. lastModified)
@@ -193,6 +213,7 @@ export class PersistedFormGroup extends SchemaFormGroup {
       return result;
     } else {
       const payload = this._scalarOnly(this.getPayload());
+      debug('create payload %j', payload);
       const result = await this._entityClass.create(payload);
       this.patchValue(result);
       this.updateOriginalValue();
@@ -201,19 +222,33 @@ export class PersistedFormGroup extends SchemaFormGroup {
   }
 
   autoSave(destroyRef: DestroyRef, debounceMs = 300): void {
+    const debug = Debug.extend('autoSave');
+    debug('autoSave registered');
+    this._autoSaveDestroyRef = destroyRef;
+    this._autoSaveDebounceMs = debounceMs;
     this.valueChanges
       .pipe(
         debounceTime(debounceMs),
-        filter(() => this.hasUnsavedChanges && !this.saving && !this.reading),
+        filter(() => {
+          const hasId = !!this.value?.[this._idProperty];
+          const canAutoCreate = !hasId && !!this._parentForeignKey;
+          const dominated = this.hasUnsavedChanges && !this.saving && !this.reading && (hasId || canAutoCreate);
+          debug('filter: hasUnsavedChanges=%o saving=%o reading=%o id=%o canAutoCreate=%o → %o', this.hasUnsavedChanges, this.saving, this.reading, this.value?.[this._idProperty], canAutoCreate, dominated);
+          return dominated;
+        }),
         takeUntilDestroyed(destroyRef),
       )
       .subscribe(() => {
+        debug('autoSave triggering save');
         this.save();
       });
 
     // Flush pending changes on destroy
     destroyRef.onDestroy(() => {
-      if (this.hasUnsavedChanges && !this.saving) {
+      const hasId = !!this.value?.[this._idProperty];
+      const canAutoCreate = !hasId && !!this._parentForeignKey;
+      if (this.hasUnsavedChanges && !this.saving && (hasId || canAutoCreate)) {
+        debug('onDestroy flush: saving pending changes');
         this.save();
       }
     });
@@ -405,6 +440,7 @@ export declare class PersistedFormGroup extends SchemaFormGroup {
   afterRead: (() => void) | null;
 
   readFilter: Record<string, any>;
+  _parentForeignKey: string | null;
 
   constructor(schema: any, entityClass: any, options?: PersistedFormGroupOptions, idProperty?: string);
 
