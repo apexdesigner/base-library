@@ -122,6 +122,24 @@ const componentGenerator: DesignGenerator = {
       componentDecorator.remove();
     }
 
+    // Capture @services imports before removing design aliases
+    const serviceImports: { name: string; typeName: string }[] = [];
+    const servicesImportDecl = writableFile.getImportDeclaration(
+      imp => imp.getModuleSpecifierValue() === '@services'
+    );
+    if (servicesImportDecl) {
+      for (const named of servicesImportDecl.getNamedImports()) {
+        serviceImports.push({ name: named.getName(), typeName: named.getName() });
+      }
+    }
+    debug('captured service imports %j', serviceImports);
+
+    // Build set of all known service type names
+    const serviceTypeNames = new Set(serviceImports.map(s => s.typeName));
+    for (const m of (context.listMetadata('Service') || [])) {
+      serviceTypeNames.add(m.name);
+    }
+
     // Capture @business-objects / @business-objects-client imports before removing design aliases
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
@@ -361,7 +379,23 @@ const componentGenerator: DesignGenerator = {
       }
     }
 
-    if (injectedExternalTypes.length > 0) {
+    // Convert service-typed properties to inject() calls
+    const injectedServices: { propName: string; typeName: string; serviceFile: string }[] = [];
+    for (const prop of exportedClass.getProperties()) {
+      const typeNode = prop.getTypeNode();
+      if (!typeNode) continue;
+      const typeText = typeNode.getText();
+      if (serviceTypeNames.has(typeText)) {
+        const propName = prop.getName();
+        const svcBaseName = typeText.replace(/Service$/, '');
+        const svcFile = kebabCase(svcBaseName);
+        injectedServices.push({ propName, typeName: typeText, serviceFile: svcFile });
+        prop.replaceWithText(`${propName} = inject(${typeText})`);
+        debug('injected service %j: %j', propName, typeText);
+      }
+    }
+
+    if (injectedExternalTypes.length > 0 || injectedServices.length > 0) {
       angularCoreExtras.push('inject');
     }
 
@@ -516,6 +550,15 @@ const componentGenerator: DesignGenerator = {
     for (const pa of persistedArrayProperties) boImports.add(pa.typeName);
     for (const fg of formGroupProperties) boImports.add(fg.typeName);
     addBoImports(writableFile, boImports, boRelativePath);
+
+    // Add service imports (re-map @services -> relative paths)
+    const serviceRelativePath = isAppComponent ? './services' : '../../services';
+    for (const svc of injectedServices) {
+      writableFile.addImportDeclaration({
+        moduleSpecifier: `${serviceRelativePath}/${svc.serviceFile}/${svc.serviceFile}.service`,
+        namedImports: [svc.typeName],
+      });
+    }
 
     // Add template-based imports (file-level)
     for (const templateImport of templateImports) {

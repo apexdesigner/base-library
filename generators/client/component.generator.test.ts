@@ -224,6 +224,36 @@ describe('componentGenerator', () => {
     });
   });
 
+  describe('service injection', () => {
+    it('should inject services and add imports', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PersonService', {
+        sourceCode: `
+          import { Service, service } from '@apexdesigner/dsl/service';
+          @service()
+          export class PersonService extends Service {}
+        `
+      });
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+          import { PersonService } from '@services';
+          export class DashboardComponent extends Component {
+            personService!: PersonService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).toContain('personService = inject(PersonService)');
+      expect(ts).toContain("from '../../services/person/person.service'");
+      expect(ts).toContain('inject');
+    });
+  });
+
   describe('required and disabled form group options', () => {
     it('should pass required and disabled to form group constructor', async () => {
       const ts = await generateComponent(`
