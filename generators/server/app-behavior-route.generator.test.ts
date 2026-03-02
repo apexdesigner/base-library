@@ -118,8 +118,10 @@ describe('appBehaviorRouteGenerator', () => {
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
       const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
 
-      expect(result.size).toBe(0);
+      expect(content).toContain('export default router');
+      expect(content).not.toContain('App.');
     });
 
     it('should generate multiple routes when multiple app behaviors exist', async () => {

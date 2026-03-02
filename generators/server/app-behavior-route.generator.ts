@@ -45,18 +45,17 @@ const appBehaviorRouteGenerator: DesignGenerator = {
 
     const outputs = new Map<string, string>();
 
-    if (appBehaviors.length === 0) {
-      return outputs;
-    }
-
     const lines: string[] = [];
 
     // Imports
     lines.push('import { Router, Request, Response, NextFunction } from "express";');
-    lines.push('import createDebug from "debug";');
-    lines.push('import { App } from "../app.js";');
+    if (appBehaviors.length > 0) {
+      lines.push('import createDebug from "debug";');
+      lines.push('import { App } from "../app.js";');
+      lines.push('');
+      lines.push(`const Debug = createDebug("${debugNamespace}:routes:appBehaviors");`);
+    }
     lines.push('');
-    lines.push(`const Debug = createDebug("${debugNamespace}:routes:appBehaviors");`);
     lines.push('const router = Router();');
 
     for (const behavior of appBehaviors) {
