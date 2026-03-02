@@ -42,10 +42,10 @@ export interface ProcessedProperties {
 export function captureBoImports(writableFile: SourceFile): string[] {
   const boNamedImports: string[] = [];
   for (const alias of ['@business-objects', '@business-objects-client']) {
-    const boImportDecl = writableFile.getImportDeclaration(
+    const boImportDecls = writableFile.getImportDeclarations().filter(
       (imp) => imp.getModuleSpecifierValue() === alias
     );
-    if (boImportDecl) {
+    for (const boImportDecl of boImportDecls) {
       for (const named of boImportDecl.getNamedImports()) {
         boNamedImports.push(named.getName());
       }

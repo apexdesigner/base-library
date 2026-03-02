@@ -240,6 +240,18 @@ const serviceGenerator: DesignGenerator = {
 
       const initLines: string[] = [];
 
+      // afterRead callbacks
+      for (const fg of formGroupProperties) {
+        if (fg.afterReadCall) {
+          initLines.push(`this.${fg.name}.afterRead = () => this.${fg.afterReadCall}();`);
+        }
+      }
+      for (const pa of persistedArrayProperties) {
+        if (pa.afterReadCall) {
+          initLines.push(`this.${pa.name}.afterRead = () => this.${pa.afterReadCall}();`);
+        }
+      }
+
       // Auto-save wiring
       for (const fg of formGroupProperties) {
         if (fg.saveMode === 'Automatically') {
@@ -252,7 +264,6 @@ const serviceGenerator: DesignGenerator = {
         if (pa.readMode === 'Automatically') {
           const readArg = pa.order ? `{ order: ${pa.order} }` : '';
           initLines.push(`await this.${pa.name}.read(${readArg});`);
-          if (pa.afterReadCall) initLines.push(`this.${pa.afterReadCall}();`);
         }
       }
 

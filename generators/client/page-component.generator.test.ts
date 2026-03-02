@@ -183,4 +183,32 @@ describe('pageComponentGenerator', () => {
       expect(ts).toContain('new TaskFormGroup()');
     });
   });
+
+  describe('afterReadCall', () => {
+    it('should be implemented', () => {
+      // TODO: Add test implementation
+    });
+
+    it('should set afterRead on the form group instead of inlining after read()', async () => {
+      const ts = await generatePage(`
+        import { Page, page, property } from '@apexdesigner/dsl/page';
+        import { TestItemFormGroup } from '@business-objects-client';
+        @page({ path: '/items/:item.id' })
+        export class ItemPage extends Page {
+          @property({ read: 'Automatically', afterReadCall: 'afterRead' })
+          item!: TestItemFormGroup;
+
+          afterRead() {}
+        }
+      `);
+
+      // Should assign afterRead callback on the instance
+      expect(ts).toContain('this.item.afterRead = () => this.afterRead()');
+      // Should NOT inline the call after .read()
+      const readCallLine = ts.split('\n').find(l => l.includes('await this.item.read('));
+      const readCallIndex = ts.split('\n').indexOf(readCallLine!);
+      const nextLine = ts.split('\n')[readCallIndex + 1] || '';
+      expect(nextLine).not.toContain('this.afterRead()');
+    });
+  });
 });

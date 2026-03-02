@@ -133,4 +133,33 @@ describe('persistedFormGroupGenerator', () => {
       expect(dts).toContain('disabled?: string[]');
     });
   });
+
+  describe('afterRead callback', () => {
+    it('should be implemented', () => {
+      // TODO: Add test implementation
+    });
+
+    it('should have an afterRead property on PersistedFormGroup', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('afterRead: (() => void) | null = null');
+    });
+
+    it('should call afterRead at the end of read()', async () => {
+      const code = await generateRuntime();
+
+      // afterRead should be called inside read(), after reading completes
+      const readMethod = code.split('async read(')[1]?.split('\n  async ')[0] || '';
+      expect(readMethod).toContain('this.afterRead');
+    });
+
+    it('should include afterRead in the type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
+
+      expect(dts).toContain('afterRead: (() => void) | null');
+    });
+  });
 });
