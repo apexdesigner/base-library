@@ -75,6 +75,8 @@ export class Student extends BusinessObject {
 | `excludeWhen` | `ConditionalRule` | [Conditionally excluded](#excludewhen) |
 | `disabledWhen` | `ConditionalRule` | [Conditionally disabled](#disabledwhen) |
 
+The options `presentAs`, `displayName`, `placeholder`, `helpText`, `hidden`, `disabled`, and `column` can also be set as defaults on a [base type](base-types.md#property-defaults) using `setPropertyDefaults()`. Per-field `@property()` options override the base type defaults.
+
 Properties use `?` (e.g., `name?: string`). Use `!` for IDs and belongs-to foreign keys (e.g., `id!: number`) to indicate they must exist from creation. Use `required: true` to indicate a property must have a value for the record to be complete.
 
 ```typescript

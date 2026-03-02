@@ -145,6 +145,45 @@ applyValidValues(FeatureFlag, [
 ]);
 ```
 
+## Property Defaults
+
+Use `setPropertyDefaults()` to set default property options for all properties that use this base type. These defaults can be overridden per-field with `@property()`.
+
+```typescript
+import { BaseType, setPropertyDefaults } from "@apexdesigner/dsl";
+
+export class Notes extends BaseType<string> {}
+
+setPropertyDefaults(Notes, {
+  presentAs: "textarea",
+  placeholder: "Enter notes...",
+});
+```
+
+Available options:
+
+| Option | Type | Description |
+|---|---|---|
+| `presentAs` | `string` | UI presentation hint (e.g. `"textarea"`) |
+| `displayName` | `string` | Default display label |
+| `placeholder` | `string` | Default placeholder text |
+| `helpText` | `string` | Default help text |
+| `hidden` | `boolean` | Whether properties are hidden by default |
+| `disabled` | `boolean` | Whether properties are disabled by default |
+| `column` | `string \| ColumnOptions` | Default [column type](persistence.md#per-field-column) |
+
+Column defaults example:
+
+```typescript
+import { BaseType, setPropertyDefaults } from "@apexdesigner/dsl";
+
+export class Currency extends BaseType<number> {}
+
+setPropertyDefaults(Currency, {
+  column: { type: "decimal", precision: 18, scale: 4 },
+});
+```
+
 ## Usage
 
 Base types are imported from `@base-types` and used as property types in [business objects](business-objects.md):
