@@ -22,8 +22,30 @@ export interface PersistedArrayProperty {
   name: string;
   typeName: string;
   readMode?: string;
+  where?: string;
+  include?: string;
   order?: string;
+  fields?: string;
+  omit?: string;
+  limit?: string;
+  offset?: string;
   afterReadCall?: string;
+}
+
+/** Keys on PersistedArrayProperty that map to .read() filter options. */
+const persistedArrayReadOptionKeys = ['where', 'include', 'order', 'fields', 'omit', 'limit', 'offset'] as const;
+
+/**
+ * Builds the argument string for a PersistedArray .read() call from its options.
+ * Returns '' if no options are set.
+ */
+export function buildReadArgs(pa: PersistedArrayProperty, indent = '      '): string {
+  const parts: string[] = [];
+  for (const key of persistedArrayReadOptionKeys) {
+    if (pa[key]) parts.push(`${key}: ${pa[key]}`);
+  }
+  if (parts.length === 0) return '';
+  return `{\n${indent}${parts.join(',\n' + indent)},\n${indent.slice(2)}}`;
 }
 
 export interface ProcessedProperties {
@@ -103,11 +125,20 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
       if (afterReadMatch) afterReadCall = afterReadMatch[1];
     }
 
+    let where: string | undefined;
     let include: string | undefined;
     let order: string | undefined;
+    let fields: string | undefined;
+    let omit: string | undefined;
+    let limit: string | undefined;
+    let offset: string | undefined;
     let required: string | undefined;
     let disabled: string | undefined;
     if (args.length > 0 && Node.isObjectLiteralExpression(args[0])) {
+      const whereProp = args[0].getProperty('where');
+      if (whereProp && Node.isPropertyAssignment(whereProp)) {
+        where = whereProp.getInitializerOrThrow().getText();
+      }
       const includeProp = args[0].getProperty('include');
       if (includeProp && Node.isPropertyAssignment(includeProp)) {
         include = includeProp.getInitializerOrThrow().getText();
@@ -132,6 +163,22 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
       if (disabledProp && Node.isPropertyAssignment(disabledProp)) {
         disabled = disabledProp.getInitializerOrThrow().getText();
       }
+      const fieldsProp = args[0].getProperty('fields');
+      if (fieldsProp && Node.isPropertyAssignment(fieldsProp)) {
+        fields = fieldsProp.getInitializerOrThrow().getText();
+      }
+      const omitProp = args[0].getProperty('omit');
+      if (omitProp && Node.isPropertyAssignment(omitProp)) {
+        omit = omitProp.getInitializerOrThrow().getText();
+      }
+      const limitProp = args[0].getProperty('limit');
+      if (limitProp && Node.isPropertyAssignment(limitProp)) {
+        limit = limitProp.getInitializerOrThrow().getText();
+      }
+      const offsetProp = args[0].getProperty('offset');
+      if (offsetProp && Node.isPropertyAssignment(offsetProp)) {
+        offset = offsetProp.getInitializerOrThrow().getText();
+      }
     }
 
     const typeNode = prop.getTypeNode();
@@ -146,7 +193,7 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
     } else if (typeName.endsWith('FormGroup')) {
       formGroupProperties.push({ name: prop.getName(), typeName, readMode, saveMode, include, afterReadCall, required, disabled });
     } else if (typeName.endsWith('PersistedArray') || typeName.endsWith('FormArray')) {
-      persistedArrayProperties.push({ name: prop.getName(), typeName, readMode, order, afterReadCall });
+      persistedArrayProperties.push({ name: prop.getName(), typeName, readMode, where, include, order, fields, omit, limit, offset, afterReadCall });
     } else if (readMode === 'Automatically') {
       autoReadProperties.push({ name: prop.getName(), typeName, isArray });
     }

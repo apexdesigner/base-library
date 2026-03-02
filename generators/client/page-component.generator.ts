@@ -4,7 +4,7 @@ import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
-import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports } from './property-processing.js';
+import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 import type { AutoReadProperty, FormGroupProperty, PersistedArrayProperty } from './property-processing.js';
 
 const Debug = createDebug('ad3:generators:pageComponent');
@@ -446,8 +446,7 @@ const pageComponentGenerator: DesignGenerator = {
         }
         for (const pa of persistedArrayProperties) {
           if (pa.readMode === 'Automatically') {
-            const readArg = pa.order ? `{ order: ${pa.order} }` : '';
-            postSubscriptionLines.push(`await this.${pa.name}.read(${readArg});`);
+            postSubscriptionLines.push(`await this.${pa.name}.read(${buildReadArgs(pa)});`);
           }
         }
         for (const methodName of callOnLoadMethods) {
@@ -511,8 +510,7 @@ const pageComponentGenerator: DesignGenerator = {
         }
         for (const pa of persistedArrayProperties) {
           if (pa.readMode === 'Automatically') {
-            const readArg = pa.order ? `{ order: ${pa.order} }` : '';
-            coreInitLines.push(`await this.${pa.name}.read(${readArg});`);
+            coreInitLines.push(`await this.${pa.name}.read(${buildReadArgs(pa)});`);
           }
         }
         for (const methodName of callOnLoadMethods) {

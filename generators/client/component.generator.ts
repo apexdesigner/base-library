@@ -4,7 +4,7 @@ import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, Scope, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
-import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports } from './property-processing.js';
+import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 
 const Debug = createDebug('ad3:generators:component');
 
@@ -441,8 +441,7 @@ const componentGenerator: DesignGenerator = {
 
       for (const pa of persistedArrayProperties) {
         if (pa.readMode === 'Automatically') {
-          const readArg = pa.order ? `{ order: ${pa.order} }` : '';
-          initLines.push(`await this.${pa.name}.read(${readArg});`);
+          initLines.push(`await this.${pa.name}.read(${buildReadArgs(pa)});`);
         }
       }
 
