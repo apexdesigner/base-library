@@ -25,6 +25,14 @@ describe('persistedFormGroupGenerator', () => {
       expect(code).toContain('this.setControl(key, control)');
     });
 
+    it('should null out scalar controls not present in server data', async () => {
+      const code = await generateRuntime();
+
+      // When the API omits null fields, _populate must reset those controls
+      expect(code).toContain('!(key in data)');
+      expect(code).toContain('control.reset(null');
+    });
+
     it('should recursively call _populate on nested PersistedFormGroup controls', async () => {
       const code = await generateRuntime();
 
@@ -131,6 +139,35 @@ describe('persistedFormGroupGenerator', () => {
 
       expect(dts).toContain('required?: string[]');
       expect(dts).toContain('disabled?: string[]');
+    });
+  });
+
+  describe('afterRead callback', () => {
+    it('should be implemented', () => {
+      // TODO: Add test implementation
+    });
+
+    it('should have an afterRead property on PersistedFormGroup', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('afterRead: (() => void) | null = null');
+    });
+
+    it('should call afterRead at the end of read()', async () => {
+      const code = await generateRuntime();
+
+      // afterRead should be called inside read(), after reading completes
+      const readMethod = code.split('async read(')[1]?.split('\n  async ')[0] || '';
+      expect(readMethod).toContain('this.afterRead');
+    });
+
+    it('should include afterRead in the type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
+
+      expect(dts).toContain('afterRead: (() => void) | null');
     });
   });
 });

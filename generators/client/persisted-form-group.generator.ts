@@ -51,6 +51,7 @@ export interface PersistedFormGroupOptions {
 export class PersistedFormGroup extends SchemaFormGroup {
   reading = false;
   saving = false;
+  afterRead: (() => void) | null = null;
   private _filter: Record<string, any> = {};
   private _entityClass: EntityClass;
   private _idProperty: string;
@@ -106,6 +107,7 @@ export class PersistedFormGroup extends SchemaFormGroup {
     } finally {
       this.reading = false;
     }
+    if (this.afterRead) this.afterRead();
   }
 
   protected createControl(_name: string): any {
@@ -122,6 +124,13 @@ export class PersistedFormGroup extends SchemaFormGroup {
           debug('lazy-creating control %s', key);
           this.setControl(key, control);
         }
+      }
+    }
+
+    // Reset scalar controls not present in data (API omits null fields)
+    for (const [key, control] of Object.entries(this.controls)) {
+      if (control instanceof SchemaFormControl && !(key in data)) {
+        control.reset(null, { emitEvent: false });
       }
     }
 
@@ -223,6 +232,7 @@ export interface PersistedFormArrayOptions {
 
 export class PersistedFormArray extends SchemaFormArray {
   reading = false;
+  afterRead: (() => void) | null = null;
 
   private _filter: Record<string, any> = {};
   private _entityClass: EntityArrayClass;
@@ -279,6 +289,7 @@ export class PersistedFormArray extends SchemaFormArray {
     } finally {
       this.reading = false;
     }
+    if (this.afterRead) this.afterRead();
   }
 
   async add(data?: Record<string, any>): Promise<any> {
@@ -316,6 +327,7 @@ export class PersistedArray<T = any> extends Array<T> {
   }
 
   reading = false;
+  afterRead: (() => void) | null = null;
 
   private _filter: Record<string, any> = {};
   private _entityClass: EntityArrayClass;
@@ -351,6 +363,7 @@ export class PersistedArray<T = any> extends Array<T> {
     } finally {
       this.reading = false;
     }
+    if (this.afterRead) this.afterRead();
   }
 
   async add(data?: Record<string, any>): Promise<T> {
@@ -389,6 +402,7 @@ export interface PersistedFormGroupOptions {
 export declare class PersistedFormGroup extends SchemaFormGroup {
   reading: boolean;
   saving: boolean;
+  afterRead: (() => void) | null;
 
   readFilter: Record<string, any>;
 
@@ -407,6 +421,7 @@ export interface PersistedFormArrayOptions {
 
 export declare class PersistedFormArray extends SchemaFormArray {
   reading: boolean;
+  afterRead: (() => void) | null;
 
   readFilter: Record<string, any>;
 
@@ -425,6 +440,7 @@ export interface PersistedArrayOptions {
 
 export declare class PersistedArray<T = any> extends Array<T> {
   reading: boolean;
+  afterRead: (() => void) | null;
 
   readFilter: Record<string, any>;
 

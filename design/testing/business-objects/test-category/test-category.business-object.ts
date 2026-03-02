@@ -1,4 +1,4 @@
-import { BusinessObject } from "@apexdesigner/dsl";
+import { BusinessObject, relationship } from "@apexdesigner/dsl";
 import { applyTestPostgresDataSource } from "@data-sources";
 
 export class TestCategory extends BusinessObject {
@@ -6,10 +6,12 @@ export class TestCategory extends BusinessObject {
 
   name?: string;
 
+  @relationship({ type: "References" })
   parentCategory?: TestCategory;
+  parentCategoryId?: number;
 
+  @relationship({ pairedWith: "parentCategory" })
   childCategories?: TestCategory[];
-  parentCategoryId!: number;
 }
 
 applyTestPostgresDataSource(TestCategory);

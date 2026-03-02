@@ -413,20 +413,25 @@ const pageComponentGenerator: DesignGenerator = {
               filterParts.push(`include: ${linkedFormGroup.include}`);
             }
             subscriptionLines.push(`await this.${param.propertyName}.read({ ${filterParts.join(', ')} });`);
-            if (linkedFormGroup.afterReadCall) {
-              subscriptionLines.push(`this.${linkedFormGroup.afterReadCall}();`);
-            }
           } else if (!param.field) {
             // Simple param: direct assignment
             subscriptionLines.push(`this.${param.propertyName} = params['${param.paramName}'];`);
           }
         }
 
-        // Lines before subscription: auto-save wiring for form groups
+        // Lines before subscription: afterRead callbacks + auto-save wiring
         const preSubscriptionLines: string[] = [];
         for (const fg of formGroupProperties) {
+          if (fg.afterReadCall) {
+            preSubscriptionLines.push(`this.${fg.name}.afterRead = () => this.${fg.afterReadCall}();`);
+          }
           if (fg.saveMode === 'Automatically') {
             preSubscriptionLines.push(`this.${fg.name}.autoSave(this.destroyRef);`);
+          }
+        }
+        for (const pa of persistedArrayProperties) {
+          if (pa.afterReadCall) {
+            preSubscriptionLines.push(`this.${pa.name}.afterRead = () => this.${pa.afterReadCall}();`);
           }
         }
 
@@ -443,7 +448,6 @@ const pageComponentGenerator: DesignGenerator = {
           if (pa.readMode === 'Automatically') {
             const readArg = pa.order ? `{ order: ${pa.order} }` : '';
             postSubscriptionLines.push(`await this.${pa.name}.read(${readArg});`);
-            if (pa.afterReadCall) postSubscriptionLines.push(`this.${pa.afterReadCall}();`);
           }
         }
         for (const methodName of callOnLoadMethods) {
@@ -484,10 +488,18 @@ const pageComponentGenerator: DesignGenerator = {
       } else {
         // No route params: everything goes in ngOnInit directly
         const coreInitLines: string[] = [];
-        // Auto-save wiring for form groups
+        // afterRead callbacks + auto-save wiring
         for (const fg of formGroupProperties) {
+          if (fg.afterReadCall) {
+            coreInitLines.push(`this.${fg.name}.afterRead = () => this.${fg.afterReadCall}();`);
+          }
           if (fg.saveMode === 'Automatically') {
             coreInitLines.push(`this.${fg.name}.autoSave(this.destroyRef);`);
+          }
+        }
+        for (const pa of persistedArrayProperties) {
+          if (pa.afterReadCall) {
+            coreInitLines.push(`this.${pa.name}.afterRead = () => this.${pa.afterReadCall}();`);
           }
         }
         for (const prop of autoReadProperties) {
@@ -501,7 +513,6 @@ const pageComponentGenerator: DesignGenerator = {
           if (pa.readMode === 'Automatically') {
             const readArg = pa.order ? `{ order: ${pa.order} }` : '';
             coreInitLines.push(`await this.${pa.name}.read(${readArg});`);
-            if (pa.afterReadCall) coreInitLines.push(`this.${pa.afterReadCall}();`);
           }
         }
         for (const methodName of callOnLoadMethods) {
