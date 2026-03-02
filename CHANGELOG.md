@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.97] - 2026-03-02
+
+- 116b002 fix: always generate app-behaviors route file even with no qualifying behaviors
+- 3ae4bb0 fix: reset scalar controls not present in server response during _populate
+- f535b0d feat: register afterRead callback on persisted instances for manual read support
+
+
 ## [1.0.96] - 2026-03-02
 
 - 7270d15 fix: preserve @angular/* imports in dialog content components
