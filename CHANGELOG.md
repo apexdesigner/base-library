@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.96] - 2026-03-02
+
+- 7270d15 fix: preserve @angular/* imports in dialog content components
+- 682ab3a docs: update base type docs for setPropertyDefaults
+- c5a430c feat: add route generator for app behaviors with httpMethod
+
+
 ## [1.0.95] - 2026-03-01
 
 - 8a00965 fix: remove duplicate EventEmitter import in generated non-dialog components
