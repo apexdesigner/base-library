@@ -2,4 +2,4 @@ import { BaseType, setPropertyDefaults } from "@apexdesigner/dsl";
 
 export class Email extends BaseType<string> {}
 
-setPropertyDefaults(Email, { column: "VARCHAR(255)" });
+setPropertyDefaults(Email, { presentAs: "email" });

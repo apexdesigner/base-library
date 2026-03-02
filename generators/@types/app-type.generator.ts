@@ -19,7 +19,8 @@ const appTypeGenerator: DesignGenerator = {
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
-    const dataSources = context.listMetadata('DataSource');
+    const dataSources = context.listMetadata('DataSource')
+      .sort((a, b) => a.name.localeCompare(b.name));
     const businessObjects = context.listMetadata('BusinessObject')
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -27,7 +28,7 @@ const appTypeGenerator: DesignGenerator = {
     const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
       const options = getBehaviorOptions(behavior.sourceFile);
       return options && !options.lifecycleStage;
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name));
 
     const lines: string[] = [];
 

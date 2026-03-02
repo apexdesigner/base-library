@@ -109,7 +109,10 @@ const serverGenerator: DesignGenerator = {
       lines.push('import { dataSource } from "./data-sources/index.js";');
     }
 
-    // Import After Start app behaviors
+    // Import After Start app behaviors (sorted for deterministic output)
+    afterStartBehaviors.sort((a, b) => a.name.localeCompare(b.name));
+    afterStartBoBehaviors.sort((a, b) => a.name.localeCompare(b.name));
+
     for (const behavior of afterStartBehaviors) {
       lines.push(`import { ${behavior.name} } from "./app-behaviors/${behavior.kebab}.js";`);
     }

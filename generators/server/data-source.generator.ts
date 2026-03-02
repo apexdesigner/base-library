@@ -67,8 +67,8 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     persistenceType,
     factoryName: `create${pascalCase(persistenceType)}Persistence`,
     configOptions,
-    entityNames: myBOs.map(bo => pascalCase(bo.name)),
-    boKebabNames: myBOs.map(bo => kebabCase(bo.name)),
+    entityNames: myBOs.map(bo => pascalCase(bo.name)).sort(),
+    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort(),
   };
 }
 
@@ -93,7 +93,8 @@ const dataSourceGenerator: DesignGenerator = {
     const allDataSources = context.listMetadata('DataSource');
     if (allDataSources.length === 0) return '';
 
-    const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context));
+    const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context))
+      .sort((a, b) => a.name.localeCompare(b.name));
     debug('data sources: %O', dataSources.map(ds => ({ name: ds.name, type: ds.persistenceType, entities: ds.entityNames })));
 
     // Get project name for debug namespace
@@ -149,7 +150,7 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
   }
 
   lines.push('import createDebug from "debug";');
-  lines.push(`import { ${[...factoryImports].join(', ')} } from "@apexdesigner/schema-persistence";`);
+  lines.push(`import { ${[...factoryImports].sort().join(', ')} } from "@apexdesigner/schema-persistence";`);
   lines.push('import { schemaRegistry } from "@apexdesigner/schema-tools";');
 
   // Schema side-effect imports for all BOs across all data sources
