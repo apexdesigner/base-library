@@ -73,6 +73,14 @@ You don't need to include these in design files — resolve will add them automa
 
 Files placed in `design/client/` or `design/server/` are copied into the corresponding generated directory using the same relative path. For example, `design/client/assets/logo.png` is copied to `client/assets/logo.png`. Use this for assets, configuration files, or any file that should be included in the generated output without modification.
 
+**Warning: Do not use static files to override generated files.** If a static file has the same path as a generated file, the static file wins and the generator is blocked. This produces a warning during `ad3 gen`:
+
+```
+W: server/src/index.ts - Static file overrides generator "server" output
+```
+
+Overriding generated files is a last-resort workaround that creates maintenance burden — the static copy won't receive generator improvements or bug fixes. The better approach is to request changes to the generator so the generated output meets your needs directly.
+
 ## CLI
 
 See `.claude/skills/apex-designer/docs/cli.md` for the full ad3 command reference.
