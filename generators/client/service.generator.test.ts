@@ -14,11 +14,11 @@ describe('serviceGenerator', () => {
         sourceCode: `
           import { Service } from '@apexdesigner/dsl/service';
           export class AuthService extends Service {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'auth');
 
       expect(ts).toContain("@Injectable({ providedIn: 'root' })");
@@ -33,11 +33,11 @@ describe('serviceGenerator', () => {
         sourceCode: `
           import { Service, property, method } from '@apexdesigner/dsl/service';
           export class AuthService extends Service {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'auth');
 
       expect(ts).not.toContain('@apexdesigner/dsl');
@@ -50,11 +50,11 @@ describe('serviceGenerator', () => {
           import { Service } from '@apexdesigner/dsl/service';
           import { AppUserFormGroup } from '@business-objects-client';
           export class AuthService extends Service {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'auth');
 
       expect(ts).not.toContain('@business-objects-client');
@@ -68,7 +68,7 @@ describe('serviceGenerator', () => {
         sourceCode: `
           import { Service } from '@apexdesigner/dsl/service';
           export class AuthService extends Service {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
@@ -83,7 +83,7 @@ describe('serviceGenerator', () => {
         sourceCode: `
           import { Service } from '@apexdesigner/dsl/service';
           export class UserNotificationService extends Service {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
@@ -103,11 +103,11 @@ describe('serviceGenerator', () => {
             @method({ callOnLoad: true })
             async initialize(): Promise<void> {}
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'auth');
 
       expect(ts).toContain('constructor()');
@@ -126,22 +126,53 @@ describe('serviceGenerator', () => {
           export class AuthService extends Service {
             notificationService!: NotificationService;
           }
-        `,
+        `
       });
       workspace.addMetadata('Service', 'NotificationService', {
         sourceCode: `
           import { Service } from '@apexdesigner/dsl/service';
           export class NotificationService extends Service {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service').find(m => m.name === 'AuthService')!;
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'auth');
 
       expect(ts).toContain('inject(NotificationService)');
       expect(ts).toContain('inject');
       expect(ts).toContain("from '../notification/notification.service'");
+    });
+
+    it('should inject services from multiple separate @services imports', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'AuthService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          import { NotificationService } from '@services';
+          import { ComponentService } from '@services';
+          export class AuthService extends Service {
+            notificationService!: NotificationService;
+            componentService!: ComponentService;
+          }
+        `
+      });
+      workspace.addMetadata('Service', 'NotificationService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class NotificationService extends Service {}
+        `
+      });
+      // ComponentService is NOT a Service metadata — only known via @services import
+
+      const metadata = workspace.context.listMetadata('Service').find(m => m.name === 'AuthService')!;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getServiceOutput(result, 'auth');
+
+      expect(ts).toContain('notificationService = inject(NotificationService)');
+      expect(ts).toContain('componentService = inject(ComponentService)');
+      expect(ts).toContain("from '../notification/notification.service'");
+      expect(ts).toContain("from '../component/component.service'");
     });
   });
 
@@ -156,11 +187,11 @@ describe('serviceGenerator', () => {
             @property({ read: 'Automatically' })
             items!: ItemPersistedArray;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'data');
 
       expect(ts).toContain('(async () => {');
@@ -180,11 +211,11 @@ describe('serviceGenerator', () => {
             @property({ read: 'Automatically' })
             currentUser!: AppUserFormGroup;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Service')[0];
-      const result = await serviceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getServiceOutput(result, 'auth');
 
       expect(ts).toContain('new AppUserFormGroup()');

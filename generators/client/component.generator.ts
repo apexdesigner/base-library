@@ -124,11 +124,11 @@ const componentGenerator: DesignGenerator = {
 
     // Capture @services imports before removing design aliases
     const serviceImports: { name: string; typeName: string }[] = [];
-    const servicesImportDecl = writableFile.getImportDeclaration(
+    const servicesImportDecls = writableFile.getImportDeclarations().filter(
       imp => imp.getModuleSpecifierValue() === '@services'
     );
-    if (servicesImportDecl) {
-      for (const named of servicesImportDecl.getNamedImports()) {
+    for (const decl of servicesImportDecls) {
+      for (const named of decl.getNamedImports()) {
         serviceImports.push({ name: named.getName(), typeName: named.getName() });
       }
     }

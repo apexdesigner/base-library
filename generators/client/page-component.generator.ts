@@ -87,11 +87,11 @@ const pageComponentGenerator: DesignGenerator = {
 
     // Capture @services imports before removal (for service injection)
     const serviceImports: { name: string; typeName: string }[] = [];
-    const servicesImportDecl = writableFile.getImportDeclaration(
+    const servicesImportDecls = writableFile.getImportDeclarations().filter(
       imp => imp.getModuleSpecifierValue() === '@services'
     );
-    if (servicesImportDecl) {
-      for (const named of servicesImportDecl.getNamedImports()) {
+    for (const decl of servicesImportDecls) {
+      for (const named of decl.getNamedImports()) {
         serviceImports.push({ name: named.getName(), typeName: named.getName() });
       }
     }
