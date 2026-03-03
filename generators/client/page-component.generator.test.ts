@@ -247,4 +247,39 @@ describe('pageComponentGenerator', () => {
       expect(ts).toContain("from '../../services/component/component.service'");
     });
   });
+
+  describe('ViewChild with template refs', () => {
+    it('should generate @ViewChild with read option for injectable external type matching a template ref', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('ExternalType', 'ViewContainerRef', {
+        sourceCode: `
+          import { externalType } from '@apexdesigner/dsl';
+          import { ViewContainerRef } from '@angular/core';
+          @externalType({ injectable: true })
+          export class ViewContainerRefExternalType {}
+        `
+      });
+      workspace.addMetadata('Page', 'MyTask', {
+        sourceCode: `
+          import { Page, page, applyTemplate } from '@apexdesigner/dsl/page';
+          import { ViewContainerRef } from '@angular/core';
+          @page({})
+          export class MyTaskPage extends Page {
+            componentInsert!: ViewContainerRef;
+          }
+
+          applyTemplate(MyTaskPage, \`
+            <ng-template #componentInsert></ng-template>
+          \`);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Page')[0];
+      const result = (await pageComponentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/pages/my-task/my-task.page.ts')!;
+
+      expect(ts).toContain("@ViewChild('componentInsert', { read: ViewContainerRef })");
+      expect(ts).not.toContain('inject(ViewContainerRef)');
+    });
+  });
 });
