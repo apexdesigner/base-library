@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.103] - 2026-03-03
+
+- 1cb2a12 fix: generate @ViewChild for injectable external types matching template refs
+
+
 ## [1.0.102] - 2026-03-03
 
 - 6810e04 fix: capture all @services import declarations for service injection
