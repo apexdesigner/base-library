@@ -268,6 +268,7 @@ export interface PersistedFormArrayOptions {
 export class PersistedFormArray extends SchemaFormArray {
   reading = false;
   afterRead: (() => void) | null = null;
+  readonly entityName: string = '';
 
   private _filter: Record<string, any> = {};
   private _entityClass: EntityArrayClass;
@@ -363,6 +364,7 @@ export class PersistedArray<T = any> extends Array<T> {
 
   reading = false;
   afterRead: (() => void) | null = null;
+  readonly entityName: string = '';
 
   private _filter: Record<string, any> = {};
   private _entityClass: EntityArrayClass;
@@ -458,6 +460,7 @@ export interface PersistedFormArrayOptions {
 export declare class PersistedFormArray extends SchemaFormArray {
   reading: boolean;
   afterRead: (() => void) | null;
+  readonly entityName: string;
 
   readFilter: Record<string, any>;
 
@@ -477,6 +480,7 @@ export interface PersistedArrayOptions {
 export declare class PersistedArray<T = any> extends Array<T> {
   reading: boolean;
   afterRead: (() => void) | null;
+  readonly entityName: string;
 
   readFilter: Record<string, any>;
 

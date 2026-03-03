@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.104] - 2026-03-03
+
+- 3c15f07 feat: polish AddButton/AddDialog with JSDoc, optional inputs, and pattern docs
+- 96fa7b7 feat: add AddButton and AddDialog components with supporting infrastructure
+- 95e2eaa fix: replace presentAs with pattern validation on Email base type
+
+
 ## [1.0.103] - 2026-03-03
 
 - 1cb2a12 fix: generate @ViewChild for injectable external types matching template refs

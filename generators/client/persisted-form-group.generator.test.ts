@@ -63,6 +63,19 @@ describe('persistedFormGroupGenerator', () => {
 
       expect(dts).toContain('_populate(data: Record<string, any>): void');
     });
+
+    it('should include entityName in the PersistedArray type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
+
+      // Both PersistedArray and PersistedFormArray should declare entityName
+      const paSection = dts.split('export declare class PersistedArray')[1];
+      expect(paSection).toContain('readonly entityName: string');
+      const pfaSection = dts.split('export declare class PersistedFormArray')[1];
+      expect(pfaSection).toContain('readonly entityName: string');
+    });
   });
 
   describe('array item group creation', () => {
@@ -169,5 +182,17 @@ describe('persistedFormGroupGenerator', () => {
 
       expect(dts).toContain('afterRead: (() => void) | null');
     });
+  });
+
+  it('should include entityName property on PersistedArray', async () => {
+    const code = await generateRuntime();
+    expect(code).toContain('readonly entityName: string');
+  });
+
+  it('should include entityName property on PersistedFormArray', async () => {
+    const code = await generateRuntime();
+    // PersistedFormArray should also have entityName
+    const formArraySection = code.split('export class PersistedFormArray')[1];
+    expect(formArraySection).toContain('readonly entityName: string');
   });
 });

@@ -43,8 +43,6 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
     return [
       `client/src/app/business-objects/${kebabCase(name)}-form-group.ts`,
-      `client/src/app/business-objects/${kebabCase(name)}-form-array.ts`,
-      `client/src/app/business-objects/${kebabCase(name)}-persisted-array.ts`,
     ];
   },
 
@@ -111,6 +109,7 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push(`import type { PersistedFormGroupOptions, PersistedFormArrayOptions, PersistedArrayOptions } from './persisted-form-group';`);
     lines.push(`import type { SchemaFormControl } from '@apexdesigner/schema-forms';`);
     lines.push(`import { ${className} } from './${boKebab}';`);
+    lines.push(`export { ${className} };`);
 
     // Schema import: camelCase name + 'Schema' from @schemas alias
     const schemaVarName = `${className.charAt(0).toLowerCase()}${className.slice(1)}Schema`;
@@ -255,6 +254,8 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push('}');
     lines.push('');
     lines.push(`export class ${className}FormArray extends PersistedFormArray {`);
+    lines.push(`  readonly entityName = '${className}' as const;`);
+    lines.push('');
     lines.push(`  constructor(options?: PersistedFormArrayOptions) {`);
     lines.push(`    super(${schemaVarName}, ${className}, options);`);
     lines.push(`  }`);
@@ -269,6 +270,8 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push(`}`);
     lines.push('');
     lines.push(`export class ${className}PersistedArray extends PersistedArray<${className}> {`);
+    lines.push(`  readonly entityName = '${className}' as const;`);
+    lines.push('');
     lines.push(`  constructor(options?: PersistedArrayOptions) {`);
     lines.push(`    super(${className}, options);`);
     lines.push(`  }`);
@@ -279,10 +282,6 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
 
     const outputs = new Map<string, string>();
     outputs.set(`client/src/app/business-objects/${boKebab}-form-group.ts`, content);
-    outputs.set(`client/src/app/business-objects/${boKebab}-form-array.ts`,
-      `export { ${className}FormArray } from './${boKebab}-form-group';\n`);
-    outputs.set(`client/src/app/business-objects/${boKebab}-persisted-array.ts`,
-      `export { ${className}PersistedArray } from './${boKebab}-form-group';\n`);
 
     return outputs;
   }

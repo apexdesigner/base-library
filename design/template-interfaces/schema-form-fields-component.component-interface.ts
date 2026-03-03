@@ -11,5 +11,6 @@ Updates visibility in response to conditional schema changes.
 export class SchemaFormFieldsComponentComponentInterface {
   group!: any;
   hideHelpTexts!: any;
+  disableHidden!: any;
   placeholders!: any;
 }

@@ -1,5 +1,6 @@
 import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
 import { TestItemPersistedArray } from "@business-objects-client";
+import { AddButtonComponent } from "@components";
 
 @page({
   path: "/test-items",
@@ -18,6 +19,8 @@ applyTemplate(TestItemsPage, `
   <flex-column>
     <flex-row [alignCenter]="true">
       <h1>Test Items</h1>
+      <div grow></div>
+      <add-button [array]="testItems" (added)="testItems.read()"></add-button>
     </flex-row>
     <if condition="!testItems.reading">
       <dt-table [dataSource]="testItems" routerLinkTemplate="/test-items/{id}">

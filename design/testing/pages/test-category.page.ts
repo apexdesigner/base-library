@@ -28,12 +28,12 @@ export class TestCategoryPage extends Page {
   }
 
   async setName() {
-    await TestCategory.updateById(this.testCategory.value.id, { name: 'Hello World' });
+    await TestCategory.updateById(this.testCategory.value.id!, { name: 'Hello World' });
     await this.testCategory.read();
   }
 
   async clearName() {
-    await TestCategory.updateById(this.testCategory.value.id, { name: null });
+    await TestCategory.updateById(this.testCategory.value.id!, { name: undefined });
     await this.testCategory.read();
   }
 }
