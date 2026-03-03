@@ -28,7 +28,7 @@ export class BaseLibrary extends Project {
     "@angular/material": "~19.2.0",
     "@angular/router": "~19.2.0",
     "@apexdesigner/declarative-tables": "^0.1.10",
-    "@apexdesigner/schema-forms": "^0.1.55",
+    "@apexdesigner/schema-forms": "^0.1.56",
     "@monaco-editor/loader": "^1.7.0",
     "debug": { versionSelector: "^4.4.3", isCommonJs: true },
     "indefinite": { versionSelector: "^2.4.6", isCommonJs: true },

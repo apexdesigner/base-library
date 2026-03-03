@@ -44,6 +44,51 @@ applyTemplate(SuppliersPage, `
 `);
 ```
 
+### Adding an Add Button
+
+Use `<add-button>` to let users create new records directly from the list page:
+
+```typescript
+import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
+import { SupplierPersistedArray } from "@business-objects-client";
+
+@page({
+  path: "/suppliers",
+  sidenavIcon: "local_shipping",
+})
+export class SuppliersPage extends Page {
+
+  @property({
+    read: "Automatically",
+    order: [{ field: "name", direction: "asc" }],
+  })
+  suppliers!: SupplierPersistedArray;
+}
+
+applyTemplate(SuppliersPage, `
+  <flex-column>
+    <flex-row [alignCenter]="true">
+      <h1 grow>Suppliers</h1>
+      <add-button [array]="suppliers" (added)="suppliers.read()"></add-button>
+    </flex-row>
+    <if condition="!suppliers.reading">
+      <dt-table [dataSource]="suppliers" routerLinkTemplate="/suppliers/{id}">
+        <dt-column property="name" header="Name"></dt-column>
+        <dt-column property="code" header="Code"></dt-column>
+      </dt-table>
+      <else>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </else>
+    </if>
+  </flex-column>
+`);
+```
+
+The add button automatically derives the dialog title from the entity name (e.g., "Add Supplier"). Optional inputs:
+- `label` — custom button and dialog title
+- `dialogWidth` — custom dialog width (default: `'400px'`)
+- `(added)` — event emitted with the newly added record
+
 Key points:
 - Type is `SupplierPersistedArray` (singular name + `PersistedArray`)
 - `read: "Automatically"` fetches on page load
