@@ -355,4 +355,38 @@ describe('componentGenerator', () => {
       expect(ts).toContain('new TaskFormGroup()');
     });
   });
+
+  describe('ViewChild with template refs', () => {
+    it('should generate @ViewChild with read option for injectable external type matching a template ref', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('ExternalType', 'ViewContainerRef', {
+        sourceCode: `
+          import { externalType } from '@apexdesigner/dsl';
+          import { ViewContainerRef } from '@angular/core';
+          @externalType({ injectable: true })
+          export class ViewContainerRefExternalType {}
+        `
+      });
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component, applyTemplate } from '@apexdesigner/dsl/component';
+          import { ViewContainerRef } from '@angular/core';
+          export class DashboardComponent extends Component {
+            componentInsert!: ViewContainerRef;
+          }
+
+          applyTemplate(DashboardComponent, \`
+            <ng-template #componentInsert></ng-template>
+          \`);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).toContain("@ViewChild('componentInsert', { read: ViewContainerRef })");
+      expect(ts).not.toContain('inject(ViewContainerRef)');
+    });
+  });
 });

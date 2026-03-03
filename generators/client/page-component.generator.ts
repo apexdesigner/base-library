@@ -81,6 +81,10 @@ const pageComponentGenerator: DesignGenerator = {
     const templateImports = await getTemplateImports(exportedClass, context, 'page', outputFilePath, template);
     debug('template requires %j import groups', templateImports.length);
 
+    // Extract template reference variable names (#ref) for ViewChild matching
+    const templateRefs = new Set([...template.matchAll(/#(\w+)/g)].map(m => m[1]));
+    debug('template refs %j', [...templateRefs]);
+
     // Capture @business-objects / @business-objects-client imports before removing design aliases
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
@@ -284,7 +288,9 @@ const pageComponentGenerator: DesignGenerator = {
     }
 
     // Convert injectable external-type properties (Router, HttpClient, MatDialog, etc.) to inject() calls
+    // Properties matching a template #ref become @ViewChild({ read: Type }) instead
     const injectedExternalTypes: { propName: string; typeName: string; moduleSpecifier: string }[] = [];
+    const viewChildExternalTypes: { propName: string; typeName: string; moduleSpecifier: string }[] = [];
     for (const prop of exportedClass.getProperties()) {
       if (!prop.hasExclamationToken()) continue;
       if (prop.getDecorators().length > 0) continue;
@@ -295,9 +301,15 @@ const pageComponentGenerator: DesignGenerator = {
       const moduleSpecifier = injectableExternalTypes.get(typeText);
       if (moduleSpecifier) {
         const propName = prop.getName();
-        injectedExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
-        prop.replaceWithText(`private ${propName} = inject(${typeText})`);
-        debug('injected external type %j: %j from %j', propName, typeText, moduleSpecifier);
+        if (templateRefs.has(propName)) {
+          viewChildExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
+          prop.addDecorator({ name: 'ViewChild', arguments: [`'${propName}'`, `{ read: ${typeText} }`] });
+          debug('viewChild external type %j: %j from %j', propName, typeText, moduleSpecifier);
+        } else {
+          injectedExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
+          prop.replaceWithText(`private ${propName} = inject(${typeText})`);
+          debug('injected external type %j: %j from %j', propName, typeText, moduleSpecifier);
+        }
       }
     }
 
@@ -308,7 +320,7 @@ const pageComponentGenerator: DesignGenerator = {
     const needsOnInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasRouteParams || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
     const needsInject = hasRouteParams || hasAutoSaveFormGroups || injectedServices.length > 0 || injectedExternalTypes.length > 0;
     const angularCoreImports = ['Component'];
-    if (viewChildProps.length > 0) {
+    if (viewChildProps.length > 0 || viewChildExternalTypes.length > 0) {
       angularCoreImports.push('ViewChild');
     }
     if (needsOnInit) {

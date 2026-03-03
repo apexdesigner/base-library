@@ -85,6 +85,10 @@ const componentGenerator: DesignGenerator = {
     // Convert AD3 template syntax to Angular control flow
     const convertedTemplate = convertAd3Template(template);
 
+    // Extract template reference variable names (#ref) for ViewChild matching
+    const templateRefs = new Set([...template.matchAll(/#(\w+)/g)].map(m => m[1]));
+    debug('template refs %j', [...templateRefs]);
+
     // Create a writable copy using ts-morph
     const project = new Project({
       useInMemoryFileSystem: true,
@@ -362,7 +366,9 @@ const componentGenerator: DesignGenerator = {
     debug('injectable external types %j', Object.fromEntries(injectableExternalTypes));
 
     // Convert injectable external-type properties to inject() calls
+    // Properties matching a template #ref become @ViewChild({ read: Type }) instead
     const injectedExternalTypes: { propName: string; typeName: string; moduleSpecifier: string }[] = [];
+    const viewChildExternalTypes: { propName: string; typeName: string; moduleSpecifier: string }[] = [];
     for (const prop of exportedClass.getProperties()) {
       if (!prop.hasExclamationToken()) continue;
       if (prop.getDecorators().length > 0) continue;
@@ -373,9 +379,16 @@ const componentGenerator: DesignGenerator = {
       const moduleSpecifier = injectableExternalTypes.get(typeText);
       if (moduleSpecifier) {
         const propName = prop.getName();
-        injectedExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
-        prop.replaceWithText(`private ${propName} = inject(${typeText})`);
-        debug('injected external type %j: %j from %j', propName, typeText, moduleSpecifier);
+        if (templateRefs.has(propName)) {
+          viewChildExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
+          prop.addDecorator({ name: 'ViewChild', arguments: [`'${propName}'`, `{ read: ${typeText} }`] });
+          angularCoreExtras.push('ViewChild');
+          debug('viewChild external type %j: %j from %j', propName, typeText, moduleSpecifier);
+        } else {
+          injectedExternalTypes.push({ propName, typeName: typeText, moduleSpecifier });
+          prop.replaceWithText(`private ${propName} = inject(${typeText})`);
+          debug('injected external type %j: %j from %j', propName, typeText, moduleSpecifier);
+        }
       }
     }
 
