@@ -26,6 +26,7 @@ export { clientAppConfigGenerator } from "./client/client-app-config.generator.j
 export { clientStylesGenerator } from "./client/client-styles.generator.js";
 export { businessObjectFormGroupGenerator } from "./client/business-object-form-group.generator.js";
 export { serviceGenerator } from "./client/service.generator.js";
+export { componentServiceGenerator } from "./client/component-service.generator.js";
 
 // Server generators
 export { serverGenerator } from "./server/server.generator.js";
