@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.102] - 2026-03-03
+
+- 6810e04 fix: capture all @services import declarations for service injection
+
+
 ## [1.0.101] - 2026-03-03
 
 - 5b08e14 feat: add component service generator

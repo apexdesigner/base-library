@@ -252,6 +252,39 @@ describe('componentGenerator', () => {
       expect(ts).toContain("from '../../services/person/person.service'");
       expect(ts).toContain('inject');
     });
+
+    it('should inject services from multiple separate @services imports', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PersonService', {
+        sourceCode: `
+          import { Service, service } from '@apexdesigner/dsl/service';
+          @service()
+          export class PersonService extends Service {}
+        `
+      });
+      // ComponentService is NOT a Service metadata — it is a generated service
+      // only known via the @services import in the design file
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+          import { PersonService } from '@services';
+          import { ComponentService } from '@services';
+          export class DashboardComponent extends Component {
+            personService!: PersonService;
+            componentService!: ComponentService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).toContain('personService = inject(PersonService)');
+      expect(ts).toContain('componentService = inject(ComponentService)');
+      expect(ts).toContain("from '../../services/person/person.service'");
+      expect(ts).toContain("from '../../services/component/component.service'");
+    });
   });
 
   describe('persisted array read options', () => {
