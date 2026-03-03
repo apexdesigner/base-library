@@ -214,6 +214,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     faLines.push(`import type { ${className} } from './${boKebab}';`);
     faLines.push('');
     faLines.push(`export declare class ${className}FormArray extends PersistedFormArray {`);
+    faLines.push(`  readonly entityName: '${className}';`);
     faLines.push(`  constructor(options?: PersistedFormArrayOptions);`);
     faLines.push(`  get array(): ${className}[];`);
     faLines.push(`}`);
@@ -224,6 +225,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     paLines.push(`import type { PersistedArray, PersistedArrayOptions } from './persisted-form-group';`);
     paLines.push('');
     paLines.push(`export declare class ${className}PersistedArray extends PersistedArray<${className}> {`);
+    paLines.push(`  readonly entityName: '${className}';`);
     paLines.push(`  constructor(options?: PersistedArrayOptions);`);
     paLines.push(`}`);
 

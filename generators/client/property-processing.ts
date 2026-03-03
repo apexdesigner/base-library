@@ -80,11 +80,44 @@ export function captureBoImports(writableFile: SourceFile): string[] {
  * Adds re-mapped business object imports to the writableFile.
  * SupplierFormArray → relativePath/supplier-form-array
  */
+// Base types that all live in persisted-form-group.ts, not their own files
+const PERSISTED_BASE_TYPES = new Set(['PersistedFormGroup', 'PersistedFormArray', 'PersistedArray']);
+
 export function addBoImports(writableFile: SourceFile, boImports: Set<string>, relativePath: string): void {
+  // Group persisted base types into a single import
+  const persistedBaseImports: string[] = [];
+  const otherImports: string[] = [];
   for (const boName of Array.from(boImports).sort()) {
+    if (PERSISTED_BASE_TYPES.has(boName)) {
+      persistedBaseImports.push(boName);
+    } else {
+      otherImports.push(boName);
+    }
+  }
+
+  if (persistedBaseImports.length > 0) {
     writableFile.addImportDeclaration({
-      moduleSpecifier: `${relativePath}/${kebabCase(boName)}`,
-      namedImports: [boName],
+      moduleSpecifier: `${relativePath}/persisted-form-group`,
+      namedImports: persistedBaseImports,
+    });
+  }
+
+  // Group non-base BO types by their form-group file
+  const byFormGroup = new Map<string, string[]>();
+  for (const boName of otherImports) {
+    // Strip class suffix to get the BO name, then derive the form-group path
+    const boBase = boName.replace(/(FormGroup|FormArray|PersistedArray)$/, '');
+    const formGroupPath = `${relativePath}/${kebabCase(boBase)}-form-group`;
+    if (!byFormGroup.has(formGroupPath)) {
+      byFormGroup.set(formGroupPath, []);
+    }
+    byFormGroup.get(formGroupPath)!.push(boName);
+  }
+
+  for (const [path, names] of Array.from(byFormGroup).sort((a, b) => a[0].localeCompare(b[0]))) {
+    writableFile.addImportDeclaration({
+      moduleSpecifier: path,
+      namedImports: names.sort(),
     });
   }
 }

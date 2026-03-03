@@ -215,4 +215,44 @@ describe('businessObjectFormGroupGenerator', () => {
       expect(content).toContain('instance.assign(userId, role)');
     });
   });
+
+  it('should generate entityName on PersistedArray subclass', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+      sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
+    const content = result instanceof Map ? result.get('client/src/app/business-objects/process-design-form-group.ts')! : (result as string);
+
+    // PersistedArray subclass should have entityName
+    const paSection = content.split('class ProcessDesignPersistedArray')[1];
+    expect(paSection).toContain("readonly entityName = 'ProcessDesign' as const");
+  });
+
+  it('should generate entityName on FormArray subclass', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+      sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
+    const content = result instanceof Map ? result.get('client/src/app/business-objects/process-design-form-group.ts')! : (result as string);
+
+    // FormArray subclass should have entityName
+    const faSection = content.split('class ProcessDesignFormArray')[1];
+    expect(faSection).toContain("readonly entityName = 'ProcessDesign' as const");
+  });
 });

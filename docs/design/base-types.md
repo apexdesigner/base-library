@@ -9,7 +9,7 @@ generated-by: design-docs.base-types.doc.md
 | <span id="calendardate">Calendar Date</span> | `string` |  |
 | <span id="currency">Currency</span> | `number` |  |
 | <span id="duration">Duration</span> | `string` |  |
-| <span id="email">Email</span> | `string` |  |
+| <span id="email">Email</span> | `string` | Validation pattern `^[^@]+@[^@]+\\.[^@]+$` |
 | <span id="json">Json</span> | `any` |  |
 | <span id="percentage">Percentage</span> | `number` |  |
 | <span id="phone">Phone</span> | `string` | Validation pattern `^\\+?[1-9]\\d{1,14}$` |
