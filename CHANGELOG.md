@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.100] - 2026-03-03
+
+- 4098254 feat: add component interfaces for Angular built-in elements
+
+
 ## [1.0.99] - 2026-03-02
 
 - 23e4959 chore: apply automated fixes
