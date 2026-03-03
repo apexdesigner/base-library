@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.101] - 2026-03-03
+
+- 5b08e14 feat: add component service generator
+
+
 ## [1.0.100] - 2026-03-03
 
 - 4098254 feat: add component interfaces for Angular built-in elements
