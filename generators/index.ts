@@ -45,3 +45,4 @@ export { appTestGenerator } from "./server/app-test.generator.js";
 export { appLifecycleTestGenerator } from "./server/app-lifecycle-test.generator.js";
 export { roleDefinitionsGenerator } from "./server/role-definitions.generator.js";
 export { interfaceDefinitionSchemaGenerator } from "./server/interface-definition-schema.generator.js";
+export { publicRoutesGenerator } from "./server/public-routes.generator.js";
