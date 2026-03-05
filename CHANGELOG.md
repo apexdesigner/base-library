@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.109] - 2026-03-05
+
+- de8c23a fix: generalize userId type to number | string in assign-default-administrators
+
+
 ## [1.0.108] - 2026-03-05
 
 - 6222de8 feat: add home page, make toolbar title a link to /
