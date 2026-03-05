@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.106] - 2026-03-05
+
+No changes
+
+
 ## [1.0.105] - 2026-03-05
 
 - 1d00f30 fix: update test mocks to match current DSL options format
