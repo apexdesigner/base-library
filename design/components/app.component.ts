@@ -1,4 +1,4 @@
-import { Component, applyTemplate } from "@apexdesigner/dsl/component";
+import { Component, applyTemplate } from '@apexdesigner/dsl/component';
 
 /**
  * App
@@ -7,13 +7,23 @@ import { Component, applyTemplate } from "@apexdesigner/dsl/component";
  */
 export class AppComponent extends Component {}
 
-applyTemplate(AppComponent, `
+applyTemplate(
+  AppComponent,
+  `
   <flex-column>
     <mat-toolbar color="primary">
-      <span>PROJECT_METADATA.displayName</span>
+      <flex-row [gap]="16" grow>
+        <span>PROJECT_METADATA.displayName</span>
+        <a routerLink="/test-categories">Categories</a>
+        <a routerLink="/test-items">Items</a>
+        <a routerLink="/test-settings">Settings</a>
+        <span grow></span>
+        <avatar></avatar>
+      </flex-row>
     </mat-toolbar>
     <div grow style="padding: 0 16px">
       <router-outlet></router-outlet>
     </div>
   </flex-column>
-`);
+`
+);

@@ -1,0 +1,6 @@
+{
+  "issuer": "https://login.apexdesigner.app/",
+  "audience": "https://apexdesigner.app",
+  "clientId": "icBo4oH3drZVm30BHITzinVLgyW0iKwF",
+  "useCustomAuth0Domain": true
+}
