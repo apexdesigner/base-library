@@ -43,7 +43,7 @@ addAppBehavior(
       const user = await User.findOne({ where: { email }, include: { roleAssignments: { where: { roleId: adminRole.id } } } });
       debug('user %j', user);
 
-      let userId: number;
+      let userId: number | string;
 
       if (!user) {
         const created = await User.create({ email });
