@@ -4,7 +4,7 @@ import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:appBehaviorRoute');
+const Debug = createDebug('BaseLibrary:generators:appBehaviorRoute');
 
 const BEHAVIOR_HTTP_METHODS: Record<string, string> = {
   Post: 'post',

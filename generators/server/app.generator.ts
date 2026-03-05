@@ -5,12 +5,13 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:app');
+const Debug = createDebug('BaseLibrary:generators:app');
 
 // Modules to skip when mapping design imports
 const SKIP_MODULES = new Set([
   '@apexdesigner/dsl',
-  '@project',
+  '@app',
+  '@roles',
   'vitest',
   'debug',
 ]);
@@ -93,6 +94,9 @@ const appGenerator: DesignGenerator = {
     {
       metadataType: 'TestFixture',
     },
+    {
+      metadataType: 'AppProperties',
+    },
   ],
 
   outputs: () => ['server/src/app.ts'],
@@ -111,10 +115,18 @@ const appGenerator: DesignGenerator = {
       .sort((a, b) => a.name.localeCompare(b.name));
     debug('dataSources count %j, businessObjects count %j', dataSources.length, businessObjects.length);
 
-    // Collect class app behaviors (exclude lifecycle)
+    // Collect app properties (server-side singleton state)
+    const appProperties = context.listMetadata('AppProperties')
+      .sort((a, b) => a.name.localeCompare(b.name));
+    debug('appProperties count %j', appProperties.length);
+
+    // Collect class app behaviors (exclude lifecycle, middleware, and client-only types)
+    const EXCLUDE_TYPES = new Set(['Lifecycle Behavior', 'Middleware', 'Provider', 'Interceptor', 'Guard']);
     const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
       const options = getBehaviorOptions(behavior.sourceFile);
-      return options && !options.lifecycleStage;
+      if (!options) return false;
+      if (EXCLUDE_TYPES.has(options.type as string)) return false;
+      return true;
     }).sort((a, b) => a.name.localeCompare(b.name));
     debug('classBehaviors count %j', classBehaviors.length);
 
@@ -129,10 +141,18 @@ const appGenerator: DesignGenerator = {
 
         if (SKIP_MODULES.has(moduleSpecifier)) continue;
 
-        // Map @business-objects to relative paths
-        const resolvedModule = moduleSpecifier === '@business-objects'
-          ? null // handled per-named-import below
-          : moduleSpecifier;
+        // Map design-time aliases to generated paths
+        let mappedModule = moduleSpecifier;
+        if (moduleSpecifier.startsWith('@server-node-modules/')) {
+          mappedModule = moduleSpecifier.replace('@server-node-modules/', '');
+        } else if (moduleSpecifier.startsWith('@server/')) {
+          mappedModule = moduleSpecifier.replace('@server/', './') + '.js';
+        }
+
+        // Map @business-objects to relative paths (per-named-import)
+        const resolvedModule = mappedModule === '@business-objects'
+          ? null
+          : mappedModule;
 
         // Handle default import
         const defaultImport = importDecl.getDefaultImport();
@@ -148,9 +168,9 @@ const appGenerator: DesignGenerator = {
             const boModule = `./business-objects/${kebabCase(name)}.js`;
             if (!namedImports.has(boModule)) namedImports.set(boModule, new Set());
             namedImports.get(boModule)!.add(name);
-          } else {
-            if (!namedImports.has(moduleSpecifier)) namedImports.set(moduleSpecifier, new Set());
-            namedImports.get(moduleSpecifier)!.add(name);
+          } else if (resolvedModule) {
+            if (!namedImports.has(resolvedModule)) namedImports.set(resolvedModule, new Set());
+            namedImports.get(resolvedModule)!.add(name);
           }
         }
       }
@@ -233,6 +253,13 @@ const appGenerator: DesignGenerator = {
     // --- dataSources ---
     if (dataSources.length > 0) {
       lines.push('  static dataSources = { default: dataSource };');
+      lines.push('');
+    }
+
+    // --- appProperties (singleton state) ---
+    for (const prop of appProperties) {
+      const propName = prop.name.charAt(0).toLowerCase() + prop.name.slice(1);
+      lines.push(`  static ${propName}: Record<string, any> = {};`);
       lines.push('');
     }
 

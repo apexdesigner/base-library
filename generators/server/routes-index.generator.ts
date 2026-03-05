@@ -5,7 +5,7 @@ import { kebabCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:routesIndex');
+const Debug = createDebug('BaseLibrary:generators:routesIndex');
 
 const routesIndexGenerator: DesignGenerator = {
   name: 'routes-index',

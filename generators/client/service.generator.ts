@@ -5,7 +5,7 @@ import { Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 
-const Debug = createDebug('ad3:generators:service');
+const Debug = createDebug('BaseLibrary:generators:service');
 
 /** Strip 'Service' suffix to get the base name */
 function getBaseName(name: string): string {

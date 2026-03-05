@@ -7,7 +7,7 @@ import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator'
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 import type { AutoReadProperty, FormGroupProperty, PersistedArrayProperty } from './property-processing.js';
 
-const Debug = createDebug('ad3:generators:pageComponent');
+const Debug = createDebug('BaseLibrary:generators:pageComponent');
 
 /** Strip 'Page' suffix to get the base name */
 function getBaseName(name: string): string {

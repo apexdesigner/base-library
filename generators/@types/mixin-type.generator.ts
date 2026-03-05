@@ -3,7 +3,7 @@ import { getClassByBase, getDescription } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:mixinType');
+const Debug = createDebug('BaseLibrary:generators:mixinType');
 
 const mixinTypeGenerator: DesignGenerator = {
   name: 'mixin-type',

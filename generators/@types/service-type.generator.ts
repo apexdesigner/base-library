@@ -3,7 +3,7 @@ import { getClassByBase, getDescription } from '@apexdesigner/utilities';
 import { kebabCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:serviceType');
+const Debug = createDebug('BaseLibrary:generators:serviceType');
 
 const serviceTypeGenerator: DesignGenerator = {
   name: 'service-type',

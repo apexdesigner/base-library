@@ -5,7 +5,7 @@ import { SyntaxKind } from 'ts-morph';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:dataSource');
+const Debug = createDebug('BaseLibrary:generators:dataSource');
 
 interface DataSourceInfo {
   name: string;
@@ -130,10 +130,21 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
   lines.push(`debug("${ds.className} persistence created");`);
   lines.push('');
   lines.push('const result = await dataSource.validateSchema();');
-  lines.push('if (!result.valid && result.autoFixable.length > 0) {');
-  lines.push('  debug("Auto-fixing schema: %O", result.autoFixable);');
-  lines.push('  await result.applyFixes();');
-  lines.push('  debug("Schema fixes applied");');
+  lines.push('if (!result.valid) {');
+  lines.push('  if (result.autoFixable.length > 0) {');
+  lines.push('    debug("Auto-fixing schema: %O", result.autoFixable.map((d: any) => d.fixMessage ?? d.message));');
+  lines.push('    await result.applyFixes();');
+  lines.push('    debug("Schema fixes applied");');
+  lines.push('  }');
+  lines.push('  const allDiffs = [');
+  lines.push('    ...Object.values(result.tables).flatMap((t: any) => t.differences),');
+  lines.push('    ...Object.values(result.views).flatMap((v: any) => v.differences),');
+  lines.push('  ];');
+  lines.push('  const unfixable = allDiffs.filter((d: any) => !d.autoFixable);');
+  lines.push('  if (unfixable.length > 0) {');
+  lines.push('    console.error("Unfixable schema issues:", unfixable.map((d: any) => d.message));');
+  lines.push('    throw new Error("Schema validation failed with unfixable issues");');
+  lines.push('  }');
   lines.push('}');
 
   return lines.join('\n');
@@ -179,10 +190,21 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
   for (const ds of dataSources) {
     const varName = camelCase(ds.name);
     lines.push(`const ${varName}Result = await ${varName}.validateSchema();`);
-    lines.push(`if (!${varName}Result.valid && ${varName}Result.autoFixable.length > 0) {`);
-    lines.push(`  debug("Auto-fixing ${ds.className} schema: %O", ${varName}Result.autoFixable);`);
-    lines.push(`  await ${varName}Result.applyFixes();`);
-    lines.push(`  debug("${ds.className} schema fixes applied");`);
+    lines.push(`if (!${varName}Result.valid) {`);
+    lines.push(`  if (${varName}Result.autoFixable.length > 0) {`);
+    lines.push(`    debug("Auto-fixing ${ds.className} schema: %O", ${varName}Result.autoFixable.map((d: any) => d.fixMessage ?? d.message));`);
+    lines.push(`    await ${varName}Result.applyFixes();`);
+    lines.push(`    debug("${ds.className} schema fixes applied");`);
+    lines.push('  }');
+    lines.push(`  const allDiffs = [`);
+    lines.push(`    ...Object.values(${varName}Result.tables).flatMap((t: any) => t.differences),`);
+    lines.push(`    ...Object.values(${varName}Result.views).flatMap((v: any) => v.differences),`);
+    lines.push('  ];');
+    lines.push('  const unfixable = allDiffs.filter((d: any) => !d.autoFixable);');
+    lines.push('  if (unfixable.length > 0) {');
+    lines.push(`    console.error("Unfixable schema issues for ${ds.className}:", unfixable.map((d: any) => d.message));`);
+    lines.push(`    throw new Error("Schema validation failed for ${ds.className} with unfixable issues");`);
+    lines.push('  }');
     lines.push('}');
   }
 

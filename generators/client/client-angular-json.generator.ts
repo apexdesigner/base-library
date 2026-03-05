@@ -3,7 +3,7 @@ import { isLibrary } from '@apexdesigner/generator';
 import { getClassByBase, getObjectLiteralValue } from '@apexdesigner/utilities';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:clientAngularJson');
+const Debug = createDebug('BaseLibrary:generators:clientAngularJson');
 
 const clientAngularJsonGenerator: DesignGenerator = {
   name: 'client-angular-json',

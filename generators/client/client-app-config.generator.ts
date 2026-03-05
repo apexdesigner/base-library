@@ -1,8 +1,10 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary } from '@apexdesigner/generator';
+import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
+import { kebabCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:clientAppConfig');
+const Debug = createDebug('BaseLibrary:generators:clientAppConfig');
 
 const clientAppConfigGenerator: DesignGenerator = {
   name: 'client-app-config',
@@ -11,6 +13,9 @@ const clientAppConfigGenerator: DesignGenerator = {
     {
       metadataType: 'Project',
       condition: (metadata: DesignMetadata) => !isLibrary(metadata),
+    },
+    {
+      metadataType: 'AppBehavior',
     },
   ],
 
@@ -23,11 +28,35 @@ const clientAppConfigGenerator: DesignGenerator = {
     const params = context.parameterValues || {};
     debug('parameterValues', params);
 
+    // Collect provider app behaviors
+    const providers = context.listMetadata('AppBehavior').filter(behavior => {
+      const options = getBehaviorOptions(behavior.sourceFile);
+      return options?.type === 'Provider';
+    });
+    debug('providers %j', providers.length);
+
+    // Collect interceptor app behaviors, sorted by sequence
+    const interceptors = context.listMetadata('AppBehavior').filter(behavior => {
+      const options = getBehaviorOptions(behavior.sourceFile);
+      return options?.type === 'Interceptor';
+    }).sort((a, b) => {
+      const aSeq = (getBehaviorOptions(a.sourceFile)?.sequence as number) || 0;
+      const bSeq = (getBehaviorOptions(b.sourceFile)?.sequence as number) || 0;
+      return aSeq - bSeq;
+    });
+    debug('interceptors %j', interceptors.length);
+
     const imports: string[] = [
-      `import { APP_INITIALIZER, ApplicationConfig, inject } from '@angular/core';`,
+      `import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';`,
       `import { provideRouter } from '@angular/router';`,
-      `import { provideHttpClient, HttpClient } from '@angular/common/http';`,
     ];
+
+    // HttpClient import — add withInterceptors if we have interceptors
+    if (interceptors.length > 0) {
+      imports.push(`import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';`);
+    } else {
+      imports.push(`import { provideHttpClient, HttpClient } from '@angular/common/http';`);
+    }
 
     const extraProviders: string[] = [];
 
@@ -55,6 +84,30 @@ ${options.join('\n')}
     },`);
     }
 
+    // Import provider functions
+    for (const provider of providers) {
+      const func = getBehaviorFunction(provider.sourceFile);
+      if (!func) continue;
+      const fileName = kebabCase(provider.name);
+      imports.push(`import { ${func.name} } from './providers/${fileName}';`);
+      extraProviders.push(`    ${func.name}(),`);
+    }
+
+    // Import interceptor functions
+    const interceptorNames: string[] = [];
+    for (const interceptor of interceptors) {
+      const func = getBehaviorFunction(interceptor.sourceFile);
+      if (!func) continue;
+      const fileName = kebabCase(interceptor.name);
+      imports.push(`import { ${func.name} } from './interceptors/${fileName}.interceptor';`);
+      interceptorNames.push(func.name);
+    }
+
+    // Build provideHttpClient line
+    const httpClientLine = interceptorNames.length > 0
+      ? `    provideHttpClient(withInterceptors([${interceptorNames.join(', ')}])),`
+      : `    provideHttpClient(),`;
+
     const lines: string[] = [
       ...imports,
       ``,
@@ -64,16 +117,11 @@ ${options.join('\n')}
       `export const appConfig: ApplicationConfig = {`,
       `  providers: [`,
       `    provideRouter(routes),`,
-      `    provideHttpClient(),`,
+      httpClientLine,
       ...extraProviders,
-      `    {`,
-      `      provide: APP_INITIALIZER,`,
-      `      useFactory: () => {`,
-      `        BusinessObjectBase.configure(inject(HttpClient));`,
-      `        return () => {};`,
-      `      },`,
-      `      multi: true,`,
-      `    },`,
+      `    provideAppInitializer(() => {`,
+      `      BusinessObjectBase.configure(inject(HttpClient));`,
+      `    }),`,
       `  ],`,
       `};`,
     ];

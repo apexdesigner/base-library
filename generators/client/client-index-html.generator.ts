@@ -4,7 +4,7 @@ import { getClassByBase, getClassPropertyInitializer } from '@apexdesigner/utili
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:clientIndexHtml');
+const Debug = createDebug('BaseLibrary:generators:clientIndexHtml');
 
 const clientIndexHtmlGenerator: DesignGenerator = {
   name: 'client-index-html',

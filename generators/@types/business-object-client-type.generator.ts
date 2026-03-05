@@ -4,7 +4,7 @@ import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectClientType');
+const Debug = createDebug('BaseLibrary:generators:businessObjectClientType');
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([

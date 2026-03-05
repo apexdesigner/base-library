@@ -5,11 +5,12 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:appLifecycle');
+const Debug = createDebug('BaseLibrary:generators:appLifecycle');
 
 // Modules to skip when mapping design imports
 const SKIP_MODULES = new Set([
   '@apexdesigner/dsl',
+  '@roles',
   'vitest',
   'debug',
 ]);
@@ -49,7 +50,7 @@ const appLifecycleGenerator: DesignGenerator = {
       metadataType: 'AppBehavior',
       condition: (metadata) => {
         const options = getBehaviorOptions(metadata.sourceFile);
-        return !!options?.lifecycleStage;
+        return options?.type === 'Lifecycle Behavior' || options?.type === 'Middleware';
       },
     },
   ],
@@ -63,8 +64,8 @@ const appLifecycleGenerator: DesignGenerator = {
     debug('name %j', metadata.name);
 
     const options = getBehaviorOptions(metadata.sourceFile);
-    if (!options?.lifecycleStage) {
-      debug('not a lifecycle behavior, skipping');
+    if (options?.type !== 'Lifecycle Behavior' && options?.type !== 'Middleware') {
+      debug('not a lifecycle/middleware behavior, skipping');
       return '';
     }
 
@@ -75,9 +76,21 @@ const appLifecycleGenerator: DesignGenerator = {
       return '';
     }
 
-    // Get project name for debug namespace
-    const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
-    const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
+    // Extract debug namespace from the design file's createDebug('...') call.
+    // Falls back to a generated namespace if not found.
+    let debugNamespace: string | undefined;
+    for (const statement of metadata.sourceFile.getStatements()) {
+      const text = statement.getText();
+      const match = text.match(/createDebug\(['"]([^'"]+)['"]\)/);
+      if (match) {
+        debugNamespace = match[1];
+        break;
+      }
+    }
+    if (!debugNamespace) {
+      const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
+      debugNamespace = `${pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''))}:AppBehavior:${func.name}`;
+    }
 
     // Collect imports from the design file
     const defaultImports = new Map<string, string>();
@@ -88,18 +101,29 @@ const appLifecycleGenerator: DesignGenerator = {
 
       if (SKIP_MODULES.has(moduleSpecifier)) continue;
 
-      // Handle @project → App import
-      if (moduleSpecifier === '@project') {
+      // Handle @app → App import
+      if (moduleSpecifier === '@app') {
         const appModule = '../app.js';
         if (!namedImports.has(appModule)) namedImports.set(appModule, new Set());
         namedImports.get(appModule)!.add('App');
         continue;
       }
 
+      // Map design-time aliases to generated paths
+      let mappedModule = moduleSpecifier;
+      if (moduleSpecifier.startsWith('@server-node-modules/')) {
+        mappedModule = moduleSpecifier.replace('@server-node-modules/', '');
+      } else if (moduleSpecifier.startsWith('@server/')) {
+        mappedModule = moduleSpecifier.replace('@server/', '../') + '.js';
+      } else if (moduleSpecifier === '@functions') {
+        // Functions are per-named-import, handled below
+        mappedModule = '@functions';
+      }
+
       // Handle default import
       const defaultImport = importDecl.getDefaultImport();
       if (defaultImport && moduleSpecifier !== '@business-objects') {
-        defaultImports.set(moduleSpecifier, defaultImport.getText());
+        defaultImports.set(mappedModule, defaultImport.getText());
       }
 
       // Handle named imports
@@ -110,9 +134,13 @@ const appLifecycleGenerator: DesignGenerator = {
           const boModule = `../business-objects/${kebabCase(name)}.js`;
           if (!namedImports.has(boModule)) namedImports.set(boModule, new Set());
           namedImports.get(boModule)!.add(name);
+        } else if (moduleSpecifier === '@functions') {
+          const fnModule = `../functions/${kebabCase(name)}.js`;
+          if (!namedImports.has(fnModule)) namedImports.set(fnModule, new Set());
+          namedImports.get(fnModule)!.add(name);
         } else {
-          if (!namedImports.has(moduleSpecifier)) namedImports.set(moduleSpecifier, new Set());
-          namedImports.get(moduleSpecifier)!.add(name);
+          if (!namedImports.has(mappedModule)) namedImports.set(mappedModule, new Set());
+          namedImports.get(mappedModule)!.add(name);
         }
       }
     }
@@ -134,11 +162,13 @@ const appLifecycleGenerator: DesignGenerator = {
     lines.push('');
 
     // --- Debug ---
-    lines.push(`const Debug = createDebug("${debugNamespace}:AppBehavior:${func.name}");`);
+    lines.push(`const Debug = createDebug("${debugNamespace}");`);
     lines.push('');
 
     // --- Exported function ---
-    lines.push(`export async function ${func.name}() {`);
+    const params = func.parameters || [];
+    const paramStr = params.map(p => `${p.name}: ${p.type || 'any'}`).join(', ');
+    lines.push(`export async function ${func.name}(${paramStr}) {`);
     lines.push(`  const debug = Debug.extend("${func.name}");`);
 
     for (const line of body.split('\n')) {

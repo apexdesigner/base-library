@@ -5,7 +5,7 @@ import { Node } from 'ts-morph';
 import { kebabCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:serverPackage');
+const Debug = createDebug('BaseLibrary:generators:serverPackage');
 
 function getStringPropertyValue(sourceFile: DesignMetadata['sourceFile'], propertyName: string): string | undefined {
   const cls = getClassByBase(sourceFile, 'Project');

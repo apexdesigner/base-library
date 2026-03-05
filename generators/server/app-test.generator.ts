@@ -5,7 +5,7 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:appTest');
+const Debug = createDebug('BaseLibrary:generators:appTest');
 
 interface TestCase {
   name: string;

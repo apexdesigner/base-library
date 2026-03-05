@@ -3,7 +3,7 @@ import { isLibrary } from '@apexdesigner/generator';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectService');
+const Debug = createDebug('BaseLibrary:generators:businessObjectService');
 
 const businessObjectServiceGenerator: DesignGenerator = {
   name: 'business-object-service',

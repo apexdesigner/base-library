@@ -5,7 +5,7 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObject');
+const Debug = createDebug('BaseLibrary:generators:businessObject');
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
@@ -265,7 +265,7 @@ const businessObjectGenerator: DesignGenerator = {
                 behaviorBoImports.add(name);
               }
             }
-          } else if (moduleSpecifier === '@project') {
+          } else if (moduleSpecifier === '@app') {
             needsAppImport = true;
           }
         }
@@ -299,7 +299,7 @@ const businessObjectGenerator: DesignGenerator = {
                 behaviorBoImports.add(name);
               }
             }
-          } else if (moduleSpecifier === '@project') {
+          } else if (moduleSpecifier === '@app') {
             needsAppImport = true;
           }
         }
@@ -716,7 +716,7 @@ const businessObjectGenerator: DesignGenerator = {
 
         // Get the function body from the AST (unchanged)
         const body = getBehaviorBody(behavior.sourceFile);
-        if (!body) {
+        if (body === undefined) {
           debug('no body found for behavior %j', func.name);
           continue;
         }
