@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.0.105] - 2026-03-05
+
+- 1d00f30 fix: update test mocks to match current DSL options format
+- 27454fc chore: update package-lock.json from dependency updates
+- c63b879 chore: add release notes for 1.0.105, bump doc-generators to ^0.0.10
+- bd17ece chore: rename proposed/ to design-documents/, remove obsolete auth proposals
+- 39e01bd chore: refresh template interfaces and static design files from resolve
+- fe1ee1d docs: update generated documentation and testing design files
+- ef00409 feat: add auth generators — guards, interceptors, providers, roles, public routes, interface definitions
+- 0def087 feat: add auth infrastructure — OIDC login/logout, JWT middleware, roles, User model, login page, avatar menu
+- 51f4633 feat: improve generators — schema validation, debug namespaces, httpMethod support, guard framework params, default page via isDefault
+- c8f54f2 chore: update DSL to 0.8.59, refresh base types and project dependencies
+- f28874d feat: propose auth interceptor as client app behavior DSL pattern
+- a1091bc feat: propose auth provider as client app behavior DSL pattern
+- 77536d8 fix: add missing CRUD methods and typed filters to client BO type generator
+- 4aa1206 feat: add public routes generator for Everyone role endpoints
+- a5de7b9 feat: add interface definition schema generator
+
+
 ## [1.0.104] - 2026-03-03
 
 - 3c15f07 feat: polish AddButton/AddDialog with JSDoc, optional inputs, and pattern docs
