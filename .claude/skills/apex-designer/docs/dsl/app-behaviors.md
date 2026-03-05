@@ -44,6 +44,24 @@ addAppBehavior(
 );
 ```
 
+Use [interface definitions](interface-definitions.md) to type inputs and outputs:
+
+```typescript
+import { addAppBehavior } from "@apexdesigner/dsl";
+import { SearchCriteria, SearchResults } from "@interface-definitions";
+
+addAppBehavior(
+  {
+    type: "Class Behavior",
+    httpMethod: "Post",
+    path: "/api/search",
+  },
+  async function search(body: SearchCriteria): Promise<SearchResults> {
+    // ...
+  },
+);
+```
+
 ## Event Handlers
 
 Event handlers respond to custom application events:
@@ -64,7 +82,45 @@ addAppBehavior(
 
 ## Lifecycle Behaviors
 
-Lifecycle behaviors run at specific application lifecycle stages:
+Lifecycle behaviors run at specific application lifecycle stages. Both `stage` and `sequence` are required (enforced by a validator).
+
+### Stages
+
+- **`Startup`** — runs before the app accepts requests, ordered by `sequence` (1-999)
+- **`Running`** — runs after the app is live and accepting requests
+- **`Shutdown`** — runs before the app stops, for graceful cleanup
+
+### Startup
+
+```typescript
+import { addAppBehavior } from "@apexdesigner/dsl";
+import { App } from "@app";
+
+addAppBehavior(
+  {
+    type: "Lifecycle Behavior",
+    stage: "Startup",
+    sequence: 100,
+  },
+  async function initializeCache() {
+    App.caches.orderCache = new Map();
+  },
+);
+```
+
+#### Startup Sequence Guidelines
+
+- **1-99**: Early initialization (logging, config)
+- **100-299**: Data setup (caches, lookups)
+- **300-499**: Service initialization (external clients, connections)
+- **500**: Middleware registration (implicit)
+- **501-699**: Post-middleware setup
+- **700-899**: Late initialization
+- **900-999**: Final startup tasks
+
+Libraries should use round numbers (100, 200, 300) to allow projects to insert behaviors between them.
+
+### Running
 
 ```typescript
 import { addAppBehavior } from "@apexdesigner/dsl";
@@ -72,17 +128,36 @@ import { addAppBehavior } from "@apexdesigner/dsl";
 addAppBehavior(
   {
     type: "Lifecycle Behavior",
-    lifecycleStage: "start",
+    stage: "Running",
+    sequence: 100,
   },
-  async function initializeCache() {
+  async function registerWithServiceRegistry() {
     // ...
+  },
+);
+```
+
+### Shutdown
+
+```typescript
+import { addAppBehavior } from "@apexdesigner/dsl";
+import { App } from "@app";
+
+addAppBehavior(
+  {
+    type: "Lifecycle Behavior",
+    stage: "Shutdown",
+    sequence: 900,
+  },
+  async function flushCaches() {
+    App.caches.orderCache.clear();
   },
 );
 ```
 
 ## Middleware
 
-Middleware behaviors intercept and process requests before they reach the main handler. Middleware runs in order (0-999, where lower numbers execute first). The actual request processing happens at the implicit order position of 1000.
+Middleware behaviors intercept and process requests before they reach the main handler. Middleware runs in sequence (0-999, where lower numbers execute first). The actual request processing happens at the implicit sequence position of 1000.
 
 ```typescript
 import { addAppBehavior } from "@apexdesigner/dsl";
@@ -90,7 +165,7 @@ import { addAppBehavior } from "@apexdesigner/dsl";
 addAppBehavior(
   {
     type: "Middleware",
-    order: 100,
+    sequence: 100,
   },
   async function authenticationMiddleware(req: any, res: any, next: () => void) {
     // Verify authentication

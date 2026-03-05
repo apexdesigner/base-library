@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Post-tool hook: runs ad3 resolve after Edit/Write to design/ files
+// Post-tool hook: loads design file into cache, generates code, and validates.
+// Returns generation results (file paths) and validation diagnostics to Claude.
 
 const fs = require('fs');
 const path = require('path');
@@ -33,7 +34,7 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 
-  // Extract the design-relative path for targeted resolve
+  // Extract the design-relative path for the endpoint
   const designIndex = filePath.indexOf('/design/');
   const designPath = designIndex >= 0 ? filePath.slice(designIndex + 1) : filePath;
 
@@ -58,28 +59,11 @@ process.stdin.on('end', () => {
     respond('ad3 server is not running. Run `ad3 start` to start it.');
   }
 
-  // Regenerate design type definitions before validating
-  // (ensures types/barrels are up to date after edits)
-  const designFilesUrl = `http://localhost:${port}/api/generate/design-files`;
-  const dfReq = http.request(designFilesUrl, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }, (dfRes) => {
-    let dfData = '';
-    dfRes.on('data', (chunk) => { dfData += chunk; });
-    dfRes.on('end', () => {
-      runValidate();
-    });
-  });
-  dfReq.on('error', () => {
-    // If design-files fails, still run validate
-    runValidate();
-  });
-  dfReq.end();
-
-  function runValidate() {
-  // Call the validate API (validate-only, no fix — use `ad3 resolve` to fix)
+  // Call the generate-for-path endpoint (loads file, generates, validates in one call)
   const start = Date.now();
-  const url = `http://localhost:${port}/api/validate?path=${encodeURIComponent(designPath)}`;
+  const url = `http://localhost:${port}/api/generate/for-path?path=${encodeURIComponent(designPath)}`;
 
-  const req = http.request(url, { method: 'POST', headers: { Authorization: `Bearer ${token}`, Accept: 'application/x-ndjson' } }, (res) => {
+  const req = http.request(url, { method: 'POST', headers: { Authorization: `Bearer ${token}` } }, (res) => {
     let data = '';
     res.on('data', (chunk) => { data += chunk; });
     res.on('end', () => {
@@ -89,51 +73,75 @@ process.stdin.on('end', () => {
         respond(`ad3 server returned ${res.statusCode}: ${data}  ${timing}`);
       }
 
-      // Parse NDJSON response
-      const diagLines = [];
-      let objectCount = 0;
-      for (const line of data.split('\n').filter(Boolean)) {
-        try {
-          const event = JSON.parse(line);
-          if (event.type === 'result') {
-            objectCount = event.summary?.total || 0;
-            if (event.diagnostics) {
-              for (const d of event.diagnostics) {
-                diagLines.push(`${d.severity}: ${d.path} - ${d.message}`);
-              }
-            }
-          }
-        } catch {}
+      let result;
+      try {
+        result = JSON.parse(data);
+      } catch {
+        respond(`ad3 server returned invalid JSON  ${timing}`);
       }
 
-      // Clean — no output needed
-      if (diagLines.length === 0) {
+      const lines = [];
+
+      // Generation results
+      const gen = result.generation;
+      if (gen) {
+        const changed = gen.added + gen.updated + gen.removed;
+        if (changed > 0 || gen.errors > 0) {
+          const parts = [];
+          if (gen.added > 0) parts.push(`${gen.added} added`);
+          if (gen.updated > 0) parts.push(`${gen.updated} updated`);
+          if (gen.removed > 0) parts.push(`${gen.removed} removed`);
+          if (gen.errors > 0) parts.push(`${gen.errors} errors`);
+          lines.push(`Generated: ${parts.join(', ')}  ${timing}`);
+
+          // File paths with status indicators
+          const STATUS_ICON = { added: '+', updated: '~', removed: '-', error: '!' };
+          for (const f of gen.files || []) {
+            const icon = STATUS_ICON[f.status] || '?';
+            lines.push(`  ${icon} ${f.outputPath}`);
+          }
+        }
+
+        // Generation diagnostics (e.g. static override warnings)
+        for (const d of gen.diagnostics || []) {
+          const prefix = d.severity === 'error' ? 'E' : 'W';
+          lines.push(`  ${prefix}: ${d.outputPath} - ${d.message}`);
+        }
+      }
+
+      // Validation diagnostics
+      const val = result.validation;
+      if (val && val.diagnostics && val.diagnostics.length > 0) {
+        const MAX_DIAGS = 20;
+        const total = val.diagnostics.length;
+        const shown = val.diagnostics.slice(0, MAX_DIAGS);
+
+        lines.push(`Validated: ${val.total} objects, ${total} diagnostics`);
+        for (const d of shown) {
+          const prefix = d.severity === 'error' ? 'E' : 'W';
+          lines.push(`  ${prefix}: ${d.path} - ${d.message}`);
+        }
+
+        if (total > MAX_DIAGS) {
+          lines.push(`  ... (${MAX_DIAGS} of ${total} shown)`);
+          lines.push(`  ...and ${total - MAX_DIAGS} more diagnostics not shown — run \`ad3 resolve\` to auto-fix before continuing edits`);
+        } else {
+          lines.push('Run `ad3 resolve` after completing edits to auto-fix');
+        }
+      }
+
+      // Silent exit when nothing to report
+      if (lines.length === 0) {
         process.exit(0);
       }
 
-      const MAX_DIAGS = 20;
-      const total = diagLines.length;
-      const shown = diagLines.slice(0, MAX_DIAGS);
-      const truncated = total > MAX_DIAGS;
-
-      let message = `Validated: ${objectCount} objects, ${total} diagnostics  ${timing}\n` +
-        shown.join('\n');
-
-      if (truncated) {
-        message += `\n... (${MAX_DIAGS} of ${total} shown)` +
-          `\n...and ${total - MAX_DIAGS} more diagnostics not shown — run \`ad3 resolve\` to auto-fix before continuing edits`;
-      } else {
-        message += '\nRun `ad3 resolve` after completing edits to auto-fix';
-      }
-
-      respond(message);
+      respond(lines.join('\n'));
     });
   });
 
-  req.on('error', (err) => {
+  req.on('error', () => {
     respond('ad3 server is not running. Run `ad3 start` to start it.');
   });
 
   req.end();
-  } // end runValidate
 });
