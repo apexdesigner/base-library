@@ -5,7 +5,7 @@ import { kebabCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:publicRoutes');
+const Debug = createDebug('BaseLibrary:generators:publicRoutes');
 
 const publicRoutesGenerator: DesignGenerator = {
   name: 'public-routes',

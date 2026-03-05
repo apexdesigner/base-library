@@ -4,7 +4,7 @@ import { kebabCase, pascalCase, camelCase } from 'change-case';
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:interfaceDefinitionSchema');
+const Debug = createDebug('BaseLibrary:generators:interfaceDefinitionSchema');
 
 const interfaceDefinitionSchemaGenerator: DesignGenerator = {
   name: 'interface-definition-schema',
