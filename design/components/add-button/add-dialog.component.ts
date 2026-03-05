@@ -1,18 +1,12 @@
-import {
-  Component,
-  component,
-  property,
-  method,
-  applyTemplate,
-} from "@apexdesigner/dsl/component";
-import { MatDialogRef } from "@angular/material/dialog";
-import { EventEmitter } from "@angular/core";
-import { PersistedArray, PersistedFormArray, PersistedFormGroup } from "@business-objects-client";
-import { BusinessObjectService } from "@services";
-import { AddButtonComponent } from "@components";
-import createDebug from "debug";
+import { Component, component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
+import { MatDialogRef } from '@angular/material/dialog';
+import { EventEmitter } from '@angular/core';
+import { PersistedArray, PersistedFormArray, PersistedFormGroup } from '@business-objects-client';
+import { BusinessObjectService } from '@services';
+import { AddButtonComponent } from '@components';
+import createDebug from 'debug';
 
-const debug = createDebug("AddDialogComponent");
+const debug = createDebug('AddDialogComponent');
 
 /**
  * Add Dialog
@@ -35,9 +29,13 @@ export class AddDialogComponent extends Component {
   @property({ isOutput: true })
   added?: EventEmitter<any>;
 
+  /** Dialog - Reference to the dialog instance */
   dialog!: MatDialogRef<any>;
+  /** Form Group - Reactive form group for the dialog fields */
   formGroup!: PersistedFormGroup;
+  /** Saving - Whether the dialog is currently saving */
   saving!: boolean;
+  /** Business Object Service - Service for CRUD operations */
   businessObjectService!: BusinessObjectService;
 
   /** Loads the form group for the array's entity type. */
@@ -45,9 +43,7 @@ export class AddDialogComponent extends Component {
   async initialize() {
     debug('entityName', this.array.entityName);
 
-    this.formGroup = await this.businessObjectService.loadFormGroup(
-      this.array.entityName
-    );
+    this.formGroup = await this.businessObjectService.loadFormGroup(this.array.entityName);
 
     debug('formGroup', this.formGroup);
   }

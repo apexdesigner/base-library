@@ -1,10 +1,5 @@
-import {
-  Component,
-  component,
-  applyTemplate,
-  applyStyles,
-} from "@apexdesigner/dsl/component";
-import { BreadcrumbLevelComponent } from "@components";
+import { Component, component, applyTemplate, applyStyles } from '@apexdesigner/dsl/component';
+import { BreadcrumbLevelComponent } from '@components';
 
 /**
  * Breadcrumb
@@ -13,6 +8,7 @@ import { BreadcrumbLevelComponent } from "@components";
  */
 @component({ allowChildren: true })
 export class BreadcrumbComponent extends Component {
+  /** Levels - Array of breadcrumb navigation levels */
   levels!: BreadcrumbLevelComponent[];
 }
 
@@ -20,7 +16,7 @@ applyTemplate(
   BreadcrumbComponent,
   `
   <ng-content></ng-content>
-`,
+`
 );
 
 applyStyles(
@@ -31,5 +27,5 @@ applyStyles(
     align-items: center;
     font-size: 14px;
   }
-`,
+`
 );

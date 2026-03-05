@@ -1,18 +1,13 @@
-import {
-  Component,
-  property,
-  applyTemplate,
-  applyStyles,
-} from "@apexdesigner/dsl/component";
+import { Component, property, applyTemplate, applyStyles } from '@apexdesigner/dsl/component';
 import { component } from '@apexdesigner/dsl/dist/component';
-import {BreadcrumbComponent} from "@components";
+import { BreadcrumbComponent } from '@components';
 
 /**
  * Breadcrumb Level
  *
  * A single level inside a Breadcrumb. Renders as a link when path is set, plain text otherwise.
  */
-@component({ parentComponent: BreadcrumbComponent})
+@component({ parentComponent: BreadcrumbComponent })
 export class BreadcrumbLevelComponent extends Component {
   /** Text displayed for this breadcrumb level. */
   @property({ isInput: true })
@@ -36,7 +31,7 @@ applyTemplate(
   <if condition="!path">
     <span class="current">{{label}}</span>
   </if>
-`,
+`
 );
 
 applyStyles(
@@ -61,5 +56,5 @@ applyStyles(
   .current {
     color: rgba(0, 0, 0, 0.54);
   }
-`,
+`
 );
