@@ -1,17 +1,24 @@
-import { BusinessObject, relationship } from "@apexdesigner/dsl";
-import { applyTestPostgresDataSource } from "@data-sources";
+import { BusinessObject, relationship } from '@apexdesigner/dsl';
 
+/**
+ * Test Category
+ *
+ * Hierarchical category for organizing test items.
+ */
 export class TestCategory extends BusinessObject {
+  /** Id - Primary key */
   id!: number;
 
+  /** Name - Category name */
   name?: string;
 
-  @relationship({ type: "References" })
+  /** Parent Category - Parent category for nesting */
+  @relationship({ type: 'References' })
   parentCategory?: TestCategory;
+  /** Parent Category Id - Foreign key to parent category */
   parentCategoryId?: number;
 
-  @relationship({ pairedWith: "parentCategory" })
+  /** Child Categories - Nested child categories */
+  @relationship({ pairedWith: 'parentCategory' })
   childCategories?: TestCategory[];
 }
-
-applyTestPostgresDataSource(TestCategory);

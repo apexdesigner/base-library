@@ -2,6 +2,6 @@
 generated-from: design/components/app.component.ts
 generated-by: design-docs.component.doc.md
 ---
-# App
+# App Component
 
-_Documentation could not be generated._
+Root application component.

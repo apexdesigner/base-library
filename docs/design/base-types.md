@@ -6,14 +6,14 @@ generated-by: design-docs.base-types.doc.md
 
 | Name | Native Type | Description |
 |------|-------------|-------------|
-| <span id="calendardate">Calendar Date</span> | `string` |  |
-| <span id="currency">Currency</span> | `number` |  |
-| <span id="duration">Duration</span> | `string` |  |
-| <span id="email">Email</span> | `string` | Validation pattern `^[^@]+@[^@]+\\.[^@]+$` |
-| <span id="json">Json</span> | `any` |  |
-| <span id="percentage">Percentage</span> | `number` |  |
-| <span id="phone">Phone</span> | `string` | Validation pattern `^\\+?[1-9]\\d{1,14}$` |
-| <span id="semanticversion">Semantic Version</span> | `string` | Validation pattern `^\\d+\\.\\d+\\.\\d+(-[\\w.]+)?(\\+[\\w.]+)?$` |
-| <span id="url">Url</span> | `string` | Validation pattern `^https?://\\S+$` |
-| <span id="uuid">Uuid</span> | `string` |  |
-| <span id="zipcode">Zip Code</span> | `string` | Validation pattern `^\\d{5}(-\\d{4})?$` |
+| <span id="calendardate">Calendar Date</span> | `string` | Date value for calendar selection. |
+| <span id="currency">Currency</span> | `number` | Monetary currency value. |
+| <span id="duration">Duration</span> | `string` | Time duration value. |
+| <span id="email">Email</span> | `string` | Email address string. |
+| <span id="json">JSON</span> | `any` | Arbitrary JSON data stored as JSONB. |
+| <span id="percentage">Percentage</span> | `number` | Numeric percentage value. |
+| <span id="phone">Phone</span> | `string` | Phone number string. |
+| <span id="semanticversion">Semantic Version</span> | `string` | Version string in semver format. |
+| <span id="url">URL</span> | `string` | Web URL string. |
+| <span id="uuid">UUID</span> | `string` | Universally unique identifier string. |
+| <span id="zipcode">Zip Code</span> | `string` | US ZIP code string with optional +4 format. |

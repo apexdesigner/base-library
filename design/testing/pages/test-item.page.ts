@@ -1,22 +1,29 @@
-import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
-import { TestItemFormGroup } from "@business-objects-client";
-import { TestItemsPage } from "@pages";
+import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { TestItemFormGroup } from '@business-objects-client';
+import { TestItemsPage } from '@pages';
 
+/**
+ * Test Item
+ *
+ * Test item detail page.
+ */
 @page({
-  path: "/test-items/:testItem.id",
-  parentPage: TestItemsPage,
+  path: '/test-items/:testItem.id',
+  parentPage: TestItemsPage
 })
 export class TestItemPage extends Page {
-
+  /** Test Item - Current test item record */
   @property({
-    read: "Automatically",
-    save: "Automatically",
-    include: { testSetting: {}, testItemDetail: {} },
+    read: 'Automatically',
+    save: 'Automatically',
+    include: { testSetting: {}, testItemDetail: {} }
   })
   testItem!: TestItemFormGroup;
 }
 
-applyTemplate(TestItemPage, `
+applyTemplate(
+  TestItemPage,
+  `
   <if condition="!testItem.reading">
     <flex-column>
       <h1>{{testItem.value.name}}</h1>
@@ -38,4 +45,5 @@ applyTemplate(TestItemPage, `
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     </else>
   </if>
-`);
+`
+);

@@ -1,21 +1,29 @@
-import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
-import { TestItemPersistedArray } from "@business-objects-client";
-import { AddButtonComponent } from "@components";
+import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { TestItemPersistedArray } from '@business-objects-client';
+import { AddButtonComponent } from '@components';
 
+/**
+ * Test Items
+ *
+ * Test items list page.
+ */
 @page({
-  path: "/test-items",
-  sidenavIcon: "list",
+  path: '/test-items',
+  sidenavIcon: 'list',
+  isDefault: true
 })
 export class TestItemsPage extends Page {
-
+  /** Test Items - Array of test item records */
   @property({
-    read: "Automatically",
-    include: { testSetting: {} },
+    read: 'Automatically',
+    include: { testSetting: {} }
   })
   testItems!: TestItemPersistedArray;
 }
 
-applyTemplate(TestItemsPage, `
+applyTemplate(
+  TestItemsPage,
+  `
   <flex-column>
     <flex-row [alignCenter]="true">
       <h1>Test Items</h1>
@@ -33,4 +41,5 @@ applyTemplate(TestItemsPage, `
       </else>
     </if>
   </flex-column>
-`);
+`
+);
