@@ -4,4 +4,4 @@ generated-by: design-docs.component.doc.md
 ---
 # App
 
-Root application component.
+_Documentation could not be generated._

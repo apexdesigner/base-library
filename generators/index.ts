@@ -11,7 +11,6 @@ export { mixinTypeGenerator } from "./@types/mixin-type.generator.js";
 export { businessObjectFormGroupTypeGenerator } from "./@types/business-object-form-group-type.generator.js";
 export { componentTypeGenerator } from "./@types/component-type.generator.js";
 export { serviceTypeGenerator } from "./@types/service-type.generator.js";
-export { appTypeGenerator } from "./@types/app-type.generator.js";
 
 // Client generators
 export { persistedFormGroupGenerator } from "./client/persisted-form-group.generator.js";
@@ -28,7 +27,10 @@ export { businessObjectFormGroupGenerator } from "./client/business-object-form-
 export { serviceGenerator } from "./client/service.generator.js";
 export { componentServiceGenerator } from "./client/component-service.generator.js";
 export { businessObjectServiceGenerator } from "./client/business-object-service.generator.js";
-
+export { clientProviderGenerator } from "./client/client-provider.generator.js";
+export { clientInterceptorGenerator } from "./client/client-interceptor.generator.js";
+export { clientGuardGenerator } from "./client/client-guard.generator.js";
+export { clientInterfaceDefinitionsGenerator } from "./client/client-interface-definitions.generator.js";
 // Server generators
 export { serverGenerator } from "./server/server.generator.js";
 export { serverPackageGenerator } from "./server/server-package.generator.js";
@@ -44,3 +46,8 @@ export { boAfterStartGenerator } from "./server/bo-after-start.generator.js";
 export { businessObjectTestGenerator } from "./server/business-object-test.generator.js";
 export { appTestGenerator } from "./server/app-test.generator.js";
 export { appLifecycleTestGenerator } from "./server/app-lifecycle-test.generator.js";
+export { roleDefinitionsGenerator } from "./server/role-definitions.generator.js";
+export { interfaceDefinitionSchemaGenerator } from "./server/interface-definition-schema.generator.js";
+export { publicRoutesGenerator } from "./server/public-routes.generator.js";
+export { serverInterfaceDefinitionsGenerator } from "./server/server-interface-definitions.generator.js";
+export { serverFunctionGenerator } from "./server/function.generator.js";

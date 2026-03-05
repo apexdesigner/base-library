@@ -1,17 +1,24 @@
-import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
-import { TestSettingPersistedArray } from "@business-objects-client";
+import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { TestSettingPersistedArray } from '@business-objects-client';
 
+/**
+ * Test Settings
+ *
+ * Test settings list page.
+ */
 @page({
-  path: "/test-settings",
-  sidenavIcon: "settings",
+  path: '/test-settings',
+  sidenavIcon: 'settings'
 })
 export class TestSettingsPage extends Page {
-
-  @property({ read: "Automatically" })
+  /** Test Settings - Array of test setting records */
+  @property({ read: 'Automatically' })
   testSettings!: TestSettingPersistedArray;
 }
 
-applyTemplate(TestSettingsPage, `
+applyTemplate(
+  TestSettingsPage,
+  `
   <flex-column>
     <flex-row [alignCenter]="true">
       <h1>Test Settings</h1>
@@ -28,4 +35,5 @@ applyTemplate(TestSettingsPage, `
       </else>
     </if>
   </flex-column>
-`);
+`
+);

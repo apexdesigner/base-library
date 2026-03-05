@@ -5,7 +5,7 @@ import { kebabCase, pascalCase, camelCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectRoute');
+const Debug = createDebug('BaseLibrary:generators:businessObjectRoute');
 
 // Lifecycle behavior types to exclude from routes
 const LIFECYCLE_TYPES = new Set([
@@ -117,6 +117,57 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('');
 
     // GET / - List
+    // Collect behavior routes before CRUD so we can order them correctly
+    const mixins = resolveMixins(metadata.sourceFile, context);
+    const parentNames = new Set([className, ...mixins.map(m => m.name)]);
+    const allBehaviors = context.listMetadata('Behavior');
+    debug('total behaviors in project %j', allBehaviors.length);
+
+    interface BehaviorRoute { func: NonNullable<ReturnType<typeof getBehaviorFunction>>; httpMethod: string; behaviorKebab: string; hasParams: boolean; callArg: string }
+    const classBehaviorRoutes: BehaviorRoute[] = [];
+    const instanceBehaviorRoutes: BehaviorRoute[] = [];
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (!parent || !parentNames.has(parent)) continue;
+
+        const func = getBehaviorFunction(behavior.sourceFile);
+        if (!func) continue;
+
+        // Skip lifecycle behaviors
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
+
+        const isInstance = options.type === 'Instance';
+        const httpMethod = BEHAVIOR_HTTP_METHODS[(options.httpMethod as string) || 'Post'] || 'post';
+        const behaviorKebab = kebabCase(func.name);
+
+        const params = func.parameters || [];
+        const methodParams = isInstance ? params.slice(1) : params;
+        const hasParams = methodParams.length > 0;
+        const callArg = hasParams ? 'req.body' : '';
+
+        const route: BehaviorRoute = { func, httpMethod, behaviorKebab, hasParams, callArg };
+
+        if (isInstance) {
+          instanceBehaviorRoutes.push(route);
+        } else {
+          classBehaviorRoutes.push(route);
+        }
+
+        debug('found route for behavior %j (instance: %j, method: %j)', func.name, isInstance, httpMethod);
+      } catch (err) {
+        debug('error processing behavior %j: %j', behavior.name, err);
+      }
+    }
+
+    // Sort behaviors alphabetically for deterministic output
+    classBehaviorRoutes.sort((a, b) => a.func.name.localeCompare(b.func.name));
+    instanceBehaviorRoutes.sort((a, b) => a.func.name.localeCompare(b.func.name));
+
     lines.push(`// GET /${pluralKebab} - List ${pluralize(entityLabel)}`);
     lines.push('router.get("/", async (req: Request, res: Response, next: NextFunction) => {');
     lines.push('  const debug = Debug.extend("find");');
@@ -134,6 +185,28 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('    next(error);');
     lines.push('  }');
     lines.push('});');
+
+    // Class behavior routes must come before /:id to avoid being caught by the param route
+    for (const route of classBehaviorRoutes) {
+      lines.push('');
+      lines.push(`// ${route.httpMethod.toUpperCase()} /${pluralKebab}/${route.behaviorKebab} - ${route.func.name}`);
+      lines.push(`router.${route.httpMethod}("/${route.behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
+      lines.push(`  const debug = Debug.extend("${route.func.name}");`);
+      if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
+      lines.push('');
+      lines.push('  try {');
+      lines.push(`    const result = await ${className}.${route.func.name}(${route.callArg});`);
+      lines.push('    debug("result %j", result);');
+      lines.push('');
+      lines.push('    res.json(result);');
+      lines.push('  } catch (error) {');
+      lines.push('    debug("error %j", error);');
+      lines.push('');
+      lines.push('    next(error);');
+      lines.push('  }');
+      lines.push('});');
+    }
+
     lines.push('');
 
     // GET /:id - Get by ID
@@ -235,86 +308,31 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  }');
     lines.push('});');
 
-    // Find and add behavior routes (BO + mixin behaviors)
-    const mixins = resolveMixins(metadata.sourceFile, context);
-    const parentNames = new Set([className, ...mixins.map(m => m.name)]);
-    const allBehaviors = context.listMetadata('Behavior');
-    debug('total behaviors in project %j', allBehaviors.length);
-
-    for (const behavior of allBehaviors) {
-      try {
-        const options = getBehaviorOptions(behavior.sourceFile);
-        if (!options) continue;
-
-        const parent = getBehaviorParent(behavior.sourceFile);
-        if (!parent || !parentNames.has(parent)) continue;
-
-        const func = getBehaviorFunction(behavior.sourceFile);
-        if (!func) continue;
-
-        // Skip lifecycle behaviors
-        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
-
-        const isInstance = options.type === 'Instance';
-        const httpMethod = BEHAVIOR_HTTP_METHODS[(options.httpMethod as string) || 'Post'] || 'post';
-        const behaviorKebab = kebabCase(func.name);
-
-        // Determine if the behavior method accepts parameters
-        const params = func.parameters || [];
-        const methodParams = isInstance ? params.slice(1) : params;
-        const hasParams = methodParams.length > 0;
-        const callArg = hasParams ? 'req.body' : '';
-
-        lines.push('');
-
-        if (isInstance) {
-          // Instance behavior: POST /:id/behavior-name
-          lines.push(`// ${httpMethod.toUpperCase()} /${pluralKebab}/:id/${behaviorKebab} - ${func.name}`);
-          lines.push(`router.${httpMethod}("/:id/${behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
-          lines.push(`  const debug = Debug.extend("${func.name}");`);
-          lines.push('  debug("req.params.id %j", req.params.id);');
-          if (hasParams) lines.push('  debug("req.body %j", req.body);');
-          lines.push('');
-          lines.push('  try {');
-          lines.push(`    const ${varName} = await ${className}.findById(${idCoerce});`);
-          lines.push(`    const result = await ${varName}.${func.name}(${callArg});`);
-          lines.push('    debug("result %j", result);');
-          lines.push('');
-          lines.push('    res.json(result);');
-          lines.push('  } catch (error) {');
-          lines.push('    debug("error %j", error);');
-          lines.push('');
-          lines.push(`    if (error instanceof Error && error.message.includes("not found")) {`);
-          lines.push('      res.status(404).json({ error: error.message });');
-          lines.push('      return;');
-          lines.push('    }');
-          lines.push('    next(error);');
-          lines.push('  }');
-          lines.push('});');
-        } else {
-          // Class behavior: POST /behavior-name
-          lines.push(`// ${httpMethod.toUpperCase()} /${pluralKebab}/${behaviorKebab} - ${func.name}`);
-          lines.push(`router.${httpMethod}("/${behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
-          lines.push(`  const debug = Debug.extend("${func.name}");`);
-          if (hasParams) lines.push('  debug("req.body %j", req.body);');
-          lines.push('');
-          lines.push('  try {');
-          lines.push(`    const result = await ${className}.${func.name}(${callArg});`);
-          lines.push('    debug("result %j", result);');
-          lines.push('');
-          lines.push('    res.json(result);');
-          lines.push('  } catch (error) {');
-          lines.push('    debug("error %j", error);');
-          lines.push('');
-          lines.push('    next(error);');
-          lines.push('  }');
-          lines.push('});');
-        }
-
-        debug('added route for behavior %j (instance: %j, method: %j)', func.name, isInstance, httpMethod);
-      } catch (err) {
-        debug('error processing behavior %j: %j', behavior.name, err);
-      }
+    // Instance behavior routes (after /:id routes)
+    for (const route of instanceBehaviorRoutes) {
+      lines.push('');
+      lines.push(`// ${route.httpMethod.toUpperCase()} /${pluralKebab}/:id/${route.behaviorKebab} - ${route.func.name}`);
+      lines.push(`router.${route.httpMethod}("/:id/${route.behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
+      lines.push(`  const debug = Debug.extend("${route.func.name}");`);
+      lines.push('  debug("req.params.id %j", req.params.id);');
+      if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
+      lines.push('');
+      lines.push('  try {');
+      lines.push(`    const ${varName} = await ${className}.findById(${idCoerce});`);
+      lines.push(`    const result = await ${varName}.${route.func.name}(${route.callArg});`);
+      lines.push('    debug("result %j", result);');
+      lines.push('');
+      lines.push('    res.json(result);');
+      lines.push('  } catch (error) {');
+      lines.push('    debug("error %j", error);');
+      lines.push('');
+      lines.push(`    if (error instanceof Error && error.message.includes("not found")) {`);
+      lines.push('      res.status(404).json({ error: error.message });');
+      lines.push('      return;');
+      lines.push('    }');
+      lines.push('    next(error);');
+      lines.push('  }');
+      lines.push('});');
     }
 
     lines.push('');

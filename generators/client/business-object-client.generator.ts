@@ -5,7 +5,7 @@ import { kebabCase, pascalCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectClient');
+const Debug = createDebug('BaseLibrary:generators:businessObjectClient');
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
@@ -284,17 +284,33 @@ const businessObjectClientGenerator: DesignGenerator = {
         const methodLines: string[] = [];
         methodLines.push('');
 
+        const httpMethod = (options.httpMethod as string || 'Post').toLowerCase();
+
+        // Map httpMethod to base class method call
+        const callForMethod = (base: string) => {
+          switch (httpMethod) {
+            case 'get':
+              return `${base}.get<${returnType}>(url)`;
+            case 'delete':
+              return `${base}.del<${returnType}>(url)`;
+            case 'patch':
+              return `${base}.patch<${returnType}>(url, ${bodyArg})`;
+            default:
+              return `${base}.post<${returnType}>(url, ${bodyArg})`;
+          }
+        };
+
         if (isInstance) {
-          // Instance behavior: POST /api/{plural}/:id/{behavior-kebab}
+          // Instance behavior: /api/{plural}/:id/{behavior-kebab}
           methodLines.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
           methodLines.push(`    const url = \`\${BusinessObjectBase.baseUrl}/\${${className}.plural}/\${(this as any).${idName}}/${behaviorKebab}\`;`);
-          methodLines.push(`    return BusinessObjectBase.post<${returnType}>(url, ${bodyArg});`);
+          methodLines.push(`    return ${callForMethod('BusinessObjectBase')};`);
           methodLines.push('  }');
         } else {
-          // Class behavior: POST /api/{plural}/{behavior-kebab}
+          // Class behavior: /api/{plural}/{behavior-kebab}
           methodLines.push(`  static async ${func.name}(${paramStr}): Promise<${returnType}> {`);
           methodLines.push(`    const url = \`\${this.baseUrl}/\${this.plural}/${behaviorKebab}\`;`);
-          methodLines.push(`    return this.post<${returnType}>(url, ${bodyArg});`);
+          methodLines.push(`    return ${callForMethod('this')};`);
           methodLines.push('  }');
         }
 

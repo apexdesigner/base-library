@@ -3,7 +3,7 @@ import { getClassByBase, getDescription } from '@apexdesigner/utilities';
 import { kebabCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:pageType');
+const Debug = createDebug('BaseLibrary:generators:pageType');
 
 const pageTypeGenerator: DesignGenerator = {
   name: 'page-type',

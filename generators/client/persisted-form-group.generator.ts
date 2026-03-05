@@ -1,7 +1,7 @@
 import type { DesignGenerator, DesignMetadata } from '@apexdesigner/generator';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:persistedFormGroup');
+const Debug = createDebug('BaseLibrary:generators:persistedFormGroup');
 
 const persistedFormGroupGenerator: DesignGenerator = {
   name: 'persisted-form-group',

@@ -5,7 +5,7 @@ import { kebabCase, pascalCase } from 'change-case';
 import { Project, StructureKind } from 'ts-morph';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectType');
+const Debug = createDebug('BaseLibrary:generators:businessObjectType');
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([

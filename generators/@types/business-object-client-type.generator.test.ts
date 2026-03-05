@@ -81,6 +81,50 @@ describe('businessObjectClientTypeGenerator', () => {
     });
   });
 
+  describe('CRUD methods', () => {
+    it('should include all CRUD methods with typed filters', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static create(data: Partial<Order>): Promise<Order>;');
+      expect(result).toContain('static createMany(data: Partial<Order>[]): Promise<Order[]>;');
+      expect(result).toContain('static find(filter?: FindFilter<Order>): Promise<Order[]>;');
+      expect(result).toContain('static findOne(filter: FindOneFilter<Order>): Promise<Order | null>;');
+      expect(result).toContain('static findOrCreate(');
+      expect(result).toContain('static count(');
+      expect(result).toContain('static update(filter: UpdateFilter<Order>,');
+      expect(result).toContain('static upsert(');
+      expect(result).toContain('static delete(filter: DeleteFilter<Order>): Promise<number>;');
+    });
+
+    it('should import filter types from schema-persistence', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain("import type { FindFilter, FindOneFilter, UpdateFilter, DeleteFilter } from '@apexdesigner/schema-persistence';");
+    });
+  });
+
   describe('base type resolution in data interface', () => {
     it('should be implemented', () => {
       // TODO: Add test implementation

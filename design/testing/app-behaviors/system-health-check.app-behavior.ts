@@ -1,12 +1,12 @@
-import { addAppBehavior } from "@apexdesigner/dsl";
+import { addAppBehavior } from '@apexdesigner/dsl';
 
 addAppBehavior(
   {
-    type: "Class Behavior",
-    httpMethod: "Get",
-    path: "/api/health",
+    type: 'Class Behavior',
+    httpMethod: 'Get',
+    path: '/api/health'
   },
   async function systemHealthCheck() {
-    return { status: "ok" };
-  },
+    return { status: 'ok' };
+  }
 );

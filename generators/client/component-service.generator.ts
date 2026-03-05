@@ -3,7 +3,7 @@ import { isLibrary } from '@apexdesigner/generator';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:componentService');
+const Debug = createDebug('BaseLibrary:generators:componentService');
 
 /** Strip 'Component' suffix to get the base name */
 function getBaseName(name: string): string {

@@ -6,7 +6,7 @@ import createDebug from 'debug';
 import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 
-const Debug = createDebug('ad3:generators:component');
+const Debug = createDebug('BaseLibrary:generators:component');
 
 /** Strip 'Component' suffix to get the base name */
 function getBaseName(name: string): string {

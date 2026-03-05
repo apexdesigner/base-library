@@ -14,7 +14,7 @@ Hidden fields are automatically disabled so they don't block form validity.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| array | `PersistedArray<any> \| PersistedFormArray` | Always | The persisted array or form array to add new records to. |
+| array | `PersistedArray<any> | PersistedFormArray` | Always | The persisted array or form array to add new records to. |
 | label | `string` | No | Title displayed in the dialog header. |
 
 ## Outputs

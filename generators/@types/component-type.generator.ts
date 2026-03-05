@@ -3,7 +3,7 @@ import { getClassByBase, getDescription } from '@apexdesigner/utilities';
 import { kebabCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:componentType');
+const Debug = createDebug('BaseLibrary:generators:componentType');
 
 const componentTypeGenerator: DesignGenerator = {
   name: 'component-type',

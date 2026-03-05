@@ -1,44 +1,55 @@
-import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
-import { TestCategoryFormGroup } from "@business-objects-client";
-import { TestCategory } from "@business-objects-client";
-import { TestCategoriesPage } from "@pages";
+import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { TestCategoryFormGroup } from '@business-objects-client';
+import { TestCategory } from '@business-objects-client';
+import { TestCategoriesPage } from '@pages';
 
+/**
+ * Test Category
+ *
+ * Test category detail page.
+ */
 @page({
-  path: "/test-categories/:testCategory.id",
-  parentPage: TestCategoriesPage,
+  path: '/test-categories/:testCategory.id',
+  parentPage: TestCategoriesPage
 })
 export class TestCategoryPage extends Page {
-
+  /** Test Category - Current test category record */
   @property({
-    read: "Automatically",
-    save: "Automatically",
-    afterReadCall: "afterRead",
+    read: 'Automatically',
+    save: 'Automatically',
+    afterReadCall: 'afterRead',
     include: {
       parentCategory: {},
-      childCategories: {},
-    },
+      childCategories: {}
+    }
   })
   testCategory!: TestCategoryFormGroup;
 
+  /** Category - Category display name */
   category: TestCategory = new TestCategory();
 
+  /** After Read - Hook called after reading the category */
   afterRead() {
     console.log('afterRead called', this.testCategory.value);
     this.category = this.testCategory.object;
   }
 
+  /** Set Name - Sets the category name */
   async setName() {
     await TestCategory.updateById(this.testCategory.value.id!, { name: 'Hello World' });
     await this.testCategory.read();
   }
 
+  /** Clear Name - Clears the category name */
   async clearName() {
     await TestCategory.updateById(this.testCategory.value.id!, { name: undefined });
     await this.testCategory.read();
   }
 }
 
-applyTemplate(TestCategoryPage, `
+applyTemplate(
+  TestCategoryPage,
+  `
   <if condition="testCategory.reading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </if>
@@ -61,4 +72,5 @@ applyTemplate(TestCategoryPage, `
       </mat-form-field>
     </flex-column>
   </if>
-`);
+`
+);

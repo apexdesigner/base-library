@@ -57,6 +57,9 @@ addAppBehavior(
 ## Key Differences from Client-Side
 
 - **Always use `%j`** — there's no browser console to inspect objects; `%j` serializes to JSON in terminal output
+- **Log the variable name, not a sentence** — use `debug("configPath %j", configPath)` not `debug("Loaded config from %s", configPath)`. Debug output should read like structured key-value pairs, not prose.
+- **Debug assignments immediately after** — debug any variable right after its assignment, with a blank line before the next statement
+- **Debug values before conditionals** — any value used in a condition that hasn't already been debugged should be debugged before the `if`
 - **Namespace includes app name** — `AppName:ClassName:methodName` for behaviors, `AppName:App:methodName` for app behaviors
 - **Use lowercase `debug`** in the design file — the generator renames it to `Debug` and injects `const debug = Debug.extend("methodName")` per behavior method
 
@@ -71,6 +74,36 @@ AppName:ClassName:methodName
 | Behavior | `ProcessEngine:ProcessDesign:disable` |
 | App Behavior | `ProcessEngine:App:evaluateCondition` |
 | Mixin Behavior | `ProcessEngine:LastModified:setCreatedAt` |
+| Static file | `ProcessEngine:Auth:getUserProfile` |
+| Static file (no module) | `ProcessEngine:formatCurrency` |
+
+### Static Server Files
+
+Static files in `design/server/src/` use the same namespace convention. If the file belongs to a module (subdirectory), include the module name. If it's a standalone utility, omit the module level.
+
+```typescript
+// design/server/src/auth/get-user-profile.ts — module: Auth
+import createDebug from "debug";
+
+const debug = createDebug("ProcessEngine:Auth:getUserProfile");
+
+export async function getUserProfile(sub: string) {
+  debug("sub %j", sub);
+  // ...
+}
+```
+
+```typescript
+// design/server/src/format-currency.ts — no module
+import createDebug from "debug";
+
+const debug = createDebug("ProcessEngine:formatCurrency");
+
+export function formatCurrency(amount: number) {
+  debug("amount %j", amount);
+  // ...
+}
+```
 
 ## What Gets Generated
 

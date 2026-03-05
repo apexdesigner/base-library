@@ -3,7 +3,7 @@ import { isLibrary } from '@apexdesigner/generator';
 import { getModuleLevelCall, getTemplateString } from '@apexdesigner/utilities';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:clientStyles');
+const Debug = createDebug('BaseLibrary:generators:clientStyles');
 
 const clientStylesGenerator: DesignGenerator = {
   name: 'client-styles',

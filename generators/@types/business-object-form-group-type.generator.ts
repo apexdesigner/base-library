@@ -4,7 +4,7 @@ import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorPar
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectFormGroupType');
+const Debug = createDebug('BaseLibrary:generators:businessObjectFormGroupType');
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([

@@ -10,7 +10,7 @@ describe('appLifecycleGenerator', () => {
         sourceCode: `
           import { addAppBehavior } from '@apexdesigner/dsl';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {}
           );
         `,
@@ -28,7 +28,7 @@ describe('appLifecycleGenerator', () => {
         sourceCode: `
           import { addAppBehavior } from '@apexdesigner/dsl';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {
               console.log('loading');
             }
@@ -75,7 +75,7 @@ describe('appLifecycleGenerator', () => {
           import { addAppBehavior } from '@apexdesigner/dsl';
           import { ProcessDesign } from '@business-objects';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {
               await ProcessDesign.find();
             }
@@ -97,7 +97,7 @@ describe('appLifecycleGenerator', () => {
           import path from 'node:path';
           import { addAppBehavior } from '@apexdesigner/dsl';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {
               fs.existsSync(path.join('.'));
             }
@@ -112,14 +112,14 @@ describe('appLifecycleGenerator', () => {
       expect(result).toContain('import path from "node:path"');
     });
 
-    it('should map @project to App import', async () => {
+    it('should map @app to App import', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('AppBehavior', 'AfterStartSetup', {
         sourceCode: `
           import { addAppBehavior } from '@apexdesigner/dsl';
-          import { App } from '@project';
+          import { App } from '@app';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function afterStartSetup() {
               await App.someMethod();
             }
@@ -140,7 +140,7 @@ describe('appLifecycleGenerator', () => {
           import { addAppBehavior } from '@apexdesigner/dsl';
           import { expect } from 'vitest';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {}
           );
         `,

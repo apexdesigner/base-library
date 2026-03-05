@@ -1,17 +1,24 @@
-import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
-import { TestCategoryPersistedArray } from "@business-objects-client";
+import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { TestCategoryPersistedArray } from '@business-objects-client';
 
+/**
+ * Test Categories
+ *
+ * Test categories list page.
+ */
 @page({
-  path: "/test-categories",
-  sidenavIcon: "category",
+  path: '/test-categories',
+  sidenavIcon: 'category'
 })
 export class TestCategoriesPage extends Page {
-
-  @property({ read: "Automatically" })
+  /** Test Categories - Array of test category records */
+  @property({ read: 'Automatically' })
   testCategories!: TestCategoryPersistedArray;
 }
 
-applyTemplate(TestCategoriesPage, `
+applyTemplate(
+  TestCategoriesPage,
+  `
   <if condition="testCategories.reading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </if>
@@ -26,4 +33,5 @@ applyTemplate(TestCategoriesPage, `
       </for>
     </flex-column>
   </if>
-`);
+`
+);

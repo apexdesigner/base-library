@@ -5,7 +5,7 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:appLifecycleTest');
+const Debug = createDebug('BaseLibrary:generators:appLifecycleTest');
 
 interface TestCase {
   name: string;
@@ -92,7 +92,7 @@ const appLifecycleTestGenerator: DesignGenerator = {
         for (const namedImport of importDecl.getNamedImports()) {
           boImports.add(namedImport.getName());
         }
-      } else if (moduleSpec === '@project') {
+      } else if (moduleSpec === '@app') {
         for (const namedImport of importDecl.getNamedImports()) {
           projectImports.add(namedImport.getName());
         }

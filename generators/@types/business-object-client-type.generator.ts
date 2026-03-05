@@ -1,10 +1,10 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
+import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent, getModuleLevelCall } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectClientType');
+const Debug = createDebug('BaseLibrary:generators:businessObjectClientType');
 
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
@@ -61,6 +61,7 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     debug('name %j', metadata.name);
 
     const className = pascalCase(metadata.name);
+    const isView = !!getModuleLevelCall(metadata.sourceFile, 'setView');
 
     // Get id property info — resolve to a primitive TS type
     const resolvedId = resolveIdType(metadata.sourceFile, context);
@@ -118,7 +119,13 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     for (const refType of Array.from(referencedTypes).sort()) {
       lines.push(`import type { ${refType} } from './${kebabCase(refType)}';`);
     }
-    if (referencedTypes.size > 0) lines.push('');
+
+    // Import filter types
+    const filterTypes = isView
+      ? ['FindFilter', 'FindOneFilter']
+      : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter'];
+    lines.push(`import type { ${filterTypes.join(', ')} } from '@apexdesigner/schema-persistence';`);
+    lines.push('');
 
     // Description comment
     if (description) {
@@ -184,11 +191,29 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
 
     // CRUD methods
     lines.push('');
-    lines.push(`  static find(filter?: any): Promise<${className}[]>;`);
-    lines.push(`  static findById(id: ${idType}, filter?: any): Promise<${className}>;`);
-    lines.push(`  static create(data: Partial<${className}>): Promise<${className}>;`);
-    lines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
-    lines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);
+
+    if (!isView) {
+      lines.push(`  static create(data: Partial<${className}>): Promise<${className}>;`);
+      lines.push(`  static createMany(data: Partial<${className}>[]): Promise<${className}[]>;`);
+    }
+
+    lines.push(`  static find(filter?: FindFilter<${className}>): Promise<${className}[]>;`);
+    lines.push(`  static findOne(filter: FindOneFilter<${className}>): Promise<${className} | null>;`);
+    lines.push(`  static findById(id: ${idType}, filter?: Pick<FindFilter<${className}>, 'include' | 'fields' | 'omit'>): Promise<${className}>;`);
+
+    if (!isView) {
+      lines.push(`  static findOrCreate(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}> }): Promise<{ entity: ${className}; created: boolean }>;`);
+    }
+
+    lines.push(`  static count(filter?: Pick<FindFilter<${className}>, 'where'>): Promise<number>;`);
+
+    if (!isView) {
+      lines.push(`  static update(filter: UpdateFilter<${className}>, data: Partial<${className}>): Promise<${className}[]>;`);
+      lines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
+      lines.push(`  static upsert(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }): Promise<${className}>;`);
+      lines.push(`  static delete(filter: DeleteFilter<${className}>): Promise<number>;`);
+      lines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);
+    }
 
     // Behavior methods (BO + mixin behaviors)
     const parentNames = new Set([className, ...mixinNames]);

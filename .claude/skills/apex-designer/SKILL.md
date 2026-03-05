@@ -16,6 +16,7 @@ All design artifacts are TypeScript files in the `/design` directory using the A
 | Business Object | Core entity classes with properties and relationships | `.claude/skills/apex-designer/docs/dsl/business-objects.md` |
 | Behavior | Custom logic for business objects | `.claude/skills/apex-designer/docs/dsl/behaviors.md` |
 | App Behavior | Application-level server logic | `.claude/skills/apex-designer/docs/dsl/app-behaviors.md` |
+| App Properties | Server-side singleton state (caches, clients) | `.claude/skills/apex-designer/docs/dsl/app-properties.md` |
 | Agent | AI-powered participants for processes | `.claude/skills/apex-designer/docs/dsl/agents.md` |
 | Base Type | Type wrappers with validation constraints | `.claude/skills/apex-designer/docs/dsl/base-types.md` |
 | Component | Reusable UI elements | `.claude/skills/apex-designer/docs/dsl/components.md` |
@@ -25,6 +26,8 @@ All design artifacts are TypeScript files in the `/design` directory using the A
 | Decision Table | Business rules evaluator | `.claude/skills/apex-designer/docs/dsl/decision-tables.md` |
 | Directive Interface | Template API for Angular directives | `.claude/skills/apex-designer/docs/dsl/directive-interfaces.md` |
 | External Type | Importable types from libraries | `.claude/skills/apex-designer/docs/dsl/external-types.md` |
+| Function | Reusable callable utilities (client, server, or both) | `.claude/skills/apex-designer/docs/dsl/functions.md` |
+| Interface Definition | Non-persisted data shapes for typed parameters | `.claude/skills/apex-designer/docs/dsl/interface-definitions.md` |
 | Library Override | Extend library design items | `.claude/skills/apex-designer/docs/dsl/library-overrides.md` |
 | Mixin | Reusable properties for business objects | `.claude/skills/apex-designer/docs/dsl/mixins.md` |
 | Page | Routable views in the application | `.claude/skills/apex-designer/docs/dsl/pages.md` |

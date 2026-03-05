@@ -34,7 +34,7 @@ describe('serverGenerator', () => {
       sourceCode: `
         import { addAppBehavior } from '@apexdesigner/dsl';
         addAppBehavior(
-          { lifecycleStage: 'After Start' },
+          { type: 'Lifecycle Behavior', stage: 'Running' },
           async function loadSampleDesigns() {
             console.log('loading');
           }
@@ -57,7 +57,7 @@ describe('serverGenerator', () => {
       sourceCode: `
         import { addAppBehavior } from '@apexdesigner/dsl';
         addAppBehavior(
-          { lifecycleStage: 'After Start' },
+          { type: 'Lifecycle Behavior', stage: 'Running' },
           async function loadSampleDesigns() {}
         );
       `,

@@ -5,7 +5,7 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:boAfterStart');
+const Debug = createDebug('BaseLibrary:generators:boAfterStart');
 
 // Modules to skip when mapping design imports
 const SKIP_MODULES = new Set([
@@ -94,8 +94,8 @@ const boAfterStartGenerator: DesignGenerator = {
 
       if (SKIP_MODULES.has(moduleSpecifier)) continue;
 
-      // Handle @project → App import
-      if (moduleSpecifier === '@project') {
+      // Handle @app → App import
+      if (moduleSpecifier === '@app') {
         const appModule = '../app.js';
         if (!namedImports.has(appModule)) namedImports.set(appModule, new Set());
         namedImports.get(appModule)!.add('App');

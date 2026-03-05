@@ -4,7 +4,7 @@ import { getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@ape
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:server');
+const Debug = createDebug('BaseLibrary:generators:server');
 
 const serverGenerator: DesignGenerator = {
   name: 'server',
@@ -13,6 +13,9 @@ const serverGenerator: DesignGenerator = {
     {
       metadataType: 'Project',
       condition: (metadata) => !isLibrary(metadata),
+    },
+    {
+      metadataType: 'AppBehavior',
     },
     {
       metadataType: 'Behavior',
@@ -40,29 +43,47 @@ const serverGenerator: DesignGenerator = {
     const hasDataSources = allDataSources.length > 0;
     debug('found %d data sources', allDataSources.length);
 
-    // Find After Start lifecycle app behaviors
+    // Collect lifecycle and middleware app behaviors
     const appBehaviors = context.listMetadata('AppBehavior');
-    const afterStartBehaviors: { name: string; kebab: string }[] = [];
+
+    interface LifecycleBehavior { name: string; kebab: string; sequence: number }
+    const startupBehaviors: LifecycleBehavior[] = [];
+    const middlewareBehaviors: LifecycleBehavior[] = [];
+    const runningBehaviors: LifecycleBehavior[] = [];
+    const shutdownBehaviors: LifecycleBehavior[] = [];
 
     for (const behavior of appBehaviors) {
       const options = getBehaviorOptions(behavior.sourceFile);
       if (!options) continue;
-      if (!options.lifecycleStage) continue;
-
-      const validStages = ['After Start'];
-      if (!validStages.includes(options.lifecycleStage as string)) {
-        throw new Error(`AppBehavior "${behavior.name}" has unsupported lifecycleStage "${options.lifecycleStage}" (valid values: ${validStages.join(', ')})`);
-      }
 
       const func = getBehaviorFunction(behavior.sourceFile);
       if (!func) continue;
 
-      afterStartBehaviors.push({
+      const entry: LifecycleBehavior = {
         name: func.name,
         kebab: kebabCase(behavior.name),
-      });
-      debug('found After Start behavior: %j', func.name);
+        sequence: (options.sequence as number) ?? 500,
+      };
+
+      if (options.type === 'Lifecycle Behavior') {
+        if (options.stage === 'Startup') startupBehaviors.push(entry);
+        else if (options.stage === 'Running') runningBehaviors.push(entry);
+        else if (options.stage === 'Shutdown') shutdownBehaviors.push(entry);
+      } else if (options.type === 'Middleware') {
+        middlewareBehaviors.push(entry);
+      }
     }
+
+    // Sort by sequence
+    startupBehaviors.sort((a, b) => a.sequence - b.sequence);
+    middlewareBehaviors.sort((a, b) => a.sequence - b.sequence);
+    runningBehaviors.sort((a, b) => a.sequence - b.sequence);
+    shutdownBehaviors.sort((a, b) => a.sequence - b.sequence);
+
+    debug('startupBehaviors %j', startupBehaviors.map(b => b.name));
+    debug('middlewareBehaviors %j', middlewareBehaviors.map(b => b.name));
+    debug('runningBehaviors %j', runningBehaviors.map(b => b.name));
+    debug('shutdownBehaviors %j', shutdownBehaviors.map(b => b.name));
 
     // Find After Start lifecycle BO behaviors
     const allBehaviors = context.listMetadata('Behavior');
@@ -83,6 +104,14 @@ const serverGenerator: DesignGenerator = {
       });
       debug('found After Start BO behavior: %j', func.name);
     }
+
+    // All lifecycle/middleware behaviors for imports
+    const allAppBehaviors = [
+      ...startupBehaviors,
+      ...middlewareBehaviors,
+      ...runningBehaviors,
+      ...shutdownBehaviors,
+    ];
 
     // --- env.ts ---
     const envLines: string[] = [];
@@ -109,15 +138,14 @@ const serverGenerator: DesignGenerator = {
       lines.push('import { dataSource } from "./data-sources/index.js";');
     }
 
-    // Import After Start app behaviors (sorted for deterministic output)
-    afterStartBehaviors.sort((a, b) => a.name.localeCompare(b.name));
-    afterStartBoBehaviors.sort((a, b) => a.name.localeCompare(b.name));
-
-    for (const behavior of afterStartBehaviors) {
+    // Import app behaviors (deduplicate by name, sorted alphabetically)
+    const importedBehaviors = [...allAppBehaviors].sort((a, b) => a.name.localeCompare(b.name));
+    for (const behavior of importedBehaviors) {
       lines.push(`import { ${behavior.name} } from "./app-behaviors/${behavior.kebab}.js";`);
     }
 
     // Import After Start BO behaviors
+    afterStartBoBehaviors.sort((a, b) => a.name.localeCompare(b.name));
     for (const behavior of afterStartBoBehaviors) {
       lines.push(`import { ${behavior.name} } from "${behavior.importPath}";`);
     }
@@ -129,16 +157,31 @@ const serverGenerator: DesignGenerator = {
     lines.push('const port = Number(process.env.PORT) || 3000;');
     lines.push('');
     lines.push('app.use(express.json());');
+
+    // Register middleware behaviors (sorted by sequence, before routes)
+    for (const behavior of middlewareBehaviors) {
+      lines.push(`app.use(${behavior.name});`);
+    }
+
     lines.push('app.use("/api", router);');
     lines.push('');
+
+    // Startup behaviors run before listening
+    for (const behavior of startupBehaviors) {
+      lines.push(`await ${behavior.name}();`);
+    }
+    if (startupBehaviors.length > 0) {
+      lines.push('');
+    }
+
     lines.push('const server = app.listen(port);');
     lines.push('');
     lines.push('server.on("listening", async () => {');
     lines.push('  console.log("Server listening on port", port);');
     lines.push('  debug("Server listening on port %d", port);');
 
-    // Call After Start behaviors (app + BO)
-    for (const behavior of afterStartBehaviors) {
+    // Call Running lifecycle behaviors
+    for (const behavior of runningBehaviors) {
       lines.push('');
       lines.push(`  try {`);
       lines.push(`    await ${behavior.name}();`);
@@ -147,6 +190,7 @@ const serverGenerator: DesignGenerator = {
       lines.push(`  }`);
     }
 
+    // Call After Start BO behaviors
     for (const behavior of afterStartBoBehaviors) {
       lines.push('');
       lines.push(`  try {`);
@@ -164,6 +208,14 @@ const serverGenerator: DesignGenerator = {
     lines.push('});');
     lines.push('');
     lines.push('const shutdown = async () => {');
+    // Call Shutdown lifecycle behaviors
+    for (const behavior of shutdownBehaviors) {
+      lines.push(`  try {`);
+      lines.push(`    await ${behavior.name}();`);
+      lines.push(`  } catch (err) {`);
+      lines.push(`    debug("Error in ${behavior.name}: %O", err);`);
+      lines.push(`  }`);
+    }
     lines.push('  server.closeAllConnections();');
     if (hasDataSources) {
       lines.push('  await dataSource.close();');

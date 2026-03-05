@@ -1,17 +1,11 @@
-import {
-  Component,
-  component,
-  property,
-  method,
-  applyTemplate,
-} from "@apexdesigner/dsl/component";
-import { EventEmitter } from "@angular/core";
-import { PersistedArray, PersistedFormArray, PersistedFormGroup } from "@business-objects-client";
-import { AddDialogComponent } from "@components";
-import { capitalCase } from "change-case";
-import createDebug from "debug";
+import { Component, component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
+import { EventEmitter } from '@angular/core';
+import { PersistedArray, PersistedFormArray, PersistedFormGroup } from '@business-objects-client';
+import { AddDialogComponent } from '@components';
+import { capitalCase } from 'change-case';
+import createDebug from 'debug';
 
-const debug = createDebug("AddButtonComponent");
+const debug = createDebug('AddButtonComponent');
 
 /**
  * Add Button
@@ -37,6 +31,7 @@ export class AddButtonComponent extends Component {
   @property({ isOutput: true })
   added?: EventEmitter<any>;
 
+  /** Default Label - Default text for the add button */
   defaultLabel!: string;
 
   /** Sets the default label from the array's entity name if no custom label is provided. */
@@ -58,5 +53,5 @@ applyTemplate(
     <mat-icon>add</mat-icon>
     {{ label || defaultLabel || 'Add' }}
   </button>
-`,
+`
 );

@@ -1,23 +1,32 @@
-import { BusinessObject, property, relationship } from "@apexdesigner/dsl";
-import { applyTestPostgresDataSource } from "@data-sources";
-import { TestSetting, TestItemDetail } from "@business-objects";
-import { Uuid, Email } from "@base-types";
+import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
 
+import { TestSetting, TestItemDetail } from '@business-objects';
+import { Uuid, Email } from '@base-types';
+
+/**
+ * Test Item
+ *
+ * Item used for testing business object features.
+ */
 export class TestItem extends BusinessObject {
+  /** Id - Primary key */
   id!: number;
 
+  /** Name - Item name */
   @property({ required: true })
   name?: string;
 
+  /** Email - Contact email */
   email?: Email;
 
-  @relationship({ type: "References" })
+  /** Test Setting - Referenced test setting */
+  @relationship({ type: 'References' })
   testSetting?: TestSetting;
 
+  /** Test Setting Id - Foreign key to test setting */
   testSettingId?: Uuid;
 
-  @relationship({ type: "Has One" })
+  /** Test Item Detail - Associated detail record */
+  @relationship({ type: 'Has One' })
   testItemDetail?: TestItemDetail;
 }
-
-applyTestPostgresDataSource(TestItem);

@@ -1,8 +1,13 @@
-import { BaseType, applyValidation } from "@apexdesigner/dsl";
+import { BaseType, applyValidation } from '@apexdesigner/dsl';
 
+/**
+ * Phone
+ *
+ * Phone number string.
+ */
 export class Phone extends BaseType<string> {}
 
 applyValidation(Phone, {
-  pattern: "^\\+?[1-9]\\d{1,14}$",
-  patternMessage: "Must be a valid phone number (E.164 format)",
+  pattern: '^\\+?[1-9]\\d{1,14}$',
+  patternMessage: 'Must be a valid phone number (E.164 format)'
 });

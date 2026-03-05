@@ -5,7 +5,7 @@ import { kebabCase, pascalCase, camelCase } from 'change-case';
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
 
-const Debug = createDebug('ad3:generators:businessObjectSchema');
+const Debug = createDebug('BaseLibrary:generators:businessObjectSchema');
 
 function toObjectLiteral(obj: Record<string, unknown>): string {
   const entries = Object.entries(obj).map(([k, v]) => {
@@ -492,7 +492,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     lines.push('  .object({');
     lines.push(schemaProps.join(',\n\n'));
     lines.push('  })');
-    lines.push(`  .describe("${entityDescription.replace(/"/g, '\\"')}")`);
+    lines.push(`  .describe("${entityDescription.replace(/"/g, '\\"').replace(/\n/g, ' ')}")`);
     if (viewSql) {
       const escapedSql = viewSql.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
       lines.push(`  .view({ sql: \`${escapedSql}\` })`);

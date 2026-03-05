@@ -115,7 +115,7 @@ describe('businessObjectTestGenerator', () => {
     expect(result).toContain('const debug = createDebug(');
   });
 
-  it('should resolve @project imports to ../app.js', async () => {
+  it('should resolve @app imports to ../app.js', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'ProcessDesign', {
       sourceCode: `
@@ -129,7 +129,7 @@ describe('businessObjectTestGenerator', () => {
       sourceCode: `
         import { addBehavior, addTest } from '@apexdesigner/dsl';
         import { ProcessDesign } from '@business-objects';
-        import { App } from '@project';
+        import { App } from '@app';
         import { expect } from 'vitest';
         addBehavior(
           ProcessDesign,

@@ -1,22 +1,29 @@
-import { Page, page, property, applyTemplate } from "@apexdesigner/dsl/page";
-import { TestSettingFormGroup } from "@business-objects-client";
-import { TestSettingsPage } from "@pages";
+import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { TestSettingFormGroup } from '@business-objects-client';
+import { TestSettingsPage } from '@pages';
 
+/**
+ * Test Setting
+ *
+ * Test setting detail page.
+ */
 @page({
-  path: "/test-settings/:testSetting.id",
-  parentPage: TestSettingsPage,
+  path: '/test-settings/:testSetting.id',
+  parentPage: TestSettingsPage
 })
 export class TestSettingPage extends Page {
-
+  /** Test Setting - Current test setting record */
   @property({
-    read: "Automatically",
-    save: "Automatically",
-    include: { testItems: {} },
+    read: 'Automatically',
+    save: 'Automatically',
+    include: { testItems: {} }
   })
   testSetting!: TestSettingFormGroup;
 }
 
-applyTemplate(TestSettingPage, `
+applyTemplate(
+  TestSettingPage,
+  `
   <if condition="!testSetting.reading">
     <flex-column>
       <h1>{{testSetting.value.name}}</h1>
@@ -33,4 +40,5 @@ applyTemplate(TestSettingPage, `
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     </else>
   </if>
-`);
+`
+);
