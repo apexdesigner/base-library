@@ -9,8 +9,7 @@ import { AddButtonComponent } from '@components';
  */
 @page({
   path: '/test-items',
-  sidenavIcon: 'list',
-  isDefault: true
+  sidenavIcon: 'list'
 })
 export class TestItemsPage extends Page {
   /** Test Items - Array of test item records */

@@ -12,11 +12,8 @@ applyTemplate(
   `
   <flex-column>
     <mat-toolbar color="primary">
-      <flex-row [gap]="16" grow>
-        <span>PROJECT_METADATA.displayName</span>
-        <a routerLink="/test-categories">Categories</a>
-        <a routerLink="/test-items">Items</a>
-        <a routerLink="/test-settings">Settings</a>
+      <flex-row [gap]="16" [alignCenter]="true" grow>
+        <a routerLink="/" style="color: inherit; text-decoration: none">PROJECT_METADATA.displayName</a>
         <span grow></span>
         <avatar></avatar>
       </flex-row>

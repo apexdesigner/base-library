@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.108] - 2026-03-05
+
+- 6222de8 feat: add home page, make toolbar title a link to /
+
+
 ## [1.0.107] - 2026-03-05
 
 - 4a4c7f6 fix: replace local tarball reference with npm registry for @apexdesigner/generator
