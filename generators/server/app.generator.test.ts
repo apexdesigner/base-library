@@ -123,7 +123,7 @@ describe('appGenerator', () => {
         sourceCode: `
           import { addAppBehavior } from '@apexdesigner/dsl';
           addAppBehavior(
-            { lifecycleStage: 'After Start' },
+            { type: 'Lifecycle Behavior', stage: 'Running' },
             async function afterStart() {
               console.log('started');
             }
@@ -265,12 +265,12 @@ describe('appGenerator', () => {
       expect(result).toContain('import { ProcessDesign } from "./business-objects/process-design.js"');
     });
 
-    it('should skip @project imports (self-reference)', async () => {
+    it('should skip @app imports (self-reference)', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('AppBehavior', 'PreprocessJson', {
         sourceCode: `
           import { addAppBehavior } from '@apexdesigner/dsl';
-          import { App } from '@project';
+          import { App } from '@app';
           addAppBehavior(
             { type: 'Class Behavior' },
             async function preprocessJson(value: unknown): Promise<unknown> {

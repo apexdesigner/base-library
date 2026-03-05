@@ -153,7 +153,7 @@ describe('businessObjectGenerator', () => {
   });
 
   describe('behavior imports', () => {
-    it('should import App when a behavior uses @project', async () => {
+    it('should import App when a behavior uses @app', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -167,7 +167,7 @@ describe('businessObjectGenerator', () => {
         sourceCode: `
           import { addBehavior } from '@apexdesigner/dsl';
           import { ProcessDesign } from '@business-objects';
-          import { App } from '@project';
+          import { App } from '@app';
           addBehavior(
             ProcessDesign,
             { type: 'Class', httpMethod: 'Post' },

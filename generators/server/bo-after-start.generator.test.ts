@@ -118,13 +118,13 @@ describe('boAfterStartGenerator', () => {
       expect(result).toContain('import fs from "node:fs"');
     });
 
-    it('should map @project to ../app.js', async () => {
+    it('should map @app to ../app.js', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('Behavior', 'TestItemStartup', {
         sourceCode: `
           import { addBehavior } from '@apexdesigner/dsl';
           import { TestItem } from '@business-objects';
-          import { App } from '@project';
+          import { App } from '@app';
           addBehavior(
             TestItem,
             { type: 'After Start' },

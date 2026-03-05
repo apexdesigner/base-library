@@ -18,6 +18,7 @@ describe('businessObjectSchemaGenerator', () => {
           import { DataSource } from '@apexdesigner/dsl';
           export class Postgres extends DataSource {
             configuration = { persistenceType: 'Postgres' };
+            isDefault = true;
           }
         `
       });
@@ -334,6 +335,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Postgres extends DataSource {
             configuration = { persistenceType: 'Postgres' };
             defaultIdType = Uuid;
+            isDefault = true;
           }
         `
       });
@@ -347,10 +349,7 @@ describe('businessObjectSchemaGenerator', () => {
       workspace.addMetadata('BusinessObject', 'ProcessInstance', {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
-          import { Uuid } from '@base-types';
-          export class ProcessInstance extends BusinessObject {
-            id!: Uuid;
-          }
+          export class ProcessInstance extends BusinessObject {}
         `
       });
 
@@ -364,14 +363,7 @@ describe('businessObjectSchemaGenerator', () => {
     });
 
     it('should use z.string() with column defaults for FK when id type is a base type', async () => {
-      const workspace = createSimpleMockWorkspace({
-        projectSourceCode: `
-          import { Project } from '@apexdesigner/dsl';
-          export class MyProject extends Project {
-            defaultDataSource = Postgres;
-          }
-        `
-      });
+      const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
           import { DataSource } from '@apexdesigner/dsl';
@@ -379,6 +371,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Postgres extends DataSource {
             configuration = { persistenceType: 'Postgres' };
             defaultIdType = Uuid;
+            isDefault = true;
           }
         `
       });
@@ -392,22 +385,16 @@ describe('businessObjectSchemaGenerator', () => {
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
-          import { Uuid } from '@base-types';
-          export class ProcessDesign extends BusinessObject {
-            id!: Uuid;
-          }
+          export class ProcessDesign extends BusinessObject {}
         `
       });
       workspace.addMetadata('BusinessObject', 'ProcessInstance', {
         sourceCode: `
           import { BusinessObject, relationship } from '@apexdesigner/dsl';
-          import { Uuid } from '@base-types';
           import { ProcessDesign } from '@business-objects';
           export class ProcessInstance extends BusinessObject {
-            id!: Uuid;
             @relationship({ type: 'Belongs To' })
             processDesign!: ProcessDesign;
-            processDesignId!: Uuid;
           }
         `
       });
