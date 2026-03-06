@@ -7,6 +7,10 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:businessObject');
 
+// Modules to skip when collecting imports from behavior design files
+// Note: @business-objects and @app are handled explicitly in the import loop
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', '@roles', '@mixins', 'vitest', 'debug']);
+
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
   'Before Create',
@@ -17,7 +21,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 /**
@@ -140,7 +144,7 @@ function emitLifecycleInline(
   lines: string[],
   contextVars: Record<string, string>,
   mixinNames: string[],
-  mixinOptionsMap: Map<string, string>,
+  mixinOptionsMap: Map<string, string>
 ): void {
   if (entries.length === 0) return;
   for (const entry of entries) {
@@ -169,7 +173,7 @@ const businessObjectGenerator: DesignGenerator = {
       condition: (metadata, conditionContext) => {
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
-      },
+      }
     },
     {
       metadataType: 'Behavior',
@@ -177,14 +181,13 @@ const businessObjectGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
+      }
     },
     {
-      metadataType: 'TestFixture',
-    },
+      metadataType: 'TestFixture'
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -198,8 +201,7 @@ const businessObjectGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;
@@ -247,6 +249,8 @@ const businessObjectGenerator: DesignGenerator = {
     // Collect imports from matched behavior design files
     const behaviorBoImports = new Set<string>();
     let needsAppImport = false;
+    const defaultImports = new Map<string, string>(); // module → default import name
+    const externalNamedImports = new Map<string, Set<string>>(); // module → set of named imports
 
     for (const behavior of allBehaviors) {
       try {
@@ -258,6 +262,8 @@ const businessObjectGenerator: DesignGenerator = {
         for (const importDecl of behavior.sourceFile.getImportDeclarations()) {
           const moduleSpecifier = importDecl.getModuleSpecifierValue();
 
+          if (SKIP_MODULES.has(moduleSpecifier)) continue;
+
           if (moduleSpecifier === '@business-objects') {
             for (const namedImport of importDecl.getNamedImports()) {
               const name = namedImport.getName();
@@ -265,8 +271,32 @@ const businessObjectGenerator: DesignGenerator = {
                 behaviorBoImports.add(name);
               }
             }
-          } else if (moduleSpecifier === '@app') {
+            continue;
+          }
+
+          if (moduleSpecifier === '@app') {
             needsAppImport = true;
+            continue;
+          }
+
+          // Map design-time aliases to generated paths
+          let mappedModule = moduleSpecifier;
+          if (moduleSpecifier.startsWith('@server-node-modules/')) {
+            mappedModule = moduleSpecifier.replace('@server-node-modules/', '');
+          } else if (moduleSpecifier.startsWith('@server/')) {
+            mappedModule = moduleSpecifier.replace('@server/', '../') + '.js';
+          }
+
+          // Handle default import
+          const defaultImport = importDecl.getDefaultImport();
+          if (defaultImport) {
+            defaultImports.set(mappedModule, defaultImport.getText());
+          }
+
+          // Handle named imports
+          for (const named of importDecl.getNamedImports()) {
+            if (!externalNamedImports.has(mappedModule)) externalNamedImports.set(mappedModule, new Set());
+            externalNamedImports.get(mappedModule)!.add(named.getName());
           }
         }
       } catch (err) {
@@ -275,7 +305,11 @@ const businessObjectGenerator: DesignGenerator = {
     }
     // Collect imports and bodies from matched test fixture design files
     const allFixtures = context.listMetadata('TestFixture');
-    interface FixtureEntry { name: string; body: string; isAsync: boolean }
+    interface FixtureEntry {
+      name: string;
+      body: string;
+      isAsync: boolean;
+    }
     const fixtureEntries: FixtureEntry[] = [];
 
     for (const fixture of allFixtures) {
@@ -345,9 +379,7 @@ const businessObjectGenerator: DesignGenerator = {
         if (!mixinMeta) continue;
 
         const configName = `${entry.parentName}Config`;
-        const hasConfig = mixinMeta.sourceFile.getInterfaces().some(
-          i => i.getName() === configName && i.isExported()
-        );
+        const hasConfig = mixinMeta.sourceFile.getInterfaces().some(i => i.getName() === configName && i.isExported());
         if (!hasConfig) continue;
 
         const optionsText = getMixinApplyOptions(metadata.sourceFile, mixinMeta.name);
@@ -405,6 +437,17 @@ const businessObjectGenerator: DesignGenerator = {
     }
     for (const boName of Array.from(behaviorBoImports).sort()) {
       lines.push(`import { ${boName} } from "./${kebabCase(boName)}.js";`);
+    }
+
+    // Default imports from external packages (e.g., import fs from "node:fs")
+    for (const [module, name] of Array.from(defaultImports.entries()).sort((a, b) => a[0].localeCompare(b[0]))) {
+      lines.push(`import ${name} from "${module}";`);
+    }
+
+    // Named imports from external packages (e.g., import { match } from "path-to-regexp")
+    for (const [module, names] of Array.from(externalNamedImports.entries()).sort((a, b) => a[0].localeCompare(b[0]))) {
+      const sortedNames = Array.from(names).sort();
+      lines.push(`import { ${sortedNames.join(', ')} } from "${module}";`);
     }
 
     lines.push('');
@@ -495,196 +538,196 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('  }');
 
     if (!isView) {
-    // findOrCreate
-    lines.push('');
-    lines.push(`  static async findOrCreate(options: {`);
-    lines.push(`    where: WhereClause<${dataTypeName}>;`);
-    lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
-    lines.push(`  }): Promise<{ entity: ${className}; created: boolean }> {`);
-    lines.push('    const debug = Debug.extend("findOrCreate");');
-    lines.push('    debug("options.where %j", options.where);');
-    lines.push('');
-    lines.push(`    const result = await this.dataSource.findOrCreate(`);
-    lines.push(`      this.entityName,`);
-    lines.push(`      options,`);
-    lines.push(`    );`);
-    lines.push('    debug("result.created %j", result.created);');
-    lines.push('');
-    lines.push(`    return { entity: new ${className}(result.entity), created: result.created };`);
-    lines.push('  }');
+      // findOrCreate
+      lines.push('');
+      lines.push(`  static async findOrCreate(options: {`);
+      lines.push(`    where: WhereClause<${dataTypeName}>;`);
+      lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
+      lines.push(`  }): Promise<{ entity: ${className}; created: boolean }> {`);
+      lines.push('    const debug = Debug.extend("findOrCreate");');
+      lines.push('    debug("options.where %j", options.where);');
+      lines.push('');
+      lines.push(`    const result = await this.dataSource.findOrCreate(`);
+      lines.push(`      this.entityName,`);
+      lines.push(`      options,`);
+      lines.push(`    );`);
+      lines.push('    debug("result.created %j", result.created);');
+      lines.push('');
+      lines.push(`    return { entity: new ${className}(result.entity), created: result.created };`);
+      lines.push('  }');
 
-    // create
-    lines.push('');
-    lines.push(`  static async create(data: Omit<${dataTypeName}, "${idName}">): Promise<${className}> {`);
-    lines.push('    const debug = Debug.extend("create");');
-    lines.push('    debug("data %j", data);');
-    lines.push('');
-    // Inline Before Create lifecycle behaviors
-    if (beforeCreateBodies.length > 0) {
-      lines.push(`    const Model = this;`);
-      lines.push(`    const dataItems = [data];`);
-      for (const body of beforeCreateBodies) {
-        for (const line of body.split('\n')) {
-          lines.push(`  ${line}`);
+      // create
+      lines.push('');
+      lines.push(`  static async create(data: Omit<${dataTypeName}, "${idName}">): Promise<${className}> {`);
+      lines.push('    const debug = Debug.extend("create");');
+      lines.push('    debug("data %j", data);');
+      lines.push('');
+      // Inline Before Create lifecycle behaviors
+      if (beforeCreateBodies.length > 0) {
+        lines.push(`    const Model = this;`);
+        lines.push(`    const dataItems = [data];`);
+        for (const body of beforeCreateBodies) {
+          for (const line of body.split('\n')) {
+            lines.push(`  ${line}`);
+          }
         }
       }
-    }
-    lines.push(`    const created = await this.dataSource.create(this.entityName, data);`);
-    lines.push('    debug("created %j", created);');
-    lines.push('');
-    // Inline After Create lifecycle behaviors
-    emitLifecycleInline(afterCreateEntries, lines, { instances: '[created]' }, mixinNames, mixinOptionsMap);
-    lines.push(`    return new ${className}(created);`);
-    lines.push('  }');
+      lines.push(`    const created = await this.dataSource.create(this.entityName, data);`);
+      lines.push('    debug("created %j", created);');
+      lines.push('');
+      // Inline After Create lifecycle behaviors
+      emitLifecycleInline(afterCreateEntries, lines, { instances: '[created]' }, mixinNames, mixinOptionsMap);
+      lines.push(`    return new ${className}(created);`);
+      lines.push('  }');
 
-    // createMany
-    lines.push('');
-    lines.push(`  static async createMany(`);
-    lines.push(`    data: Omit<${dataTypeName}, "${idName}">[],`);
-    lines.push(`  ): Promise<${className}[]> {`);
-    lines.push('    const debug = Debug.extend("createMany");');
-    lines.push('    debug("data.length %j", data.length);');
-    lines.push('');
-    // Inline Before Create lifecycle behaviors (data is already an array)
-    if (beforeCreateBodies.length > 0) {
-      lines.push(`    const Model = this;`);
-      lines.push(`    const dataItems = data;`);
-      for (const body of beforeCreateBodies) {
-        for (const line of body.split('\n')) {
-          lines.push(`  ${line}`);
+      // createMany
+      lines.push('');
+      lines.push(`  static async createMany(`);
+      lines.push(`    data: Omit<${dataTypeName}, "${idName}">[],`);
+      lines.push(`  ): Promise<${className}[]> {`);
+      lines.push('    const debug = Debug.extend("createMany");');
+      lines.push('    debug("data.length %j", data.length);');
+      lines.push('');
+      // Inline Before Create lifecycle behaviors (data is already an array)
+      if (beforeCreateBodies.length > 0) {
+        lines.push(`    const Model = this;`);
+        lines.push(`    const dataItems = data;`);
+        for (const body of beforeCreateBodies) {
+          for (const line of body.split('\n')) {
+            lines.push(`  ${line}`);
+          }
         }
       }
-    }
-    lines.push(`    const results = await this.dataSource.createMany(this.entityName, data);`);
-    lines.push('    debug("results.length %j", results.length);');
-    lines.push('');
-    // Inline After Create lifecycle behaviors
-    emitLifecycleInline(afterCreateEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
-    lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
-    lines.push('  }');
+      lines.push(`    const results = await this.dataSource.createMany(this.entityName, data);`);
+      lines.push('    debug("results.length %j", results.length);');
+      lines.push('');
+      // Inline After Create lifecycle behaviors
+      emitLifecycleInline(afterCreateEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
+      lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
+      lines.push('  }');
 
-    // update
-    lines.push('');
-    lines.push(`  static async update(`);
-    lines.push(`    filter: UpdateFilter<${dataTypeName}>,`);
-    lines.push(`    data: Partial<${dataTypeName}>,`);
-    lines.push(`  ): Promise<${className}[]> {`);
-    lines.push('    const debug = Debug.extend("update");');
-    lines.push('    debug("filter %j", filter);');
-    lines.push('    debug("data %j", data);');
-    lines.push('');
-    // Inline Before Update lifecycle behaviors
-    if (beforeUpdateBodies.length > 0) {
-      lines.push(`    const Model = this;`);
-      lines.push(`    const where = filter.where;`);
-      lines.push(`    const updates = data;`);
-      for (const body of beforeUpdateBodies) {
-        for (const line of body.split('\n')) {
-          lines.push(`  ${line}`);
+      // update
+      lines.push('');
+      lines.push(`  static async update(`);
+      lines.push(`    filter: UpdateFilter<${dataTypeName}>,`);
+      lines.push(`    data: Partial<${dataTypeName}>,`);
+      lines.push(`  ): Promise<${className}[]> {`);
+      lines.push('    const debug = Debug.extend("update");');
+      lines.push('    debug("filter %j", filter);');
+      lines.push('    debug("data %j", data);');
+      lines.push('');
+      // Inline Before Update lifecycle behaviors
+      if (beforeUpdateBodies.length > 0) {
+        lines.push(`    const Model = this;`);
+        lines.push(`    const where = filter.where;`);
+        lines.push(`    const updates = data;`);
+        for (const body of beforeUpdateBodies) {
+          for (const line of body.split('\n')) {
+            lines.push(`  ${line}`);
+          }
         }
       }
-    }
-    lines.push(`    const results = await this.dataSource.update(`);
-    lines.push(`      this.entityName,`);
-    lines.push(`      filter,`);
-    lines.push(`      data,`);
-    lines.push(`    );`);
-    lines.push('    debug("results.length %j", results.length);');
-    lines.push('');
-    // Inline After Update lifecycle behaviors
-    emitLifecycleInline(afterUpdateEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
-    lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
-    lines.push('  }');
+      lines.push(`    const results = await this.dataSource.update(`);
+      lines.push(`      this.entityName,`);
+      lines.push(`      filter,`);
+      lines.push(`      data,`);
+      lines.push(`    );`);
+      lines.push('    debug("results.length %j", results.length);');
+      lines.push('');
+      // Inline After Update lifecycle behaviors
+      emitLifecycleInline(afterUpdateEntries, lines, { instances: 'results' }, mixinNames, mixinOptionsMap);
+      lines.push(`    return results.map((item: ${dataTypeName}) => new ${className}(item));`);
+      lines.push('  }');
 
-    // updateById
-    lines.push('');
-    lines.push(`  static async updateById(`);
-    lines.push(`    id: ${idType},`);
-    lines.push(`    data: Partial<${dataTypeName}>,`);
-    lines.push(`  ): Promise<${className}> {`);
-    lines.push('    const debug = Debug.extend("updateById");');
-    lines.push('    debug("id %j", id);');
-    lines.push('    debug("data %j", data);');
-    lines.push('');
-    // Inline Before Update lifecycle behaviors
-    if (beforeUpdateBodies.length > 0) {
-      lines.push(`    const Model = this;`);
-      lines.push(`    const where = { id };`);
-      lines.push(`    const updates = data;`);
-      for (const body of beforeUpdateBodies) {
-        for (const line of body.split('\n')) {
-          lines.push(`  ${line}`);
+      // updateById
+      lines.push('');
+      lines.push(`  static async updateById(`);
+      lines.push(`    id: ${idType},`);
+      lines.push(`    data: Partial<${dataTypeName}>,`);
+      lines.push(`  ): Promise<${className}> {`);
+      lines.push('    const debug = Debug.extend("updateById");');
+      lines.push('    debug("id %j", id);');
+      lines.push('    debug("data %j", data);');
+      lines.push('');
+      // Inline Before Update lifecycle behaviors
+      if (beforeUpdateBodies.length > 0) {
+        lines.push(`    const Model = this;`);
+        lines.push(`    const where = { id };`);
+        lines.push(`    const updates = data;`);
+        for (const body of beforeUpdateBodies) {
+          for (const line of body.split('\n')) {
+            lines.push(`  ${line}`);
+          }
         }
       }
-    }
-    lines.push(`    const updated = await this.dataSource.updateById(`);
-    lines.push(`      this.entityName,`);
-    lines.push(`      id,`);
-    lines.push(`      data,`);
-    lines.push(`    );`);
-    lines.push('    debug("updated %j", updated);');
-    lines.push('');
-    lines.push(`    if (!updated) throw new Error(\`${className} not found: \${id}\`);`);
-    // Inline After Update lifecycle behaviors
-    emitLifecycleInline(afterUpdateEntries, lines, { instances: '[updated]' }, mixinNames, mixinOptionsMap);
-    lines.push(`    return new ${className}(updated);`);
-    lines.push('  }');
+      lines.push(`    const updated = await this.dataSource.updateById(`);
+      lines.push(`      this.entityName,`);
+      lines.push(`      id,`);
+      lines.push(`      data,`);
+      lines.push(`    );`);
+      lines.push('    debug("updated %j", updated);');
+      lines.push('');
+      lines.push(`    if (!updated) throw new Error(\`${className} not found: \${id}\`);`);
+      // Inline After Update lifecycle behaviors
+      emitLifecycleInline(afterUpdateEntries, lines, { instances: '[updated]' }, mixinNames, mixinOptionsMap);
+      lines.push(`    return new ${className}(updated);`);
+      lines.push('  }');
 
-    // upsert
-    lines.push('');
-    lines.push(`  static async upsert(options: {`);
-    lines.push(`    where: WhereClause<${dataTypeName}>;`);
-    lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
-    lines.push(`    update: Partial<${dataTypeName}>;`);
-    lines.push(`  }): Promise<${className}> {`);
-    lines.push('    const debug = Debug.extend("upsert");');
-    lines.push('    debug("options.where %j", options.where);');
-    lines.push('');
-    lines.push(`    const result = await this.dataSource.upsert(this.entityName, options);`);
-    lines.push('    debug("result %j", result);');
-    lines.push('');
-    lines.push(`    return new ${className}(result);`);
-    lines.push('  }');
+      // upsert
+      lines.push('');
+      lines.push(`  static async upsert(options: {`);
+      lines.push(`    where: WhereClause<${dataTypeName}>;`);
+      lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
+      lines.push(`    update: Partial<${dataTypeName}>;`);
+      lines.push(`  }): Promise<${className}> {`);
+      lines.push('    const debug = Debug.extend("upsert");');
+      lines.push('    debug("options.where %j", options.where);');
+      lines.push('');
+      lines.push(`    const result = await this.dataSource.upsert(this.entityName, options);`);
+      lines.push('    debug("result %j", result);');
+      lines.push('');
+      lines.push(`    return new ${className}(result);`);
+      lines.push('  }');
 
-    // delete
-    lines.push('');
-    lines.push(`  static async delete(filter: DeleteFilter<${dataTypeName}>): Promise<number> {`);
-    lines.push('    const debug = Debug.extend("delete");');
-    lines.push('    debug("filter %j", filter);');
-    lines.push('');
-    // Inline Before Delete lifecycle behaviors
-    emitLifecycleInline(beforeDeleteEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
-    // Pre-fetch instances for After Delete (if needed)
-    if (afterDeleteEntries.length > 0) {
-      lines.push(`    const deletedInstances = await this.find({ where: filter.where });`);
-    }
-    lines.push(`    const result = await this.dataSource.delete(this.entityName, filter);`);
-    lines.push('    debug("result %j", result);');
-    lines.push('');
-    // Inline After Delete lifecycle behaviors
-    emitLifecycleInline(afterDeleteEntries, lines, { instances: 'deletedInstances' }, mixinNames, mixinOptionsMap);
-    lines.push('    return result;');
-    lines.push('  }');
+      // delete
+      lines.push('');
+      lines.push(`  static async delete(filter: DeleteFilter<${dataTypeName}>): Promise<number> {`);
+      lines.push('    const debug = Debug.extend("delete");');
+      lines.push('    debug("filter %j", filter);');
+      lines.push('');
+      // Inline Before Delete lifecycle behaviors
+      emitLifecycleInline(beforeDeleteEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
+      // Pre-fetch instances for After Delete (if needed)
+      if (afterDeleteEntries.length > 0) {
+        lines.push(`    const deletedInstances = await this.find({ where: filter.where });`);
+      }
+      lines.push(`    const result = await this.dataSource.delete(this.entityName, filter);`);
+      lines.push('    debug("result %j", result);');
+      lines.push('');
+      // Inline After Delete lifecycle behaviors
+      emitLifecycleInline(afterDeleteEntries, lines, { instances: 'deletedInstances' }, mixinNames, mixinOptionsMap);
+      lines.push('    return result;');
+      lines.push('  }');
 
-    // deleteById
-    lines.push('');
-    lines.push(`  static async deleteById(id: ${idType}): Promise<boolean> {`);
-    lines.push('    const debug = Debug.extend("deleteById");');
-    lines.push('    debug("id %j", id);');
-    lines.push('');
-    // Inline Before Delete lifecycle behaviors
-    emitLifecycleInline(beforeDeleteEntries, lines, { where: '{ id }' }, mixinNames, mixinOptionsMap);
-    // Pre-fetch instance for After Delete (if needed)
-    if (afterDeleteEntries.length > 0) {
-      lines.push(`    const deletedInstance = await this.findById(id);`);
-    }
-    lines.push(`    const result = await this.dataSource.deleteById(this.entityName, id);`);
-    lines.push('    debug("result %j", result);');
-    lines.push('');
-    // Inline After Delete lifecycle behaviors
-    emitLifecycleInline(afterDeleteEntries, lines, { instances: '[deletedInstance]' }, mixinNames, mixinOptionsMap);
-    lines.push('    return result;');
-    lines.push('  }');
+      // deleteById
+      lines.push('');
+      lines.push(`  static async deleteById(id: ${idType}): Promise<boolean> {`);
+      lines.push('    const debug = Debug.extend("deleteById");');
+      lines.push('    debug("id %j", id);');
+      lines.push('');
+      // Inline Before Delete lifecycle behaviors
+      emitLifecycleInline(beforeDeleteEntries, lines, { where: '{ id }' }, mixinNames, mixinOptionsMap);
+      // Pre-fetch instance for After Delete (if needed)
+      if (afterDeleteEntries.length > 0) {
+        lines.push(`    const deletedInstance = await this.findById(id);`);
+      }
+      lines.push(`    const result = await this.dataSource.deleteById(this.entityName, id);`);
+      lines.push('    debug("result %j", result);');
+      lines.push('');
+      // Inline After Delete lifecycle behaviors
+      emitLifecycleInline(afterDeleteEntries, lines, { instances: '[deletedInstance]' }, mixinNames, mixinOptionsMap);
+      lines.push('    return result;');
+      lines.push('  }');
     } // end if (!isView)
 
     // --- Instance and Class behaviors ---

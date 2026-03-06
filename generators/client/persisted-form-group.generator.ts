@@ -8,14 +8,11 @@ const persistedFormGroupGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Project',
-    },
+      metadataType: 'Project'
+    }
   ],
 
-  outputs: () => [
-    'client/src/app/business-objects/persisted-form-group.ts',
-    'design/@types/business-objects-client/persisted-form-group.d.ts',
-  ],
+  outputs: () => ['client/src/app/business-objects/persisted-form-group.ts', 'design/@types/business-objects-client/persisted-form-group.d.ts'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext): Promise<Map<string, string>> {
     const debug = Debug.extend('generate');
@@ -497,7 +494,7 @@ export declare class PersistedArray<T = any> extends Array<T> {
     outputs.set('design/@types/business-objects-client/persisted-form-group.d.ts', typeContent);
 
     return outputs;
-  },
+  }
 };
 
 export { persistedFormGroupGenerator };

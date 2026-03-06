@@ -16,17 +16,14 @@ const componentServiceGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Component',
+      metadataType: 'Component'
     },
     {
-      metadataType: 'Project',
-    },
+      metadataType: 'Project'
+    }
   ],
 
-  outputs: () => [
-    'client/src/app/services/component/component.service.ts',
-    'design/@types/services/component.d.ts',
-  ],
+  outputs: () => ['client/src/app/services/component/component.service.ts', 'design/@types/services/component.d.ts'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -36,7 +33,8 @@ const componentServiceGenerator: DesignGenerator = {
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Collect all components, sorted by name, excluding AppComponent
-    const components = context.listMetadata('Component')
+    const components = context
+      .listMetadata('Component')
       .filter(c => getBaseName(c.name) !== 'App')
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -48,7 +46,7 @@ const componentServiceGenerator: DesignGenerator = {
       return {
         name: baseName,
         className: `${baseName}Component`,
-        importPath: `../../components/${kebab}/${kebab}.component`,
+        importPath: `../../components/${kebab}/${kebab}.component`
       };
     });
 
@@ -104,7 +102,7 @@ const componentServiceGenerator: DesignGenerator = {
     outputs.set('design/@types/services/component.d.ts', typeContent);
 
     return outputs;
-  },
+  }
 };
 
 export { componentServiceGenerator };

@@ -16,15 +16,15 @@ const clientRoutesGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Page',
+      metadataType: 'Page'
     },
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'Guard';
-      },
-    },
+      }
+    }
   ],
 
   outputs: () => ['client/src/app/app.routes.ts'],
@@ -37,20 +37,23 @@ const clientRoutesGenerator: DesignGenerator = {
     debug('allPages.length %j', allPages.length);
 
     // Collect guard app behaviors, sorted by sequence
-    const guards = context.listMetadata('AppBehavior').filter(behavior => {
-      const options = getBehaviorOptions(behavior.sourceFile);
-      return options?.type === 'Guard';
-    }).sort((a, b) => {
-      const aSeq = (getBehaviorOptions(a.sourceFile)?.sequence as number) || 0;
-      const bSeq = (getBehaviorOptions(b.sourceFile)?.sequence as number) || 0;
-      return aSeq - bSeq;
-    });
+    const guards = context
+      .listMetadata('AppBehavior')
+      .filter(behavior => {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        return options?.type === 'Guard';
+      })
+      .sort((a, b) => {
+        const aSeq = (getBehaviorOptions(a.sourceFile)?.sequence as number) || 0;
+        const bSeq = (getBehaviorOptions(b.sourceFile)?.sequence as number) || 0;
+        return aSeq - bSeq;
+      });
     debug('guards %j', guards.length);
 
     // Separate guards by stage
     const activateGuards = guards.filter(g => {
       const options = getBehaviorOptions(g.sourceFile);
-      return (options?.stage as string || 'Activate') === 'Activate';
+      return ((options?.stage as string) || 'Activate') === 'Activate';
     });
     const deactivateGuards = guards.filter(g => {
       const options = getBehaviorOptions(g.sourceFile);
@@ -71,7 +74,10 @@ const clientRoutesGenerator: DesignGenerator = {
       })
       .filter((page): page is { name: string; path: string; roles: string[] | undefined; isDefault: boolean | undefined } => !!page?.path);
 
-    debug('pageInfos %j', pageInfos.map(p => ({ name: p.name, path: p.path, roles: p.roles })));
+    debug(
+      'pageInfos %j',
+      pageInfos.map(p => ({ name: p.name, path: p.path, roles: p.roles }))
+    );
 
     // Sort by path specificity (more segments first, alphabetical tiebreak)
     const sortedPages = [...pageInfos].sort((a, b) => {
@@ -87,15 +93,14 @@ const clientRoutesGenerator: DesignGenerator = {
     debug('defaultPagePath %j', defaultPagePath);
 
     // Strip leading slash and convert dotted params (:supplier.id → :supplierId)
-    const processPath = (path: string) => path.replace(/^\//, '').replace(/:(\w+)\.(\w+)/g, (_match, prop, field) => `:${prop}${field.charAt(0).toUpperCase()}${field.slice(1)}`);
+    const processPath = (path: string) =>
+      path.replace(/^\//, '').replace(/:(\w+)\.(\w+)/g, (_match, prop, field) => `:${prop}${field.charAt(0).toUpperCase()}${field.slice(1)}`);
 
     // Check if any page needs guards (pages without roles: ['Everyone'] require auth)
     const hasRoleProtectedPages = pageInfos.some(p => !p.roles?.includes('Everyone'));
 
     // Build imports
-    const importLines: string[] = [
-      `import { Routes } from '@angular/router';`,
-    ];
+    const importLines: string[] = [`import { Routes } from '@angular/router';`];
 
     // Import guard functions
     const guardImportNames: { activate: string[]; deactivate: string[] } = { activate: [], deactivate: [] };
@@ -138,7 +143,7 @@ const clientRoutesGenerator: DesignGenerator = {
       const routeProps: string[] = [
         `    path: '${path}'`,
         `    loadComponent: () => import('./pages/${dirName}/${dirName}.page').then(c => c.${className})`,
-        `    pathMatch: 'full'`,
+        `    pathMatch: 'full'`
       ];
 
       // Add canActivate guards — all pages except Everyone are protected
@@ -164,7 +169,7 @@ export const routes: Routes = [
 ${routes.join(',\n')}
 ];
 `;
-  },
+  }
 };
 
 export { clientRoutesGenerator };

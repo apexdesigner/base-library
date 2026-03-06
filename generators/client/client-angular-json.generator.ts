@@ -11,8 +11,8 @@ const clientAngularJsonGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata: DesignMetadata) => !isLibrary(metadata),
-    },
+      condition: (metadata: DesignMetadata) => !isLibrary(metadata)
+    }
   ],
 
   outputs: () => ['client/angular.json'],
@@ -60,14 +60,11 @@ const clientAngularJsonGenerator: DesignGenerator = {
                 tsConfig: 'tsconfig.app.json',
                 polyfills: ['zone.js'],
                 assets: ['src/assets'],
-                styles: [
-                  '@angular/material/prebuilt-themes/azure-blue.css',
-                  'src/styles.scss',
-                ],
+                styles: ['@angular/material/prebuilt-themes/azure-blue.css', 'src/styles.scss'],
                 scripts: [],
                 ...(commonJsPackages.length > 0 && {
-                  allowedCommonJsDependencies: commonJsPackages,
-                }),
+                  allowedCommonJsDependencies: commonJsPackages
+                })
               },
               configurations: {
                 production: {
@@ -78,7 +75,7 @@ const clientAngularJsonGenerator: DesignGenerator = {
                   aot: true,
                   extractLicenses: true,
                   vendorChunk: false,
-                  buildOptimizer: true,
+                  buildOptimizer: true
                 },
                 development: {
                   buildOptimizer: false,
@@ -86,22 +83,22 @@ const clientAngularJsonGenerator: DesignGenerator = {
                   vendorChunk: true,
                   extractLicenses: false,
                   sourceMap: true,
-                  namedChunks: true,
-                },
+                  namedChunks: true
+                }
               },
-              defaultConfiguration: 'development',
+              defaultConfiguration: 'development'
             },
             serve: {
               builder: '@angular-devkit/build-angular:dev-server',
               options: {
                 buildTarget: 'angular:build',
-                proxyConfig: 'proxy.conf.js',
+                proxyConfig: 'proxy.conf.js'
               },
               configurations: {
                 production: {
-                  buildTarget: 'angular:build:production',
-                },
-              },
+                  buildTarget: 'angular:build:production'
+                }
+              }
             },
             test: {
               builder: '@angular-devkit/build-angular:karma',
@@ -111,16 +108,16 @@ const clientAngularJsonGenerator: DesignGenerator = {
                 tsConfig: 'tsconfig.spec.json',
                 styles: ['src/styles.scss'],
                 scripts: [],
-                assets: ['src/assets'],
-              },
-            },
-          },
-        },
-      },
+                assets: ['src/assets']
+              }
+            }
+          }
+        }
+      }
     };
 
     return JSON.stringify(angularConfig, null, 2);
-  },
+  }
 };
 
 export { clientAngularJsonGenerator };

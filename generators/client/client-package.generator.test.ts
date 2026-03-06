@@ -11,7 +11,7 @@ describe('clientPackageGenerator', () => {
           packageName = 'test-project';
           version = '2.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -30,7 +30,7 @@ describe('clientPackageGenerator', () => {
         export class MyTestProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -52,7 +52,7 @@ describe('clientPackageGenerator', () => {
             'zone.js': '~0.15.0',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -76,7 +76,7 @@ describe('clientPackageGenerator', () => {
             typescript: { versionSelector: '~5.7.0', developmentOnly: true },
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -103,7 +103,7 @@ describe('clientPackageGenerator', () => {
             tslib: '^2.6.0',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -122,7 +122,7 @@ describe('clientPackageGenerator', () => {
         export class TestProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -142,7 +142,7 @@ describe('clientPackageGenerator', () => {
             papaparse: '~5.4.1',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -156,7 +156,7 @@ describe('clientPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -178,7 +178,7 @@ describe('clientPackageGenerator', () => {
             '@angular/core': '~19.2.0',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -191,7 +191,7 @@ describe('clientPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -208,7 +208,7 @@ describe('clientPackageGenerator', () => {
         export class MainProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -221,7 +221,7 @@ describe('clientPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -242,7 +242,7 @@ describe('clientPackageGenerator', () => {
             papaparse: '~5.4.1',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'LibraryProject', {
       sourceCode: `
@@ -257,7 +257,7 @@ describe('clientPackageGenerator', () => {
           ];
         }
       `,
-      libraryPackage: 'library',
+      libraryPackage: 'library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -280,7 +280,7 @@ describe('clientPackageGenerator', () => {
           displayName = 'Test Project';
           description = 'A test project';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -303,7 +303,7 @@ describe('clientPackageGenerator', () => {
             build: 'ng build',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -327,7 +327,7 @@ describe('clientPackageGenerator', () => {
             start: 'node dist/index.js',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -348,7 +348,7 @@ describe('clientPackageGenerator', () => {
             lint: 'eslint .',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -363,7 +363,7 @@ describe('clientPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -383,7 +383,7 @@ describe('clientPackageGenerator', () => {
         export class TestProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];

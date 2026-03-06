@@ -6,10 +6,7 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:clientProvider');
 
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  'vitest',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', 'vitest']);
 
 /**
  * Collect top-level statements that aren't imports or the addAppBehavior() call.
@@ -63,16 +60,14 @@ const clientProviderGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'Provider';
-      },
-    },
+      }
+    }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `client/src/app/providers/${kebabCase(metadata.name)}.ts`,
-  ],
+  outputs: (metadata: DesignMetadata) => [`client/src/app/providers/${kebabCase(metadata.name)}.ts`],
 
   async generate(metadata: DesignMetadata, _context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -95,9 +90,7 @@ const clientProviderGenerator: DesignGenerator = {
       if (SKIP_MODULES.has(moduleSpecifier)) continue;
 
       // Map @interface-definitions to relative path
-      const resolvedModule = moduleSpecifier === '@interface-definitions'
-        ? '../interface-definitions'
-        : moduleSpecifier;
+      const resolvedModule = moduleSpecifier === '@interface-definitions' ? '../interface-definitions' : moduleSpecifier;
 
       const defaultImport = importDecl.getDefaultImport();
       if (defaultImport) {
@@ -153,7 +146,7 @@ const clientProviderGenerator: DesignGenerator = {
     debug('generated provider file for %j', func.name);
 
     return content;
-  },
+  }
 };
 
 export { clientProviderGenerator };

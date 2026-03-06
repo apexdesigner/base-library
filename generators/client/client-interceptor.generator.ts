@@ -6,10 +6,7 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:clientInterceptor');
 
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  'vitest',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', 'vitest']);
 
 /**
  * Collect top-level statements that aren't imports or the addAppBehavior() call.
@@ -63,16 +60,14 @@ const clientInterceptorGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'Interceptor';
-      },
-    },
+      }
+    }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `client/src/app/interceptors/${kebabCase(metadata.name)}.interceptor.ts`,
-  ],
+  outputs: (metadata: DesignMetadata) => [`client/src/app/interceptors/${kebabCase(metadata.name)}.interceptor.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -172,8 +167,8 @@ const clientInterceptorGenerator: DesignGenerator = {
     // Build framework param string
     const reqParam = frameworkParams[0];
     const nextParam = frameworkParams[1];
-    const reqStr = reqParam?.type ? `${reqParam.name}: ${reqParam.type}` : reqParam?.name ?? 'req';
-    const nextStr = nextParam?.type ? `${nextParam.name}: ${nextParam.type}` : nextParam?.name ?? 'next';
+    const reqStr = reqParam?.type ? `${reqParam.name}: ${reqParam.type}` : (reqParam?.name ?? 'req');
+    const nextStr = nextParam?.type ? `${nextParam.name}: ${nextParam.type}` : (nextParam?.name ?? 'next');
 
     // Exported interceptor function
     lines.push(`export const ${func.name}: HttpInterceptorFn = (${reqStr}, ${nextStr}) => {`);
@@ -194,7 +189,7 @@ const clientInterceptorGenerator: DesignGenerator = {
     debug('generated interceptor file for %j', func.name);
 
     return content;
-  },
+  }
 };
 
 export { clientInterceptorGenerator };

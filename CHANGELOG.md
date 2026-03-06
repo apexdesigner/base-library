@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.110] - 2026-03-06
+
+- cb4b60f chore: add format script and apply prettier to generators and design
+- a7e3669 fix: carry Node.js and external package imports from BO behavior design files to generated server code
+
+
 ## [1.0.109] - 2026-03-05
 
 - de8c23a fix: generalize userId type to number | string in assign-default-administrators

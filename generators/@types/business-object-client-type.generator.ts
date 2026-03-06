@@ -1,6 +1,13 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent, getModuleLevelCall } from '@apexdesigner/utilities';
+import {
+  getClassByBase,
+  getDescription,
+  getBehaviorFunction,
+  getBehaviorOptions,
+  getBehaviorParent,
+  getModuleLevelCall
+} from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
@@ -16,7 +23,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 const businessObjectClientTypeGenerator: DesignGenerator = {
@@ -24,7 +31,7 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
       metadataType: 'Behavior',
@@ -32,11 +39,10 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -50,8 +56,7 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;
@@ -121,9 +126,7 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     }
 
     // Import filter types
-    const filterTypes = isView
-      ? ['FindFilter', 'FindOneFilter']
-      : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter'];
+    const filterTypes = isView ? ['FindFilter', 'FindOneFilter'] : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter'];
     lines.push(`import type { ${filterTypes.join(', ')} } from '@apexdesigner/schema-persistence';`);
     lines.push('');
 
@@ -202,7 +205,9 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     lines.push(`  static findById(id: ${idType}, filter?: Pick<FindFilter<${className}>, 'include' | 'fields' | 'omit'>): Promise<${className}>;`);
 
     if (!isView) {
-      lines.push(`  static findOrCreate(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}> }): Promise<{ entity: ${className}; created: boolean }>;`);
+      lines.push(
+        `  static findOrCreate(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}> }): Promise<{ entity: ${className}; created: boolean }>;`
+      );
     }
 
     lines.push(`  static count(filter?: Pick<FindFilter<${className}>, 'where'>): Promise<number>;`);
@@ -210,7 +215,9 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     if (!isView) {
       lines.push(`  static update(filter: UpdateFilter<${className}>, data: Partial<${className}>): Promise<${className}[]>;`);
       lines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
-      lines.push(`  static upsert(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }): Promise<${className}>;`);
+      lines.push(
+        `  static upsert(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }): Promise<${className}>;`
+      );
       lines.push(`  static delete(filter: DeleteFilter<${className}>): Promise<number>;`);
       lines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);
     }

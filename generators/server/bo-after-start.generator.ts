@@ -8,11 +8,7 @@ import createDebug from 'debug';
 const Debug = createDebug('BaseLibrary:generators:boAfterStart');
 
 // Modules to skip when mapping design imports
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  'vitest',
-  'debug',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', 'vitest', 'debug']);
 
 /**
  * Extract the function body text from an addBehavior() call.
@@ -47,20 +43,18 @@ const boAfterStartGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Behavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'After Start';
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
     const parent = getBehaviorParent(metadata.sourceFile);
     const func = getBehaviorFunction(metadata.sourceFile);
     if (!parent || !func) return [];
-    return [
-      `server/src/business-objects/${kebabCase(parent)}.${kebabCase(func.name)}.ts`
-    ];
+    return [`server/src/business-objects/${kebabCase(parent)}.${kebabCase(func.name)}.ts`];
   },
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
@@ -158,7 +152,7 @@ const boAfterStartGenerator: DesignGenerator = {
     debug('Generated lifecycle BO behavior file for %j', func.name);
 
     return content;
-  },
+  }
 };
 
 export { boAfterStartGenerator };

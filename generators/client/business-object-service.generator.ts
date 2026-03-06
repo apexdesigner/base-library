@@ -11,17 +11,14 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
-      metadataType: 'Project',
-    },
+      metadataType: 'Project'
+    }
   ],
 
-  outputs: () => [
-    'client/src/app/services/business-object/business-object.service.ts',
-    'design/@types/services/business-object.d.ts',
-  ],
+  outputs: () => ['client/src/app/services/business-object/business-object.service.ts', 'design/@types/services/business-object.d.ts'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -31,8 +28,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Collect all business objects, sorted by name
-    const businessObjects = context.listMetadata('BusinessObject')
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const businessObjects = context.listMetadata('BusinessObject').sort((a, b) => a.name.localeCompare(b.name));
 
     debug('found %d business objects', businessObjects.length);
 
@@ -40,7 +36,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
       const className = pascalCase(bo.name);
       return {
         name: className,
-        kebab: kebabCase(bo.name),
+        kebab: kebabCase(bo.name)
       };
     });
 
@@ -132,7 +128,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
     outputs.set('design/@types/services/business-object.d.ts', typeContent);
 
     return outputs;
-  },
+  }
 };
 
 export { businessObjectServiceGenerator };

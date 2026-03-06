@@ -12,24 +12,21 @@ const serverGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
+      condition: metadata => !isLibrary(metadata)
     },
     {
-      metadataType: 'AppBehavior',
+      metadataType: 'AppBehavior'
     },
     {
       metadataType: 'Behavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'After Start';
-      },
-    },
+      }
+    }
   ],
 
-  outputs: () => [
-    'server/src/env.ts',
-    'server/src/index.ts',
-  ],
+  outputs: () => ['server/src/env.ts', 'server/src/index.ts'],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -46,7 +43,11 @@ const serverGenerator: DesignGenerator = {
     // Collect lifecycle and middleware app behaviors
     const appBehaviors = context.listMetadata('AppBehavior');
 
-    interface LifecycleBehavior { name: string; kebab: string; sequence: number }
+    interface LifecycleBehavior {
+      name: string;
+      kebab: string;
+      sequence: number;
+    }
     const startupBehaviors: LifecycleBehavior[] = [];
     const middlewareBehaviors: LifecycleBehavior[] = [];
     const runningBehaviors: LifecycleBehavior[] = [];
@@ -62,7 +63,7 @@ const serverGenerator: DesignGenerator = {
       const entry: LifecycleBehavior = {
         name: func.name,
         kebab: kebabCase(behavior.name),
-        sequence: (options.sequence as number) ?? 500,
+        sequence: (options.sequence as number) ?? 500
       };
 
       if (options.type === 'Lifecycle Behavior') {
@@ -80,10 +81,22 @@ const serverGenerator: DesignGenerator = {
     runningBehaviors.sort((a, b) => a.sequence - b.sequence);
     shutdownBehaviors.sort((a, b) => a.sequence - b.sequence);
 
-    debug('startupBehaviors %j', startupBehaviors.map(b => b.name));
-    debug('middlewareBehaviors %j', middlewareBehaviors.map(b => b.name));
-    debug('runningBehaviors %j', runningBehaviors.map(b => b.name));
-    debug('shutdownBehaviors %j', shutdownBehaviors.map(b => b.name));
+    debug(
+      'startupBehaviors %j',
+      startupBehaviors.map(b => b.name)
+    );
+    debug(
+      'middlewareBehaviors %j',
+      middlewareBehaviors.map(b => b.name)
+    );
+    debug(
+      'runningBehaviors %j',
+      runningBehaviors.map(b => b.name)
+    );
+    debug(
+      'shutdownBehaviors %j',
+      shutdownBehaviors.map(b => b.name)
+    );
 
     // Find After Start lifecycle BO behaviors
     const allBehaviors = context.listMetadata('Behavior');
@@ -100,18 +113,13 @@ const serverGenerator: DesignGenerator = {
 
       afterStartBoBehaviors.push({
         name: func.name,
-        importPath: `./business-objects/${kebabCase(parent)}.${kebabCase(func.name)}.js`,
+        importPath: `./business-objects/${kebabCase(parent)}.${kebabCase(func.name)}.js`
       });
       debug('found After Start BO behavior: %j', func.name);
     }
 
     // All lifecycle/middleware behaviors for imports
-    const allAppBehaviors = [
-      ...startupBehaviors,
-      ...middlewareBehaviors,
-      ...runningBehaviors,
-      ...shutdownBehaviors,
-    ];
+    const allAppBehaviors = [...startupBehaviors, ...middlewareBehaviors, ...runningBehaviors, ...shutdownBehaviors];
 
     // --- env.ts ---
     const envLines: string[] = [];

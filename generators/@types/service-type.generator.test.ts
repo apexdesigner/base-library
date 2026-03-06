@@ -9,7 +9,7 @@ describe('serviceTypeGenerator', () => {
       sourceCode: `
         import { Service } from '@apexdesigner/dsl/service';
         export class AuthService extends Service {}
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Service')[0];
@@ -28,7 +28,7 @@ describe('serviceTypeGenerator', () => {
           count!: number;
           greet(name: string): void {}
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Service')[0];
@@ -45,7 +45,7 @@ describe('serviceTypeGenerator', () => {
       sourceCode: `
         import { Service } from '@apexdesigner/dsl/service';
         export class AuthService extends Service {}
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Service')[0];

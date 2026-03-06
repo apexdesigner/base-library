@@ -24,7 +24,7 @@ describe('appTestGenerator', () => {
           const result = await App.evaluateCondition(undefined, { data: {} });
           expect(result).toBe(true);
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -52,7 +52,7 @@ describe('appTestGenerator', () => {
         addTest("should load", async () => {
           expect(true).toBe(true);
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -76,7 +76,7 @@ describe('appTestGenerator', () => {
           const d = await ProcessDesign.testFixtures.simple();
           expect(d).toBeDefined();
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('AppBehavior')[0];

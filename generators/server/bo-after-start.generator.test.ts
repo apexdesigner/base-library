@@ -15,7 +15,7 @@ describe('boAfterStartGenerator', () => {
             { type: 'After Start' },
             async function startup() {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];
@@ -38,7 +38,7 @@ describe('boAfterStartGenerator', () => {
               console.log('Found', items.length, 'items');
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];
@@ -48,7 +48,7 @@ describe('boAfterStartGenerator', () => {
       expect(result).toContain('const Debug = createDebug(');
       expect(result).toContain('export async function startup()');
       expect(result).toContain('const debug = Debug.extend("startup")');
-      expect(result).toContain("const items = await TestItem.find()");
+      expect(result).toContain('const items = await TestItem.find()');
     });
 
     it('should skip non-After Start behaviors', async () => {
@@ -62,7 +62,7 @@ describe('boAfterStartGenerator', () => {
             { type: 'Class', httpMethod: 'Post' },
             async function process() { return 'done'; }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];
@@ -86,7 +86,7 @@ describe('boAfterStartGenerator', () => {
               await TestItem.find();
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];
@@ -109,7 +109,7 @@ describe('boAfterStartGenerator', () => {
               fs.existsSync('.');
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];
@@ -132,7 +132,7 @@ describe('boAfterStartGenerator', () => {
               await App.someMethod();
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];
@@ -153,7 +153,7 @@ describe('boAfterStartGenerator', () => {
             { type: 'After Start' },
             async function startup() {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Behavior')[0];

@@ -47,7 +47,6 @@ describe('buildReadArgs', () => {
     expect(result).not.toContain('limit:');
     expect(result).not.toContain('offset:');
   });
-
 });
 
 describe('addBoImports', () => {
@@ -70,7 +69,10 @@ describe('addBoImports', () => {
     const imports = file.getImportDeclarations();
     expect(imports.length).toBe(1);
     expect(imports[0].getModuleSpecifierValue()).toBe('../../business-objects/persisted-form-group');
-    const names = imports[0].getNamedImports().map(n => n.getName()).sort();
+    const names = imports[0]
+      .getNamedImports()
+      .map(n => n.getName())
+      .sort();
     expect(names).toEqual(['PersistedArray', 'PersistedFormArray', 'PersistedFormGroup']);
   });
 
@@ -91,7 +93,10 @@ describe('addBoImports', () => {
     const imports = file.getImportDeclarations();
     expect(imports.length).toBe(1);
     expect(imports[0].getModuleSpecifierValue()).toBe('../../business-objects/test-category-form-group');
-    const names = imports[0].getNamedImports().map(n => n.getName()).sort();
+    const names = imports[0]
+      .getNamedImports()
+      .map(n => n.getName())
+      .sort();
     expect(names).toEqual(['TestCategoryFormGroup', 'TestCategoryPersistedArray']);
   });
 });

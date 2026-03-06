@@ -10,13 +10,11 @@ const serviceTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Service',
+      metadataType: 'Service'
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `design/@types/services/${kebabCase(metadata.name)}.d.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`design/@types/services/${kebabCase(metadata.name)}.d.ts`],
 
   async generate(metadata: DesignMetadata, _context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -48,11 +46,14 @@ const serviceTypeGenerator: DesignGenerator = {
       for (const method of serviceClass.getMethods()) {
         const name = method.getName();
         const returnType = method.getReturnTypeNode()?.getText() || 'void';
-        const params = method.getParameters().map(p => {
-          const pName = p.getName();
-          const pType = p.getTypeNode()?.getText() || 'any';
-          return `${pName}: ${pType}`;
-        }).join(', ');
+        const params = method
+          .getParameters()
+          .map(p => {
+            const pName = p.getName();
+            const pType = p.getTypeNode()?.getText() || 'any';
+            return `${pName}: ${pType}`;
+          })
+          .join(', ');
         const isAsync = method.isAsync();
         members.push(`  ${isAsync ? 'async ' : ''}${name}(${params}): ${returnType};`);
       }

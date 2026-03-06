@@ -8,13 +8,7 @@ import createDebug from 'debug';
 const Debug = createDebug('BaseLibrary:generators:app');
 
 // Modules to skip when mapping design imports
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  '@app',
-  '@roles',
-  'vitest',
-  'debug',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', '@app', '@roles', 'vitest', 'debug']);
 
 /**
  * Extract the function name and body from an addAppTestFixture(fn) call.
@@ -80,23 +74,23 @@ const appGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Project',
+      metadataType: 'Project'
     },
     {
-      metadataType: 'AppBehavior',
+      metadataType: 'AppBehavior'
     },
     {
-      metadataType: 'DataSource',
+      metadataType: 'DataSource'
     },
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
-      metadataType: 'TestFixture',
+      metadataType: 'TestFixture'
     },
     {
-      metadataType: 'AppProperties',
-    },
+      metadataType: 'AppProperties'
+    }
   ],
 
   outputs: () => ['server/src/app.ts'],
@@ -109,25 +103,25 @@ const appGenerator: DesignGenerator = {
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Collect data sources and business objects
-    const dataSources = context.listMetadata('DataSource')
-      .sort((a, b) => a.name.localeCompare(b.name));
-    const businessObjects = context.listMetadata('BusinessObject')
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const dataSources = context.listMetadata('DataSource').sort((a, b) => a.name.localeCompare(b.name));
+    const businessObjects = context.listMetadata('BusinessObject').sort((a, b) => a.name.localeCompare(b.name));
     debug('dataSources count %j, businessObjects count %j', dataSources.length, businessObjects.length);
 
     // Collect app properties (server-side singleton state)
-    const appProperties = context.listMetadata('AppProperties')
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const appProperties = context.listMetadata('AppProperties').sort((a, b) => a.name.localeCompare(b.name));
     debug('appProperties count %j', appProperties.length);
 
     // Collect class app behaviors (exclude lifecycle, middleware, and client-only types)
     const EXCLUDE_TYPES = new Set(['Lifecycle Behavior', 'Middleware', 'Provider', 'Interceptor', 'Guard']);
-    const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
-      const options = getBehaviorOptions(behavior.sourceFile);
-      if (!options) return false;
-      if (EXCLUDE_TYPES.has(options.type as string)) return false;
-      return true;
-    }).sort((a, b) => a.name.localeCompare(b.name));
+    const classBehaviors = context
+      .listMetadata('AppBehavior')
+      .filter(behavior => {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) return false;
+        if (EXCLUDE_TYPES.has(options.type as string)) return false;
+        return true;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
     debug('classBehaviors count %j', classBehaviors.length);
 
     // Collect imports from all class behavior design files
@@ -150,9 +144,7 @@ const appGenerator: DesignGenerator = {
         }
 
         // Map @business-objects to relative paths (per-named-import)
-        const resolvedModule = mappedModule === '@business-objects'
-          ? null
-          : mappedModule;
+        const resolvedModule = mappedModule === '@business-objects' ? null : mappedModule;
 
         // Handle default import
         const defaultImport = importDecl.getDefaultImport();
@@ -178,7 +170,11 @@ const appGenerator: DesignGenerator = {
 
     // Collect app test fixtures
     const allFixtures = context.listMetadata('TestFixture');
-    interface FixtureEntry { name: string; body: string; isAsync: boolean }
+    interface FixtureEntry {
+      name: string;
+      body: string;
+      isAsync: boolean;
+    }
     const appFixtureEntries: FixtureEntry[] = [];
 
     for (const fixture of allFixtures) {
@@ -350,7 +346,7 @@ const appGenerator: DesignGenerator = {
     debug('Generated app file');
 
     return content;
-  },
+  }
 };
 
 export { appGenerator };

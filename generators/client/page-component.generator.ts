@@ -19,8 +19,8 @@ const pageComponentGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Page',
-    },
+      metadataType: 'Page'
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -29,7 +29,7 @@ const pageComponentGenerator: DesignGenerator = {
     return [
       `client/src/app/pages/${componentName}/${componentName}.page.ts`,
       `client/src/app/pages/${componentName}/${componentName}.page.html`,
-      `client/src/app/pages/${componentName}/${componentName}.page.scss`,
+      `client/src/app/pages/${componentName}/${componentName}.page.scss`
     ];
   },
 
@@ -62,7 +62,7 @@ const pageComponentGenerator: DesignGenerator = {
     const project = new Project({
       useInMemoryFileSystem: true,
       compilerOptions: { target: 99, module: 99 },
-      manipulationSettings: { quoteKind: QuoteKind.Single },
+      manipulationSettings: { quoteKind: QuoteKind.Single }
     });
     const writableFile = project.createSourceFile('temp.ts', sourceFile.getText());
 
@@ -91,9 +91,7 @@ const pageComponentGenerator: DesignGenerator = {
 
     // Capture @services imports before removal (for service injection)
     const serviceImports: { name: string; typeName: string }[] = [];
-    const servicesImportDecls = writableFile.getImportDeclarations().filter(
-      imp => imp.getModuleSpecifierValue() === '@services'
-    );
+    const servicesImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@services');
     for (const decl of servicesImportDecls) {
       for (const named of decl.getNamedImports()) {
         serviceImports.push({ name: named.getName(), typeName: named.getName() });
@@ -103,14 +101,14 @@ const pageComponentGenerator: DesignGenerator = {
 
     // Build set of service type names for identifying service-typed properties
     const serviceTypeNames = new Set(serviceImports.map(s => s.typeName));
-    for (const m of (context.listMetadata('Service') || [])) {
+    for (const m of context.listMetadata('Service') || []) {
       serviceTypeNames.add(m.name);
     }
 
     // Build set of injectable external type names (e.g. Router, HttpClient, MatDialog)
     // and map each to its module specifier (e.g. Router → @angular/router)
     const injectableExternalTypes = new Map<string, string>();
-    for (const et of (context.listMetadata('ExternalType') || [])) {
+    for (const et of context.listMetadata('ExternalType') || []) {
       const etClass = et.sourceFile.getClasses()[0];
       if (!etClass) continue;
       const opts = getClassDecorator(etClass, 'externalType');
@@ -152,16 +150,15 @@ const pageComponentGenerator: DesignGenerator = {
     }
 
     // Process @property decorators
-    const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap } =
-      processPropertyDecorators(exportedClass);
+    const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap } = processPropertyDecorators(exportedClass);
     debug('autoRead %j, formGroups %j, persistedArrays %j', autoReadProperties.length, formGroupProperties.length, persistedArrayProperties.length);
 
     // Extract route params from @page path before transforming properties
     // Supports :propName (simple) and :prop.field (dotted — e.g. :supplier.id)
     interface RouteParam {
-      paramName: string;       // Angular route param name (e.g. 'supplierId')
-      propertyName: string;    // page property (e.g. 'supplier' or 'supplierId')
-      field?: string;          // sub-field for dotted params (e.g. 'id')
+      paramName: string; // Angular route param name (e.g. 'supplierId')
+      propertyName: string; // page property (e.g. 'supplier' or 'supplierId')
+      field?: string; // sub-field for dotted params (e.g. 'id')
     }
     const routeParams: RouteParam[] = [];
     const pageDecorator = exportedClass.getDecorator('page');
@@ -317,7 +314,8 @@ const pageComponentGenerator: DesignGenerator = {
     const hasRouteParams = routeParams.length > 0;
     const hasAutoSaveFormGroups = formGroupProperties.some(fg => fg.saveMode === 'Automatically');
     const hasPersistedArrayAutoRead = persistedArrayProperties.some(pa => pa.readMode === 'Automatically');
-    const needsOnInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasRouteParams || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
+    const needsOnInit =
+      autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasRouteParams || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
     const needsInject = hasRouteParams || hasAutoSaveFormGroups || injectedServices.length > 0 || injectedExternalTypes.length > 0;
     const angularCoreImports = ['Component'];
     if (viewChildProps.length > 0 || viewChildExternalTypes.length > 0) {
@@ -340,13 +338,11 @@ const pageComponentGenerator: DesignGenerator = {
     }
     writableFile.insertImportDeclaration(0, {
       moduleSpecifier: '@angular/core',
-      namedImports: angularCoreImports,
+      namedImports: angularCoreImports
     });
 
     if (hasRouteParams) {
-      const existingRouterImport = writableFile.getImportDeclaration(
-        (imp) => imp.getModuleSpecifierValue() === '@angular/router'
-      );
+      const existingRouterImport = writableFile.getImportDeclaration(imp => imp.getModuleSpecifierValue() === '@angular/router');
       if (existingRouterImport) {
         const existingNames = existingRouterImport.getNamedImports().map(ni => ni.getName());
         if (!existingNames.includes('ActivatedRoute')) {
@@ -355,12 +351,12 @@ const pageComponentGenerator: DesignGenerator = {
       } else {
         writableFile.addImportDeclaration({
           moduleSpecifier: '@angular/router',
-          namedImports: ['ActivatedRoute'],
+          namedImports: ['ActivatedRoute']
         });
       }
       writableFile.addImportDeclaration({
         moduleSpecifier: 'rxjs',
-        namedImports: ['Subscription'],
+        namedImports: ['Subscription']
       });
     }
 
@@ -466,10 +462,7 @@ const pageComponentGenerator: DesignGenerator = {
         }
 
         const subscriptionBody = subscriptionLines.map(l => `      ${l}`).join('\n');
-        const initLines = [
-          '',
-          `private route = inject(ActivatedRoute);`,
-        ];
+        const initLines = ['', `private route = inject(ActivatedRoute);`];
         if (hasAutoSaveFormGroups) {
           initLines.push(`private destroyRef = inject(DestroyRef);`);
         }
@@ -537,7 +530,7 @@ const pageComponentGenerator: DesignGenerator = {
           elseInitLines.push('');
         }
         const initBody = coreInitLines.join('\n    ');
-        const asyncPrefix = (autoReadProperties.length > 0 || hasPersistedArrayAutoRead) ? 'async ' : '';
+        const asyncPrefix = autoReadProperties.length > 0 || hasPersistedArrayAutoRead ? 'async ' : '';
         elseInitLines.push(`${asyncPrefix}ngOnInit() {\n    ${initBody}\n  }`);
         exportedClass.insertMember(insertIndex, elseInitLines.join('\n  '));
       }
@@ -559,18 +552,16 @@ const pageComponentGenerator: DesignGenerator = {
 
     // Add template-based imports (file-level)
     for (const templateImport of templateImports) {
-      const existingImport = writableFile.getImportDeclaration(
-        (imp) => imp.getModuleSpecifierValue() === templateImport.moduleSpecifier
-      );
+      const existingImport = writableFile.getImportDeclaration(imp => imp.getModuleSpecifierValue() === templateImport.moduleSpecifier);
 
       if (!existingImport) {
         writableFile.addImportDeclaration({
           moduleSpecifier: templateImport.moduleSpecifier,
-          namedImports: templateImport.namedImports,
+          namedImports: templateImport.namedImports
         });
       } else {
         const existingNamedImports = existingImport.getNamedImports().map(ni => ni.getName());
-        templateImport.namedImports.forEach((importName) => {
+        templateImport.namedImports.forEach(importName => {
           if (!existingNamedImports.includes(importName)) {
             existingImport.addNamedImport(importName);
           }
@@ -580,13 +571,11 @@ const pageComponentGenerator: DesignGenerator = {
 
     // Add imports for ViewChild component types (after template imports to avoid duplicates)
     for (const vc of viewChildProps) {
-      const alreadyImported = writableFile.getImportDeclarations().some(imp =>
-        imp.getNamedImports().some(ni => ni.getName() === vc.typeName)
-      );
+      const alreadyImported = writableFile.getImportDeclarations().some(imp => imp.getNamedImports().some(ni => ni.getName() === vc.typeName));
       if (!alreadyImported) {
         writableFile.addImportDeclaration({
           moduleSpecifier: `../../components/${vc.componentFile}/${vc.componentFile}.component`,
-          namedImports: [vc.typeName],
+          namedImports: [vc.typeName]
         });
       }
     }
@@ -595,13 +584,13 @@ const pageComponentGenerator: DesignGenerator = {
     for (const svc of injectedServices) {
       writableFile.addImportDeclaration({
         moduleSpecifier: `../../services/${svc.serviceFile}/${svc.serviceFile}.service`,
-        namedImports: [svc.typeName],
+        namedImports: [svc.typeName]
       });
     }
 
     // Build imports array for @Component decorator
     const componentImports: string[] = [];
-    templateImports.forEach((imp) => {
+    templateImports.forEach(imp => {
       componentImports.push(...imp.namedImports);
     });
     componentImports.sort((a, b) => a.localeCompare(b));
@@ -617,7 +606,7 @@ const pageComponentGenerator: DesignGenerator = {
 
     exportedClass.addDecorator({
       name: 'Component',
-      arguments: [decoratorConfig],
+      arguments: [decoratorConfig]
     });
 
     // Build output files
@@ -627,7 +616,7 @@ const pageComponentGenerator: DesignGenerator = {
     outputs.set(`client/src/app/pages/${componentName}/${componentName}.page.scss`, styles);
 
     return outputs;
-  },
+  }
 };
 
 export { pageComponentGenerator };

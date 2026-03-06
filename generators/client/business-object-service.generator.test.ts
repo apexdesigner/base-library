@@ -16,7 +16,7 @@ function addBusinessObject(workspace: ReturnType<typeof createSimpleMockWorkspac
       export class ${name} extends BusinessObject {
         id!: number;
       }
-    `,
+    `
   });
 }
 
@@ -25,7 +25,7 @@ function addProject(workspace: ReturnType<typeof createSimpleMockWorkspace>, nam
     sourceCode: `
       import { Project } from '@apexdesigner/dsl';
       export class ${name} extends Project {}
-    `,
+    `
   });
 }
 
@@ -44,7 +44,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("@Injectable({ providedIn: 'root' })");
@@ -58,7 +58,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Token');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("'Task'");
@@ -73,7 +73,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('async loadFormGroup(');
@@ -88,7 +88,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('async loadFormArray(');
@@ -102,7 +102,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('async loadPersistedArray(');
@@ -116,7 +116,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('async loadEntity(');
@@ -130,7 +130,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       // All methods should use parameterized imports, not a switch/case per BO
@@ -148,7 +148,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Middle');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const alphaIndex = ts.indexOf("'Alpha'");
@@ -166,7 +166,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const dts = getOutput(result, TYPE_PATH);
 
       expect(dts).toContain('export declare class BusinessObjectService');
@@ -184,7 +184,7 @@ describe('businessObjectServiceGenerator', () => {
       addProject(workspace);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('readonly names = [] as const;');
@@ -199,7 +199,7 @@ describe('businessObjectServiceGenerator', () => {
       addBusinessObject(workspace, 'Task');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await businessObjectServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('createDebug("TestProject:BusinessObjectService")');

@@ -10,13 +10,11 @@ const dataSourceTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'DataSource',
+      metadataType: 'DataSource'
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `design/@types/data-sources/${kebabCase(metadata.name)}.d.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`design/@types/data-sources/${kebabCase(metadata.name)}.d.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');

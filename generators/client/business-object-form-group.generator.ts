@@ -16,7 +16,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 const businessObjectFormGroupGenerator: DesignGenerator = {
@@ -24,7 +24,7 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
       metadataType: 'Behavior',
@@ -32,18 +32,15 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
     const name = getBehaviorParent(metadata.sourceFile) || metadata.name;
-    return [
-      `client/src/app/business-objects/${kebabCase(name)}-form-group.ts`,
-    ];
+    return [`client/src/app/business-objects/${kebabCase(name)}-form-group.ts`];
   },
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
@@ -52,8 +49,7 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;

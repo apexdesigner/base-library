@@ -14,15 +14,15 @@ const publicRoutesGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'AppBehavior',
+      metadataType: 'AppBehavior'
     },
     {
-      metadataType: 'Behavior',
+      metadataType: 'Behavior'
     },
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
-    },
+      condition: metadata => !isLibrary(metadata)
+    }
   ],
 
   outputs: () => ['server/src/routes/public-routes.ts'],
@@ -46,9 +46,7 @@ const publicRoutesGenerator: DesignGenerator = {
       const func = getBehaviorFunction(behavior.sourceFile);
       if (!func) continue;
 
-      const path = options.path
-        ? (options.path as string)
-        : `/api/${kebabCase(func.name)}`;
+      const path = options.path ? (options.path as string) : `/api/${kebabCase(func.name)}`;
       debug('path %j', path);
 
       routes.push(path);
@@ -75,9 +73,7 @@ const publicRoutesGenerator: DesignGenerator = {
       const behaviorKebab = kebabCase(func.name);
       const isInstance = options.type === 'Instance';
 
-      const path = isInstance
-        ? `/api/${pluralKebab}/:id/${behaviorKebab}`
-        : `/api/${pluralKebab}/${behaviorKebab}`;
+      const path = isInstance ? `/api/${pluralKebab}/:id/${behaviorKebab}` : `/api/${pluralKebab}/${behaviorKebab}`;
       debug('path %j', path);
 
       routes.push(path);
@@ -94,7 +90,7 @@ const publicRoutesGenerator: DesignGenerator = {
     lines.push('] as const;');
 
     return lines.join('\n') + '\n';
-  },
+  }
 };
 
 export { publicRoutesGenerator };

@@ -8,12 +8,7 @@ import createDebug from 'debug';
 const Debug = createDebug('BaseLibrary:generators:appLifecycle');
 
 // Modules to skip when mapping design imports
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  '@roles',
-  'vitest',
-  'debug',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', '@roles', 'vitest', 'debug']);
 
 /**
  * Extract the function body text from an addAppBehavior() call.
@@ -48,16 +43,14 @@ const appLifecycleGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'Lifecycle Behavior' || options?.type === 'Middleware';
-      },
-    },
+      }
+    }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `server/src/app-behaviors/${kebabCase(metadata.name)}.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`server/src/app-behaviors/${kebabCase(metadata.name)}.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -181,7 +174,7 @@ const appLifecycleGenerator: DesignGenerator = {
     debug('Generated lifecycle app behavior file for %j', func.name);
 
     return content;
-  },
+  }
 };
 
 export { appLifecycleGenerator };

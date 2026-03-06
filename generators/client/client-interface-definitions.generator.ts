@@ -9,11 +9,7 @@ const Debug = createDebug('BaseLibrary:generators:clientInterfaceDefinitions');
 /**
  * Map a property type from the design file to a plain TypeScript type.
  */
-function mapPropertyType(
-  typeText: string,
-  baseTypeNativeMap: Map<string, string>,
-  interfaceDefNames: Set<string>,
-): string {
+function mapPropertyType(typeText: string, baseTypeNativeMap: Map<string, string>, interfaceDefNames: Set<string>): string {
   // Primitives
   if (['string', 'number', 'boolean', 'any'].includes(typeText)) return typeText;
   if (typeText === 'Date') return 'Date';
@@ -47,12 +43,12 @@ const clientInterfaceDefinitionsGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'InterfaceDefinition',
+      metadataType: 'InterfaceDefinition'
     },
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
-    },
+      condition: metadata => !isLibrary(metadata)
+    }
   ],
 
   outputs: () => ['client/src/app/interface-definitions/index.ts'],
@@ -88,9 +84,7 @@ const clientInterfaceDefinitionsGenerator: DesignGenerator = {
     const lines: string[] = [];
 
     // Sort alphabetically for stable output
-    const sorted = [...interfaceDefs].sort((a, b) =>
-      pascalCase(a.name).localeCompare(pascalCase(b.name))
-    );
+    const sorted = [...interfaceDefs].sort((a, b) => pascalCase(a.name).localeCompare(pascalCase(b.name)));
 
     for (const id of sorted) {
       const className = pascalCase(id.name);
@@ -144,7 +138,7 @@ const clientInterfaceDefinitionsGenerator: DesignGenerator = {
     }
 
     return lines.join('\n');
-  },
+  }
 };
 
 export { clientInterfaceDefinitionsGenerator };

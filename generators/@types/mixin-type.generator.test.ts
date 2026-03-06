@@ -46,9 +46,7 @@ describe('mixinTypeGenerator', () => {
       export class HistoryTracking extends Mixin {}
     `);
 
-    expect(dts).toContain(
-      'export declare function applyHistoryTrackingMixin(target: any, options: HistoryTrackingConfig): void;'
-    );
+    expect(dts).toContain('export declare function applyHistoryTrackingMixin(target: any, options: HistoryTrackingConfig): void;');
   });
 
   it('should not add config parameter when no config interface exists', async () => {

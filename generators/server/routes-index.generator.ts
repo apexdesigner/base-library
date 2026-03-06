@@ -12,18 +12,18 @@ const routesIndexGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Project',
+      metadataType: 'Project'
     },
     {
       metadataType: 'BusinessObject',
       condition: (metadata, conditionContext) => {
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
-      },
+      }
     },
     {
-      metadataType: 'AppBehavior',
-    },
+      metadataType: 'AppBehavior'
+    }
   ],
 
   outputs: () => ['server/src/routes/index.ts'],

@@ -11,7 +11,7 @@ describe('serverPackageGenerator', () => {
           packageName = 'test-project';
           version = '2.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -34,7 +34,7 @@ describe('serverPackageGenerator', () => {
         export class MyTestProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -55,7 +55,7 @@ describe('serverPackageGenerator', () => {
             debug: '^4.4.3',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -77,7 +77,7 @@ describe('serverPackageGenerator', () => {
             '@types/express': { versionSelector: '^5.0.3', developmentOnly: true },
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -100,7 +100,7 @@ describe('serverPackageGenerator', () => {
             uuid: '^8.3.2',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -118,7 +118,7 @@ describe('serverPackageGenerator', () => {
         export class TestProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -138,7 +138,7 @@ describe('serverPackageGenerator', () => {
             express: '^5.1.0',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -152,7 +152,7 @@ describe('serverPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -174,7 +174,7 @@ describe('serverPackageGenerator', () => {
             debug: '^4.4.3',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -187,7 +187,7 @@ describe('serverPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -209,7 +209,7 @@ describe('serverPackageGenerator', () => {
             start: 'node dist/index.js',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -232,7 +232,7 @@ describe('serverPackageGenerator', () => {
             start: 'ng serve',
           };
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -253,7 +253,7 @@ describe('serverPackageGenerator', () => {
             migrate: 'node dist/migrate.js',
           };
         }
-      `,
+      `
     });
     workspace.addMetadata('Project', 'BaseLibrary', {
       sourceCode: `
@@ -267,7 +267,7 @@ describe('serverPackageGenerator', () => {
           };
         }
       `,
-      libraryPackage: 'base-library',
+      libraryPackage: 'base-library'
     });
 
     const metadata = workspace.context.listMetadata('Project').find(p => p.name === 'MainProject')!;
@@ -286,7 +286,7 @@ describe('serverPackageGenerator', () => {
         export class TestProject extends Project {
           version = '1.0.0';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -306,7 +306,7 @@ describe('serverPackageGenerator', () => {
           displayName = 'Test Project';
           description = 'A test project';
         }
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];

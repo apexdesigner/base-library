@@ -16,7 +16,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 const businessObjectFormGroupTypeGenerator: DesignGenerator = {
@@ -24,7 +24,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
       metadataType: 'Behavior',
@@ -32,11 +32,10 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -44,7 +43,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     return [
       `design/@types/business-objects-client/${kebabCase(name)}-form-group.d.ts`,
       `design/@types/business-objects-client/${kebabCase(name)}-form-array.d.ts`,
-      `design/@types/business-objects-client/${kebabCase(name)}-persisted-array.d.ts`,
+      `design/@types/business-objects-client/${kebabCase(name)}-persisted-array.d.ts`
     ];
   },
 
@@ -54,8 +53,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;

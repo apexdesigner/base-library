@@ -12,7 +12,7 @@ describe('businessObjectTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -29,7 +29,7 @@ describe('businessObjectTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -47,7 +47,7 @@ describe('businessObjectTypeGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -67,7 +67,7 @@ describe('businessObjectTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -91,7 +91,7 @@ describe('businessObjectTypeGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -115,7 +115,7 @@ describe('businessObjectTypeGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ServiceTask extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ServiceTaskClaimNext', {
         sourceCode: `
@@ -126,7 +126,7 @@ describe('businessObjectTypeGenerator', () => {
             { type: 'Class', httpMethod: 'Post' },
             async function claimNext(options: any): Promise<ServiceTask | null> {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -147,7 +147,7 @@ describe('businessObjectTypeGenerator', () => {
             name?: string;
           }
           setView(LatestProcessDesign, \`SELECT * FROM process_design\`);
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];

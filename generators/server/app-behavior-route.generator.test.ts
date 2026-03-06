@@ -19,7 +19,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('router.get("/health"');
@@ -39,7 +39,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('"/health"');
@@ -59,7 +59,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('"/get-active-orders"');
@@ -78,7 +78,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('App.searchOrders(req.body)');
@@ -97,7 +97,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('App.systemHealthCheck()');
@@ -117,7 +117,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('export default router');
@@ -146,7 +146,7 @@ describe('appBehaviorRouteGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
-      const result = await appBehaviorRouteGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
       expect(content).toContain('router.get("/health"');

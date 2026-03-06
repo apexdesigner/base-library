@@ -17,7 +17,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 const businessObjectClientGenerator: DesignGenerator = {
@@ -25,7 +25,7 @@ const businessObjectClientGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
       metadataType: 'Behavior',
@@ -33,11 +33,10 @@ const businessObjectClientGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -51,8 +50,7 @@ const businessObjectClientGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;
@@ -272,11 +270,8 @@ const businessObjectClientGenerator: DesignGenerator = {
         // Build the body arg from parameters
         // Single param: pass directly (server passes req.body as the argument)
         // Multiple params: wrap in object
-        const bodyArg = methodParams.length === 0
-          ? '{}'
-          : methodParams.length === 1
-            ? methodParams[0].name
-            : `{ ${methodParams.map(p => p.name).join(', ')} }`;
+        const bodyArg =
+          methodParams.length === 0 ? '{}' : methodParams.length === 1 ? methodParams[0].name : `{ ${methodParams.map(p => p.name).join(', ')} }`;
 
         const behaviorKebab = kebabCase(func.name);
         const returnType = func.returnType || 'any';
@@ -284,7 +279,7 @@ const businessObjectClientGenerator: DesignGenerator = {
         const methodLines: string[] = [];
         methodLines.push('');
 
-        const httpMethod = (options.httpMethod as string || 'Post').toLowerCase();
+        const httpMethod = ((options.httpMethod as string) || 'Post').toLowerCase();
 
         // Map httpMethod to base class method call
         const callForMethod = (base: string) => {
@@ -303,7 +298,9 @@ const businessObjectClientGenerator: DesignGenerator = {
         if (isInstance) {
           // Instance behavior: /api/{plural}/:id/{behavior-kebab}
           methodLines.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
-          methodLines.push(`    const url = \`\${BusinessObjectBase.baseUrl}/\${${className}.plural}/\${(this as any).${idName}}/${behaviorKebab}\`;`);
+          methodLines.push(
+            `    const url = \`\${BusinessObjectBase.baseUrl}/\${${className}.plural}/\${(this as any).${idName}}/${behaviorKebab}\`;`
+          );
           methodLines.push(`    return ${callForMethod('BusinessObjectBase')};`);
           methodLines.push('  }');
         } else {
