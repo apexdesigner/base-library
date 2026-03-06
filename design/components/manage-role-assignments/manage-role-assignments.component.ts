@@ -7,6 +7,7 @@ import {
 } from '@apexdesigner/dsl/component';
 import { RolePersistedArray } from '@business-objects-client';
 import { RoleAssignment, User } from '@business-objects-client';
+import { AuthService } from '@services';
 
 /**
  * Manage Role Assignments
@@ -39,6 +40,12 @@ export class ManageRoleAssignmentsComponent extends Component {
   /** Assignment Map - Map of "userId:roleId" to RoleAssignment for quick lookup */
   assignmentMap!: Map<string, any>;
 
+  /** Auth Service */
+  authService!: AuthService;
+
+  /** Current User Id - ID of the logged-in user */
+  currentUserId?: number | string;
+
   /** Busy - Prevents clicks while toggling */
   busy!: boolean;
 
@@ -61,6 +68,10 @@ export class ManageRoleAssignmentsComponent extends Component {
         .map((n) => n.trim())
         .filter(Boolean);
       filter.where = { name: { in: names } };
+    }
+    const currentUser = await this.authService.getCurrentUser();
+    if (currentUser) {
+      this.currentUserId = currentUser.id;
     }
     await this.roles.read(filter);
     this.buildUserList();
@@ -203,7 +214,7 @@ applyTemplate(
           <for const="role" of="roles">
             <dt-column [header]="role.displayName || role.name" align="center">
               <ng-template let-row>
-                <button mat-icon-button (click)="toggleAssignment(row.id, role.id)" [disabled]="busy">
+                <button mat-icon-button (click)="toggleAssignment(row.id, role.id)" [disabled]="busy || (row.id === currentUserId && role.name === 'Administrator')">
                   <if condition="hasAssignment(row.id, role.id)">
                     <mat-icon>check_box</mat-icon>
                     <else>
