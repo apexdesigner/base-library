@@ -39,7 +39,7 @@
   "devDependencies": {
     "@apexdesigner/claude-skills": "^1.0.47",
     "@apexdesigner/dsl": "^0.8.59",
-    "@apexdesigner/generator": "^0.8.52",
+    "@apexdesigner/generator": "^0.8.53",
     "@apexdesigner/utilities": "^0.1.24",
     "@types/debug": "^4.1.12",
     "@types/node": "^25.2.3",
