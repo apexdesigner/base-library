@@ -183,6 +183,39 @@ describe('businessObjectTestGenerator', () => {
     expect(result).toContain('import { AsyncLocalStorage } from "node:async_hooks"');
   });
 
+  it('should map @functions imports to relative function paths', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'UserTask', {
+      sourceCode: `
+        import { BusinessObject } from '@apexdesigner/dsl';
+        export class UserTask extends BusinessObject {
+          id!: number;
+        }
+      `
+    });
+    workspace.addMetadata('Behavior', 'UserTaskClaim', {
+      sourceCode: `
+        import { addBehavior, addTest } from '@apexdesigner/dsl';
+        import { UserTask } from '@business-objects';
+        import { currentUser } from '@functions';
+        import { expect } from 'vitest';
+        addBehavior(
+          UserTask,
+          { type: 'Instance', httpMethod: 'Post' },
+          async function claim(userTask: UserTask) { return; }
+        );
+        addTest("should use currentUser", async () => {
+          expect(currentUser()).toBeDefined();
+        });
+      `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = (await businessObjectTestGenerator.generate(metadata, workspace.context)) as string;
+
+    expect(result).toContain('import { currentUser } from "../functions/current-user.js"');
+  });
+
   it('should collect tests from multiple behaviors into one file', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'ProcessDesign', {

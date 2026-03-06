@@ -291,6 +291,39 @@ describe('businessObjectGenerator', () => {
 
       expect(result).toContain('import { match } from "path-to-regexp"');
     });
+
+    it('should map @functions imports to relative function paths', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'UserTask', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class UserTask extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'UserTaskClaim', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { UserTask } from '@business-objects';
+          import { currentUser, hasRole } from '@functions';
+          addBehavior(
+            UserTask,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function claim(userTask: UserTask) {
+              const user = currentUser();
+              return user;
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { currentUser } from "../functions/current-user.js"');
+      expect(result).toContain('import { hasRole } from "../functions/has-role.js"');
+    });
   });
 
   describe('test fixtures', () => {

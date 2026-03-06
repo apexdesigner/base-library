@@ -145,6 +145,13 @@ const businessObjectTestGenerator: DesignGenerator = {
             for (const namedImport of importDecl.getNamedImports()) {
               projectImports.add(namedImport.getName());
             }
+          } else if (moduleSpec === '@functions') {
+            for (const namedImport of importDecl.getNamedImports()) {
+              const name = namedImport.getName();
+              const fnModule = `../functions/${kebabCase(name)}.js`;
+              if (!externalNamedImports.has(fnModule)) externalNamedImports.set(fnModule, new Set());
+              externalNamedImports.get(fnModule)!.add(name);
+            }
           } else {
             const defaultImport = importDecl.getDefaultImport();
             if (defaultImport) {
