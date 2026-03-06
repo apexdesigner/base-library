@@ -6,6 +6,9 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:appBehaviorRoute');
 
+// Built-in roles that don't need missingRole checks
+const IMPLICIT_ROLES = new Set(['Authenticated', 'Everyone']);
+
 const BEHAVIOR_HTTP_METHODS: Record<string, string> = {
   Post: 'post',
   Put: 'put',
@@ -45,18 +48,16 @@ const appBehaviorRouteGenerator: DesignGenerator = {
 
     const outputs = new Map<string, string>();
 
-    const lines: string[] = [];
-
-    // Imports
-    lines.push('import { Router, Request, Response, NextFunction } from "express";');
-    if (appBehaviors.length > 0) {
-      lines.push('import createDebug from "debug";');
-      lines.push('import { App } from "../app.js";');
-      lines.push('');
-      lines.push(`const Debug = createDebug("${debugNamespace}:routes:appBehaviors");`);
+    // Pre-compute role guards for each behavior to determine if missingRole import is needed
+    interface RouteInfo {
+      func: NonNullable<ReturnType<typeof getBehaviorFunction>>;
+      httpMethod: string;
+      routePath: string;
+      hasParams: boolean;
+      callArg: string;
+      roleGuard: string[];
     }
-    lines.push('');
-    lines.push('const router = Router();');
+    const routes: RouteInfo[] = [];
 
     for (const behavior of appBehaviors) {
       try {
@@ -68,7 +69,6 @@ const appBehaviorRouteGenerator: DesignGenerator = {
 
         const httpMethod = BEHAVIOR_HTTP_METHODS[options.httpMethod as string] || 'post';
 
-        // Determine route path: strip /api prefix, default to /<kebab-name>
         let routePath: string;
         if (options.path) {
           routePath = (options.path as string).replace(/^\/api/, '');
@@ -80,28 +80,60 @@ const appBehaviorRouteGenerator: DesignGenerator = {
         const hasParams = params.length > 0;
         const callArg = hasParams ? 'req.body' : '';
 
-        lines.push('');
-        lines.push(`// ${httpMethod.toUpperCase()} ${routePath} - ${func.name}`);
-        lines.push(`router.${httpMethod}("${routePath}", async (req: Request, res: Response, next: NextFunction) => {`);
-        lines.push(`  const debug = Debug.extend("${func.name}");`);
-        if (hasParams) lines.push('  debug("req.body %j", req.body);');
-        lines.push('');
-        lines.push('  try {');
-        lines.push(`    const result = await App.${func.name}(${callArg});`);
-        lines.push('    debug("result %j", result);');
-        lines.push('');
-        lines.push('    res.json(result);');
-        lines.push('  } catch (error) {');
-        lines.push('    debug("error %j", error);');
-        lines.push('');
-        lines.push('    next(error);');
-        lines.push('  }');
-        lines.push('});');
+        // Compute role guard
+        const behaviorRoles = Array.isArray(options.roles) ? (options.roles as string[]) : [];
+        const checkRoles = behaviorRoles.filter(r => !IMPLICIT_ROLES.has(r));
+        const roleGuard = checkRoles.length > 0
+          ? [`  if (missingRole(res, ${checkRoles.map(r => `"${r}"`).join(', ')})) return;`, '']
+          : [];
 
-        debug('added route %s %s for %j', httpMethod.toUpperCase(), routePath, func.name);
+        routes.push({ func, httpMethod, routePath, hasParams, callArg, roleGuard });
       } catch (err) {
         debug('error processing app behavior %j: %j', behavior.name, err);
       }
+    }
+
+    const needsMissingRole = routes.some(r => r.roleGuard.length > 0);
+
+    const lines: string[] = [];
+
+    // Imports
+    lines.push('import { Router, Request, Response, NextFunction } from "express";');
+    if (appBehaviors.length > 0) {
+      lines.push('import createDebug from "debug";');
+      lines.push('import { App } from "../app.js";');
+    }
+    if (needsMissingRole) {
+      lines.push('import { missingRole } from "./missing-role.js";');
+    }
+    if (appBehaviors.length > 0) {
+      lines.push('');
+      lines.push(`const Debug = createDebug("${debugNamespace}:routes:appBehaviors");`);
+    }
+    lines.push('');
+    lines.push('const router = Router();');
+
+    for (const route of routes) {
+      lines.push('');
+      lines.push(`// ${route.httpMethod.toUpperCase()} ${route.routePath} - ${route.func.name}`);
+      lines.push(`router.${route.httpMethod}("${route.routePath}", async (req: Request, res: Response, next: NextFunction) => {`);
+      lines.push(`  const debug = Debug.extend("${route.func.name}");`);
+      if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
+      lines.push('');
+      for (const line of route.roleGuard) lines.push(line);
+      lines.push('  try {');
+      lines.push(`    const result = await App.${route.func.name}(${route.callArg});`);
+      lines.push('    debug("result %j", result);');
+      lines.push('');
+      lines.push('    res.json(result);');
+      lines.push('  } catch (error) {');
+      lines.push('    debug("error %j", error);');
+      lines.push('');
+      lines.push('    next(error);');
+      lines.push('  }');
+      lines.push('});');
+
+      debug('added route %s %s for %j', route.httpMethod.toUpperCase(), route.routePath, route.func.name);
     }
 
     lines.push('');
