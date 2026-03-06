@@ -19,6 +19,8 @@ applyTemplate(
     <a routerLink="/test-categories">Categories</a>
     <a routerLink="/test-items">Items</a>
     <a routerLink="/test-settings">Settings</a>
+    <a routerLink="/manage-roles">Manage Roles</a>
+    <a routerLink="/test-select-fields">Select Fields</a>
   </flex-column>
 `
 );

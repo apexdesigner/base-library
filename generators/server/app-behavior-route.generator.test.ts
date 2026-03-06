@@ -153,4 +153,66 @@ describe('appBehaviorRouteGenerator', () => {
       expect(content).toContain('router.post("/search-orders"');
     });
   });
+
+  describe('role enforcement', () => {
+    it('should add missingRole check when roles are specified', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'AdminReport', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          import { Administrator } from '@roles';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Get', roles: [Administrator] },
+            async function adminReport() {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).toContain('import { missingRole } from "./missing-role.js"');
+      expect(content).toContain('if (missingRole(res, "Administrator")) return;');
+    });
+
+    it('should not add missingRole for Everyone role', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'GetConfig', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          import { Everyone } from '@roles';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Get', roles: [Everyone] },
+            async function getConfig() {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).not.toContain('missingRole');
+    });
+
+    it('should not add missingRole when no roles specified', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'HealthCheck', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Get' },
+            async function healthCheck() {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).not.toContain('missingRole');
+    });
+  });
 });

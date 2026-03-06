@@ -141,6 +141,58 @@ describe('businessObjectClientGenerator', () => {
       expect(result).toContain('return BusinessObjectBase.post<any>(url, data)');
       expect(result).not.toContain('{ data }');
     });
+
+    it('should wrap scalar parameter in object for instance behavior', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'UserTask', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class UserTask extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'UserTaskClaim', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { UserTask } from '@business-objects';
+          addBehavior(
+            UserTask,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function claim(userTask: UserTask, userId?: number) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should wrap scalar param in object, not pass raw
+      expect(result).toContain('url, { userId }');
+      expect(result).not.toContain('url, userId)');
+    });
+  });
+
+  describe('findOne method', () => {
+    it('should generate a findOne static method that returns a single instance or null', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static async findOne(filter?: any): Promise<Order | null>');
+      expect(result).toContain("params['filter'] = JSON.stringify(filter)");
+      expect(result).toContain('find-one');
+      expect(result).toContain('return data ? new Order(data) : null');
+    });
   });
 
   describe('base type resolution in data interface', () => {

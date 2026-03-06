@@ -189,6 +189,16 @@ const businessObjectClientGenerator: DesignGenerator = {
     lines.push(`    return results.map((data) => new ${className}(data));`);
     lines.push('  }');
 
+    // findOne
+    lines.push('');
+    lines.push(`  static async findOne(filter?: any): Promise<${className} | null> {`);
+    lines.push('    const url = `${this.baseUrl}/${this.plural}/find-one`;');
+    lines.push('    const params: Record<string, string> = {};');
+    lines.push("    if (filter) params['filter'] = JSON.stringify(filter);");
+    lines.push('    const data = await this.get<any>(url, params);');
+    lines.push(`    return data ? new ${className}(data) : null;`);
+    lines.push('  }');
+
     // findById
     lines.push('');
     lines.push(`  static async findById(`);
@@ -268,10 +278,12 @@ const businessObjectClientGenerator: DesignGenerator = {
           .join(', ');
 
         // Build the body arg from parameters
-        // Single param: pass directly (server passes req.body as the argument)
-        // Multiple params: wrap in object
-        const bodyArg =
-          methodParams.length === 0 ? '{}' : methodParams.length === 1 ? methodParams[0].name : `{ ${methodParams.map(p => p.name).join(', ')} }`;
+        // Single object/any param: pass directly (server passes req.body as the argument)
+        // Scalar or multiple params: wrap in object (server unwraps by name)
+        const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
+        const isPassthrough =
+          methodParams.length === 1 && (OBJECT_TYPES.has(methodParams[0].type || 'any') || (methodParams[0].type || '').startsWith('{'));
+        const bodyArg = methodParams.length === 0 ? '{}' : isPassthrough ? methodParams[0].name : `{ ${methodParams.map(p => p.name).join(', ')} }`;
 
         const behaviorKebab = kebabCase(func.name);
         const returnType = func.returnType || 'any';

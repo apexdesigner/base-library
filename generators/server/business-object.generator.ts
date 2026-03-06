@@ -279,6 +279,16 @@ const businessObjectGenerator: DesignGenerator = {
             continue;
           }
 
+          if (moduleSpecifier === '@functions') {
+            for (const namedImport of importDecl.getNamedImports()) {
+              const name = namedImport.getName();
+              const fnModule = `../functions/${kebabCase(name)}.js`;
+              if (!externalNamedImports.has(fnModule)) externalNamedImports.set(fnModule, new Set());
+              externalNamedImports.get(fnModule)!.add(name);
+            }
+            continue;
+          }
+
           // Map design-time aliases to generated paths
           let mappedModule = moduleSpecifier;
           if (moduleSpecifier.startsWith('@server-node-modules/')) {

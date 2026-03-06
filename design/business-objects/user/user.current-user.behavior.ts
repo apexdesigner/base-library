@@ -1,6 +1,7 @@
 import { addBehavior } from '@apexdesigner/dsl';
 import { User } from '@business-objects';
 import { App } from '@app';
+import { Authenticated } from '@roles';
 import createDebug from 'debug';
 
 const debug = createDebug('User:currentUser');
@@ -14,14 +15,15 @@ addBehavior(
   User,
   {
     type: 'Class',
-    httpMethod: 'Get'
+    httpMethod: 'Get',
+    roles: [Authenticated]
   },
   async function currentUser() {
-    const authCtx = App.auth.context?.getStore();
-    debug('authCtx', authCtx);
+    const authContext = App.auth.context?.getStore();
+    debug('authContext', authContext);
 
-    if (!authCtx?.user) return null;
+    if (!authContext?.user) return null;
 
-    return authCtx.user;
+    return authContext.user;
   }
 );

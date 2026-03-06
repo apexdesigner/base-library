@@ -155,7 +155,13 @@ const appLifecycleGenerator: DesignGenerator = {
     lines.push('');
 
     // --- Debug ---
-    lines.push(`const Debug = createDebug("${debugNamespace}");`);
+    // Strip the last segment if it matches the function name, since .extend() adds it back
+    const segments = debugNamespace.split(':');
+    if (segments[segments.length - 1] === func.name) {
+      segments.pop();
+    }
+    const baseNamespace = segments.join(':');
+    lines.push(`const Debug = createDebug("${baseNamespace}");`);
     lines.push('');
 
     // --- Exported function ---

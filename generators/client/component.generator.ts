@@ -146,6 +146,16 @@ const componentGenerator: DesignGenerator = {
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
 
+    // Capture @components imports before removing design aliases
+    const componentImportNames: string[] = [];
+    const componentsImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@components');
+    for (const decl of componentsImportDecls) {
+      for (const named of decl.getNamedImports()) {
+        componentImportNames.push(named.getName());
+      }
+    }
+    debug('captured component imports %j', componentImportNames);
+
     // Remove DSL and design-time alias imports
     const designImports = writableFile.getImportDeclarations().filter(imp => {
       const moduleSpec = imp.getModuleSpecifierValue();
@@ -306,6 +316,7 @@ const componentGenerator: DesignGenerator = {
     const callOnLoadMethods: string[] = [];
     const callAfterLoadMethods: string[] = [];
     const callOnUnloadMethods: string[] = [];
+    const debouncedMethods: { name: string; ms: string }[] = [];
     for (const meth of exportedClass.getMethods()) {
       const methodDecorator = meth.getDecorator('method');
       if (methodDecorator) {
@@ -329,9 +340,29 @@ const componentGenerator: DesignGenerator = {
               callOnUnloadMethods.push(meth.getName());
             }
           }
+          const debounceProp = args[0].getProperty('debounceMilliseconds');
+          if (debounceProp && Node.isPropertyAssignment(debounceProp)) {
+            debouncedMethods.push({ name: meth.getName(), ms: debounceProp.getInitializerOrThrow().getText() });
+          }
         }
         methodDecorator.remove();
       }
+    }
+
+    // Apply debounce wrappers
+    for (const { name, ms } of debouncedMethods) {
+      const meth = exportedClass.getMethod(name);
+      if (!meth) continue;
+      const timerProp = `_${name}Timeout`;
+      exportedClass.addProperty({
+        name: timerProp,
+        type: 'any'
+      });
+      const body = meth.getBody();
+      if (!body) continue;
+      const statements = body.getStatements();
+      const originalBody = statements.map(s => s.getText()).join('\n');
+      meth.setBodyText(`clearTimeout(this.${timerProp});\nthis.${timerProp} = setTimeout(async () => {\n${originalBody}\n}, ${ms});`);
     }
 
     // Check if the source file has debug setup and rename debug -> Debug
@@ -588,6 +619,19 @@ const componentGenerator: DesignGenerator = {
           if (!existingNamedImports.includes(importName)) {
             existingImport.addNamedImport(importName);
           }
+        });
+      }
+    }
+
+    // Add component imports (re-map @components -> relative paths, after template imports to avoid duplicates)
+    const componentRelativePath = isAppComponent ? './components' : '../../components';
+    for (const compName of componentImportNames) {
+      const alreadyImported = writableFile.getImportDeclarations().some(imp => imp.getNamedImports().some(ni => ni.getName() === compName));
+      if (!alreadyImported) {
+        const compKebab = kebabCase(compName.replace(/Component$/, ''));
+        writableFile.addImportDeclaration({
+          moduleSpecifier: `${componentRelativePath}/${compKebab}/${compKebab}.component`,
+          namedImports: [compName]
         });
       }
     }

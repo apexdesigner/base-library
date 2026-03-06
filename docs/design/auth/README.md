@@ -9,6 +9,11 @@ generated-by: design-docs.readme.md
 - [Auth Config](./auth-config.interface-definition.md)
 - [Auth Context](./auth-context.interface-definition.md)
 
+## Functions
+
+- [Current User](./current-user.function.md)
+- [Has Role](./has-role.function.md)
+
 ## Pages
 
 - [Login](./login.page.md) - Public login page with a button to initiate OIDC login.

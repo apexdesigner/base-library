@@ -1,6 +1,11 @@
 import { addBehavior } from '@apexdesigner/dsl';
 import { TestItem } from '@business-objects';
 
+/**
+ * Process
+ *
+ * Processes a test item with the given options.
+ */
 addBehavior(
   TestItem,
   {

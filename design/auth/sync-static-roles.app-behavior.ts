@@ -7,6 +7,7 @@ const debug = createDebug('BaseLibrary:Auth:syncStaticRoles');
 
 /**
  * Sync Static Roles
+ *
  * Creates any missing DSL-defined roles in the database at startup.
  */
 addAppBehavior(

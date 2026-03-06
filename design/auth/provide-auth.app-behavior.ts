@@ -7,6 +7,11 @@ import createDebug from 'debug';
 
 const debug = createDebug('provideAuth');
 
+/**
+ * Provide Auth
+ *
+ * Configures the OIDC client by fetching auth config from the server.
+ */
 addAppBehavior(
   {
     type: 'Provider'

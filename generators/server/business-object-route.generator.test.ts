@@ -108,4 +108,129 @@ describe('businessObjectRouteGenerator', () => {
       expect(result).toContain('String(req.params.id)');
     });
   });
+
+  describe('role enforcement', () => {
+    it('should add hasRole check for CRUD routes when applyDefaultRoles is set', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, applyDefaultRoles } from '@apexdesigner/dsl';
+          import { Administrator } from '@roles';
+          export class User extends BusinessObject {
+            id!: number;
+            email!: string;
+          }
+          applyDefaultRoles(User, [Administrator]);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { missingRole } from "./missing-role.js"');
+      expect(result).toContain('if (missingRole(res, "Administrator")) return;');
+    });
+
+    it('should not add hasRole check when no default roles are set', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).not.toContain('missingRole');
+    });
+
+    it('should use behavior-level roles instead of default roles when specified', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, applyDefaultRoles } from '@apexdesigner/dsl';
+          import { Administrator } from '@roles';
+          export class User extends BusinessObject {
+            id!: number;
+          }
+          applyDefaultRoles(User, [Administrator]);
+        `
+      });
+      workspace.addMetadata('Behavior', 'UserCurrentUser', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { User } from '@business-objects';
+          import { Authenticated } from '@roles';
+          addBehavior(
+            User,
+            { type: 'Class', httpMethod: 'Get', roles: [Authenticated] },
+            async function currentUser() { return null; }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      // currentUser route should not have missingRole check (Authenticated = any logged-in user)
+      const currentUserRoute = result.split('current-user')[1]?.split('router.')[0] || '';
+      expect(currentUserRoute).not.toContain('missingRole');
+
+      // CRUD routes should still have Administrator check
+      expect(result).toContain('if (missingRole(res, "Administrator")) return;');
+    });
+
+    it('should check multiple roles with OR logic', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Report', {
+        sourceCode: `
+          import { BusinessObject, applyDefaultRoles } from '@apexdesigner/dsl';
+          import { Administrator, Editor } from '@roles';
+          export class Report extends BusinessObject {
+            id!: number;
+          }
+          applyDefaultRoles(Report, [Administrator, Editor]);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('if (missingRole(res, "Administrator", "Editor")) return;');
+    });
+  });
+
+  it('should unwrap scalar parameters from req.body for instance behaviors', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'UserTask', {
+      sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class UserTask extends BusinessObject {
+            id!: number;
+          }
+        `
+    });
+    workspace.addMetadata('Behavior', 'UserTaskClaim', {
+      sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { UserTask } from '@business-objects';
+          addBehavior(
+            UserTask,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function claim(userTask: UserTask, userId?: number) {}
+          );
+        `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+    // Should unwrap scalar param from req.body, not pass req.body directly
+    expect(result).toContain('.claim(req.body.userId)');
+    expect(result).not.toContain('.claim(req.body)');
+  });
 });

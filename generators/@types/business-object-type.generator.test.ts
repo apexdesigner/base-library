@@ -136,6 +136,38 @@ describe('businessObjectTypeGenerator', () => {
     });
   });
 
+  describe('optional behavior parameters', () => {
+    it('should preserve optional marker on behavior parameters', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'UserTask', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class UserTask extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'UserTaskClaim', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { UserTask } from '@business-objects';
+          addBehavior(
+            UserTask,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function claim(userTask: UserTask, options?: any) {
+              return;
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('options?:');
+    });
+  });
+
   describe('view-backed business objects', () => {
     it('should only generate read-only method signatures when setView is present', async () => {
       const workspace = createSimpleMockWorkspace();
