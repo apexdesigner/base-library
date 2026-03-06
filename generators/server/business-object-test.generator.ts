@@ -7,6 +7,9 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectTest');
 
+// Modules to skip when collecting imports from behavior design files
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', '@roles', '@mixins', 'vitest', 'debug']);
+
 interface TestCase {
   name: string;
   body: string;
@@ -108,6 +111,8 @@ const businessObjectTestGenerator: DesignGenerator = {
     const groups: BehaviorGroup[] = [];
     const boImports = new Set<string>();
     const projectImports = new Set<string>();
+    const defaultImports = new Map<string, string>();
+    const externalNamedImports = new Map<string, Set<string>>();
     let needsDebug = false;
 
     for (const behavior of allBehaviors) {
@@ -130,6 +135,8 @@ const businessObjectTestGenerator: DesignGenerator = {
         for (const importDecl of behavior.sourceFile.getImportDeclarations()) {
           const moduleSpec = importDecl.getModuleSpecifierValue();
 
+          if (SKIP_MODULES.has(moduleSpec)) continue;
+
           if (moduleSpec === '@business-objects') {
             for (const namedImport of importDecl.getNamedImports()) {
               boImports.add(namedImport.getName());
@@ -137,6 +144,17 @@ const businessObjectTestGenerator: DesignGenerator = {
           } else if (moduleSpec === '@app') {
             for (const namedImport of importDecl.getNamedImports()) {
               projectImports.add(namedImport.getName());
+            }
+          } else {
+            const defaultImport = importDecl.getDefaultImport();
+            if (defaultImport) {
+              defaultImports.set(defaultImport.getText(), moduleSpec);
+            }
+            for (const namedImport of importDecl.getNamedImports()) {
+              if (!externalNamedImports.has(moduleSpec)) {
+                externalNamedImports.set(moduleSpec, new Set());
+              }
+              externalNamedImports.get(moduleSpec)!.add(namedImport.getName());
             }
           }
         }
@@ -178,6 +196,17 @@ const businessObjectTestGenerator: DesignGenerator = {
     // App / project imports
     for (const name of Array.from(projectImports).sort()) {
       lines.push(`import { ${name} } from "../app.js";`);
+    }
+
+    // External default imports
+    for (const [name, moduleSpec] of Array.from(defaultImports).sort((a, b) => a[0].localeCompare(b[0]))) {
+      lines.push(`import ${name} from "${moduleSpec}";`);
+    }
+
+    // External named imports
+    for (const [moduleSpec, names] of Array.from(externalNamedImports).sort((a, b) => a[0].localeCompare(b[0]))) {
+      const sorted = Array.from(names).sort();
+      lines.push(`import { ${sorted.join(', ')} } from "${moduleSpec}";`);
     }
 
     // Debug setup

@@ -148,6 +148,41 @@ describe('businessObjectTestGenerator', () => {
     expect(result).toContain('import { App } from "../app.js"');
   });
 
+  it('should include external imports like node:async_hooks from behavior files', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'UserTask', {
+      sourceCode: `
+        import { BusinessObject } from '@apexdesigner/dsl';
+        export class UserTask extends BusinessObject {
+          id!: number;
+        }
+      `
+    });
+    workspace.addMetadata('Behavior', 'UserTaskClaim', {
+      sourceCode: `
+        import { addBehavior, addTest } from '@apexdesigner/dsl';
+        import { UserTask } from '@business-objects';
+        import { App } from '@app';
+        import { AsyncLocalStorage } from 'node:async_hooks';
+        import { expect } from 'vitest';
+        addBehavior(
+          UserTask,
+          { type: 'Instance', httpMethod: 'Post' },
+          async function claim(userTask: UserTask) { return; }
+        );
+        addTest("should claim", async () => {
+          const als = new AsyncLocalStorage();
+          expect(als).toBeDefined();
+        });
+      `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = (await businessObjectTestGenerator.generate(metadata, workspace.context)) as string;
+
+    expect(result).toContain('import { AsyncLocalStorage } from "node:async_hooks"');
+  });
+
   it('should collect tests from multiple behaviors into one file', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'ProcessDesign', {
