@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.0.111] - 2026-03-06
+
+- 88241c0 style: format design and generator files
+- 15d8ed1 fix: wrap/unwrap scalar parameters in behavior REST marshalling
+- 6bbe23c feat: disable clear button when control is disabled and fix @components imports
+- 13e7562 refactor: use plain integer fields with presentAs instead of FK relationships in TestAssignment
+- a91b184 feat: rename sf-select fields to select-user-field and select-role-field
+- 1e4abc8 feat: add sf-select-user-field and sf-select-role-field components
+- 4cdf155 fix: strip duplicate function name from debug namespace in app-lifecycle generator
+- 9504db9 fix: restore package.json metadata and clean devDependencies
+- e9bf215 feat: disable admin checkbox for current user in manage role assignments
+- 9b84c80 fix: add missing JSDoc comments to app behaviors and test behaviors
+- 5e5d00f test: add admin-report app behavior to verify role enforcement in routes
+- ee311c0 feat: add role enforcement to app behavior route generator
+- 4ab239d feat: add role enforcement to generated route handlers
+- 5094e9a fix: map @functions imports to relative paths in BO and BO test generators
+- aedd3f6 feat: add currentUser server-side utility function
+- 6337ef3 feat: add debug logging to hasRole function and update debug pattern doc
+- dd3b956 feat: add function test generator and server-side hasRole utility
+- 7d0b6ef fix: carry external imports in test generator and preserve optional params in type generator
+- b1c0c76 fix: carry external imports from behavior files to generated test files
+- 7310616 feat: add manage role assignments component and generator fixes
+
+
 ## [1.0.110] - 2026-03-06
 
 - cb4b60f chore: add format script and apply prettier to generators and design
