@@ -298,7 +298,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
           name: func.name,
           isStatic,
           parameters: methodParams.map(p => ({
-            name: p.name,
+            name: p.isOptional ? `${p.name}?` : p.name,
             type: p.type || 'any'
           })),
           returnType: isAsync ? `Promise<${func.returnType || 'any'}>` : func.returnType || 'any'
