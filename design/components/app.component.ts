@@ -1,5 +1,7 @@
 import { Component, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { SchemaFormsService } from '@apexdesigner/schema-forms';
+import { SelectUserFieldComponent } from '@components';
+import { SelectRoleFieldComponent } from '@components';
 
 /**
  * App
@@ -13,12 +15,8 @@ export class AppComponent extends Component {
   /** Register Fields - Register custom schema form fields */
   @method({ callOnLoad: true })
   registerFields(): void {
-    this.schemaFormsService.registerField('select-user', () =>
-      import('@components/select-user-field/select-user-field.component').then((m: any) => m.SelectUserFieldComponent)
-    );
-    this.schemaFormsService.registerField('select-role', () =>
-      import('@components/select-role-field/select-role-field.component').then((m: any) => m.SelectRoleFieldComponent)
-    );
+    this.schemaFormsService.registerField('select-user', () => Promise.resolve(SelectUserFieldComponent as any));
+    this.schemaFormsService.registerField('select-role', () => Promise.resolve(SelectRoleFieldComponent as any));
   }
 }
 

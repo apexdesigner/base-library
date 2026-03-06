@@ -50,7 +50,7 @@ applyTemplate(
       </for>
     </mat-select>
     <if condition="control.value">
-      <button matSuffix mat-icon-button (click)="control.setValue(null); $event.stopPropagation()">
+      <button matSuffix mat-icon-button [disabled]="control.disabled" (click)="control.setValue(null); $event.stopPropagation()">
         <mat-icon>close</mat-icon>
       </button>
     </if>

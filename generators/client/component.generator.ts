@@ -146,6 +146,16 @@ const componentGenerator: DesignGenerator = {
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
 
+    // Capture @components imports before removing design aliases
+    const componentImportNames: string[] = [];
+    const componentsImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@components');
+    for (const decl of componentsImportDecls) {
+      for (const named of decl.getNamedImports()) {
+        componentImportNames.push(named.getName());
+      }
+    }
+    debug('captured component imports %j', componentImportNames);
+
     // Remove DSL and design-time alias imports
     const designImports = writableFile.getImportDeclarations().filter(imp => {
       const moduleSpec = imp.getModuleSpecifierValue();
@@ -609,6 +619,19 @@ const componentGenerator: DesignGenerator = {
           if (!existingNamedImports.includes(importName)) {
             existingImport.addNamedImport(importName);
           }
+        });
+      }
+    }
+
+    // Add component imports (re-map @components -> relative paths, after template imports to avoid duplicates)
+    const componentRelativePath = isAppComponent ? './components' : '../../components';
+    for (const compName of componentImportNames) {
+      const alreadyImported = writableFile.getImportDeclarations().some(imp => imp.getNamedImports().some(ni => ni.getName() === compName));
+      if (!alreadyImported) {
+        const compKebab = kebabCase(compName.replace(/Component$/, ''));
+        writableFile.addImportDeclaration({
+          moduleSpecifier: `${componentRelativePath}/${compKebab}/${compKebab}.component`,
+          namedImports: [compName]
         });
       }
     }
