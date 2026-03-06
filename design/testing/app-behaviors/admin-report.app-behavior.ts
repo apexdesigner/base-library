@@ -1,6 +1,11 @@
 import { addAppBehavior } from '@apexdesigner/dsl';
 import { Administrator } from '@roles';
 
+/**
+ * Admin Report
+ *
+ * Returns admin-only data for verifying role enforcement.
+ */
 addAppBehavior(
   {
     type: 'Class Behavior',

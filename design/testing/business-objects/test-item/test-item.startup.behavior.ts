@@ -1,6 +1,11 @@
 import { addBehavior } from '@apexdesigner/dsl';
 import { TestItem } from '@business-objects';
 
+/**
+ * Startup
+ *
+ * Logs the count of test items after server start.
+ */
 addBehavior(
   TestItem,
   {

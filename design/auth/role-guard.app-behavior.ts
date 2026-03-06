@@ -5,6 +5,11 @@ import createDebug from 'debug';
 
 const debug = createDebug('roleGuard');
 
+/**
+ * Role Guard
+ *
+ * Client-side route guard that checks authentication and role requirements.
+ */
 addAppBehavior(
   {
     type: 'Guard',

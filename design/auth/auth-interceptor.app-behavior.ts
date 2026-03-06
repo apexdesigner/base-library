@@ -6,6 +6,11 @@ import createDebug from 'debug';
 
 const debug = createDebug('authInterceptor');
 
+/**
+ * Auth Interceptor
+ *
+ * Attaches the OIDC access token to outgoing API requests.
+ */
 addAppBehavior(
   {
     type: 'Interceptor',

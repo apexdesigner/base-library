@@ -1,5 +1,10 @@
 import { addAppBehavior } from '@apexdesigner/dsl';
 
+/**
+ * System Health Check
+ *
+ * Returns server health status.
+ */
 addAppBehavior(
   {
     type: 'Class Behavior',
