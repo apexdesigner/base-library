@@ -9,4 +9,6 @@ generated-by: design-docs.readme.md
 - [Avatar](./avatar/README.md)
 - [Breadcrumb](./breadcrumb/README.md)
 - [Manage Role Assignments](./manage-role-assignments/README.md)
+- [Sf Select Role Field](./sf-select-role-field/README.md)
+- [Sf Select User Field](./sf-select-user-field/README.md)
 
