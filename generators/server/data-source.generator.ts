@@ -68,7 +68,7 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     factoryName: `create${pascalCase(persistenceType)}Persistence`,
     configOptions,
     entityNames: myBOs.map(bo => pascalCase(bo.name)).sort(),
-    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort(),
+    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort()
   };
 }
 
@@ -77,11 +77,11 @@ const dataSourceGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'DataSource',
+      metadataType: 'DataSource'
     },
     {
-      metadataType: 'BusinessObject',
-    },
+      metadataType: 'BusinessObject'
+    }
   ],
 
   outputs: () => ['server/src/data-sources/index.ts'],
@@ -93,9 +93,11 @@ const dataSourceGenerator: DesignGenerator = {
     const allDataSources = context.listMetadata('DataSource');
     if (allDataSources.length === 0) return '';
 
-    const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context))
-      .sort((a, b) => a.name.localeCompare(b.name));
-    debug('data sources: %O', dataSources.map(ds => ({ name: ds.name, type: ds.persistenceType, entities: ds.entityNames })));
+    const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context)).sort((a, b) => a.name.localeCompare(b.name));
+    debug(
+      'data sources: %O',
+      dataSources.map(ds => ({ name: ds.name, type: ds.persistenceType, entities: ds.entityNames }))
+    );
 
     // Get project name for debug namespace
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));

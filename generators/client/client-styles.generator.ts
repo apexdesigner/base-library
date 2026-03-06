@@ -12,8 +12,8 @@ const clientStylesGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata: DesignMetadata) => !isLibrary(metadata),
-    },
+      condition: (metadata: DesignMetadata) => !isLibrary(metadata)
+    }
   ],
 
   outputs: () => ['client/src/styles.scss'],
@@ -51,7 +51,7 @@ const clientStylesGenerator: DesignGenerator = {
     }
 
     return styleParts.join('\n\n') + '\n';
-  },
+  }
 };
 
 export { clientStylesGenerator };

@@ -64,9 +64,7 @@ export interface ProcessedProperties {
 export function captureBoImports(writableFile: SourceFile): string[] {
   const boNamedImports: string[] = [];
   for (const alias of ['@business-objects', '@business-objects-client']) {
-    const boImportDecls = writableFile.getImportDeclarations().filter(
-      (imp) => imp.getModuleSpecifierValue() === alias
-    );
+    const boImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === alias);
     for (const boImportDecl of boImportDecls) {
       for (const named of boImportDecl.getNamedImports()) {
         boNamedImports.push(named.getName());
@@ -98,7 +96,7 @@ export function addBoImports(writableFile: SourceFile, boImports: Set<string>, r
   if (persistedBaseImports.length > 0) {
     writableFile.addImportDeclaration({
       moduleSpecifier: `${relativePath}/persisted-form-group`,
-      namedImports: persistedBaseImports,
+      namedImports: persistedBaseImports
     });
   }
 
@@ -117,7 +115,7 @@ export function addBoImports(writableFile: SourceFile, boImports: Set<string>, r
   for (const [path, names] of Array.from(byFormGroup).sort((a, b) => a[0].localeCompare(b[0]))) {
     writableFile.addImportDeclaration({
       moduleSpecifier: path,
-      namedImports: names.sort(),
+      namedImports: names.sort()
     });
   }
 }
@@ -244,10 +242,7 @@ export function processPropertyDecorators(exportedClass: ClassDeclaration): Proc
 /**
  * Transforms properties with onChangeCall into private backing field + getter + setter.
  */
-export function transformOnChangeProperties(
-  exportedClass: ClassDeclaration,
-  onChangeCallMap: Map<string, string>,
-): void {
+export function transformOnChangeProperties(exportedClass: ClassDeclaration, onChangeCallMap: Map<string, string>): void {
   for (const [propName, methodName] of onChangeCallMap) {
     const prop = exportedClass.getProperty(propName);
     if (!prop) continue;

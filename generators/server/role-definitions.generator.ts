@@ -12,12 +12,12 @@ const roleDefinitionsGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Role',
+      metadataType: 'Role'
     },
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
-    },
+      condition: metadata => !isLibrary(metadata)
+    }
   ],
 
   outputs: () => ['server/src/roles/role-definitions.ts'],
@@ -25,7 +25,8 @@ const roleDefinitionsGenerator: DesignGenerator = {
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
-    const roles = context.listMetadata('Role')
+    const roles = context
+      .listMetadata('Role')
       .map(role => {
         const roleClass = getClassByBase(role.sourceFile, 'Role');
         const description = roleClass ? getDescription(roleClass) : undefined;
@@ -59,7 +60,7 @@ const roleDefinitionsGenerator: DesignGenerator = {
     lines.push('] as const;');
 
     return lines.join('\n') + '\n';
-  },
+  }
 };
 
 export { roleDefinitionsGenerator };

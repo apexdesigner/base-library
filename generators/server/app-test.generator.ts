@@ -40,7 +40,7 @@ function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
       tests.push({
         name: nameArg.getLiteralValue(),
         body: text.slice(1, -1),
-        isAsync: fnArg.isAsync(),
+        isAsync: fnArg.isAsync()
       });
     }
   }
@@ -53,11 +53,11 @@ const appTestGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return !!options && !options.lifecycleStage;
-      },
-    },
+      }
+    }
   ],
 
   outputs: () => ['server/src/app.test.ts'],
@@ -66,10 +66,13 @@ const appTestGenerator: DesignGenerator = {
     const debug = Debug.extend('generate');
 
     // Collect all non-lifecycle app behaviors with tests
-    const classBehaviors = context.listMetadata('AppBehavior').filter(behavior => {
-      const options = getBehaviorOptions(behavior.sourceFile);
-      return options && !options.lifecycleStage;
-    }).sort((a, b) => a.name.localeCompare(b.name));
+    const classBehaviors = context
+      .listMetadata('AppBehavior')
+      .filter(behavior => {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        return options && !options.lifecycleStage;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     interface BehaviorGroup {
       funcName: string;
@@ -170,7 +173,7 @@ const appTestGenerator: DesignGenerator = {
     lines.push('});');
 
     return lines.join('\n');
-  },
+  }
 };
 
 export { appTestGenerator };

@@ -16,7 +16,7 @@ describe('serverGenerator', () => {
             await TestItem.find();
           }
         );
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -39,7 +39,7 @@ describe('serverGenerator', () => {
             console.log('loading');
           }
         );
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];
@@ -60,7 +60,7 @@ describe('serverGenerator', () => {
           { type: 'Lifecycle Behavior', stage: 'Running' },
           async function loadSampleDesigns() {}
         );
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'TestItemStartup', {
       sourceCode: `
@@ -71,7 +71,7 @@ describe('serverGenerator', () => {
           { type: 'After Start' },
           async function startup() {}
         );
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('Project')[0];

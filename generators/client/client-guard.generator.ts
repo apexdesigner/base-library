@@ -6,10 +6,7 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:clientGuard');
 
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  'vitest',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', 'vitest']);
 
 /**
  * Collect top-level statements that aren't imports or the addAppBehavior() call.
@@ -63,16 +60,14 @@ const clientGuardGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return options?.type === 'Guard';
-      },
-    },
+      }
+    }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `client/src/app/guards/${kebabCase(metadata.name)}.guard.ts`,
-  ],
+  outputs: (metadata: DesignMetadata) => [`client/src/app/guards/${kebabCase(metadata.name)}.guard.ts`],
 
   async generate(metadata: DesignMetadata, _context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -90,11 +85,7 @@ const clientGuardGenerator: DesignGenerator = {
 
     // Angular guard signatures provide specific framework types as arguments.
     // Everything else must be injected.
-    const FRAMEWORK_TYPES = new Set([
-      'ActivatedRouteSnapshot',
-      'RouterStateSnapshot',
-      'UrlTree',
-    ]);
+    const FRAMEWORK_TYPES = new Set(['ActivatedRouteSnapshot', 'RouterStateSnapshot', 'UrlTree']);
 
     const frameworkParams: typeof params = [];
     const serviceParams: typeof params = [];
@@ -107,7 +98,7 @@ const clientGuardGenerator: DesignGenerator = {
     }
 
     // Determine guard type
-    const stage = options?.stage as string || 'Activate';
+    const stage = (options?.stage as string) || 'Activate';
     const guardType = stage === 'Deactivate' ? 'CanDeactivateFn' : 'CanActivateFn';
 
     // Collect imports from the design file
@@ -218,7 +209,7 @@ const clientGuardGenerator: DesignGenerator = {
     debug('generated guard file for %j', func.name);
 
     return content;
-  },
+  }
 };
 
 export { clientGuardGenerator };

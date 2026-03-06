@@ -128,9 +128,7 @@ const componentGenerator: DesignGenerator = {
 
     // Capture @services imports before removing design aliases
     const serviceImports: { name: string; typeName: string }[] = [];
-    const servicesImportDecls = writableFile.getImportDeclarations().filter(
-      imp => imp.getModuleSpecifierValue() === '@services'
-    );
+    const servicesImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@services');
     for (const decl of servicesImportDecls) {
       for (const named of decl.getNamedImports()) {
         serviceImports.push({ name: named.getName(), typeName: named.getName() });
@@ -140,7 +138,7 @@ const componentGenerator: DesignGenerator = {
 
     // Build set of all known service type names
     const serviceTypeNames = new Set(serviceImports.map(s => s.typeName));
-    for (const m of (context.listMetadata('Service') || [])) {
+    for (const m of context.listMetadata('Service') || []) {
       serviceTypeNames.add(m.name);
     }
 
@@ -184,9 +182,14 @@ const componentGenerator: DesignGenerator = {
     // Process @property decorators
     const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap, inputProperties, outputProperties } =
       processPropertyDecorators(exportedClass);
-    debug('autoRead %j, formGroups %j, persistedArrays %j, inputs %j, outputs %j',
-      autoReadProperties.length, formGroupProperties.length, persistedArrayProperties.length,
-      inputProperties.length, outputProperties.length);
+    debug(
+      'autoRead %j, formGroups %j, persistedArrays %j, inputs %j, outputs %j',
+      autoReadProperties.length,
+      formGroupProperties.length,
+      persistedArrayProperties.length,
+      inputProperties.length,
+      outputProperties.length
+    );
 
     // Angular core extras to collect
     const angularCoreExtras: string[] = [];
@@ -350,7 +353,7 @@ const componentGenerator: DesignGenerator = {
 
     // Build set of injectable external type names (Router, HttpClient, MatDialog, etc.)
     const injectableExternalTypes = new Map<string, string>();
-    for (const et of (context.listMetadata('ExternalType') || [])) {
+    for (const et of context.listMetadata('ExternalType') || []) {
       const etClass = et.sourceFile.getClasses()[0];
       if (!etClass) continue;
       const opts = getClassDecorator(etClass, 'externalType');
@@ -467,7 +470,7 @@ const componentGenerator: DesignGenerator = {
         name: 'ngOnInit',
         isAsync,
         returnType: isAsync ? 'Promise<void>' : 'void',
-        statements: initLines,
+        statements: initLines
       });
     }
 
@@ -529,9 +532,7 @@ const componentGenerator: DesignGenerator = {
 
     // Add Angular Component import (merge with existing if design file imported from @angular/core)
     const angularCoreImports = ['Component', ...new Set(angularCoreExtras)];
-    const existingAngularCoreImport = writableFile.getImportDeclaration(
-      imp => imp.getModuleSpecifierValue() === '@angular/core'
-    );
+    const existingAngularCoreImport = writableFile.getImportDeclaration(imp => imp.getModuleSpecifierValue() === '@angular/core');
     if (existingAngularCoreImport) {
       const existingNames = existingAngularCoreImport.getNamedImports().map(ni => ni.getName());
       for (const name of angularCoreImports) {
@@ -568,7 +569,7 @@ const componentGenerator: DesignGenerator = {
     for (const svc of injectedServices) {
       writableFile.addImportDeclaration({
         moduleSpecifier: `${serviceRelativePath}/${svc.serviceFile}/${svc.serviceFile}.service`,
-        namedImports: [svc.typeName],
+        namedImports: [svc.typeName]
       });
     }
 
@@ -593,9 +594,7 @@ const componentGenerator: DesignGenerator = {
 
     // Add imports for ViewChild component types (after template imports to avoid duplicates)
     for (const vc of viewChildProps) {
-      const alreadyImported = writableFile.getImportDeclarations().some(imp =>
-        imp.getNamedImports().some(ni => ni.getName() === vc.typeName)
-      );
+      const alreadyImported = writableFile.getImportDeclarations().some(imp => imp.getNamedImports().some(ni => ni.getName() === vc.typeName));
       if (!alreadyImported) {
         writableFile.addImportDeclaration({
           moduleSpecifier: `../${vc.componentFile}/${vc.componentFile}.component`,
@@ -664,9 +663,7 @@ const componentGenerator: DesignGenerator = {
       }
 
       // Add MatDialogRef import (merge with existing if present)
-      const existingMatDialogImport = writableFile.getImportDeclaration(
-        imp => imp.getModuleSpecifierValue() === '@angular/material/dialog'
-      );
+      const existingMatDialogImport = writableFile.getImportDeclaration(imp => imp.getModuleSpecifierValue() === '@angular/material/dialog');
       if (existingMatDialogImport) {
         const existingNames = existingMatDialogImport.getNamedImports().map(ni => ni.getName());
         if (!existingNames.includes('MatDialogRef')) {
@@ -685,16 +682,18 @@ const componentGenerator: DesignGenerator = {
         existingCtor.addParameter({
           name: 'dialog',
           type: `MatDialogRef<${contentClassName}>`,
-          scope: Scope.Public,
+          scope: Scope.Public
         });
       } else {
         exportedClass.insertConstructor(0, {
-          parameters: [{
-            name: 'dialog',
-            type: `MatDialogRef<${contentClassName}>`,
-            scope: Scope.Public,
-          }],
-          statements: [],
+          parameters: [
+            {
+              name: 'dialog',
+              type: `MatDialogRef<${contentClassName}>`,
+              scope: Scope.Public
+            }
+          ],
+          statements: []
         });
       }
 

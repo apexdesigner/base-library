@@ -8,11 +8,7 @@ import createDebug from 'debug';
 const Debug = createDebug('BaseLibrary:generators:serverFunction');
 
 // Modules to skip when mapping design imports
-const SKIP_MODULES = new Set([
-  '@apexdesigner/dsl',
-  '@roles',
-  'vitest',
-]);
+const SKIP_MODULES = new Set(['@apexdesigner/dsl', '@roles', 'vitest']);
 
 /**
  * Extract the layer option from addFunction(options, fn).
@@ -168,7 +164,7 @@ const serverFunctionGenerator: DesignGenerator = {
     debug('Generated server function file for %j', slug);
 
     return content;
-  },
+  }
 };
 
 export { serverFunctionGenerator };

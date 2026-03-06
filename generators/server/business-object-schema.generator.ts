@@ -1,6 +1,13 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getDataSource, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getPropertyDecorator, getObjectLiteralValue, getModuleLevelCall, getTemplateString } from '@apexdesigner/utilities';
+import {
+  getClassByBase,
+  getDescription,
+  getPropertyDecorator,
+  getObjectLiteralValue,
+  getModuleLevelCall,
+  getTemplateString
+} from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
@@ -31,13 +38,11 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       condition: (metadata, conditionContext) => {
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
-      },
+      }
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `server/src/schemas/business-objects/${kebabCase(metadata.name)}.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`server/src/schemas/business-objects/${kebabCase(metadata.name)}.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -75,7 +80,6 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     });
 
     // schema-tools import is deferred until after property processing (see below)
-
 
     // Get id property info
     const idProperty = getIdProperty(metadata.sourceFile, context);
@@ -286,7 +290,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       // Build the schema chain
       const chain: string[] = [zodType];
 
-      if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
+      if (isOptional) {
+        chain.push('.nullable()');
+        chain.push('.optional()');
+      }
       if (opts.column && typeof opts.column === 'object') {
         chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
       } else if (typeNode) {
@@ -355,8 +362,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           else if (typeText === 'number') zodType = 'z.number()';
           else if (typeText === 'boolean') zodType = 'z.boolean()';
           else if (typeText === 'Date') zodType = 'z.coerce.date()';
-          else if (typeText === 'DateTime') { zodType = 'datetime()'; imports.add('datetime'); }
-          else if (baseTypeValidValues.has(typeText)) {
+          else if (typeText === 'DateTime') {
+            zodType = 'datetime()';
+            imports.add('datetime');
+          } else if (baseTypeValidValues.has(typeText)) {
             const values = baseTypeValidValues.get(typeText)!;
             zodType = `z.enum([${values.map(v => `"${v.replace(/"/g, '\\"')}"`).join(', ')}])`;
           } else if (baseTypeNativeMap.has(typeText)) {
@@ -373,7 +382,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
 
         const chain: string[] = [zodType];
 
-        if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
+        if (isOptional) {
+          chain.push('.nullable()');
+          chain.push('.optional()');
+        }
         if (opts.column && typeof opts.column === 'object') {
           chain.push(`.column(${toObjectLiteral(opts.column as Record<string, unknown>)})`);
         } else if (typeNode) {

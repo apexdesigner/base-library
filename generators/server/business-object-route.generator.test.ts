@@ -17,7 +17,7 @@ describe('businessObjectRouteGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
         sourceCode: `
@@ -28,7 +28,7 @@ describe('businessObjectRouteGenerator', () => {
             { type: 'Class', httpMethod: 'Post' },
             async function upload(options: any) {}
           );
-        `,
+        `
       });
 
       const behaviorMeta = workspace.context.listMetadata('Behavior')[0];
@@ -47,7 +47,7 @@ describe('businessObjectRouteGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -65,7 +65,7 @@ describe('businessObjectRouteGenerator', () => {
           export class ProcessInstance extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessInstancePause', {
         sourceCode: `
@@ -78,7 +78,7 @@ describe('businessObjectRouteGenerator', () => {
               debug("pausing");
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -98,7 +98,7 @@ describe('businessObjectRouteGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];

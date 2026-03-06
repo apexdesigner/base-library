@@ -13,7 +13,7 @@ describe('appLifecycleGenerator', () => {
             { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -33,7 +33,7 @@ describe('appLifecycleGenerator', () => {
               console.log('loading');
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -57,7 +57,7 @@ describe('appLifecycleGenerator', () => {
               return 'abc';
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -80,7 +80,7 @@ describe('appLifecycleGenerator', () => {
               await ProcessDesign.find();
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -102,7 +102,7 @@ describe('appLifecycleGenerator', () => {
               fs.existsSync(path.join('.'));
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -124,7 +124,7 @@ describe('appLifecycleGenerator', () => {
               await App.someMethod();
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -143,7 +143,7 @@ describe('appLifecycleGenerator', () => {
             { type: 'Lifecycle Behavior', stage: 'Running' },
             async function loadSampleDesigns() {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('AppBehavior')[0];

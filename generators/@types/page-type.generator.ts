@@ -10,13 +10,11 @@ const pageTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Page',
+      metadataType: 'Page'
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `design/@types/pages/${kebabCase(metadata.name)}.d.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`design/@types/pages/${kebabCase(metadata.name)}.d.ts`],
 
   async generate(metadata: DesignMetadata, _context: GenerationContext) {
     const debug = Debug.extend('generate');

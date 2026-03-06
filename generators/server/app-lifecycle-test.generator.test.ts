@@ -25,7 +25,7 @@ describe('appLifecycleTestGenerator', () => {
           const designs = await ProcessDesign.find();
           expect(designs).toHaveLength(0);
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -54,7 +54,7 @@ describe('appLifecycleTestGenerator', () => {
         addTest("test", async () => {
           expect(true).toBe(true);
         });
-      `,
+      `
     });
 
     // Trigger condition should reject non-lifecycle
@@ -74,7 +74,7 @@ describe('appLifecycleTestGenerator', () => {
             console.log('started');
           }
         );
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('AppBehavior')[0];
@@ -82,5 +82,4 @@ describe('appLifecycleTestGenerator', () => {
 
     expect(result).toContain('it.skip("no tests defined")');
   });
-
 });

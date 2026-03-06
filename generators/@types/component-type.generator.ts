@@ -10,13 +10,11 @@ const componentTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Component',
+      metadataType: 'Component'
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `design/@types/components/${kebabCase(metadata.name)}.d.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`design/@types/components/${kebabCase(metadata.name)}.d.ts`],
 
   async generate(metadata: DesignMetadata, _context: GenerationContext) {
     const debug = Debug.extend('generate');

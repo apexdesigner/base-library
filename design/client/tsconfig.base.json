@@ -13,33 +13,16 @@
     "target": "ES2022",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "lib": ["ES2022", "dom"],
     "paths": {
-      "@services/*": [
-        "./src/app/services/*"
-      ],
-      "@components/*": [
-        "./src/app/components/*"
-      ],
-      "@pages/*": [
-        "./src/app/pages/*"
-      ],
-      "@business-objects/*": [
-        "./src/app/business-objects/*"
-      ],
-      "@schemas/*": [
-        "../server/src/schemas/*"
-      ],
-      "@app/*": [
-        "./src/app/*"
-      ]
+      "@services/*": ["./src/app/services/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@pages/*": ["./src/app/pages/*"],
+      "@business-objects/*": ["./src/app/business-objects/*"],
+      "@schemas/*": ["../server/src/schemas/*"],
+      "@app/*": ["./src/app/*"]
     }
   },
   "angularCompilerOptions": {

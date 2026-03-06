@@ -12,11 +12,11 @@ const clientAppConfigGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata: DesignMetadata) => !isLibrary(metadata),
+      condition: (metadata: DesignMetadata) => !isLibrary(metadata)
     },
     {
-      metadataType: 'AppBehavior',
-    },
+      metadataType: 'AppBehavior'
+    }
   ],
 
   outputs: () => ['client/src/app/app.config.ts'],
@@ -36,19 +36,22 @@ const clientAppConfigGenerator: DesignGenerator = {
     debug('providers %j', providers.length);
 
     // Collect interceptor app behaviors, sorted by sequence
-    const interceptors = context.listMetadata('AppBehavior').filter(behavior => {
-      const options = getBehaviorOptions(behavior.sourceFile);
-      return options?.type === 'Interceptor';
-    }).sort((a, b) => {
-      const aSeq = (getBehaviorOptions(a.sourceFile)?.sequence as number) || 0;
-      const bSeq = (getBehaviorOptions(b.sourceFile)?.sequence as number) || 0;
-      return aSeq - bSeq;
-    });
+    const interceptors = context
+      .listMetadata('AppBehavior')
+      .filter(behavior => {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        return options?.type === 'Interceptor';
+      })
+      .sort((a, b) => {
+        const aSeq = (getBehaviorOptions(a.sourceFile)?.sequence as number) || 0;
+        const bSeq = (getBehaviorOptions(b.sourceFile)?.sequence as number) || 0;
+        return aSeq - bSeq;
+      });
     debug('interceptors %j', interceptors.length);
 
     const imports: string[] = [
       `import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';`,
-      `import { provideRouter } from '@angular/router';`,
+      `import { provideRouter } from '@angular/router';`
     ];
 
     // HttpClient import — add withInterceptors if we have interceptors
@@ -104,9 +107,8 @@ ${options.join('\n')}
     }
 
     // Build provideHttpClient line
-    const httpClientLine = interceptorNames.length > 0
-      ? `    provideHttpClient(withInterceptors([${interceptorNames.join(', ')}])),`
-      : `    provideHttpClient(),`;
+    const httpClientLine =
+      interceptorNames.length > 0 ? `    provideHttpClient(withInterceptors([${interceptorNames.join(', ')}])),` : `    provideHttpClient(),`;
 
     const lines: string[] = [
       ...imports,
@@ -123,11 +125,11 @@ ${options.join('\n')}
       `      BusinessObjectBase.configure(inject(HttpClient));`,
       `    }),`,
       `  ],`,
-      `};`,
+      `};`
     ];
 
     return lines.join('\n') + '\n';
-  },
+  }
 };
 
 export { clientAppConfigGenerator };

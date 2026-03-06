@@ -45,7 +45,7 @@ function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
       tests.push({
         name,
         body: text.slice(1, -1),
-        isAsync: fnArg.isAsync(),
+        isAsync: fnArg.isAsync()
       });
     }
   }
@@ -57,7 +57,7 @@ const businessObjectTestGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
       metadataType: 'Behavior',
@@ -65,11 +65,10 @@ const businessObjectTestGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -83,8 +82,7 @@ const businessObjectTestGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;
@@ -217,7 +215,7 @@ const businessObjectTestGenerator: DesignGenerator = {
     lines.push('});');
 
     return lines.join('\n');
-  },
+  }
 };
 
 export { businessObjectTestGenerator };

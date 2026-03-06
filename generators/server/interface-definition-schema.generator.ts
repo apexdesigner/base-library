@@ -11,13 +11,11 @@ const interfaceDefinitionSchemaGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'InterfaceDefinition',
+      metadataType: 'InterfaceDefinition'
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `server/src/schemas/interface-definitions/${kebabCase(metadata.name)}.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`server/src/schemas/interface-definitions/${kebabCase(metadata.name)}.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -171,7 +169,10 @@ const interfaceDefinitionSchemaGenerator: DesignGenerator = {
       // Build the schema chain
       const chain: string[] = [zodType];
 
-      if (isOptional) { chain.push('.nullable()'); chain.push('.optional()'); }
+      if (isOptional) {
+        chain.push('.nullable()');
+        chain.push('.optional()');
+      }
       if (opts.hidden) chain.push('.hidden()');
       if (opts.required) chain.push('.requiredFinal()');
       if (opts.disabled) chain.push('.disabled()');

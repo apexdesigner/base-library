@@ -17,7 +17,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 // HTTP methods for behaviors
@@ -26,7 +26,7 @@ const BEHAVIOR_HTTP_METHODS: Record<string, string> = {
   Put: 'put',
   Patch: 'patch',
   Get: 'get',
-  Delete: 'delete',
+  Delete: 'delete'
 };
 
 const businessObjectRouteGenerator: DesignGenerator = {
@@ -38,7 +38,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
       condition: (metadata, conditionContext) => {
         if (!conditionContext?.context) return true;
         return !!getDataSource(metadata.sourceFile, conditionContext.context);
-      },
+      }
     },
     {
       metadataType: 'Behavior',
@@ -46,11 +46,10 @@ const businessObjectRouteGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
-    },
+      }
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -64,8 +63,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;
@@ -123,7 +121,13 @@ const businessObjectRouteGenerator: DesignGenerator = {
     const allBehaviors = context.listMetadata('Behavior');
     debug('total behaviors in project %j', allBehaviors.length);
 
-    interface BehaviorRoute { func: NonNullable<ReturnType<typeof getBehaviorFunction>>; httpMethod: string; behaviorKebab: string; hasParams: boolean; callArg: string }
+    interface BehaviorRoute {
+      func: NonNullable<ReturnType<typeof getBehaviorFunction>>;
+      httpMethod: string;
+      behaviorKebab: string;
+      hasParams: boolean;
+      callArg: string;
+    }
     const classBehaviorRoutes: BehaviorRoute[] = [];
     const instanceBehaviorRoutes: BehaviorRoute[] = [];
 

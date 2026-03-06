@@ -32,6 +32,7 @@
   },
   "scripts": {
     "test": "vitest run",
+    "format": "prettier --write \"generators/**\" \"design/**\"",
     "pack": "rm -f apexdesigner-base-library-*.tgz && npm pack"
   },
   "type": "module",

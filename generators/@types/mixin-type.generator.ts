@@ -10,13 +10,11 @@ const mixinTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Mixin',
+      metadataType: 'Mixin'
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `design/@types/mixins/${kebabCase(metadata.name)}.d.ts`
-  ],
+  outputs: (metadata: DesignMetadata) => [`design/@types/mixins/${kebabCase(metadata.name)}.d.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');

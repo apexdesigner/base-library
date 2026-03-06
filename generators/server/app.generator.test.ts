@@ -28,7 +28,7 @@ describe('appGenerator', () => {
         sourceCode: `
           import { DataSource } from '@apexdesigner/dsl';
           export class Postgres extends DataSource {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -46,13 +46,13 @@ describe('appGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Token', {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class Token extends BusinessObject {}
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -71,7 +71,7 @@ describe('appGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('AppBehavior', 'SomeBehavior', {
         sourceCode: `
@@ -83,7 +83,7 @@ describe('appGenerator', () => {
               return ProcessDesign.find();
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -106,7 +106,7 @@ describe('appGenerator', () => {
               return 'abc123';
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -128,7 +128,7 @@ describe('appGenerator', () => {
               console.log('started');
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -156,7 +156,7 @@ describe('appGenerator', () => {
               return user;
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -172,7 +172,7 @@ describe('appGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class AppUser extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('TestFixture', 'SeedAdminUser', {
         sourceCode: `
@@ -184,7 +184,7 @@ describe('appGenerator', () => {
               return user;
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -207,7 +207,7 @@ describe('appGenerator', () => {
               return createHash('sha1').update(JSON.stringify(data)).digest('hex');
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -228,7 +228,7 @@ describe('appGenerator', () => {
               return ts.transpileModule('code', {});
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -243,7 +243,7 @@ describe('appGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('AppBehavior', 'SomeAppBehavior', {
         sourceCode: `
@@ -256,7 +256,7 @@ describe('appGenerator', () => {
               return designs;
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -277,7 +277,7 @@ describe('appGenerator', () => {
               return App.preprocessJson(value);
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -300,7 +300,7 @@ describe('appGenerator', () => {
               return 'abc';
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];
@@ -321,7 +321,7 @@ describe('appGenerator', () => {
               return createHash('sha1');
             }
           );
-        `,
+        `
       });
       workspace.addMetadata('AppBehavior', 'BehaviorB', {
         sourceCode: `
@@ -333,7 +333,7 @@ describe('appGenerator', () => {
               return createHash('md5');
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('Project')[0];

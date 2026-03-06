@@ -11,7 +11,7 @@ const BEHAVIOR_HTTP_METHODS: Record<string, string> = {
   Put: 'put',
   Patch: 'patch',
   Get: 'get',
-  Delete: 'delete',
+  Delete: 'delete'
 };
 
 const appBehaviorRouteGenerator: DesignGenerator = {
@@ -19,11 +19,11 @@ const appBehaviorRouteGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'AppBehavior',
+      metadataType: 'AppBehavior'
     },
     {
-      metadataType: 'Project',
-    },
+      metadataType: 'Project'
+    }
   ],
 
   outputs: () => ['server/src/routes/app-behaviors.ts'],
@@ -66,7 +66,7 @@ const appBehaviorRouteGenerator: DesignGenerator = {
         const func = getBehaviorFunction(behavior.sourceFile);
         if (!func) continue;
 
-        const httpMethod = BEHAVIOR_HTTP_METHODS[(options.httpMethod as string)] || 'post';
+        const httpMethod = BEHAVIOR_HTTP_METHODS[options.httpMethod as string] || 'post';
 
         // Determine route path: strip /api prefix, default to /<kebab-name>
         let routePath: string;

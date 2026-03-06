@@ -53,20 +53,21 @@ const serverPackageGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Project',
+      metadataType: 'Project'
     }
   ],
 
-  outputs: () => [
-    'server/package.json'
-  ],
+  outputs: () => ['server/package.json'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
     // Get all projects from context
     const allProjects = context.listMetadata('Project');
-    debug('allProjects %j', allProjects.map(p => p.name));
+    debug(
+      'allProjects %j',
+      allProjects.map(p => p.name)
+    );
 
     // Find the main project (not a library)
     const mainProject = allProjects.find(p => !isLibrary(p));
@@ -94,7 +95,10 @@ const serverPackageGenerator: DesignGenerator = {
     const orderedProjects = [...libraryProjects].reverse();
     orderedProjects.push(mainProject);
 
-    debug('orderedProjects %j', orderedProjects.map(p => p.name));
+    debug(
+      'orderedProjects %j',
+      orderedProjects.map(p => p.name)
+    );
 
     // Iterate through projects and collect dependencies
     for (const project of orderedProjects) {
@@ -103,9 +107,7 @@ const serverPackageGenerator: DesignGenerator = {
       const projectClass = getClassByBase(project.sourceFile, 'Project');
       if (!projectClass) continue;
 
-      const serverDependencies = getObjectLiteralValue(projectClass, 'serverDependencies') as
-        | Record<string, string | ServerDependency>
-        | undefined;
+      const serverDependencies = getObjectLiteralValue(projectClass, 'serverDependencies') as Record<string, string | ServerDependency> | undefined;
 
       if (serverDependencies) {
         debug('  serverDependencies count: %j', Object.keys(serverDependencies).length);
@@ -139,9 +141,7 @@ const serverPackageGenerator: DesignGenerator = {
       }
 
       // Merge serverDependencyOverrides (later projects override earlier ones)
-      const serverDependencyOverrides = getObjectLiteralValue(projectClass, 'serverDependencyOverrides') as
-        | Record<string, unknown>
-        | undefined;
+      const serverDependencyOverrides = getObjectLiteralValue(projectClass, 'serverDependencyOverrides') as Record<string, unknown> | undefined;
 
       if (serverDependencyOverrides) {
         debug('  serverDependencyOverrides: %j', serverDependencyOverrides);
@@ -162,7 +162,7 @@ const serverPackageGenerator: DesignGenerator = {
       private: true,
       type: 'module',
       main: 'dist/index.js',
-      types: 'dist/index.d.ts',
+      types: 'dist/index.d.ts'
     };
 
     if (displayName) {

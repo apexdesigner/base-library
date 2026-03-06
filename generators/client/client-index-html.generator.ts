@@ -12,8 +12,8 @@ const clientIndexHtmlGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata),
-    },
+      condition: metadata => !isLibrary(metadata)
+    }
   ],
 
   outputs: () => ['client/src/index.html'],
@@ -30,9 +30,7 @@ const clientIndexHtmlGenerator: DesignGenerator = {
     const projectClass = getClassByBase(project.sourceFile, 'Project')!;
 
     const displayNameExpr = getClassPropertyInitializer(projectClass, 'displayName');
-    const displayName = displayNameExpr && Node.isStringLiteral(displayNameExpr)
-      ? displayNameExpr.getLiteralValue()
-      : undefined;
+    const displayName = displayNameExpr && Node.isStringLiteral(displayNameExpr) ? displayNameExpr.getLiteralValue() : undefined;
 
     const title = displayName || project.name;
     const params = context.parameterValues || {};
@@ -52,7 +50,7 @@ const clientIndexHtmlGenerator: DesignGenerator = {
     <app-root></app-root>
   </body>
 </html>`;
-  },
+  }
 };
 
 export { clientIndexHtmlGenerator };

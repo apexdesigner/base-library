@@ -1,6 +1,13 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent, getModuleLevelCall } from '@apexdesigner/utilities';
+import {
+  getClassByBase,
+  getDescription,
+  getBehaviorFunction,
+  getBehaviorOptions,
+  getBehaviorParent,
+  getModuleLevelCall
+} from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import { Project, StructureKind } from 'ts-morph';
 import createDebug from 'debug';
@@ -17,7 +24,7 @@ const LIFECYCLE_TYPES = new Set([
   'After Delete',
   'Before Read',
   'After Read',
-  'After Start',
+  'After Start'
 ]);
 
 const businessObjectTypeGenerator: DesignGenerator = {
@@ -25,7 +32,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'BusinessObject',
+      metadataType: 'BusinessObject'
     },
     {
       metadataType: 'Behavior',
@@ -33,14 +40,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context.listMetadata('BusinessObject')
-          .find(bo => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
-      },
+      }
     },
     {
-      metadataType: 'TestFixture',
-    },
+      metadataType: 'TestFixture'
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -54,8 +60,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
     // If triggered by a Behavior, resolve to the parent BO metadata
     const parentName = getBehaviorParent(metadata.sourceFile);
     if (parentName) {
-      const boMeta = context.listMetadata('BusinessObject')
-        .find(bo => pascalCase(bo.name) === parentName);
+      const boMeta = context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
       if (boMeta) {
         debug('resolved behavior %j to parent BO %j', metadata.name, boMeta.name);
         metadata = boMeta;
@@ -73,7 +78,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
     debug('Creating ts-morph project');
     const project = new Project({
       useInMemoryFileSystem: true,
-      skipFileDependencyResolution: true,
+      skipFileDependencyResolution: true
     });
     const sourceFile = project.createSourceFile('temp.d.ts', '', { overwrite: true });
     debug('Created source file');
@@ -101,7 +106,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
           kind: StructureKind.ImportDeclaration as const,
           isTypeOnly: true,
           moduleSpecifier: `./${kebabCase(typeName)}`,
-          namedImports: [typeName],
+          namedImports: [typeName]
         }));
 
       sourceFile.addImportDeclarations(importDecls);
@@ -112,9 +117,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       kind: StructureKind.ImportDeclaration,
       isTypeOnly: true,
       moduleSpecifier: '@apexdesigner/schema-persistence',
-      namedImports: isView
-        ? ['FindFilter', 'FindOneFilter']
-        : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter'],
+      namedImports: isView ? ['FindFilter', 'FindOneFilter'] : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter']
     });
 
     // Get description and add as comment
@@ -128,21 +131,21 @@ const businessObjectTypeGenerator: DesignGenerator = {
     const classDecl = sourceFile.addClass({
       name: className,
       isExported: true,
-      hasDeclareKeyword: true,
+      hasDeclareKeyword: true
     });
 
     // Add static dataSource property
     classDecl.addProperty({
       name: 'dataSource',
       type: 'any',
-      isStatic: true,
+      isStatic: true
     });
 
     // Add static testFixtures property
     classDecl.addProperty({
       name: 'testFixtures',
       type: 'Record<string, (...args: any[]) => any>',
-      isStatic: true,
+      isStatic: true
     });
 
     // Add id property — resolve to a primitive TS type
@@ -156,7 +159,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
 
     classDecl.addProperty({
       name: idName,
-      type: idType,
+      type: idType
     });
 
     // Get properties from the class
@@ -184,7 +187,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       classDecl.addProperty({
         name: propName,
         type: propType,
-        hasQuestionToken: prop.hasQuestionToken(),
+        hasQuestionToken: prop.hasQuestionToken()
       });
     }
 
@@ -205,7 +208,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         classDecl.addProperty({
           name: propName,
           type: propType,
-          hasQuestionToken: prop.hasQuestionToken(),
+          hasQuestionToken: prop.hasQuestionToken()
         });
       }
     }
@@ -224,7 +227,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
 
           classDecl.addProperty({
             name: rel.foreignKey,
-            type: fkType,
+            type: fkType
           });
         }
       }
@@ -237,13 +240,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
         classDecl.addProperty({
           name: rel.relationshipName,
           type: `${rel.businessObjectName}${arraySuffix}`,
-          hasQuestionToken,
+          hasQuestionToken
         });
       } else {
         classDecl.addProperty({
           name: rel.relationshipName,
           type: rel.businessObjectName,
-          hasQuestionToken,
+          hasQuestionToken
         });
       }
     }
@@ -296,9 +299,9 @@ const businessObjectTypeGenerator: DesignGenerator = {
           isStatic,
           parameters: methodParams.map(p => ({
             name: p.name,
-            type: p.type || 'any',
+            type: p.type || 'any'
           })),
-          returnType: isAsync ? `Promise<${func.returnType || 'any'}>` : (func.returnType || 'any'),
+          returnType: isAsync ? `Promise<${func.returnType || 'any'}>` : func.returnType || 'any'
         });
 
         debug('added behavior method %j (static: %j)', func.name, isStatic);
@@ -310,20 +313,20 @@ const businessObjectTypeGenerator: DesignGenerator = {
     // Add CRUD static methods based on @apexdesigner/schema-persistence API
 
     if (!isView) {
-    // Create methods
-    classDecl.addMethod({
-      name: 'create',
-      isStatic: true,
-      parameters: [{ name: 'data', type: `Partial<${className}>` }],
-      returnType: `Promise<${className}>`,
-    });
+      // Create methods
+      classDecl.addMethod({
+        name: 'create',
+        isStatic: true,
+        parameters: [{ name: 'data', type: `Partial<${className}>` }],
+        returnType: `Promise<${className}>`
+      });
 
-    classDecl.addMethod({
-      name: 'createMany',
-      isStatic: true,
-      parameters: [{ name: 'data', type: `Partial<${className}>[]` }],
-      returnType: `Promise<${className}[]>`,
-    });
+      classDecl.addMethod({
+        name: 'createMany',
+        isStatic: true,
+        parameters: [{ name: 'data', type: `Partial<${className}>[]` }],
+        returnType: `Promise<${className}[]>`
+      });
     }
 
     // Find methods
@@ -331,14 +334,14 @@ const businessObjectTypeGenerator: DesignGenerator = {
       name: 'find',
       isStatic: true,
       parameters: [{ name: 'filter?', type: `FindFilter<${className}>` }],
-      returnType: `Promise<${className}[]>`,
+      returnType: `Promise<${className}[]>`
     });
 
     classDecl.addMethod({
       name: 'findOne',
       isStatic: true,
       parameters: [{ name: 'filter', type: `FindOneFilter<${className}>` }],
-      returnType: `Promise<${className} | null>`,
+      returnType: `Promise<${className} | null>`
     });
 
     classDecl.addMethod({
@@ -348,16 +351,16 @@ const businessObjectTypeGenerator: DesignGenerator = {
         { name: 'id', type: idType },
         { name: 'filter?', type: `Pick<FindFilter<${className}>, 'include' | 'fields' | 'omit'>` }
       ],
-      returnType: `Promise<${className}>`,
+      returnType: `Promise<${className}>`
     });
 
     if (!isView) {
-    classDecl.addMethod({
-      name: 'findOrCreate',
-      isStatic: true,
-      parameters: [{ name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}> }` }],
-      returnType: `Promise<{ entity: ${className}; created: boolean }>`,
-    });
+      classDecl.addMethod({
+        name: 'findOrCreate',
+        isStatic: true,
+        parameters: [{ name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}> }` }],
+        returnType: `Promise<{ entity: ${className}; created: boolean }>`
+      });
     }
 
     // Count method
@@ -365,53 +368,55 @@ const businessObjectTypeGenerator: DesignGenerator = {
       name: 'count',
       isStatic: true,
       parameters: [{ name: 'filter?', type: `Pick<FindFilter<${className}>, 'where'>` }],
-      returnType: `Promise<number>`,
+      returnType: `Promise<number>`
     });
 
     if (!isView) {
-    // Update methods
-    classDecl.addMethod({
-      name: 'update',
-      isStatic: true,
-      parameters: [
-        { name: 'filter', type: `UpdateFilter<${className}>` },
-        { name: 'data', type: `Partial<${className}>` }
-      ],
-      returnType: `Promise<${className}[]>`,
-    });
+      // Update methods
+      classDecl.addMethod({
+        name: 'update',
+        isStatic: true,
+        parameters: [
+          { name: 'filter', type: `UpdateFilter<${className}>` },
+          { name: 'data', type: `Partial<${className}>` }
+        ],
+        returnType: `Promise<${className}[]>`
+      });
 
-    classDecl.addMethod({
-      name: 'updateById',
-      isStatic: true,
-      parameters: [
-        { name: 'id', type: idType },
-        { name: 'data', type: `Partial<${className}>` }
-      ],
-      returnType: `Promise<${className}>`,
-    });
+      classDecl.addMethod({
+        name: 'updateById',
+        isStatic: true,
+        parameters: [
+          { name: 'id', type: idType },
+          { name: 'data', type: `Partial<${className}>` }
+        ],
+        returnType: `Promise<${className}>`
+      });
 
-    // Upsert method
-    classDecl.addMethod({
-      name: 'upsert',
-      isStatic: true,
-      parameters: [{ name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }` }],
-      returnType: `Promise<${className}>`,
-    });
+      // Upsert method
+      classDecl.addMethod({
+        name: 'upsert',
+        isStatic: true,
+        parameters: [
+          { name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }` }
+        ],
+        returnType: `Promise<${className}>`
+      });
 
-    // Delete methods
-    classDecl.addMethod({
-      name: 'delete',
-      isStatic: true,
-      parameters: [{ name: 'filter', type: `DeleteFilter<${className}>` }],
-      returnType: `Promise<number>`,
-    });
+      // Delete methods
+      classDecl.addMethod({
+        name: 'delete',
+        isStatic: true,
+        parameters: [{ name: 'filter', type: `DeleteFilter<${className}>` }],
+        returnType: `Promise<number>`
+      });
 
-    classDecl.addMethod({
-      name: 'deleteById',
-      isStatic: true,
-      parameters: [{ name: 'id', type: idType }],
-      returnType: `Promise<boolean>`,
-    });
+      classDecl.addMethod({
+        name: 'deleteById',
+        isStatic: true,
+        parameters: [{ name: 'id', type: idType }],
+        returnType: `Promise<boolean>`
+      });
     }
 
     const content = sourceFile.getText();

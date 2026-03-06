@@ -40,7 +40,7 @@ function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
       tests.push({
         name: nameArg.getLiteralValue(),
         body: text.slice(1, -1),
-        isAsync: fnArg.isAsync(),
+        isAsync: fnArg.isAsync()
       });
     }
   }
@@ -53,16 +53,14 @@ const appLifecycleTestGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'AppBehavior',
-      condition: (metadata) => {
+      condition: metadata => {
         const options = getBehaviorOptions(metadata.sourceFile);
         return !!options?.lifecycleStage;
-      },
-    },
+      }
+    }
   ],
 
-  outputs: (metadata: DesignMetadata) => [
-    `server/src/app-behaviors/${kebabCase(metadata.name)}.test.ts`,
-  ],
+  outputs: (metadata: DesignMetadata) => [`server/src/app-behaviors/${kebabCase(metadata.name)}.test.ts`],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -138,9 +136,7 @@ const appLifecycleTestGenerator: DesignGenerator = {
     lines.push('');
 
     // Pick a BO for afterEach truncateAll
-    const truncateClass = boImports.size > 0
-      ? Array.from(boImports).sort()[0]
-      : null;
+    const truncateClass = boImports.size > 0 ? Array.from(boImports).sort()[0] : null;
 
     lines.push(`describe("${funcName}", () => {`);
 
@@ -163,7 +159,7 @@ const appLifecycleTestGenerator: DesignGenerator = {
     lines.push('});');
 
     return lines.join('\n');
-  },
+  }
 };
 
 export { appLifecycleTestGenerator };

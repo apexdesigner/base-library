@@ -1,8 +1,8 @@
 const target = `http://localhost:${process.env.PORT || 3000}`;
 
 module.exports = {
-  "/api": {
+  '/api': {
     target,
-    secure: false,
-  },
+    secure: false
+  }
 };

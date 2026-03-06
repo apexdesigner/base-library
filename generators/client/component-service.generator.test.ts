@@ -14,7 +14,7 @@ function addComponent(workspace: ReturnType<typeof createSimpleMockWorkspace>, n
     sourceCode: `
       import { Component } from '@apexdesigner/dsl/component';
       export class ${name} extends Component {}
-    `,
+    `
   });
 }
 
@@ -23,7 +23,7 @@ function addProject(workspace: ReturnType<typeof createSimpleMockWorkspace>, nam
     sourceCode: `
       import { Project } from '@apexdesigner/dsl';
       export class ${name} extends Project {}
-    `,
+    `
   });
 }
 
@@ -42,7 +42,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'BreadcrumbComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("@Injectable({ providedIn: 'root' })");
@@ -56,7 +56,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'SidebarComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("readonly names = ['Breadcrumb', 'Sidebar'] as const;");
@@ -68,7 +68,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'BreadcrumbComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("case 'Breadcrumb':");
@@ -81,7 +81,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'BreadcrumbComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('throw new Error(`Unknown component: ${name}`)');
@@ -97,7 +97,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'MiddleComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("readonly names = ['Alpha', 'Middle', 'Zebra'] as const;");
@@ -118,7 +118,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'BreadcrumbComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).not.toContain("'App'");
@@ -133,7 +133,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'BreadcrumbComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const dts = getOutput(result, TYPE_PATH);
 
       expect(dts).toContain('export declare class ComponentService');
@@ -149,7 +149,7 @@ describe('componentServiceGenerator', () => {
       addComponent(workspace, 'BreadcrumbComponent');
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('createDebug("TestProject:ComponentService")');
@@ -162,7 +162,7 @@ describe('componentServiceGenerator', () => {
       addProject(workspace);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = await componentServiceGenerator.generate(metadata, workspace.context) as Map<string, string>;
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('readonly names = [] as const;');

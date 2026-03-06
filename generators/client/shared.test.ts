@@ -4,7 +4,7 @@ import {
   extractElementSelectors,
   extractDirectiveSelectors,
   extractPipeNames,
-  matchesDirectiveSelector,
+  matchesDirectiveSelector
 } from '@apexdesigner/utilities';
 import { convertAd3Template } from '@apexdesigner/generator';
 

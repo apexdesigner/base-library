@@ -17,16 +17,14 @@ const serviceGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Service',
-    },
+      metadataType: 'Service'
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
     const baseName = getBaseName(metadata.name);
     const serviceName = kebabCase(baseName);
-    return [
-      `client/src/app/services/${serviceName}/${serviceName}.service.ts`,
-    ];
+    return [`client/src/app/services/${serviceName}/${serviceName}.service.ts`];
   },
 
   async generate(metadata: DesignMetadata, context: GenerationContext): Promise<Map<string, string>> {
@@ -41,7 +39,7 @@ const serviceGenerator: DesignGenerator = {
     const project = new Project({
       useInMemoryFileSystem: true,
       compilerOptions: { target: 99, module: 99 },
-      manipulationSettings: { quoteKind: QuoteKind.Single },
+      manipulationSettings: { quoteKind: QuoteKind.Single }
     });
     const writableFile = project.createSourceFile('temp.ts', sourceFile.getText());
 
@@ -57,9 +55,7 @@ const serviceGenerator: DesignGenerator = {
 
     // Capture @services imports before removal (for service injection)
     const serviceImports: { name: string; typeName: string }[] = [];
-    const servicesImportDecls = writableFile.getImportDeclarations().filter(
-      imp => imp.getModuleSpecifierValue() === '@services'
-    );
+    const servicesImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@services');
     for (const decl of servicesImportDecls) {
       for (const named of decl.getNamedImports()) {
         serviceImports.push({ name: named.getName(), typeName: named.getName() });
@@ -70,7 +66,7 @@ const serviceGenerator: DesignGenerator = {
     // Build set of service type names for identifying service-typed properties
     const serviceTypeNames = new Set(serviceImports.map(s => s.typeName));
     // Also include all known Service metadata names
-    for (const m of (context.listMetadata('Service') || [])) {
+    for (const m of context.listMetadata('Service') || []) {
       serviceTypeNames.add(m.name);
     }
 
@@ -86,10 +82,8 @@ const serviceGenerator: DesignGenerator = {
     }
 
     // Process @property decorators
-    const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap } =
-      processPropertyDecorators(exportedClass);
-    debug('autoRead %j, formGroups %j, persistedArrays %j',
-      autoReadProperties.length, formGroupProperties.length, persistedArrayProperties.length);
+    const { autoReadProperties, formGroupProperties, persistedArrayProperties, onChangeCallMap } = processPropertyDecorators(exportedClass);
+    debug('autoRead %j, formGroups %j, persistedArrays %j', autoReadProperties.length, formGroupProperties.length, persistedArrayProperties.length);
 
     // Transform onChangeCall properties into getter/setter with private backing field
     transformOnChangeProperties(exportedClass, onChangeCallMap);
@@ -178,7 +172,7 @@ const serviceGenerator: DesignGenerator = {
 
     // Build set of injectable external type names (Router, HttpClient, MatDialog, etc.)
     const injectableExternalTypes = new Map<string, string>();
-    for (const et of (context.listMetadata('ExternalType') || [])) {
+    for (const et of context.listMetadata('ExternalType') || []) {
       const etClass = et.sourceFile.getClasses()[0];
       if (!etClass) continue;
       const opts = getClassDecorator(etClass, 'externalType');
@@ -224,8 +218,7 @@ const serviceGenerator: DesignGenerator = {
     }
 
     // Build constructor for initialization if needed
-    const needsInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 ||
-      hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
+    const needsInit = autoReadProperties.length > 0 || callOnLoadMethods.length > 0 || hasAutoSaveFormGroups || hasPersistedArrayAutoRead;
 
     if (needsInit) {
       // Find insertion point: after properties, before design methods
@@ -291,13 +284,13 @@ const serviceGenerator: DesignGenerator = {
     // Add @Injectable decorator
     exportedClass.addDecorator({
       name: 'Injectable',
-      arguments: [`{ providedIn: 'root' }`],
+      arguments: [`{ providedIn: 'root' }`]
     });
 
     // Add Angular import at top
     writableFile.insertImportDeclaration(0, {
       moduleSpecifier: '@angular/core',
-      namedImports: angularCoreImports,
+      namedImports: angularCoreImports
     });
 
     // Add business object imports
@@ -312,19 +305,16 @@ const serviceGenerator: DesignGenerator = {
     for (const svc of injectedServices) {
       writableFile.addImportDeclaration({
         moduleSpecifier: `../${svc.serviceFile}/${svc.serviceFile}.service`,
-        namedImports: [svc.typeName],
+        namedImports: [svc.typeName]
       });
     }
 
     // Build output
     const outputs = new Map<string, string>();
-    outputs.set(
-      `client/src/app/services/${serviceName}/${serviceName}.service.ts`,
-      writableFile.getText(),
-    );
+    outputs.set(`client/src/app/services/${serviceName}/${serviceName}.service.ts`, writableFile.getText());
 
     return outputs;
-  },
+  }
 };
 
 export { serviceGenerator };

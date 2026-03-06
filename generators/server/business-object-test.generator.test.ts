@@ -16,7 +16,7 @@ describe('businessObjectTestGenerator', () => {
         export class ProcessDesign extends BusinessObject {
           id!: string;
         }
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
       sourceCode: `
@@ -34,7 +34,7 @@ describe('businessObjectTestGenerator', () => {
           const design = await ProcessDesign.testFixtures.simple();
           expect(design).toBeDefined();
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -56,7 +56,7 @@ describe('businessObjectTestGenerator', () => {
         export class ProcessDesign extends BusinessObject {
           id!: string;
         }
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
       sourceCode: `
@@ -69,7 +69,7 @@ describe('businessObjectTestGenerator', () => {
             return;
           }
         );
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -86,7 +86,7 @@ describe('businessObjectTestGenerator', () => {
         export class ProcessDesign extends BusinessObject {
           id!: string;
         }
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
       sourceCode: `
@@ -105,7 +105,7 @@ describe('businessObjectTestGenerator', () => {
           debug("d.id %j", d.id);
           expect(d).toBeDefined();
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -123,7 +123,7 @@ describe('businessObjectTestGenerator', () => {
         export class ProcessDesign extends BusinessObject {
           id!: string;
         }
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
       sourceCode: `
@@ -139,7 +139,7 @@ describe('businessObjectTestGenerator', () => {
         addTest("should use App", async () => {
           expect(App).toBeDefined();
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -156,7 +156,7 @@ describe('businessObjectTestGenerator', () => {
         export class ProcessDesign extends BusinessObject {
           id!: string;
         }
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
       sourceCode: `
@@ -171,7 +171,7 @@ describe('businessObjectTestGenerator', () => {
         addTest("test disable", async () => {
           expect(true).toBe(true);
         });
-      `,
+      `
     });
     workspace.addMetadata('Behavior', 'ProcessDesignEnable', {
       sourceCode: `
@@ -186,7 +186,7 @@ describe('businessObjectTestGenerator', () => {
         addTest("test enable", async () => {
           expect(true).toBe(true);
         });
-      `,
+      `
     });
 
     const metadata = workspace.context.listMetadata('BusinessObject')[0];

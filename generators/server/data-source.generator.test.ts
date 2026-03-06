@@ -14,12 +14,11 @@ describe('dataSourceGenerator', () => {
               persistenceType: "File",
             };
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('DataSource')[0];
-      await expect(dataSourceGenerator.generate(metadata, workspace.context))
-        .rejects.toThrow('requires a rootDir configuration option');
+      await expect(dataSourceGenerator.generate(metadata, workspace.context)).rejects.toThrow('requires a rootDir configuration option');
     });
 
     it('should not throw if File data source has rootDir', async () => {
@@ -33,7 +32,7 @@ describe('dataSourceGenerator', () => {
               rootDir: "./data",
             };
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('DataSource')[0];

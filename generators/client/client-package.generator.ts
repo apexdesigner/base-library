@@ -63,20 +63,21 @@ const clientPackageGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Project',
+      metadataType: 'Project'
     }
   ],
 
-  outputs: () => [
-    'client/package.json'
-  ],
+  outputs: () => ['client/package.json'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
     // Get all projects from context
     const allProjects = context.listMetadata('Project');
-    debug('allProjects %j', allProjects.map(p => p.name));
+    debug(
+      'allProjects %j',
+      allProjects.map(p => p.name)
+    );
 
     // Find the main project (not a library)
     const mainProject = allProjects.find(p => !isLibrary(p));
@@ -104,7 +105,10 @@ const clientPackageGenerator: DesignGenerator = {
     const orderedProjects = [...libraryProjects].reverse();
     orderedProjects.push(mainProject);
 
-    debug('orderedProjects %j', orderedProjects.map(p => p.name));
+    debug(
+      'orderedProjects %j',
+      orderedProjects.map(p => p.name)
+    );
 
     // Iterate through projects and collect dependencies
     for (const project of orderedProjects) {
@@ -118,12 +122,8 @@ const clientPackageGenerator: DesignGenerator = {
       // 2. From array literal in source (old TS array format)
       // 3. From object literal in source (new TS object format)
       const metadataClientDeps = (project as any).clientDependencies as ClientDependenciesValue | undefined;
-      const arrayClientDeps = getArrayLiteralValue(projectClass, 'clientDependencies') as
-        | ClientDependencyItem[]
-        | undefined;
-      const objectClientDeps = getObjectLiteralValue(projectClass, 'clientDependencies') as
-        | ClientDependencies
-        | undefined;
+      const arrayClientDeps = getArrayLiteralValue(projectClass, 'clientDependencies') as ClientDependencyItem[] | undefined;
+      const objectClientDeps = getObjectLiteralValue(projectClass, 'clientDependencies') as ClientDependencies | undefined;
 
       const rawClientDeps = metadataClientDeps || arrayClientDeps || objectClientDeps;
 
@@ -175,9 +175,7 @@ const clientPackageGenerator: DesignGenerator = {
 
       // Merge clientDependencyOverrides (later projects override earlier ones)
       const metadataOverrides = (project as any).clientDependencyOverrides as Record<string, unknown> | undefined;
-      const sourceOverrides = getObjectLiteralValue(projectClass, 'clientDependencyOverrides') as
-        | Record<string, unknown>
-        | undefined;
+      const sourceOverrides = getObjectLiteralValue(projectClass, 'clientDependencyOverrides') as Record<string, unknown> | undefined;
       const clientOverrides = metadataOverrides || sourceOverrides;
 
       if (clientOverrides) {
@@ -198,7 +196,7 @@ const clientPackageGenerator: DesignGenerator = {
 
     const pkg: Record<string, unknown> = {
       name: packageName,
-      version,
+      version
     };
 
     if (displayName) {
