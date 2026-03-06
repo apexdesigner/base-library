@@ -356,6 +356,26 @@ describe('componentGenerator', () => {
     });
   });
 
+  describe('debounceMilliseconds', () => {
+    it('should wrap the method body in a debounce timer', async () => {
+      const ts = await generateComponent(`
+        import { Component, component, method } from '@apexdesigner/dsl/component';
+        @component({})
+        export class DashboardComponent extends Component {
+          @method({ debounceMilliseconds: 300 })
+          async searchUsers(): Promise<void> {
+            console.log('searching');
+          }
+        }
+      `);
+
+      expect(ts).toContain('_searchUsersTimeout');
+      expect(ts).toContain('clearTimeout');
+      expect(ts).toContain('setTimeout');
+      expect(ts).toContain('300');
+    });
+  });
+
   describe('ViewChild with template refs', () => {
     it('should generate @ViewChild with read option for injectable external type matching a template ref', async () => {
       const workspace = createSimpleMockWorkspace();

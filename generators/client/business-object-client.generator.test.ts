@@ -143,6 +143,28 @@ describe('businessObjectClientGenerator', () => {
     });
   });
 
+  describe('findOne method', () => {
+    it('should generate a findOne static method that returns a single instance or null', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static async findOne(filter?: any): Promise<Order | null>');
+      expect(result).toContain("params['filter'] = JSON.stringify(filter)");
+      expect(result).toContain('find-one');
+      expect(result).toContain('return data ? new Order(data) : null');
+    });
+  });
+
   describe('base type resolution in data interface', () => {
     it('should be implemented', () => {
       // TODO: Add test implementation

@@ -19,6 +19,7 @@ applyTemplate(
     <a routerLink="/test-categories">Categories</a>
     <a routerLink="/test-items">Items</a>
     <a routerLink="/test-settings">Settings</a>
+    <a routerLink="/manage-roles">Manage Roles</a>
   </flex-column>
 `
 );

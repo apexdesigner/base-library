@@ -189,6 +189,16 @@ const businessObjectClientGenerator: DesignGenerator = {
     lines.push(`    return results.map((data) => new ${className}(data));`);
     lines.push('  }');
 
+    // findOne
+    lines.push('');
+    lines.push(`  static async findOne(filter?: any): Promise<${className} | null> {`);
+    lines.push('    const url = `${this.baseUrl}/${this.plural}/find-one`;');
+    lines.push('    const params: Record<string, string> = {};');
+    lines.push("    if (filter) params['filter'] = JSON.stringify(filter);");
+    lines.push('    const data = await this.get<any>(url, params);');
+    lines.push(`    return data ? new ${className}(data) : null;`);
+    lines.push('  }');
+
     // findById
     lines.push('');
     lines.push(`  static async findById(`);

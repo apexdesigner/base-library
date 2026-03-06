@@ -306,6 +306,7 @@ const componentGenerator: DesignGenerator = {
     const callOnLoadMethods: string[] = [];
     const callAfterLoadMethods: string[] = [];
     const callOnUnloadMethods: string[] = [];
+    const debouncedMethods: { name: string; ms: string }[] = [];
     for (const meth of exportedClass.getMethods()) {
       const methodDecorator = meth.getDecorator('method');
       if (methodDecorator) {
@@ -329,9 +330,29 @@ const componentGenerator: DesignGenerator = {
               callOnUnloadMethods.push(meth.getName());
             }
           }
+          const debounceProp = args[0].getProperty('debounceMilliseconds');
+          if (debounceProp && Node.isPropertyAssignment(debounceProp)) {
+            debouncedMethods.push({ name: meth.getName(), ms: debounceProp.getInitializerOrThrow().getText() });
+          }
         }
         methodDecorator.remove();
       }
+    }
+
+    // Apply debounce wrappers
+    for (const { name, ms } of debouncedMethods) {
+      const meth = exportedClass.getMethod(name);
+      if (!meth) continue;
+      const timerProp = `_${name}Timeout`;
+      exportedClass.addProperty({
+        name: timerProp,
+        type: 'any',
+      });
+      const body = meth.getBody();
+      if (!body) continue;
+      const statements = body.getStatements();
+      const originalBody = statements.map(s => s.getText()).join('\n');
+      meth.setBodyText(`clearTimeout(this.${timerProp});\nthis.${timerProp} = setTimeout(async () => {\n${originalBody}\n}, ${ms});`);
     }
 
     // Check if the source file has debug setup and rename debug -> Debug
