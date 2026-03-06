@@ -1,6 +1,11 @@
-import { BusinessObject, property, addUniqueConstraint, applyDefaultRoles } from '@apexdesigner/dsl';
-import { RoleAssignment } from '@business-objects';
-import { Administrator } from '@roles';
+import {
+  BusinessObject,
+  property,
+  addUniqueConstraint,
+  applyDefaultRoles,
+} from "@apexdesigner/dsl";
+import { RoleAssignment, TestAssignment } from "@business-objects";
+import { Administrator } from "@roles";
 
 /**
  * Role
@@ -23,8 +28,11 @@ export class Role extends BusinessObject {
 
   /** Role Assignments - Users assigned to this role */
   roleAssignments?: RoleAssignment[];
+
+  /** Test Assignments - Test assignments for this role */
+  testAssignments?: TestAssignment[];
 }
 
-addUniqueConstraint(Role, 'name');
+addUniqueConstraint(Role, "name");
 
 applyDefaultRoles(Role, [Administrator]);

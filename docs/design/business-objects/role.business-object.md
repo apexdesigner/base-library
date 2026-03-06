@@ -20,3 +20,4 @@ Named authorization role that can be assigned to users.
 | Name | Type | Relationship | Description |
 |------|------|--------------|-------------|
 | roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many | Role Assignments - Users assigned to this role |
+| testAssignments | [`TestAssignment[]`](../testing/business-objects/test-assignment.business-object.md) | Has Many | Test Assignments - Test assignments for this role |

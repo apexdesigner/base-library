@@ -4,18 +4,19 @@ import {
   method,
   applyTemplate,
 } from '@apexdesigner/dsl/component';
-import { User } from '@business-objects-client';
+import { Role } from '@business-objects-client';
+import { SchemaFormControl } from '@apexdesigner/schema-forms';
 
 /**
- * SF Select User Field
+ * Select Role Field
  *
- * Schema form field that displays a dropdown of users.
- * The control value is the user id.
+ * Schema form field that displays a dropdown of roles.
+ * The control value is the role id.
  */
-export class SfSelectUserFieldComponent extends Component {
+export class SelectRoleFieldComponent extends Component {
   /** Control - The schema form control bound to this field */
   @property({ isInput: true })
-  control!: any;
+  control!: SchemaFormControl;
 
   /** Label - Label text to override the control's display name */
   @property({ isInput: true })
@@ -25,26 +26,30 @@ export class SfSelectUserFieldComponent extends Component {
   @property({ isInput: true })
   placeholder?: string;
 
-  /** Users - Loaded list of users */
-  users!: Array<{ id: number | string; email: string }>;
+  /** Roles - Loaded list of roles */
+  roles!: Array<{ id: number; name: string; displayName: string }>;
 
-  /** Load - Fetch users on init */
+  /** Load - Fetch roles on init */
   @method({ callOnLoad: true })
   async load(): Promise<void> {
-    const results = await User.find({ order: [{ field: 'email', direction: 'asc' }] });
-    this.users = results.map((u: any) => ({ id: u.id, email: u.email }));
+    const results = await Role.find({ order: [{ field: 'name', direction: 'asc' }] });
+    this.roles = results.map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      displayName: r.displayName || r.name,
+    }));
   }
 }
 
 applyTemplate(
-  SfSelectUserFieldComponent,
+  SelectRoleFieldComponent,
   `
   <mat-form-field>
-    <mat-label>{{label || control.displayName}}</mat-label>
+    <mat-label>{{label || 'Role'}}</mat-label>
     <mat-select [formControl]="control" [placeholder]="placeholder || control.placeholder">
-      <for const="user" of="users">
-        <mat-option [value]="user.id">
-          {{user.email}}
+      <for const="role" of="roles">
+        <mat-option [value]="role.id">
+          {{role.displayName}}
         </mat-option>
       </for>
     </mat-select>

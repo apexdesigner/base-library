@@ -449,8 +449,17 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           const fkProp = boClass?.getProperty(rel.foreignKey);
           const fkOptional = fkProp?.hasQuestionToken() ? '\n      .nullable()\n      .optional()' : '';
 
+          // Check for @property() options on the FK field
+          const fkOpts = fkProp ? getPropertyDecorator(fkProp, 'property') || {} : {};
+          const fkHidden = fkOpts.hidden === false ? '' : '\n      .hidden()';
+          let fkExtras = '';
+          for (const key of ['displayName', 'placeholder', 'helpText', 'presentAs'] as const) {
+            const val = fkOpts[key];
+            if (val) fkExtras += `\n      .${key}("${String(val).replace(/"/g, '\\"')}")`;
+          }
+
           const fkDescription = `Foreign key to ${rel.businessObjectName}`;
-          schemaProps.push(`    ${rel.foreignKey}: ${fkZodType}${fkOptional}${fkColumnConfig}\n      .hidden()\n      .describe("${fkDescription}")`);
+          schemaProps.push(`    ${rel.foreignKey}: ${fkZodType}${fkOptional}${fkColumnConfig}${fkHidden}${fkExtras}\n      .describe("${fkDescription}")`);
         }
       }
     }
