@@ -58,6 +58,8 @@ addAppBehavior(
 
 - **Always use `%j`** — there's no browser console to inspect objects; `%j` serializes to JSON in terminal output
 - **Log the variable name, not a sentence** — use `debug("configPath %j", configPath)` not `debug("Loaded config from %s", configPath)`. Debug output should read like structured key-value pairs, not prose.
+- **Left and right always match** — the label in the format string must match the variable name exactly: `debug("result %j", result)` not `debug("hasRole result %j", result)`
+- **Debug inputs at the top** — log function parameters right at the entry point, before any logic
 - **Debug assignments immediately after** — debug any variable right after its assignment, with a blank line before the next statement
 - **Debug values before conditionals** — any value used in a condition that hasn't already been debugged should be debugged before the `if`
 - **Namespace includes app name** — `AppName:ClassName:methodName` for behaviors, `AppName:App:methodName` for app behaviors

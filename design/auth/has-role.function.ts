@@ -2,7 +2,10 @@ import { addFunction, addTest } from '@apexdesigner/dsl';
 import { App } from '@app';
 import { hasRole } from '@functions';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import createDebug from 'debug';
 import { expect } from 'vitest';
+
+const debug = createDebug('BaseLibrary:Auth:hasRole');
 
 /**
  * Has Role
@@ -16,8 +19,14 @@ import { expect } from 'vitest';
 addFunction(
   { layer: 'Server' },
   function hasRole(roleName: string): boolean {
+    debug('roleName %j', roleName);
+
     const store = App.auth.context?.getStore();
-    return store?.roles?.some((r: any) => r.name === roleName) ?? false;
+
+    const result = store?.roles?.some((r: any) => r.name === roleName) ?? false;
+    debug('result %j', result);
+
+    return result;
   },
 );
 
