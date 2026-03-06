@@ -51,3 +51,4 @@ export { interfaceDefinitionSchemaGenerator } from './server/interface-definitio
 export { publicRoutesGenerator } from './server/public-routes.generator.js';
 export { serverInterfaceDefinitionsGenerator } from './server/server-interface-definitions.generator.js';
 export { serverFunctionGenerator } from './server/function.generator.js';
+export { functionTestGenerator } from './server/function-test.generator.js';
