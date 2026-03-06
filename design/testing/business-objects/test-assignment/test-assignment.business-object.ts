@@ -1,10 +1,9 @@
-import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
-import { User, Role } from '@business-objects';
+import { BusinessObject, property } from '@apexdesigner/dsl';
 
 /**
  * Test Assignment
  *
- * Test business object with user and role foreign keys for testing select fields.
+ * Test business object with presentAs fields for testing select fields.
  */
 export class TestAssignment extends BusinessObject {
   /** Id - Primary key */
@@ -13,19 +12,11 @@ export class TestAssignment extends BusinessObject {
   /** Name - Assignment name */
   name?: string;
 
-  /** User - Assigned user */
-  @relationship({ type: 'References' })
-  user?: User;
-
-  /** User ID - Foreign key to user */
-  @property({ hidden: false, presentAs: 'select-user' })
+  /** User ID - Selected user */
+  @property({ presentAs: 'select-user' })
   userId?: number;
 
-  /** Role - Assigned role */
-  @relationship({ type: 'References' })
-  role?: Role;
-
-  /** Role ID - Foreign key to role */
-  @property({ hidden: false, presentAs: 'select-role' })
+  /** Role ID - Selected role */
+  @property({ presentAs: 'select-role' })
   roleId?: number;
 }

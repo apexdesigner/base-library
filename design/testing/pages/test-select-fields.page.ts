@@ -50,7 +50,7 @@ export class TestSelectFieldsPage extends Page {
   async loadAssignment(): Promise<void> {
     let [first] = await TestAssignment.find({ limit: 1 });
     if (!first) {
-      first = await TestAssignment.create({ name: 'Test Assignment', userId: null, roleId: null } as any);
+      first = await TestAssignment.create({ name: 'Test Assignment', testUserId: null, testRoleId: null } as any);
     }
     await this.testAssignment.read({ where: { id: first.id } });
   }

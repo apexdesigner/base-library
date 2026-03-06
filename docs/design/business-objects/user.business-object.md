@@ -18,7 +18,6 @@ Authenticated user identified by email address.
 | Name | Type | Relationship | Description |
 |------|------|--------------|-------------|
 | roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many | Role Assignments - Roles assigned to this user |
-| testAssignments | [`TestAssignment[]`](../testing/business-objects/test-assignment.business-object.md) | Has Many | Test Assignments - Test assignments for this user |
 
 ## Class Behaviors
 
