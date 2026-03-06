@@ -7,6 +7,16 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:businessObject');
 
+// Modules to skip when collecting imports from behavior design files
+// Note: @business-objects and @app are handled explicitly in the import loop
+const SKIP_MODULES = new Set([
+  '@apexdesigner/dsl',
+  '@roles',
+  '@mixins',
+  'vitest',
+  'debug',
+]);
+
 // Lifecycle behavior types to exclude
 const LIFECYCLE_TYPES = new Set([
   'Before Create',
@@ -247,6 +257,8 @@ const businessObjectGenerator: DesignGenerator = {
     // Collect imports from matched behavior design files
     const behaviorBoImports = new Set<string>();
     let needsAppImport = false;
+    const defaultImports = new Map<string, string>(); // module → default import name
+    const externalNamedImports = new Map<string, Set<string>>(); // module → set of named imports
 
     for (const behavior of allBehaviors) {
       try {
@@ -258,6 +270,8 @@ const businessObjectGenerator: DesignGenerator = {
         for (const importDecl of behavior.sourceFile.getImportDeclarations()) {
           const moduleSpecifier = importDecl.getModuleSpecifierValue();
 
+          if (SKIP_MODULES.has(moduleSpecifier)) continue;
+
           if (moduleSpecifier === '@business-objects') {
             for (const namedImport of importDecl.getNamedImports()) {
               const name = namedImport.getName();
@@ -265,8 +279,32 @@ const businessObjectGenerator: DesignGenerator = {
                 behaviorBoImports.add(name);
               }
             }
-          } else if (moduleSpecifier === '@app') {
+            continue;
+          }
+
+          if (moduleSpecifier === '@app') {
             needsAppImport = true;
+            continue;
+          }
+
+          // Map design-time aliases to generated paths
+          let mappedModule = moduleSpecifier;
+          if (moduleSpecifier.startsWith('@server-node-modules/')) {
+            mappedModule = moduleSpecifier.replace('@server-node-modules/', '');
+          } else if (moduleSpecifier.startsWith('@server/')) {
+            mappedModule = moduleSpecifier.replace('@server/', '../') + '.js';
+          }
+
+          // Handle default import
+          const defaultImport = importDecl.getDefaultImport();
+          if (defaultImport) {
+            defaultImports.set(mappedModule, defaultImport.getText());
+          }
+
+          // Handle named imports
+          for (const named of importDecl.getNamedImports()) {
+            if (!externalNamedImports.has(mappedModule)) externalNamedImports.set(mappedModule, new Set());
+            externalNamedImports.get(mappedModule)!.add(named.getName());
           }
         }
       } catch (err) {
@@ -405,6 +443,17 @@ const businessObjectGenerator: DesignGenerator = {
     }
     for (const boName of Array.from(behaviorBoImports).sort()) {
       lines.push(`import { ${boName} } from "./${kebabCase(boName)}.js";`);
+    }
+
+    // Default imports from external packages (e.g., import fs from "node:fs")
+    for (const [module, name] of Array.from(defaultImports.entries()).sort((a, b) => a[0].localeCompare(b[0]))) {
+      lines.push(`import ${name} from "${module}";`);
+    }
+
+    // Named imports from external packages (e.g., import { match } from "path-to-regexp")
+    for (const [module, names] of Array.from(externalNamedImports.entries()).sort((a, b) => a[0].localeCompare(b[0]))) {
+      const sortedNames = Array.from(names).sort();
+      lines.push(`import { ${sortedNames.join(', ')} } from "${module}";`);
     }
 
     lines.push('');

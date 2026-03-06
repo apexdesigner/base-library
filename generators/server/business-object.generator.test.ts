@@ -19,7 +19,7 @@ describe('businessObjectGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -36,7 +36,7 @@ describe('businessObjectGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -53,7 +53,7 @@ describe('businessObjectGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -71,7 +71,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -87,7 +87,7 @@ describe('businessObjectGenerator', () => {
           export class MyProject extends Project {
             defaultDataSource = Postgres;
           }
-        `,
+        `
       });
       workspace.addMetadata('DataSource', 'Postgres', {
         sourceCode: `
@@ -97,14 +97,14 @@ describe('businessObjectGenerator', () => {
             configuration = { persistenceType: 'Postgres' };
             defaultIdType = Uuid;
           }
-        `,
+        `
       });
       workspace.addMetadata('BaseType', 'Uuid', {
         sourceCode: `
           import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class Uuid extends BaseType<string> {}
           setPropertyDefaults(Uuid, { column: 'uuid' });
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -113,7 +113,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: Uuid;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -131,7 +131,7 @@ describe('businessObjectGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
         sourceCode: `
@@ -142,7 +142,7 @@ describe('businessObjectGenerator', () => {
             { type: 'Class', httpMethod: 'Post' },
             async function upload(options: any) {}
           );
-        `,
+        `
       });
 
       const behaviorMeta = workspace.context.listMetadata('Behavior')[0];
@@ -161,7 +161,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
         sourceCode: `
@@ -176,7 +176,7 @@ describe('businessObjectGenerator', () => {
               return result;
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -193,7 +193,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesignHistory', {
         sourceCode: `
@@ -201,7 +201,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesignHistory extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignUpload', {
         sourceCode: `
@@ -214,7 +214,7 @@ describe('businessObjectGenerator', () => {
               await ProcessDesignHistory.create({ processDesignId: 1 });
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessDesign')!;
@@ -223,6 +223,73 @@ describe('businessObjectGenerator', () => {
       expect(result).toContain('import { ProcessDesignHistory } from "./process-design-history.js"');
       // Should not import self
       expect(result).not.toMatch(/import.*ProcessDesign.*from "\.\/process-design\.js"/);
+    });
+
+    it('should include Node.js default imports from behavior files', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignLoadFromFiles', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function loadFromFiles() {
+              const dir = path.join(process.cwd(), 'designs');
+              if (!fs.existsSync(dir)) return [];
+              return [];
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import fs from "node:fs"');
+      expect(result).toContain('import path from "node:path"');
+    });
+
+    it('should include named imports from external packages in behavior files', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignValidate', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          import { match } from 'path-to-regexp';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function validate(options: any) {
+              const m = match('/api/:id');
+              return m(options.path);
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('import { match } from "path-to-regexp"');
     });
   });
 
@@ -240,7 +307,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('TestFixture', 'ProcessDesignSimple', {
         sourceCode: `
@@ -253,7 +320,7 @@ describe('businessObjectGenerator', () => {
               return design;
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -271,7 +338,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessInstance extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -279,7 +346,7 @@ describe('businessObjectGenerator', () => {
           export class ProcessDesign extends BusinessObject {
             id!: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('TestFixture', 'ProcessInstanceStarted', {
         sourceCode: `
@@ -293,7 +360,7 @@ describe('businessObjectGenerator', () => {
               return instance;
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
@@ -308,7 +375,7 @@ describe('businessObjectGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('TestFixture', 'ProcessDesignSimple', {
         sourceCode: `
@@ -320,7 +387,7 @@ describe('businessObjectGenerator', () => {
               return ProcessDesign.create({ name: "Test" });
             }
           );
-        `,
+        `
       });
 
       const fixtureMeta = workspace.context.listMetadata('TestFixture')[0];
@@ -337,7 +404,7 @@ describe('businessObjectGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ProcessDesign extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
         sourceCode: `
@@ -350,7 +417,7 @@ describe('businessObjectGenerator', () => {
               debug("processDesign.id %j", processDesign.id);
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -365,7 +432,7 @@ describe('businessObjectGenerator', () => {
         sourceCode: `
           import { BusinessObject } from '@apexdesigner/dsl';
           export class ServiceTask extends BusinessObject {}
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ServiceTaskClaimNext', {
         sourceCode: `
@@ -378,7 +445,7 @@ describe('businessObjectGenerator', () => {
               debug("claiming next task");
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -393,7 +460,7 @@ describe('businessObjectGenerator', () => {
         sourceCode: `
           import { Mixin } from '@apexdesigner/dsl';
           export class Claimable extends Mixin {}
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ServiceTask', {
         sourceCode: `
@@ -402,7 +469,7 @@ describe('businessObjectGenerator', () => {
           export class ServiceTask extends BusinessObject {
             static mixins = [Claimable];
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'ServiceTaskClaim', {
         sourceCode: `
@@ -415,7 +482,7 @@ describe('businessObjectGenerator', () => {
               debug("claiming instance");
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -435,7 +502,7 @@ describe('businessObjectGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', `Order${funcName}`, {
         sourceCode: `
@@ -448,7 +515,7 @@ describe('businessObjectGenerator', () => {
               ${funcBody}
             }
           );
-        `,
+        `
       });
       return workspace;
     }
@@ -527,7 +594,7 @@ describe('businessObjectGenerator', () => {
               foreignKey: string;
             }
             export class HistoryTracking extends Mixin {}
-          `,
+          `
         });
         workspace.addMetadata('BusinessObject', 'Token', {
           sourceCode: `
@@ -540,7 +607,7 @@ describe('businessObjectGenerator', () => {
               static mixins = [HistoryTracking];
             }
             applyHistoryTrackingMixin(Token, { historyModel: TokenHistory, foreignKey: "tokenId" });
-          `,
+          `
         });
         workspace.addMetadata('BusinessObject', 'TokenHistory', {
           sourceCode: `
@@ -548,7 +615,7 @@ describe('businessObjectGenerator', () => {
             export class TokenHistory extends BusinessObject {
               id!: string;
             }
-          `,
+          `
         });
         workspace.addMetadata('Behavior', 'HistoryTrackingCreateHistory', {
           sourceCode: `
@@ -563,7 +630,7 @@ describe('businessObjectGenerator', () => {
                 }
               }
             );
-          `,
+          `
         });
 
         const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Token')!;
@@ -730,7 +797,7 @@ describe('businessObjectGenerator', () => {
             name?: string;
           }
           setView(LatestProcessDesign, \`SELECT * FROM process_design\`);
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
