@@ -1,5 +1,6 @@
-import { BusinessObject, relationship } from '@apexdesigner/dsl';
+import { BusinessObject, relationship, applyDefaultRoles } from '@apexdesigner/dsl';
 import { User, Role } from '@business-objects';
+import { Administrator } from '@roles';
 
 /**
  * Role Assignment
@@ -23,3 +24,5 @@ export class RoleAssignment extends BusinessObject {
   /** Role ID - Foreign key to role */
   roleId?: number;
 }
+
+applyDefaultRoles(RoleAssignment, [Administrator]);

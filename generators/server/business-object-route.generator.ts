@@ -1,6 +1,7 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, getDataSource, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
-import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
+import { getClassByBase, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent, getModuleLevelCall } from '@apexdesigner/utilities';
+import { Node } from 'ts-morph';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
@@ -28,6 +29,42 @@ const BEHAVIOR_HTTP_METHODS: Record<string, string> = {
   Get: 'get',
   Delete: 'delete'
 };
+
+// Built-in roles that don't need hasRole checks
+const IMPLICIT_ROLES = new Set(['Authenticated', 'Everyone']);
+
+/**
+ * Extract role names from applyDefaultRoles(BO, [Role1, Role2]).
+ */
+function getDefaultRoleNames(sourceFile: DesignMetadata['sourceFile']): string[] {
+  const call = getModuleLevelCall(sourceFile, 'applyDefaultRoles');
+  if (!call) return [];
+
+  const args = call.getArguments();
+  if (args.length < 2) return [];
+
+  const rolesArg = args[1];
+  if (!Node.isArrayLiteralExpression(rolesArg)) return [];
+
+  return rolesArg.getElements()
+    .filter(el => Node.isIdentifier(el))
+    .map(el => el.getText());
+}
+
+/**
+ * Emit missingRole guard lines for the given role names.
+ * Returns empty array if no guard is needed (no roles, or all roles are implicit).
+ */
+function emitRoleGuard(roleNames: string[]): string[] {
+  const checkRoles = roleNames.filter(r => !IMPLICIT_ROLES.has(r));
+  if (checkRoles.length === 0) return [];
+
+  const args = checkRoles.map(r => `"${r}"`).join(', ');
+  return [
+    `  if (missingRole(res, ${args})) return;`,
+    '',
+  ];
+}
 
 const businessObjectRouteGenerator: DesignGenerator = {
   name: 'business-object-route',
@@ -89,33 +126,12 @@ const businessObjectRouteGenerator: DesignGenerator = {
     }
     const idCoerce = idType === 'number' ? 'Number(req.params.id)' : 'String(req.params.id)';
 
-    const lines: string[] = [];
+    // Extract default roles from applyDefaultRoles(BO, [Role1, Role2])
+    const defaultRoles = getDefaultRoleNames(metadata.sourceFile);
+    const defaultRoleGuard = emitRoleGuard(defaultRoles);
+    debug('defaultRoles %j', defaultRoles);
 
-    // Imports
-    lines.push(`import createDebug from "debug";`);
-    lines.push(`import { Router, Request, Response, NextFunction } from "express";`);
-    lines.push(`import { z } from "zod";`);
-    lines.push(`import { ${className} } from "../business-objects/${kebabCase(metadata.name)}.js";`);
-    lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${kebabCase(metadata.name)}.js";`);
-    lines.push('');
-
-    // Debug and router setup
-    const debugNamespace = pascalCase((context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App').replace(/Project$/, ''));
-    lines.push(`const Debug = createDebug("${debugNamespace}:Route:${className}");`);
-    lines.push('const router = Router();');
-    lines.push('');
-
-    // Parse filter helper
-    lines.push('function parseFilter(query: unknown) {');
-    lines.push('  if (typeof query === "string") {');
-    lines.push('    return JSON.parse(query);');
-    lines.push('  }');
-    lines.push('  return undefined;');
-    lines.push('}');
-    lines.push('');
-
-    // GET / - List
-    // Collect behavior routes before CRUD so we can order them correctly
+    // Collect behavior routes before emitting code so we know all role requirements upfront
     const mixins = resolveMixins(metadata.sourceFile, context);
     const parentNames = new Set([className, ...mixins.map(m => m.name)]);
     const allBehaviors = context.listMetadata('Behavior');
@@ -127,6 +143,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
       behaviorKebab: string;
       hasParams: boolean;
       callArg: string;
+      roleGuard: string[];
     }
     const classBehaviorRoutes: BehaviorRoute[] = [];
     const instanceBehaviorRoutes: BehaviorRoute[] = [];
@@ -154,7 +171,11 @@ const businessObjectRouteGenerator: DesignGenerator = {
         const hasParams = methodParams.length > 0;
         const callArg = hasParams ? 'req.body' : '';
 
-        const route: BehaviorRoute = { func, httpMethod, behaviorKebab, hasParams, callArg };
+        // Behavior-level roles override default roles
+        const behaviorRoles = Array.isArray(options.roles) ? (options.roles as string[]) : [];
+        const roleGuard = behaviorRoles.length > 0 ? emitRoleGuard(behaviorRoles) : defaultRoleGuard;
+
+        const route: BehaviorRoute = { func, httpMethod, behaviorKebab, hasParams, callArg, roleGuard };
 
         if (isInstance) {
           instanceBehaviorRoutes.push(route);
@@ -172,11 +193,36 @@ const businessObjectRouteGenerator: DesignGenerator = {
     classBehaviorRoutes.sort((a, b) => a.func.name.localeCompare(b.func.name));
     instanceBehaviorRoutes.sort((a, b) => a.func.name.localeCompare(b.func.name));
 
+    // Determine if hasRole import is needed
+    const allBehaviorRoutes = [...classBehaviorRoutes, ...instanceBehaviorRoutes];
+    const needsHasRole = defaultRoleGuard.length > 0 || allBehaviorRoutes.some(r => r.roleGuard.length > 0);
+
+    const lines: string[] = [];
+
+    // Imports
+    lines.push(`import createDebug from "debug";`);
+    lines.push(`import { Router, Request, Response, NextFunction } from "express";`);
+    lines.push(`import { z } from "zod";`);
+    lines.push(`import { ${className} } from "../business-objects/${kebabCase(metadata.name)}.js";`);
+    lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${kebabCase(metadata.name)}.js";`);
+    if (needsHasRole) {
+      lines.push('import { missingRole } from "./missing-role.js";');
+    }
+    lines.push('import { parseFilter } from "./parse-filter.js";');
+    lines.push('');
+
+    // Debug and router setup
+    const debugNamespace = pascalCase((context.listMetadata('Project').find(p => !isLibrary(p))?.name || 'App').replace(/Project$/, ''));
+    lines.push(`const Debug = createDebug("${debugNamespace}:Route:${className}");`);
+    lines.push('const router = Router();');
+    lines.push('');
+
     lines.push(`// GET /${pluralKebab} - List ${pluralize(entityLabel)}`);
     lines.push('router.get("/", async (req: Request, res: Response, next: NextFunction) => {');
     lines.push('  const debug = Debug.extend("find");');
     lines.push('  debug("req.query.filter %j", req.query.filter);');
     lines.push('');
+    for (const line of defaultRoleGuard) lines.push(line);
     lines.push('  try {');
     lines.push('    const filter = parseFilter(req.query.filter);');
     lines.push(`    const results = await ${className}.find(filter);`);
@@ -198,6 +244,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
       lines.push(`  const debug = Debug.extend("${route.func.name}");`);
       if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
       lines.push('');
+      for (const line of route.roleGuard) lines.push(line);
       lines.push('  try {');
       lines.push(`    const result = await ${className}.${route.func.name}(${route.callArg});`);
       lines.push('    debug("result %j", result);');
@@ -219,6 +266,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  const debug = Debug.extend("findById");');
     lines.push('  debug("req.params.id %j", req.params.id);');
     lines.push('');
+    for (const line of defaultRoleGuard) lines.push(line);
     lines.push('  try {');
     lines.push('    const filter = parseFilter(req.query.filter);');
     lines.push(`    const ${varName} = await ${className}.findById(${idCoerce}, filter);`);
@@ -243,6 +291,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  const debug = Debug.extend("create");');
     lines.push('  debug("req.body %j", req.body);');
     lines.push('');
+    for (const line of defaultRoleGuard) lines.push(line);
     lines.push('  try {');
     lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).parse(req.body);`);
     lines.push(`    const ${varName} = await ${className}.create(validated);`);
@@ -268,6 +317,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  debug("req.params.id %j", req.params.id);');
     lines.push('  debug("req.body %j", req.body);');
     lines.push('');
+    for (const line of defaultRoleGuard) lines.push(line);
     lines.push('  try {');
     lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).partial().parse(req.body);`);
     lines.push(`    const ${varName} = await ${className}.updateById(${idCoerce}, validated);`);
@@ -296,6 +346,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('  const debug = Debug.extend("deleteById");');
     lines.push('  debug("req.params.id %j", req.params.id);');
     lines.push('');
+    for (const line of defaultRoleGuard) lines.push(line);
     lines.push('  try {');
     lines.push(`    const deleted = await ${className}.deleteById(${idCoerce});`);
     lines.push('    debug("deleted %j", deleted);');
@@ -321,6 +372,7 @@ const businessObjectRouteGenerator: DesignGenerator = {
       lines.push('  debug("req.params.id %j", req.params.id);');
       if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
       lines.push('');
+      for (const line of route.roleGuard) lines.push(line);
       lines.push('  try {');
       lines.push(`    const ${varName} = await ${className}.findById(${idCoerce});`);
       lines.push(`    const result = await ${varName}.${route.func.name}(${route.callArg});`);
