@@ -1,9 +1,4 @@
-import {
-  Component,
-  property,
-  method,
-  applyTemplate,
-} from '@apexdesigner/dsl/component';
+import { Component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { Role } from '@business-objects-client';
 import { SchemaFormControl } from '@apexdesigner/schema-forms';
 
@@ -36,7 +31,7 @@ export class SelectRoleFieldComponent extends Component {
     this.roles = results.map((r: any) => ({
       id: r.id,
       name: r.name,
-      displayName: r.displayName || r.name,
+      displayName: r.displayName || r.name
     }));
   }
 }
@@ -59,5 +54,5 @@ applyTemplate(
       </button>
     </if>
   </mat-form-field>
-`,
+`
 );

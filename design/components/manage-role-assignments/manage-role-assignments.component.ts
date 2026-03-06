@@ -1,10 +1,4 @@
-import {
-  Component,
-  property,
-  method,
-  applyTemplate,
-  applyStyles,
-} from '@apexdesigner/dsl/component';
+import { Component, property, method, applyTemplate, applyStyles } from '@apexdesigner/dsl/component';
 import { RolePersistedArray } from '@business-objects-client';
 import { RoleAssignment, User } from '@business-objects-client';
 import { AuthService } from '@services';
@@ -24,7 +18,7 @@ export class ManageRoleAssignmentsComponent extends Component {
   /** Roles - Loaded roles with assignments and users */
   @property({
     read: 'On Demand',
-    include: { roleAssignments: { include: { user: {} } } },
+    include: { roleAssignments: { include: { user: {} } } }
   })
   roles!: RolePersistedArray;
 
@@ -55,17 +49,16 @@ export class ManageRoleAssignmentsComponent extends Component {
   /** No Matches - True when server search returned no results */
   noMatches!: boolean;
 
-
   /** Load - Read roles and build user list */
   @method({ callOnLoad: true })
   async load(): Promise<void> {
     const filter: Record<string, any> = {
-      include: { roleAssignments: { include: { user: {} } } },
+      include: { roleAssignments: { include: { user: {} } } }
     };
     if (this.roleNames) {
       const names = this.roleNames
         .split(',')
-        .map((n) => n.trim())
+        .map(n => n.trim())
         .filter(Boolean);
       filter.where = { name: { in: names } };
     }
@@ -79,10 +72,7 @@ export class ManageRoleAssignmentsComponent extends Component {
 
   /** Build User List - Extract unique users from role assignments */
   buildUserList(): void {
-    const userMap = new Map<
-      number | string,
-      { id: number | string; email: string }
-    >();
+    const userMap = new Map<number | string, { id: number | string; email: string }>();
     this.assignmentMap = new Map();
     for (const role of this.roles) {
       if (!role.roleAssignments) continue;
@@ -92,9 +82,7 @@ export class ManageRoleAssignmentsComponent extends Component {
         this.assignmentMap.set(`${ra.userId}:${ra.roleId}`, ra);
       }
     }
-    this.users = Array.from(userMap.values()).sort((a, b) =>
-      a.email.localeCompare(b.email),
-    );
+    this.users = Array.from(userMap.values()).sort((a, b) => a.email.localeCompare(b.email));
     this.filterUsers();
   }
 
@@ -119,9 +107,7 @@ export class ManageRoleAssignmentsComponent extends Component {
       return;
     }
     const term = this.search.toLowerCase();
-    this.filteredUsers = this.users.filter((u) =>
-      u.email.toLowerCase().includes(term),
-    );
+    this.filteredUsers = this.users.filter(u => u.email.toLowerCase().includes(term));
     if (this.filteredUsers.length === 0) {
       this.searchUsers();
     }
@@ -133,14 +119,12 @@ export class ManageRoleAssignmentsComponent extends Component {
     const term = this.search?.trim();
     if (!term) return;
     this.filteredUsers = undefined;
-    const existingIds = new Set(this.users.map((u) => u.id));
+    const existingIds = new Set(this.users.map(u => u.id));
     const results = await User.find({
       where: { email: { like: `%${term}%` } },
-      limit: 20,
+      limit: 20
     });
-    this.filteredUsers = results
-      .filter((u: any) => !existingIds.has(u.id))
-      .map((u: any) => ({ id: u.id, email: u.email }));
+    this.filteredUsers = results.filter((u: any) => !existingIds.has(u.id)).map((u: any) => ({ id: u.id, email: u.email }));
     this.showingSuggestions = this.filteredUsers.length > 0;
     this.noMatches = this.filteredUsers.length === 0;
   }
@@ -153,7 +137,7 @@ export class ManageRoleAssignmentsComponent extends Component {
     if (this.roles.length > 0) {
       await RoleAssignment.create({
         userId: user.id as any,
-        roleId: (this.roles[0] as any).id,
+        roleId: (this.roles[0] as any).id
       });
     }
     this.search = '';
@@ -169,10 +153,7 @@ export class ManageRoleAssignmentsComponent extends Component {
   }
 
   /** Toggle Assignment - Add or remove a role assignment */
-  async toggleAssignment(
-    userId: number | string,
-    roleId: number,
-  ): Promise<void> {
+  async toggleAssignment(userId: number | string, roleId: number): Promise<void> {
     if (this.busy) return;
     this.busy = true;
     const key = `${userId}:${roleId}`;
@@ -190,7 +171,6 @@ export class ManageRoleAssignmentsComponent extends Component {
     this.buildUserList();
     this.busy = false;
   }
-
 }
 
 applyTemplate(
@@ -238,10 +218,7 @@ applyTemplate(
       </if>
     </flex-column>
   </if>
-`,
+`
 );
 
-applyStyles(
-  ManageRoleAssignmentsComponent,
-  ``,
-);
+applyStyles(ManageRoleAssignmentsComponent, ``);

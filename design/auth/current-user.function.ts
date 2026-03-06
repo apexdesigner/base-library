@@ -16,22 +16,19 @@ const debug = createDebug('BaseLibrary:Auth:currentUser');
  *
  * @returns The current authenticated user
  */
-addFunction(
-  { layer: 'Server' },
-  function currentUser(): User {
-    const store = App.auth.context?.getStore();
-    debug('store %j', !!store);
+addFunction({ layer: 'Server' }, function currentUser(): User {
+  const store = App.auth.context?.getStore();
+  debug('store %j', !!store);
 
-    const user = store?.user;
-    debug('user %j', user?.id);
+  const user = store?.user;
+  debug('user %j', user?.id);
 
-    if (!user) {
-      throw new Error('Not authenticated');
-    }
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
 
-    return user;
-  },
-);
+  return user;
+});
 
 addTest('should return the user from auth context', async () => {
   App.auth.context = new AsyncLocalStorage();

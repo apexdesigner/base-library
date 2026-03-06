@@ -459,7 +459,9 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           }
 
           const fkDescription = `Foreign key to ${rel.businessObjectName}`;
-          schemaProps.push(`    ${rel.foreignKey}: ${fkZodType}${fkOptional}${fkColumnConfig}${fkHidden}${fkExtras}\n      .describe("${fkDescription}")`);
+          schemaProps.push(
+            `    ${rel.foreignKey}: ${fkZodType}${fkOptional}${fkColumnConfig}${fkHidden}${fkExtras}\n      .describe("${fkDescription}")`
+          );
         }
       }
     }

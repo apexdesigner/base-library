@@ -281,10 +281,9 @@ const businessObjectClientGenerator: DesignGenerator = {
         // Single object/any param: pass directly (server passes req.body as the argument)
         // Scalar or multiple params: wrap in object (server unwraps by name)
         const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
-        const isPassthrough = methodParams.length === 1
-          && (OBJECT_TYPES.has(methodParams[0].type || 'any') || (methodParams[0].type || '').startsWith('{'));
-        const bodyArg =
-          methodParams.length === 0 ? '{}' : isPassthrough ? methodParams[0].name : `{ ${methodParams.map(p => p.name).join(', ')} }`;
+        const isPassthrough =
+          methodParams.length === 1 && (OBJECT_TYPES.has(methodParams[0].type || 'any') || (methodParams[0].type || '').startsWith('{'));
+        const bodyArg = methodParams.length === 0 ? '{}' : isPassthrough ? methodParams[0].name : `{ ${methodParams.map(p => p.name).join(', ')} }`;
 
         const behaviorKebab = kebabCase(func.name);
         const returnType = func.returnType || 'any';

@@ -356,7 +356,7 @@ const componentGenerator: DesignGenerator = {
       const timerProp = `_${name}Timeout`;
       exportedClass.addProperty({
         name: timerProp,
-        type: 'any',
+        type: 'any'
       });
       const body = meth.getBody();
       if (!body) continue;

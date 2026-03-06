@@ -16,19 +16,16 @@ const debug = createDebug('BaseLibrary:Auth:hasRole');
  * @param roleName - The role name to check
  * @returns True if the current user has the role
  */
-addFunction(
-  { layer: 'Server' },
-  function hasRole(roleName: string): boolean {
-    debug('roleName %j', roleName);
+addFunction({ layer: 'Server' }, function hasRole(roleName: string): boolean {
+  debug('roleName %j', roleName);
 
-    const store = App.auth.context?.getStore();
+  const store = App.auth.context?.getStore();
 
-    const result = store?.roles?.some((r: any) => r.name === roleName) ?? false;
-    debug('result %j', result);
+  const result = store?.roles?.some((r: any) => r.name === roleName) ?? false;
+  debug('result %j', result);
 
-    return result;
-  },
-);
+  return result;
+});
 
 addTest('should return true when user has the role', async () => {
   App.auth.context = new AsyncLocalStorage();

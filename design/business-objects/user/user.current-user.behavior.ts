@@ -16,7 +16,7 @@ addBehavior(
   {
     type: 'Class',
     httpMethod: 'Get',
-    roles: [Authenticated],
+    roles: [Authenticated]
   },
   async function currentUser() {
     const authContext = App.auth.context?.getStore();

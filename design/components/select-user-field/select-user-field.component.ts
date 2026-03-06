@@ -1,9 +1,4 @@
-import {
-  Component,
-  property,
-  method,
-  applyTemplate,
-} from '@apexdesigner/dsl/component';
+import { Component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { User } from '@business-objects-client';
 import { SchemaFormControl } from '@apexdesigner/schema-forms';
 
@@ -55,5 +50,5 @@ applyTemplate(
       </button>
     </if>
   </mat-form-field>
-`,
+`
 );

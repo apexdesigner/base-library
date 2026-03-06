@@ -83,9 +83,7 @@ const appBehaviorRouteGenerator: DesignGenerator = {
         // Compute role guard
         const behaviorRoles = Array.isArray(options.roles) ? (options.roles as string[]) : [];
         const checkRoles = behaviorRoles.filter(r => !IMPLICIT_ROLES.has(r));
-        const roleGuard = checkRoles.length > 0
-          ? [`  if (missingRole(res, ${checkRoles.map(r => `"${r}"`).join(', ')})) return;`, '']
-          : [];
+        const roleGuard = checkRoles.length > 0 ? [`  if (missingRole(res, ${checkRoles.map(r => `"${r}"`).join(', ')})) return;`, ''] : [];
 
         routes.push({ func, httpMethod, routePath, hasParams, callArg, roleGuard });
       } catch (err) {

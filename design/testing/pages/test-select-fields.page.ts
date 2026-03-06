@@ -10,7 +10,7 @@ import { TestAssignmentFormGroup } from '@business-objects-client';
  */
 @page({
   path: '/test-select-fields',
-  excludeFromSidenav: true,
+  excludeFromSidenav: true
 })
 export class TestSelectFieldsPage extends Page {
   /** User Control - Form control for the selected user id */
@@ -86,5 +86,5 @@ applyTemplate(
       <p>No test assignment found. Create one first.</p>
     </if>
   </flex-column>
-`,
+`
 );

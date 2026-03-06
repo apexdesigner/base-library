@@ -8,7 +8,7 @@ import { ManageRoleAssignmentsComponent } from '@components';
  */
 @page({
   path: '/manage-roles',
-  sidenavIcon: 'admin_panel_settings',
+  sidenavIcon: 'admin_panel_settings'
 })
 export class ManageRolesPage extends Page {}
 
@@ -19,5 +19,5 @@ applyTemplate(
     <h1>Manage Roles</h1>
     <manage-role-assignments [grow]="true"></manage-role-assignments>
   </flex-column>
-`,
+`
 );
