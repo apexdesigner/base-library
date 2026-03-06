@@ -169,7 +169,15 @@ const businessObjectRouteGenerator: DesignGenerator = {
         const params = func.parameters || [];
         const methodParams = isInstance ? params.slice(1) : params;
         const hasParams = methodParams.length > 0;
-        const callArg = hasParams ? 'req.body' : '';
+
+        // Single object/any param: pass req.body directly (it IS the param)
+        // Scalar or multiple params: unwrap from req.body by name
+        const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
+        const isPassthrough = methodParams.length === 1
+          && (OBJECT_TYPES.has(methodParams[0].type || 'any') || (methodParams[0].type || '').startsWith('{'));
+        const callArg = !hasParams ? ''
+          : isPassthrough ? 'req.body'
+          : methodParams.map(p => `req.body.${p.name}`).join(', ');
 
         // Behavior-level roles override default roles
         const behaviorRoles = Array.isArray(options.roles) ? (options.roles as string[]) : [];

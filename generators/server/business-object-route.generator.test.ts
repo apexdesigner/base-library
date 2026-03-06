@@ -203,4 +203,34 @@ describe('businessObjectRouteGenerator', () => {
       expect(result).toContain('if (missingRole(res, "Administrator", "Editor")) return;');
     });
   });
+
+  it('should unwrap scalar parameters from req.body for instance behaviors', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'UserTask', {
+      sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class UserTask extends BusinessObject {
+            id!: number;
+          }
+        `
+    });
+    workspace.addMetadata('Behavior', 'UserTaskClaim', {
+      sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { UserTask } from '@business-objects';
+          addBehavior(
+            UserTask,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function claim(userTask: UserTask, userId?: number) {}
+          );
+        `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+    // Should unwrap scalar param from req.body, not pass req.body directly
+    expect(result).toContain('.claim(req.body.userId)');
+    expect(result).not.toContain('.claim(req.body)');
+  });
 });
