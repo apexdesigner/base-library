@@ -506,6 +506,8 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    const debug = Debug.extend("findOne");');
     lines.push('    debug("filter %j", filter);');
     lines.push('');
+    // Inline Before Read lifecycle behaviors
+    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter?.where' }, mixinNames, mixinOptionsMap);
     lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter);`);
     lines.push('    debug("data %j", data);');
     lines.push('');

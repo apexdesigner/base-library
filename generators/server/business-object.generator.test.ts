@@ -799,6 +799,16 @@ describe('businessObjectGenerator', () => {
         expect(method).toContain(marker);
         expect(method.indexOf(marker)).toBeLessThan(method.indexOf('this.dataSource.find('));
       });
+
+      it('should inline body in findOne() before the dataSource call', async () => {
+        const workspace = createLifecycleWorkspace(type, 'addDefaultFilter', funcParams, funcBody);
+        const metadata = workspace.context.listMetadata('BusinessObject')[0];
+        const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+        const method = extractMethod(result, 'static async findOne(', 'static async findById(');
+
+        expect(method).toContain(marker);
+        expect(method.indexOf(marker)).toBeLessThan(method.indexOf('this.dataSource.findOne('));
+      });
     });
 
     describe('After Read', () => {
