@@ -20,7 +20,7 @@ export class SwitchUserPage extends Page {
   users!: UserPersistedArray;
 
   /** Current User - The currently authenticated user */
-  currentUser?: User
+  currentUser?: User;
 
   /** Auth Service */
   authService!: AuthService;
@@ -31,7 +31,7 @@ export class SwitchUserPage extends Page {
   /** Initialize - Fetch users only when not impersonating */
   @method({ callOnLoad: true })
   async initialize(): Promise<void> {
-    this.currentUser = await this.authService.getCurrentUser()
+    this.currentUser = await this.authService.getCurrentUser();
     this.isImpersonating = !!sessionStorage.getItem('impersonateUserId');
     if (!this.isImpersonating) {
       await this.users.read();
@@ -59,10 +59,11 @@ export class SwitchUserPage extends Page {
     sessionStorage.removeItem('impersonateUserId');
     window.location.href = '/switch-user';
   }
-
 }
 
-applyTemplate(SwitchUserPage, `
+applyTemplate(
+  SwitchUserPage,
+  `
   <flex-column>
     <if condition="isImpersonating">
       <div>
@@ -89,4 +90,5 @@ applyTemplate(SwitchUserPage, `
       </if>
     </if>
   </flex-column>
-`);
+`
+);

@@ -17,7 +17,13 @@ addAppBehavior(
     stage: 'Activate',
     sequence: 100
   },
-  async function roleGuard(route: ActivatedRouteSnapshot, state: RouterStateSnapshot, router: Router, authService: AuthService, snackBar: MatSnackBar): Promise<boolean> {
+  async function roleGuard(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+    router: Router,
+    authService: AuthService,
+    snackBar: MatSnackBar
+  ): Promise<boolean> {
     debug('checking auth');
     const authEnabled = await authService.getAuthEnabled();
     debug('authEnabled', authEnabled);

@@ -39,7 +39,6 @@ addAppBehavior(
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-
       const isPublicRoute = App.auth.isPublicRoute?.(req.path);
 
       // Public routes can proceed without a token
@@ -153,9 +152,9 @@ addAppBehavior(
       const impersonateUserId = req.headers['x-impersonate-user-id'];
 
       if (impersonateUserId) {
-        debug('impersonateUserId %j',impersonateUserId);
+        debug('impersonateUserId %j', impersonateUserId);
 
-        debug('process.env.ALLOW_IMPERSONATION %j',process.env.ALLOW_IMPERSONATION);
+        debug('process.env.ALLOW_IMPERSONATION %j', process.env.ALLOW_IMPERSONATION);
 
         if (process.env.ALLOW_IMPERSONATION !== 'true') {
           res.status(403).json({ error: 'Impersonation is not enabled', code: 'AUTH_IMPERSONATION_DISABLED' });

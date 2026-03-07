@@ -37,7 +37,7 @@
   },
   "type": "module",
   "devDependencies": {
-    "@apexdesigner/claude-skills": "^1.0.47",
+    "@apexdesigner/claude-skills": "^1.0.48",
     "@apexdesigner/dsl": "^0.8.60",
     "@apexdesigner/generator": "^0.8.53",
     "@apexdesigner/utilities": "^0.1.24",

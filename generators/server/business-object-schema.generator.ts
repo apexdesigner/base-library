@@ -616,9 +616,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       lines.push(`  .unique({ fields: [${fieldList}] })`);
     }
     for (const idx of indexes) {
-      const propsList = idx.properties.map(p =>
-        p.descending ? `{ name: "${p.name}", descending: true }` : `{ name: "${p.name}" }`
-      ).join(', ');
+      const propsList = idx.properties.map(p => (p.descending ? `{ name: "${p.name}", descending: true }` : `{ name: "${p.name}" }`)).join(', ');
       lines.push(`  .index({ name: "${idx.name}", properties: [${propsList}] })`);
     }
     if (viewSql) {
