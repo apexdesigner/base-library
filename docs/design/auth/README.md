@@ -16,8 +16,8 @@ generated-by: design-docs.readme.md
 
 ## Pages
 
-- [Impersonate](./impersonate.page.md) - Allows administrators to impersonate another user by selecting from a list.
 - [Login](./login.page.md) - Public login page with a button to initiate OIDC login.
+- [Switch User](./switch-user.page.md) - Allows administrators to switch to another user by selecting from a list.
 
 ## Services
 

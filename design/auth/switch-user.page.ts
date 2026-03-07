@@ -4,14 +4,14 @@ import { User } from '@business-objects-client';
 import { AuthService } from '@services';
 
 /**
- * Impersonate
+ * Switch User
  *
- * Allows administrators to impersonate another user by selecting from a list.
+ * Allows administrators to switch to another user by selecting from a list.
  * Only available when ALLOW_IMPERSONATION is enabled on the server.
  * Selecting a user sets sessionStorage and reloads the app.
  */
-@page({ path: '/impersonate', excludeFromSidenav: true })
-export class ImpersonatePage extends Page {
+@page({ path: '/switch-user', excludeFromSidenav: true })
+export class SwitchUserPage extends Page {
   /** Users - List of all users available for impersonation */
   @property({
     read: 'On Demand',
@@ -19,6 +19,7 @@ export class ImpersonatePage extends Page {
   })
   users!: UserPersistedArray;
 
+  /** Current User - The currently authenticated user */
   currentUser?: User
 
   /** Auth Service */
@@ -50,26 +51,26 @@ export class ImpersonatePage extends Page {
   /** Switch To - Set impersonation and reload */
   switchTo(user: User): void {
     sessionStorage.setItem('impersonateUserId', String(user.id));
-    window.location.href = '/impersonate';
+    window.location.href = '/switch-user';
   }
 
   /** Stop Impersonating - Clear impersonation and reload */
   stopImpersonating(): void {
     sessionStorage.removeItem('impersonateUserId');
-    window.location.href = '/impersonate';
+    window.location.href = '/switch-user';
   }
 
 }
 
-applyTemplate(ImpersonatePage, `
+applyTemplate(SwitchUserPage, `
   <flex-column>
     <if condition="isImpersonating">
       <div>
-        <button mat-raised-button color="warn" (click)="stopImpersonating()">Stop Impersonating {{currentUser?.email}}</button>
+        <button mat-raised-button color="warn" (click)="stopImpersonating()">Stop being {{currentUser?.email}}</button>
       </div>
     </if>
     <if condition="!isImpersonating">
-      <h1>Impersonate a User</h1>
+      <h1>Switch User</h1>
       <mat-form-field>
         <mat-label>Search</mat-label>
         <input matInput [(ngModel)]="searchText" placeholder="Filter by email">
