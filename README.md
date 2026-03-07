@@ -17,6 +17,14 @@ Base scaffold and code generators for Apex Designer Angular/Express applications
 - **Generated model classes** with static methods (`find`, `findById`, `create`, `createMany`, `count`) and instance methods (`save`, `delete`)
 - **Zod schemas** with UI metadata extensions. See `client/node_modules/@apexdesigner/schema-tools/README.md`
 
+## Environment Variables
+
+| Variable | Description | Example |
+|---|---|---|
+| `ADMINISTRATOR_EMAILS` | Comma-separated emails to auto-assign Administrator role on startup | `david.knapp@apexbpm.com,nick.laughton@apexbpm.com` |
+| `ALLOW_IMPERSONATION` | Enable user switching (dev/test/demo only) | `true` |
+| `SCHEMA_FORCE_SYNC` | Apply destructive schema fixes on startup (dev/test only) | `true` |
+
 ## Patterns
 
 - [**Generated Types**](./docs/patterns/generated-types.md) - Typed classes produced for each business object
