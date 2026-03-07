@@ -241,7 +241,7 @@ Reports an error when two [pages](pages.md) have the same `path`.
 
 ### Missing Data Source
 
-Reports an error when a [business object](business-objects.md) has no [data source](data-sources.md) and the [project](project.md) has no `defaultDataSource`. Only applies to non-library projects.
+Reports an error when a [business object](business-objects.md) has no [data source](data-sources.md) and no data source has [`isDefault`](data-sources.md#default-data-source) set. Only applies to non-library projects.
 
 ## Library Validators
 

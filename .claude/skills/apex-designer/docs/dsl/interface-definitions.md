@@ -21,7 +21,7 @@ export class Address extends InterfaceDefinition {
 
 ## Properties
 
-Properties work the same as on [business objects](business-objects.md#properties) — native types and [base types](base-types.md) are supported:
+Properties can be typed as native types (`string`, `number`, `boolean`, `Date`), [base types](base-types.md), other [interface definitions](#nesting), or [business objects](business-objects.md):
 
 ```typescript
 import { InterfaceDefinition } from "@apexdesigner/dsl";
@@ -31,6 +31,19 @@ export class ContactInfo extends InterfaceDefinition {
   name?: string;
   email?: Email;
   phone?: string;
+}
+```
+
+Business objects can be referenced directly:
+
+```typescript
+import { InterfaceDefinition } from "@apexdesigner/dsl";
+import { Student, Organization } from "@business-objects";
+
+export class EnrollmentSummary extends InterfaceDefinition {
+  student?: Student;
+  organization?: Organization;
+  enrolledAt?: Date;
 }
 ```
 

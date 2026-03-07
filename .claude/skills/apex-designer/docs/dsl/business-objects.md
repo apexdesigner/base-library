@@ -334,7 +334,7 @@ export class Student extends BusinessObject {
 
 ## Data Source
 
-By default, all business objects use the project default [data source](data-sources.md). Each data source generates a typed `apply` function in `@data-sources` to override:
+By default, all business objects use the [default data source](data-sources.md#default-data-source). Each data source generates a typed `apply` function in `@data-sources` to override:
 
 ```typescript
 // ...
@@ -353,7 +353,7 @@ applyWarehouseDataSource(Student);
 Every business object requires an `id` property. If not declared, a [validator](validators.md) automatically adds it with a type determined by:
 
 1. The business object's [data source](data-sources.md) `defaultIdType`
-2. The project's [default data source](project.md#default-data-source) `defaultIdType`
+2. The [default data source](data-sources.md#default-data-source) `defaultIdType`
 3. Fallback to `number` if neither is configured
 
 ```typescript
@@ -527,8 +527,8 @@ export class Student extends BusinessObject {
   organizationId!: number;
 }
 
-addUniqueConstraint(Student, ["email"]);
-addUniqueConstraint(Student, ["organizationId", "studentCode"]);
+addUniqueConstraint(Student, { fields: ["email"] });
+addUniqueConstraint(Student, { fields: ["organizationId", "studentCode"] });
 ```
 
 ## Names

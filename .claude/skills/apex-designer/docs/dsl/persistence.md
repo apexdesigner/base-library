@@ -100,19 +100,26 @@ export class Student extends BusinessObject {
   organizationId!: number;
 }
 
-addIndex(Student, ["lastName"]);
-addIndex(Student, ["organizationId", "lastName"]);
+addIndex(Student, {
+  name: "byLastName",
+  properties: [{ name: "lastName" }],
+});
+addIndex(Student, {
+  name: "byOrgLastName",
+  properties: [{ name: "organizationId" }, { name: "lastName" }],
+});
 ```
 
-Use the object form for sort order or filtered indexes:
+Use `descending` for sort order and `where` for partial indexes:
 
 ```typescript
 addIndex(Student, {
-  columns: [
+  name: "byOrgLastNameDesc",
+  properties: [
     { name: "organizationId" },
-    { name: "lastName", sort: "ASC" },
+    { name: "lastName", descending: true },
   ],
-  where: "lastName IS NOT NULL",
+  where: { active: true },
 });
 ```
 

@@ -78,6 +78,17 @@ Use `excludeFromSidenav` to hide the page:
 export class OrganizationDetailsPage extends Page {}
 ```
 
+### Default Page
+
+Set `isDefault` to make a page the default route for the application:
+
+```typescript
+@page({ path: "/home", isDefault: true })
+export class HomePage extends Page {}
+```
+
+Only one page should have `isDefault: true` (enforced by a validator).
+
 ## Properties
 
 Properties are declared as class members. Use `@property()` only when configuration is needed.

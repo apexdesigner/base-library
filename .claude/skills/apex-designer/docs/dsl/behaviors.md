@@ -84,6 +84,25 @@ addBehavior(
 );
 ```
 
+Use [interface definitions](interface-definitions.md) to type inputs and outputs:
+
+```typescript
+import { addBehavior } from "@apexdesigner/dsl";
+import { Student } from "@business-objects";
+import { TranscriptRequest, TranscriptReport } from "@interface-definitions";
+
+addBehavior(
+  Student,
+  {
+    type: "Instance",
+    httpMethod: "Post",
+  },
+  async function generateTranscript(student: Student, body: TranscriptRequest): Promise<TranscriptReport> {
+    // ...
+  },
+);
+```
+
 ## Exposing Endpoints
 
 Instance and class behaviors can be exposed as API endpoints using `httpMethod`.

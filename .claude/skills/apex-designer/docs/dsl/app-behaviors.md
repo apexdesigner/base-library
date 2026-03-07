@@ -1,6 +1,6 @@
 # App Behaviors
 
-An app behavior adds application-level server logic that is not tied to a specific [business object](business-objects.md). App behavior files are named `<name>.app-behavior.ts` and by default are created in `design/app-behaviors/`.
+An app behavior adds application-level logic that is not tied to a specific [business object](business-objects.md). App behaviors can target the server (Class Behavior, Middleware, Lifecycle Behavior) or client (Provider, Interceptor, Guard). The [`layer`](#layer) option defaults to `"Server"` and can be set explicitly to target the client. App behavior files are named `<name>.app-behavior.ts` and by default are created in `design/app-behaviors/`.
 
 ## Structure
 
@@ -188,6 +188,100 @@ addAppBehavior(
 - **1000**: Main request processing (implicit, not explicitly set)
 
 Libraries should use round numbers (100, 200, 300) to allow projects to insert middleware between them (150, 250, etc.).
+
+## Providers
+
+Providers register framework-level services at application bootstrap. The function returns the provider configuration synchronously.
+
+```typescript
+import { addAppBehavior } from "@apexdesigner/dsl";
+
+addAppBehavior(
+  {
+    type: "Provider",
+    layer: "Client",
+  },
+  function authProvider(): EnvironmentProviders {
+    // ...
+    return environmentProviders;
+  },
+);
+```
+
+No `sequence` or `stage` — providers are unordered.
+
+## Interceptors
+
+Interceptors process HTTP requests and responses on the client. They use `sequence` for ordering, like server-side [Middleware](#middleware).
+
+```typescript
+import { addAppBehavior } from "@apexdesigner/dsl";
+
+addAppBehavior(
+  {
+    type: "Interceptor",
+    sequence: 100,
+    layer: "Client",
+  },
+  async function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Promise<HttpEvent<unknown>> {
+    // ...
+    return next(req);
+  },
+);
+```
+
+### Interceptor Sequence Guidelines
+
+- **100-199**: Authentication (attach tokens)
+- **200-299**: Error handling (401s, retries)
+- **300-499**: Request/response transformation
+- **500-699**: Logging and monitoring
+- **700-899**: Caching
+
+## Guards
+
+Guards control route navigation. They use `stage` and `sequence` for ordering.
+
+```typescript
+import { addAppBehavior } from "@apexdesigner/dsl";
+
+addAppBehavior(
+  {
+    type: "Guard",
+    stage: "Activate",
+    sequence: 100,
+    layer: "Client",
+  },
+  async function roleGuard(route: ActivatedRouteSnapshot, router: Router): Promise<boolean> {
+    // ...
+    return true;
+  },
+);
+```
+
+### Guard Stages
+
+- **`Activate`** — runs before a route is activated (canActivate)
+- **`Deactivate`** — runs before leaving a route (canDeactivate)
+
+## Layer
+
+Use `layer` to explicitly set whether an app behavior targets the client or server:
+
+```typescript
+addAppBehavior(
+  {
+    type: "Class Behavior",
+    httpMethod: "Get",
+    layer: "Client",
+  },
+  async function getTheme() {
+    // ...
+  },
+);
+```
+
+When omitted, the generator infers the layer from the type: Provider, Interceptor, and Guard target the client; Class Behavior, Middleware, and Lifecycle Behavior target the server.
 
 ## Service Tasks
 
