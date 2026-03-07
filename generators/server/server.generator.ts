@@ -8,6 +8,7 @@ const Debug = createDebug('BaseLibrary:generators:server');
 
 const serverGenerator: DesignGenerator = {
   name: 'server',
+  isAggregate: true,
 
   triggers: [
     {

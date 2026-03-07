@@ -80,6 +80,7 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
 
 const dataSourceGenerator: DesignGenerator = {
   name: 'data-source',
+  isAggregate: true,
 
   triggers: [
     {

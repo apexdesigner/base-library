@@ -7,6 +7,7 @@ const Debug = createDebug('BaseLibrary:generators:clientAngularJson');
 
 const clientAngularJsonGenerator: DesignGenerator = {
   name: 'client-angular-json',
+  isAggregate: true,
 
   triggers: [
     {

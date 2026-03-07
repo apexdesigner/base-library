@@ -8,6 +8,7 @@ const Debug = createDebug('BaseLibrary:generators:clientAppConfig');
 
 const clientAppConfigGenerator: DesignGenerator = {
   name: 'client-app-config',
+  isAggregate: true,
 
   triggers: [
     {

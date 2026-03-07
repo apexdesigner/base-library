@@ -8,6 +8,7 @@ const Debug = createDebug('BaseLibrary:generators:clientIndexHtml');
 
 const clientIndexHtmlGenerator: DesignGenerator = {
   name: 'client-index-html',
+  isAggregate: true,
 
   triggers: [
     {

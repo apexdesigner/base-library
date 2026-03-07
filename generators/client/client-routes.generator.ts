@@ -13,6 +13,7 @@ function getBaseName(name: string): string {
 
 const clientRoutesGenerator: DesignGenerator = {
   name: 'client-routes',
+  isAggregate: true,
 
   triggers: [
     {
