@@ -15,6 +15,7 @@ interface DataSourceInfo {
   configOptions: string[];
   entityNames: string[];
   boKebabNames: string[];
+  isDefault: boolean;
 }
 
 function readDataSourceConfig(metadata: DesignMetadata, context: GenerationContext): DataSourceInfo {
@@ -61,6 +62,10 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     return ds && ds.name === dsName;
   });
 
+  // Check for isDefault property
+  const isDefaultProp = dsClass.getProperty('isDefault');
+  const isDefault = isDefaultProp?.getInitializer()?.getText() === 'true';
+
   return {
     name: dsName,
     className: pascalCase(dsName),
@@ -68,7 +73,8 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     factoryName: `create${pascalCase(persistenceType)}Persistence`,
     configOptions,
     entityNames: myBOs.map(bo => pascalCase(bo.name)).sort(),
-    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort()
+    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort(),
+    isDefault
   };
 }
 
@@ -106,7 +112,7 @@ const dataSourceGenerator: DesignGenerator = {
     const isFederated = dataSources.length >= 2;
 
     if (isFederated) {
-      return generateFederated(dataSources, debugNamespace, context);
+      return generateFederated(dataSources, debugNamespace);
     } else {
       return generateSingle(dataSources[0], debugNamespace);
     }
@@ -158,7 +164,7 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
   return lines.join('\n');
 }
 
-function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string, context: GenerationContext): string {
+function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string): string {
   const lines: string[] = [];
 
   // Collect all unique factory imports
@@ -232,21 +238,9 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
   lines.push('');
 
   // Determine default data source
-  const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
-  let defaultDsName = dataSources[0].name;
-  if (projectMeta) {
-    const projectClass = getClassByBase(projectMeta.sourceFile, 'Project');
-    if (projectClass) {
-      const defaultDsProp = projectClass.getProperty('defaultDataSource');
-      if (defaultDsProp) {
-        const initText = defaultDsProp.getInitializer()?.getText();
-        if (initText) {
-          const matched = dataSources.find(ds => ds.className === initText);
-          if (matched) defaultDsName = matched.name;
-        }
-      }
-    }
-  }
+  // Priority: isDefault on DataSource > first data source alphabetically
+  const defaultDs = dataSources.find(ds => ds.isDefault);
+  let defaultDsName = defaultDs ? defaultDs.name : dataSources[0].name;
 
   // Create federated persistence
   lines.push('debug("Creating federated persistence");');
