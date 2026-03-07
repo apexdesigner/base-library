@@ -489,7 +489,11 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    debug("filter %j", filter);');
     lines.push('');
     // Inline Before Read lifecycle behaviors
-    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter?.where' }, mixinNames, mixinOptionsMap);
+    if (beforeReadEntries.length > 0) {
+      lines.push('    if (!filter) filter = {};');
+      lines.push('    if (!filter.where) filter.where = {} as any;');
+    }
+    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
     lines.push(`    const results = await this.dataSource.find(this.entityName, filter);`);
     lines.push('    debug("results.length %j", results.length);');
     lines.push('');
@@ -507,7 +511,11 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    debug("filter %j", filter);');
     lines.push('');
     // Inline Before Read lifecycle behaviors
-    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter?.where' }, mixinNames, mixinOptionsMap);
+    if (beforeReadEntries.length > 0) {
+      lines.push('    if (!filter) filter = {} as any;');
+      lines.push('    if (!filter.where) filter.where = {} as any;');
+    }
+    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
     lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter);`);
     lines.push('    debug("data %j", data);');
     lines.push('');
