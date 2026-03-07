@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.112] - 2026-03-07
+
+- 866fb79 chore: update dependencies and apply formatting fixes
+- b7fa721 docs: add environment variables section to README
+- bd172aa fix: add missing isAggregate flag to all aggregate generators
+- aa09ef2 feat: add SCHEMA_FORCE_SYNC env var for destructive schema fixes
+- 2d702cf feat: add unique constraints, indexes, and switch user page
+- 6106b91 feat: add user impersonation for dev/test/demo environments
+- e5dacfe fix: initialize filter.where before Before Read lifecycle behaviors
+- f798335 fix: inline Before Read lifecycle behaviors into findOne() method
+- 708b0b6 fix: use isDefault on DataSource to determine default in federated persistence
+- 7876c2d fix: preserve @Input() decorator on onChangeCall getter/setter transform
+- 2237d3d fix: include table name in unfixable schema error messages
+
+
 ## [1.0.111] - 2026-03-06
 
 - 88241c0 style: format design and generator files
