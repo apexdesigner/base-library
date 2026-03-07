@@ -53,6 +53,17 @@ has_script() {
 
 echo -e "${BLUE}📋 Pre-flight checks...${NC}"
 
+# 0. Check npm login
+echo -n "Checking npm login... "
+if npm whoami &>/dev/null; then
+    echo -e "${GREEN}✓${NC} ($(npm whoami))"
+else
+    echo -e "${RED}✗${NC}"
+    echo -e "${RED}Error: Not logged in to npm. Please run:${NC}"
+    echo -e "   ${GREEN}npm login${NC}"
+    exit 1
+fi
+
 # 1. Auto-detect and check base branch
 echo -n "Detecting base branch... "
 BASE_BRANCH=$(detect_base_branch)

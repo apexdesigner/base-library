@@ -15,6 +15,7 @@ interface DataSourceInfo {
   configOptions: string[];
   entityNames: string[];
   boKebabNames: string[];
+  isDefault: boolean;
 }
 
 function readDataSourceConfig(metadata: DesignMetadata, context: GenerationContext): DataSourceInfo {
@@ -61,6 +62,10 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     return ds && ds.name === dsName;
   });
 
+  // Check for isDefault property
+  const isDefaultProp = dsClass.getProperty('isDefault');
+  const isDefault = isDefaultProp?.getInitializer()?.getText() === 'true';
+
   return {
     name: dsName,
     className: pascalCase(dsName),
@@ -68,12 +73,14 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     factoryName: `create${pascalCase(persistenceType)}Persistence`,
     configOptions,
     entityNames: myBOs.map(bo => pascalCase(bo.name)).sort(),
-    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort()
+    boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort(),
+    isDefault
   };
 }
 
 const dataSourceGenerator: DesignGenerator = {
   name: 'data-source',
+  isAggregate: true,
 
   triggers: [
     {
@@ -106,7 +113,7 @@ const dataSourceGenerator: DesignGenerator = {
     const isFederated = dataSources.length >= 2;
 
     if (isFederated) {
-      return generateFederated(dataSources, debugNamespace, context);
+      return generateFederated(dataSources, debugNamespace);
     } else {
       return generateSingle(dataSources[0], debugNamespace);
     }
@@ -131,32 +138,45 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
   lines.push(`export const dataSource = await ${ds.factoryName}(${factoryArg});`);
   lines.push(`debug("${ds.className} persistence created");`);
   lines.push('');
+  lines.push('const schemaForceSync = process.env.SCHEMA_FORCE_SYNC === "true";');
   lines.push('const result = await dataSource.validateSchema();');
   lines.push('if (!result.valid) {');
-  lines.push('  if (result.autoFixable.length > 0) {');
-  lines.push('    debug("Auto-fixing schema: %O", result.autoFixable.map((d: any) => d.fixMessage ?? d.message));');
-  lines.push('    const fixResult = await result.applyFixes();');
+  lines.push('  if (schemaForceSync) {');
+  lines.push('    debug("Force-syncing schema");');
+  lines.push('    const fixResult = await result.applyFixes({ force: true });');
   lines.push('    if (!fixResult.success) {');
   lines.push('      console.error("Schema fix errors:", fixResult.errors);');
-  lines.push('      throw new Error("Schema auto-fix failed");');
+  lines.push('      throw new Error("Schema force-sync failed");');
   lines.push('    }');
-  lines.push('    console.log("Schema fixes applied:", fixResult.executedSql);');
-  lines.push('  }');
-  lines.push('  const allDiffs = [');
-  lines.push('    ...Object.values(result.tables).flatMap((t: any) => t.differences),');
-  lines.push('    ...Object.values(result.views).flatMap((v: any) => v.differences),');
-  lines.push('  ];');
-  lines.push('  const unfixable = allDiffs.filter((d: any) => !d.autoFixable);');
-  lines.push('  if (unfixable.length > 0) {');
-  lines.push('    console.error("Unfixable schema issues:", unfixable.map((d: any) => d.message));');
-  lines.push('    throw new Error("Schema validation failed with unfixable issues");');
+  lines.push('    if (fixResult.executedSql.length > 0) console.log("Schema fixes applied:", fixResult.executedSql);');
+  lines.push('  } else {');
+  lines.push('    if (result.autoFixable.length > 0) {');
+  lines.push('      debug("Auto-fixing schema: %O", result.autoFixable.map((d: any) => d.fixMessage ?? d.message));');
+  lines.push('      const fixResult = await result.applyFixes();');
+  lines.push('      if (!fixResult.success) {');
+  lines.push('        console.error("Schema fix errors:", fixResult.errors);');
+  lines.push('        throw new Error("Schema auto-fix failed");');
+  lines.push('      }');
+  lines.push('      console.log("Schema fixes applied:", fixResult.executedSql);');
+  lines.push('    }');
+  lines.push('    const unfixable: string[] = [];');
+  lines.push('    for (const [name, t] of Object.entries(result.tables) as any) {');
+  lines.push('      for (const d of t.differences) if (!d.autoFixable) unfixable.push(`${name}: ${d.message}`);');
+  lines.push('    }');
+  lines.push('    for (const [name, v] of Object.entries(result.views) as any) {');
+  lines.push('      for (const d of v.differences) if (!d.autoFixable) unfixable.push(`${name}: ${d.message}`);');
+  lines.push('    }');
+  lines.push('    if (unfixable.length > 0) {');
+  lines.push('      console.error("Unfixable schema issues:", unfixable);');
+  lines.push('      throw new Error("Schema validation failed with unfixable issues");');
+  lines.push('    }');
   lines.push('  }');
   lines.push('}');
 
   return lines.join('\n');
 }
 
-function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string, context: GenerationContext): string {
+function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string): string {
   const lines: string[] = [];
 
   // Collect all unique factory imports
@@ -193,27 +213,40 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
   lines.push('');
 
   // Validate each child's schema
+  lines.push('const schemaForceSync = process.env.SCHEMA_FORCE_SYNC === "true";');
   for (const ds of dataSources) {
     const varName = camelCase(ds.name);
     lines.push(`const ${varName}Result = await ${varName}.validateSchema();`);
     lines.push(`if (!${varName}Result.valid) {`);
-    lines.push(`  if (${varName}Result.autoFixable.length > 0) {`);
-    lines.push(`    debug("Auto-fixing ${ds.className} schema: %O", ${varName}Result.autoFixable.map((d: any) => d.fixMessage ?? d.message));`);
-    lines.push(`    const fixResult = await ${varName}Result.applyFixes();`);
+    lines.push('  if (schemaForceSync) {');
+    lines.push(`    debug("Force-syncing ${ds.className} schema");`);
+    lines.push(`    const fixResult = await ${varName}Result.applyFixes({ force: true });`);
     lines.push('    if (!fixResult.success) {');
     lines.push(`      console.error("${ds.className} schema fix errors:", fixResult.errors);`);
-    lines.push(`      throw new Error("Schema auto-fix failed for ${ds.className}");`);
+    lines.push(`      throw new Error("Schema force-sync failed for ${ds.className}");`);
     lines.push('    }');
-    lines.push(`    console.log("${ds.className} schema fixes applied:", fixResult.executedSql);`);
-    lines.push('  }');
-    lines.push(`  const allDiffs = [`);
-    lines.push(`    ...Object.values(${varName}Result.tables).flatMap((t: any) => t.differences),`);
-    lines.push(`    ...Object.values(${varName}Result.views).flatMap((v: any) => v.differences),`);
-    lines.push('  ];');
-    lines.push('  const unfixable = allDiffs.filter((d: any) => !d.autoFixable);');
-    lines.push('  if (unfixable.length > 0) {');
-    lines.push(`    console.error("Unfixable schema issues for ${ds.className}:", unfixable.map((d: any) => d.message));`);
-    lines.push(`    throw new Error("Schema validation failed for ${ds.className} with unfixable issues");`);
+    lines.push(`    if (fixResult.executedSql.length > 0) console.log("${ds.className} schema fixes applied:", fixResult.executedSql);`);
+    lines.push('  } else {');
+    lines.push(`    if (${varName}Result.autoFixable.length > 0) {`);
+    lines.push(`      debug("Auto-fixing ${ds.className} schema: %O", ${varName}Result.autoFixable.map((d: any) => d.fixMessage ?? d.message));`);
+    lines.push(`      const fixResult = await ${varName}Result.applyFixes();`);
+    lines.push('      if (!fixResult.success) {');
+    lines.push(`        console.error("${ds.className} schema fix errors:", fixResult.errors);`);
+    lines.push(`        throw new Error("Schema auto-fix failed for ${ds.className}");`);
+    lines.push('      }');
+    lines.push(`      console.log("${ds.className} schema fixes applied:", fixResult.executedSql);`);
+    lines.push('    }');
+    lines.push('    const unfixable: string[] = [];');
+    lines.push(`    for (const [name, t] of Object.entries(${varName}Result.tables) as any) {`);
+    lines.push('      for (const d of t.differences) if (!d.autoFixable) unfixable.push(`${name}: ${d.message}`);');
+    lines.push('    }');
+    lines.push(`    for (const [name, v] of Object.entries(${varName}Result.views) as any) {`);
+    lines.push('      for (const d of v.differences) if (!d.autoFixable) unfixable.push(`${name}: ${d.message}`);');
+    lines.push('    }');
+    lines.push('    if (unfixable.length > 0) {');
+    lines.push(`      console.error("Unfixable schema issues for ${ds.className}:", unfixable);`);
+    lines.push(`      throw new Error("Schema validation failed for ${ds.className} with unfixable issues");`);
+    lines.push('    }');
     lines.push('  }');
     lines.push('}');
   }
@@ -228,21 +261,9 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
   lines.push('');
 
   // Determine default data source
-  const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
-  let defaultDsName = dataSources[0].name;
-  if (projectMeta) {
-    const projectClass = getClassByBase(projectMeta.sourceFile, 'Project');
-    if (projectClass) {
-      const defaultDsProp = projectClass.getProperty('defaultDataSource');
-      if (defaultDsProp) {
-        const initText = defaultDsProp.getInitializer()?.getText();
-        if (initText) {
-          const matched = dataSources.find(ds => ds.className === initText);
-          if (matched) defaultDsName = matched.name;
-        }
-      }
-    }
-  }
+  // Priority: isDefault on DataSource > first data source alphabetically
+  const defaultDs = dataSources.find(ds => ds.isDefault);
+  let defaultDsName = defaultDs ? defaultDs.name : dataSources[0].name;
 
   // Create federated persistence
   lines.push('debug("Creating federated persistence");');

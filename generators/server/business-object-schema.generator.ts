@@ -29,6 +29,37 @@ function toObjectLiteral(obj: Record<string, unknown>): string {
   return `{ ${entries.join(', ')} }`;
 }
 
+/**
+ * Extract field names from addUniqueConstraint args.
+ * Supports: addUniqueConstraint(Class, 'field1', 'field2') — string args
+ * and: addUniqueConstraint(Class, { fields: ['field1', 'field2'] }) — object form
+ */
+function extractFieldsFromArgs(args: Node[]): string[] {
+  const fields: string[] = [];
+  // Skip first arg (class reference), check remaining
+  for (let i = 1; i < args.length; i++) {
+    const arg = args[i];
+    if (Node.isStringLiteral(arg)) {
+      // String args form: addUniqueConstraint(Class, 'field1', 'field2')
+      fields.push(arg.getLiteralValue());
+    } else if (Node.isObjectLiteralExpression(arg)) {
+      // Object form: addUniqueConstraint(Class, { fields: ['field1'] })
+      const fieldsProp = arg.getProperty('fields');
+      if (fieldsProp && Node.isPropertyAssignment(fieldsProp)) {
+        const init = fieldsProp.getInitializer();
+        if (init && Node.isArrayLiteralExpression(init)) {
+          for (const el of init.getElements()) {
+            if (Node.isStringLiteral(el)) {
+              fields.push(el.getLiteralValue());
+            }
+          }
+        }
+      }
+    }
+  }
+  return fields;
+}
+
 const businessObjectSchemaGenerator: DesignGenerator = {
   name: 'business-object-schema',
 
@@ -511,11 +542,83 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     const viewSql = viewCall ? getTemplateString(viewCall) : undefined;
     debug('viewSql %j', viewSql);
 
+    // Detect addUniqueConstraint() and addIndex() calls
+    const uniqueConstraints: string[][] = [];
+    const indexes: { name: string; properties: { name: string; descending?: boolean }[] }[] = [];
+    for (const statement of metadata.sourceFile.getStatements()) {
+      if (!Node.isExpressionStatement(statement)) continue;
+      const expr = statement.getExpression();
+      if (!Node.isCallExpression(expr)) continue;
+      const callee = expr.getExpression();
+      if (!Node.isIdentifier(callee)) continue;
+      const calleeName = callee.getText();
+      const args = expr.getArguments();
+
+      if (calleeName === 'addUniqueConstraint') {
+        const fields = extractFieldsFromArgs(args);
+        if (fields.length > 0) {
+          uniqueConstraints.push(fields);
+        }
+      } else if (calleeName === 'addIndex') {
+        // addIndex(ClassName, { name: '...', properties: [{ name: '...' }] })
+        const optsArg = args[1];
+        if (optsArg && Node.isObjectLiteralExpression(optsArg)) {
+          const nameProp = optsArg.getProperty('name');
+          const propsProp = optsArg.getProperty('properties');
+          let indexName = '';
+          if (nameProp && Node.isPropertyAssignment(nameProp)) {
+            const init = nameProp.getInitializer();
+            if (init && Node.isStringLiteral(init)) {
+              indexName = init.getLiteralValue();
+            }
+          }
+          const properties: { name: string; descending?: boolean }[] = [];
+          if (propsProp && Node.isPropertyAssignment(propsProp)) {
+            const init = propsProp.getInitializer();
+            if (init && Node.isArrayLiteralExpression(init)) {
+              for (const el of init.getElements()) {
+                if (Node.isObjectLiteralExpression(el)) {
+                  const np = el.getProperty('name');
+                  if (np && Node.isPropertyAssignment(np)) {
+                    const nInit = np.getInitializer();
+                    if (nInit && Node.isStringLiteral(nInit)) {
+                      const prop: { name: string; descending?: boolean } = { name: nInit.getLiteralValue() };
+                      const dp = el.getProperty('descending');
+                      if (dp && Node.isPropertyAssignment(dp)) {
+                        const dInit = dp.getInitializer();
+                        if (dInit && dInit.getText() === 'true') {
+                          prop.descending = true;
+                        }
+                      }
+                      properties.push(prop);
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if (indexName && properties.length > 0) {
+            indexes.push({ name: indexName, properties });
+          }
+        }
+      }
+    }
+    debug('uniqueConstraints %j', uniqueConstraints);
+    debug('indexes %j', indexes);
+
     lines.push(`export const ${schemaVarName} = z`);
     lines.push('  .object({');
     lines.push(schemaProps.join(',\n\n'));
     lines.push('  })');
     lines.push(`  .describe("${entityDescription.replace(/"/g, '\\"').replace(/\n/g, ' ')}")`);
+    for (const fields of uniqueConstraints) {
+      const fieldList = fields.map(f => `"${f}"`).join(', ');
+      lines.push(`  .unique({ fields: [${fieldList}] })`);
+    }
+    for (const idx of indexes) {
+      const propsList = idx.properties.map(p => (p.descending ? `{ name: "${p.name}", descending: true }` : `{ name: "${p.name}" }`)).join(', ');
+      lines.push(`  .index({ name: "${idx.name}", properties: [${propsList}] })`);
+    }
     if (viewSql) {
       const escapedSql = viewSql.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
       lines.push(`  .view({ sql: \`${escapedSql}\` })`);

@@ -59,6 +59,17 @@ export class Postgres extends DataSource {
 }
 ```
 
-## Project Default
+## Default Data Source
 
-The project's [`defaultDataSource`](project.md#default-data-source) is used by all business objects unless [overridden](business-objects.md#data-source).
+Set `isDefault` to make a data source the default for all business objects that don't have an explicit data source assigned:
+
+```typescript
+import { DataSource } from "@apexdesigner/dsl";
+
+export class Postgres extends DataSource {
+  defaultIdType = Number;
+  isDefault = true;
+}
+```
+
+Only one data source should have `isDefault = true` (enforced by a validator).

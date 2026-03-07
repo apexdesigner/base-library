@@ -437,4 +437,121 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).toContain('SELECT DISTINCT ON');
     });
   });
+
+  describe('unique constraints', () => {
+    it('should emit .unique() for addUniqueConstraint with object form', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint } from '@apexdesigner/dsl';
+          export class User extends BusinessObject {
+            email!: string;
+          }
+          addUniqueConstraint(User, { fields: ['email'] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.unique({ fields: ["email"] })');
+    });
+
+    it('should emit .unique() for addUniqueConstraint with string args', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Role', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint } from '@apexdesigner/dsl';
+          export class Role extends BusinessObject {
+            name!: string;
+          }
+          addUniqueConstraint(Role, 'name');
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.unique({ fields: ["name"] })');
+    });
+
+    it('should emit .unique() for composite unique constraint', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Assignment', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint } from '@apexdesigner/dsl';
+          export class Assignment extends BusinessObject {
+            userId!: number;
+            roleId!: number;
+          }
+          addUniqueConstraint(Assignment, { fields: ['userId', 'roleId'] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.unique({ fields: ["userId", "roleId"] })');
+    });
+
+    it('should emit multiple .unique() calls for multiple constraints', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint } from '@apexdesigner/dsl';
+          export class User extends BusinessObject {
+            email!: string;
+            slug!: string;
+          }
+          addUniqueConstraint(User, { fields: ['email'] });
+          addUniqueConstraint(User, { fields: ['slug'] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.unique({ fields: ["email"] })');
+      expect(result).toContain('.unique({ fields: ["slug"] })');
+    });
+  });
+
+  describe('indexes', () => {
+    it('should emit .index() for addIndex on a single field', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, addIndex } from '@apexdesigner/dsl';
+          export class User extends BusinessObject {
+            email!: string;
+          }
+          addIndex(User, { name: 'user_email_idx', properties: [{ name: 'email' }] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.index({ name: "user_email_idx", properties: [{ name: "email" }] })');
+    });
+
+    it('should emit .index() for composite index', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject, addIndex } from '@apexdesigner/dsl';
+          export class Task extends BusinessObject {
+            projectId!: number;
+            status!: string;
+          }
+          addIndex(Task, { name: 'task_project_id_status_idx', properties: [{ name: 'projectId' }, { name: 'status' }] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('.index({ name: "task_project_id_status_idx", properties: [{ name: "projectId" }, { name: "status" }] })');
+    });
+  });
 });

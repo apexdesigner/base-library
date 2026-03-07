@@ -71,6 +71,7 @@ function getAppBehaviorBody(sourceFile: DesignMetadata['sourceFile']): string | 
 
 const appGenerator: DesignGenerator = {
   name: 'app',
+  isAggregate: true,
 
   triggers: [
     {

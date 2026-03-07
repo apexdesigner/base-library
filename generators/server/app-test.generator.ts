@@ -49,6 +49,7 @@ function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
 
 const appTestGenerator: DesignGenerator = {
   name: 'app-test',
+  isAggregate: true,
 
   triggers: [
     {

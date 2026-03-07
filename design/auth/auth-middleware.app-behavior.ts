@@ -27,14 +27,6 @@ addAppBehavior(
 
     debug('req.path %j', req.path);
 
-    // Allow public routes through without authentication
-    if (App.auth.isPublicRoute?.(req.path)) {
-      debug('public route %j', req.path);
-
-      next();
-      return;
-    }
-
     const config = App.auth.config;
     debug('config %j', config);
 
@@ -45,16 +37,32 @@ addAppBehavior(
 
     // Extract bearer token
     const authHeader = req.headers.authorization;
+
     if (!authHeader) {
-      debug('authHeader %j', null);
+      const isPublicRoute = App.auth.isPublicRoute?.(req.path);
+
+      // Public routes can proceed without a token
+      if (isPublicRoute) {
+        debug('public route without token %j', req.path);
+        next();
+        return;
+      }
+      debug('No authorization token provided');
       res.status(401).json({ error: 'No authorization token provided', code: 'AUTH_NO_TOKEN' });
       return;
     }
+
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') {
+      if (App.auth.isPublicRoute?.(req.path)) {
+        debug('public route with invalid auth header %j', req.path);
+        next();
+        return;
+      }
       res.status(401).json({ error: 'No authorization token provided', code: 'AUTH_NO_TOKEN' });
       return;
     }
+
     const token = parts[1];
 
     try {
@@ -137,8 +145,46 @@ addAppBehavior(
       }
       debug('user %j', user);
 
-      const roles = user ? (user.roleAssignments || []).map((ra: any) => ra.role).filter(Boolean) : [];
+      let roles = user ? (user.roleAssignments || []).map((ra: any) => ra.role).filter(Boolean) : [];
       debug('roles %j', roles);
+
+      // Impersonation: if requested, check that it's enabled and the user is an admin
+      const impersonateUserId = req.headers['x-impersonate-user-id'];
+
+      if (impersonateUserId) {
+        debug('impersonateUserId %j', impersonateUserId);
+
+        debug('process.env.ALLOW_IMPERSONATION %j', process.env.ALLOW_IMPERSONATION);
+
+        if (process.env.ALLOW_IMPERSONATION !== 'true') {
+          res.status(403).json({ error: 'Impersonation is not enabled', code: 'AUTH_IMPERSONATION_DISABLED' });
+          return;
+        }
+
+        const isAdmin = roles.some((r: any) => r.name === 'Administrator');
+        debug('isAdmin %j', isAdmin);
+
+        if (!isAdmin) {
+          res.status(403).json({ error: 'Impersonation requires Administrator role', code: 'AUTH_IMPERSONATION_DENIED' });
+          return;
+        }
+
+        const targetUser = await User.findOne({
+          where: { id: Number(impersonateUserId) },
+          include: { roleAssignments: { include: { role: {} } } }
+        });
+
+        if (!targetUser) {
+          res.status(404).json({ error: 'Impersonation target user not found', code: 'AUTH_IMPERSONATION_USER_NOT_FOUND' });
+          return;
+        }
+
+        if (targetUser) {
+          user = targetUser;
+          roles = (user.roleAssignments || []).map((ra: any) => ra.role).filter(Boolean);
+          debug('impersonating user %j with roles %j', user.id, roles);
+        }
+      }
 
       // Set on request
       req.user = user;

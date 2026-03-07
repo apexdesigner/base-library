@@ -1,6 +1,7 @@
 import { addAppBehavior } from '@apexdesigner/dsl';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { AuthService } from '@services';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import createDebug from 'debug';
 
 const debug = createDebug('roleGuard');
@@ -16,7 +17,13 @@ addAppBehavior(
     stage: 'Activate',
     sequence: 100
   },
-  async function roleGuard(route: ActivatedRouteSnapshot, state: RouterStateSnapshot, router: Router, authService: AuthService): Promise<boolean> {
+  async function roleGuard(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+    router: Router,
+    authService: AuthService,
+    snackBar: MatSnackBar
+  ): Promise<boolean> {
     debug('checking auth');
     const authEnabled = await authService.getAuthEnabled();
     debug('authEnabled', authEnabled);
@@ -50,6 +57,7 @@ addAppBehavior(
     }
 
     debug('missing required role');
+    snackBar.open('You do not have permission to access this page.', 'OK', { duration: 5000 });
     return false;
   }
 );

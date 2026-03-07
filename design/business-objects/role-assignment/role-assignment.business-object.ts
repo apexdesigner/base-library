@@ -1,4 +1,4 @@
-import { BusinessObject, relationship, applyDefaultRoles } from '@apexdesigner/dsl';
+import { BusinessObject, relationship, addUniqueConstraint, applyDefaultRoles } from '@apexdesigner/dsl';
 import { User, Role } from '@business-objects';
 import { Administrator } from '@roles';
 
@@ -24,5 +24,7 @@ export class RoleAssignment extends BusinessObject {
   /** Role ID - Foreign key to role */
   roleId?: number;
 }
+
+addUniqueConstraint(RoleAssignment, { fields: ['userId', 'roleId'] });
 
 applyDefaultRoles(RoleAssignment, [Administrator]);

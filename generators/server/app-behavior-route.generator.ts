@@ -19,6 +19,7 @@ const BEHAVIOR_HTTP_METHODS: Record<string, string> = {
 
 const appBehaviorRouteGenerator: DesignGenerator = {
   name: 'app-behavior-route',
+  isAggregate: true,
 
   triggers: [
     {

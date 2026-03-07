@@ -249,13 +249,15 @@ export function transformOnChangeProperties(exportedClass: ClassDeclaration, onC
 
     const typeText = prop.getTypeNode()?.getText() || 'any';
     const hasExclamation = prop.hasExclamationToken();
+    const hasInputDecorator = !!prop.getDecorator('Input');
     const propIndex = exportedClass.getMembers().indexOf(prop);
 
     prop.remove();
 
+    const inputPrefix = hasInputDecorator ? '@Input() ' : '';
     const backingField = `private _${propName}${hasExclamation ? '!' : ''}: ${typeText};`;
     const getter = `get ${propName}(): ${typeText} { return this._${propName}; }`;
-    const setter = `set ${propName}(value: ${typeText}) { this._${propName} = value; this.${methodName}(); }`;
+    const setter = `${inputPrefix}set ${propName}(value: ${typeText}) { this._${propName} = value; this.${methodName}(); }`;
 
     exportedClass.insertMember(propIndex, `\n${backingField}\n  ${getter}\n  ${setter}`);
   }

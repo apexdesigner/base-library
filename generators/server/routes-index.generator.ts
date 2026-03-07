@@ -9,6 +9,7 @@ const Debug = createDebug('BaseLibrary:generators:routesIndex');
 
 const routesIndexGenerator: DesignGenerator = {
   name: 'routes-index',
+  isAggregate: true,
 
   triggers: [
     {

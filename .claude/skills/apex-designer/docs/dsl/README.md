@@ -5,6 +5,7 @@ Design files live in the `design/` directory and are written in TypeScript.
 ## Design Types
 
 - [Business Objects](business-objects.md) — data models with properties, relationships, and behaviors
+- [Interface Definitions](interface-definitions.md) — non-persisted data shapes for behavior input/output and embedded data
 - [Base Types](base-types.md) — reusable property types with validation and constrained values
 - [Mixins](mixins.md) — reusable properties, relationships, and behaviors applied to business objects
 - [Behaviors](behaviors.md) — custom logic attached to business objects
@@ -27,11 +28,6 @@ Design files live in the `design/` directory and are written in TypeScript.
 - [Project](project.md) — application settings and dependencies
 - [Validators](validators.md) — design source checks and auto-fixes
 - [Persistence](persistence.md) — overrides for tables, columns, indexes, and views
-
-### Future
-
-- [Library Overrides](library-overrides.md) — extending and patching library-defined items
-- [Directives and Pipes](TODO-directives-pipes.md) — app-authored directives and pipes
 
 ## Documentation
 

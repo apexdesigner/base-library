@@ -409,4 +409,22 @@ describe('componentGenerator', () => {
       expect(ts).not.toContain('inject(ViewContainerRef)');
     });
   });
+
+  it('should apply @Input() to properties with both isInput and onChangeCall', async () => {
+    const ts = await generateComponent(`
+        import { Component, component, property } from '@apexdesigner/dsl/component';
+        @component({})
+        export class DashboardComponent extends Component {
+          @property({ isInput: true, onChangeCall: 'loadDesign' })
+          designUuid!: string;
+
+          loadDesign() {}
+        }
+      `);
+
+    // Should have @Input() on the setter
+    expect(ts).toContain('@Input()');
+    expect(ts).toContain('set designUuid');
+    expect(ts).toContain('this.loadDesign()');
+  });
 });

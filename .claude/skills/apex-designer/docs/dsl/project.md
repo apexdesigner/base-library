@@ -36,32 +36,6 @@ export class MyApp extends Project {
 }
 ```
 
-## Default Data Source
-
-Set `defaultDataSource` to define the [data source](data-sources.md) used by all business objects unless [overridden](business-objects.md#data-source):
-
-```typescript
-import { Project } from "@apexdesigner/dsl";
-import { Postgres } from "@data-sources";
-
-export class MyApp extends Project {
-  defaultDataSource = Postgres;
-}
-```
-
-## Default Page
-
-Set `defaultPage` to define the default page for the application:
-
-```typescript
-import { Project } from "@apexdesigner/dsl";
-import { Home } from "@pages";
-
-export class MyApp extends Project {
-  defaultPage = Home;
-}
-```
-
 ## Parameter Values
 
 Use `parameterValues` to define configuration parameters for a project or library. Libraries define default values that consuming projects can override or extend:
