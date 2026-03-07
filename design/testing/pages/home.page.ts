@@ -21,6 +21,7 @@ applyTemplate(
     <a routerLink="/test-settings">Settings</a>
     <a routerLink="/manage-roles">Manage Roles</a>
     <a routerLink="/test-select-fields">Select Fields</a>
+    <a routerLink="/impersonate">Impersonate</a>
   </flex-column>
 `
 );

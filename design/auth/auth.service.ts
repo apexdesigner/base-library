@@ -36,6 +36,7 @@ export class AuthService extends Service {
   /** Auth Enabled - Observable that emits whether auth is configured on each change */
   authEnabled: Observable<boolean | undefined> = this._authEnabled.asObservable();
 
+
   /** Oidc Security Service - Injected OIDC client for login and logout */
   oidcSecurityService!: OidcSecurityService;
 
@@ -67,6 +68,7 @@ export class AuthService extends Service {
       debug('config', config);
       const hasConfig = !!config?.authority;
       this._authEnabled.next(hasConfig);
+
 
       if (hasConfig && authResult?.isAuthenticated) {
         this._authenticated.next(true);

@@ -1,5 +1,6 @@
 import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestSettingPersistedArray } from '@business-objects-client';
+import { Administrator } from '@roles';
 
 /**
  * Test Settings
@@ -8,7 +9,8 @@ import { TestSettingPersistedArray } from '@business-objects-client';
  */
 @page({
   path: '/test-settings',
-  sidenavIcon: 'settings'
+  sidenavIcon: 'settings',
+  roles: [Administrator]
 })
 export class TestSettingsPage extends Page {
   /** Test Settings - Array of test setting records */

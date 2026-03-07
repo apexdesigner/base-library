@@ -30,7 +30,8 @@ addAppBehavior(
       audience: config.audience,
       scopes: config.scopes,
       logoutUrl: config.logoutUrl,
-      useCustomAuth0Domain: config.useCustomAuth0Domain
+      useCustomAuth0Domain: config.useCustomAuth0Domain,
+      allowImpersonation: process.env.ALLOW_IMPERSONATION === 'true'
     };
   }
 );

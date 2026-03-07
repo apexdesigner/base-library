@@ -29,13 +29,24 @@ addAppBehavior(
         .pipe(
           // switchMap() waits for the token, then runs this function with it.
           switchMap(token => {
-            // If we have a token — clone the request and add the Authorization header
+            const headers: Record<string, string> = {};
+
             if (token) {
               debug('token', token);
-              return next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
+              headers['Authorization'] = `Bearer ${token}`;
             }
 
-            // Otherwise pass the request through without auth
+            // Add impersonation header if set in sessionStorage
+            const impersonateUserId = sessionStorage.getItem('impersonateUserId');
+            if (impersonateUserId) {
+              debug('impersonating user', impersonateUserId);
+              headers['X-Impersonate-User-Id'] = impersonateUserId;
+            }
+
+            if (Object.keys(headers).length > 0) {
+              return next(req.clone({ setHeaders: headers }));
+            }
+
             debug('no token');
             return next(req);
           })
