@@ -268,6 +268,26 @@ describe('pageComponentGenerator', () => {
     });
   });
 
+  describe('On Demand persisted array read options', () => {
+    it('should set readFilter on initialization when order is specified', async () => {
+      const ts = await generatePage(`
+        import { Page, page, property } from '@apexdesigner/dsl/page';
+        import { UserPersistedArray } from '@business-objects-client';
+        @page({ path: '/switch-user' })
+        export class HomePage extends Page {
+          @property({
+            read: 'On Demand',
+            order: [{ field: 'email', direction: 'asc' }]
+          })
+          users!: UserPersistedArray;
+        }
+      `);
+
+      expect(ts).toContain("filter:");
+      expect(ts).toContain("order:");
+    });
+  });
+
   describe('ViewChild with template refs', () => {
     it('should generate @ViewChild with read option for injectable external type matching a template ref', async () => {
       const workspace = createSimpleMockWorkspace();
