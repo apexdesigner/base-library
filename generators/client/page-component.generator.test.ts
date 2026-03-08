@@ -283,8 +283,8 @@ describe('pageComponentGenerator', () => {
         }
       `);
 
-      expect(ts).toContain("filter:");
-      expect(ts).toContain("order:");
+      expect(ts).toContain('filter:');
+      expect(ts).toContain('order:');
     });
   });
 
