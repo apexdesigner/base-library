@@ -216,6 +216,7 @@ const pageComponentGenerator: DesignGenerator = {
     const callOnLoadMethods: string[] = [];
     const callAfterLoadMethods: string[] = [];
     const callOnUnloadMethods: string[] = [];
+    const debouncedMethods: { name: string; ms: string }[] = [];
 
     for (const classMethod of exportedClass.getMethods()) {
       const methodDecorator = classMethod.getDecorator('method');
@@ -236,9 +237,31 @@ const pageComponentGenerator: DesignGenerator = {
           callOnUnloadMethods.push(classMethod.getName());
           debug('callOnUnload method %j', classMethod.getName());
         }
+        if (Node.isObjectLiteralExpression(args[0])) {
+          const debounceProp = args[0].getProperty('debounceMilliseconds');
+          if (debounceProp && Node.isPropertyAssignment(debounceProp)) {
+            debouncedMethods.push({ name: classMethod.getName(), ms: debounceProp.getInitializerOrThrow().getText() });
+          }
+        }
       }
 
       methodDecorator.remove();
+    }
+
+    // Apply debounce wrappers
+    for (const { name, ms } of debouncedMethods) {
+      const meth = exportedClass.getMethod(name);
+      if (!meth) continue;
+      const timerProp = `_${name}Timeout`;
+      exportedClass.addProperty({
+        name: timerProp,
+        type: 'any'
+      });
+      const body = meth.getBody();
+      if (!body) continue;
+      const statements = body.getStatements();
+      const originalBody = statements.map(s => s.getText()).join('\n');
+      meth.setBodyText(`clearTimeout(this.${timerProp});\nthis.${timerProp} = setTimeout(async () => {\n${originalBody}\n}, ${ms});`);
     }
 
     // Transform debug pattern: design uses `const debug = createDebug(...)`,
