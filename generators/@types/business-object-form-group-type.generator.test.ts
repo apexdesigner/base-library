@@ -129,6 +129,25 @@ describe('businessObjectFormGroupTypeGenerator', () => {
       expect(content).toContain('assign(userId: string, role?: string): Promise<any>');
     });
 
+    it('should declare constructor with data as first positional arg and options as second', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')! : (result as string);
+
+      expect(content).toContain('constructor(data?: Record<string, any> | null, options?: PersistedFormGroupOptions)');
+    });
+
     it('should include object getter in type declaration', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {

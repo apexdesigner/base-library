@@ -41,7 +41,6 @@ export interface PersistedFormGroupOptions {
   filter?: Record<string, any>;
   required?: string[];
   disabled?: string[];
-  data?: Record<string, any>;
 }
 
 export class PersistedFormGroup extends SchemaFormGroup {
@@ -59,6 +58,7 @@ export class PersistedFormGroup extends SchemaFormGroup {
   constructor(
     schema: SchemaType,
     entityClass: EntityClass,
+    data?: Record<string, any> | null,
     options?: PersistedFormGroupOptions,
     idProperty = 'id',
   ) {
@@ -78,8 +78,8 @@ export class PersistedFormGroup extends SchemaFormGroup {
         if (control) control.disable();
       }
     }
-    if (options?.data) {
-      this._populate(options.data);
+    if (data) {
+      this._populate(data);
     }
     this.updateOriginalValue();
   }
@@ -443,7 +443,6 @@ export interface PersistedFormGroupOptions {
   filter?: Record<string, any>;
   required?: string[];
   disabled?: string[];
-  data?: Record<string, any>;
 }
 
 export declare class PersistedFormGroup extends SchemaFormGroup {
@@ -454,7 +453,7 @@ export declare class PersistedFormGroup extends SchemaFormGroup {
   readFilter: Record<string, any>;
   _parentForeignKey: string | null;
 
-  constructor(schema: any, entityClass: any, options?: PersistedFormGroupOptions, idProperty?: string);
+  constructor(schema: any, entityClass: any, data?: Record<string, any> | null, options?: PersistedFormGroupOptions, idProperty?: string);
 
   protected createControl(name: string): any;
   _populate(data: Record<string, any>): void;
