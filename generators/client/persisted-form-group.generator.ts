@@ -32,6 +32,7 @@ const Debug = createDebug('PersistedForm');
 
 export interface EntityClass {
   findById(id: any, filter?: any): Promise<any>;
+  find(filter?: any): Promise<any[]>;
   create(data: any): Promise<any>;
   updateById(id: any, data: any): Promise<any>;
 }
@@ -97,7 +98,14 @@ export class PersistedFormGroup extends SchemaFormGroup {
     this.reading = true;
     try {
       const id = mergedFilter.where?.[this._idProperty];
-      const data = await this._entityClass.findById(id, mergedFilter);
+      let data: Record<string, any>;
+      if (id !== undefined && id !== null) {
+        data = await this._entityClass.findById(id, mergedFilter);
+      } else {
+        const results = await this._entityClass.find(mergedFilter);
+        data = results[0];
+        if (!data) throw new Error('No record found matching filter');
+      }
       debug('data', data);
       this._populate(data);
       debug('value after read', this.value);
