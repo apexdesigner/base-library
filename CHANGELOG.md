@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.117] - 2026-03-08
+
+- 8bc636d fix: make data the first positional arg in FormGroup constructor
+
+
 ## [1.0.116] - 2026-03-08
 
 - bc6d6d2 chore: apply formatting fixes
