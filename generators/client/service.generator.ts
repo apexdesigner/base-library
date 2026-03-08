@@ -140,7 +140,15 @@ const serviceGenerator: DesignGenerator = {
       if (!prop) continue;
       if (prop.hasQuestionToken()) prop.setHasQuestionToken(false);
       if (prop.hasExclamationToken()) prop.setHasExclamationToken(false);
-      prop.setInitializer(`new ${fg.typeName}()`);
+      const optsParts: string[] = [];
+      if (fg.include) {
+        optsParts.push(`filter: { include: ${fg.include} }`);
+      }
+      if (optsParts.length > 0) {
+        prop.setInitializer(`new ${fg.typeName}({ ${optsParts.join(', ')} })`);
+      } else {
+        prop.setInitializer(`new ${fg.typeName}()`);
+      }
     }
 
     // Initialize persisted array properties with new instances
@@ -149,7 +157,12 @@ const serviceGenerator: DesignGenerator = {
       if (!prop) continue;
       if (prop.hasQuestionToken()) prop.setHasQuestionToken(false);
       if (prop.hasExclamationToken()) prop.setHasExclamationToken(false);
-      prop.setInitializer(`new ${pa.typeName}()`);
+      const readArgs = buildReadArgs(pa);
+      if (readArgs) {
+        prop.setInitializer(`new ${pa.typeName}({ filter: ${readArgs} })`);
+      } else {
+        prop.setInitializer(`new ${pa.typeName}()`);
+      }
     }
 
     // Convert service-typed properties to inject() calls

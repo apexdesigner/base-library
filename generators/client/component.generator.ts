@@ -239,6 +239,9 @@ const componentGenerator: DesignGenerator = {
       const optsParts: string[] = [];
       if (fg.required) optsParts.push(`required: ${fg.required}`);
       if (fg.disabled) optsParts.push(`disabled: ${fg.disabled}`);
+      if (fg.include) {
+        optsParts.push(`filter: { include: ${fg.include} }`);
+      }
       if (optsParts.length > 0) {
         prop.setInitializer(`new ${fg.typeName}({ ${optsParts.join(', ')} })`);
       } else {
@@ -252,7 +255,12 @@ const componentGenerator: DesignGenerator = {
       if (!prop) continue;
       if (prop.hasQuestionToken()) prop.setHasQuestionToken(false);
       if (prop.hasExclamationToken()) prop.setHasExclamationToken(false);
-      prop.setInitializer(`new ${pa.typeName}()`);
+      const readArgs = buildReadArgs(pa);
+      if (readArgs) {
+        prop.setInitializer(`new ${pa.typeName}({ filter: ${readArgs} })`);
+      } else {
+        prop.setInitializer(`new ${pa.typeName}()`);
+      }
     }
 
     // Check for ViewChild / ContentChildren: properties typed as component classes

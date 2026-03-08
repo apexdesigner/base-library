@@ -204,6 +204,31 @@ describe('businessObjectRouteGenerator', () => {
     });
   });
 
+  describe('findOne route', () => {
+    it('should generate a find-one route before the :id route', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('"/find-one"');
+      expect(result).toContain('findOne');
+
+      // find-one must appear before /:id to avoid route conflict
+      const findOneIndex = result.indexOf('"/find-one"');
+      const paramIdIndex = result.indexOf('"/:id"');
+      expect(findOneIndex).toBeLessThan(paramIdIndex);
+    });
+  });
+
   it('should unwrap scalar parameters from req.body for instance behaviors', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'UserTask', {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.116] - 2026-03-08
+
+- bc6d6d2 chore: apply formatting fixes
+- fbc5167 fix: add find-one route before :id to prevent route conflict
+- 8f8d4e9 fix: pass @property read options as default filter on construction
+
+
 ## [1.0.115] - 2026-03-08
 
 - fa097c5 feat: add data option to PersistedFormGroup constructor
