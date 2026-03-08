@@ -212,6 +212,26 @@ describe('pageComponentGenerator', () => {
     });
   });
 
+  describe('debounceMilliseconds', () => {
+    it('should wrap the method body in a debounce timer', async () => {
+      const ts = await generatePage(`
+        import { Page, page, method } from '@apexdesigner/dsl/page';
+        @page({ path: '/' })
+        export class HomePage extends Page {
+          @method({ debounceMilliseconds: 500 })
+          async saveProfile(): Promise<void> {
+            console.log('saving');
+          }
+        }
+      `);
+
+      expect(ts).toContain('_saveProfileTimeout');
+      expect(ts).toContain('clearTimeout');
+      expect(ts).toContain('setTimeout');
+      expect(ts).toContain('500');
+    });
+  });
+
   describe('service injection', () => {
     it('should inject services from multiple separate @services imports', async () => {
       const workspace = createSimpleMockWorkspace();
