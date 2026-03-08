@@ -37,10 +37,10 @@ addAppBehavior(
             }
 
             // Add impersonation header if set in sessionStorage
-            const impersonateUserId = sessionStorage.getItem('impersonateUserId');
-            if (impersonateUserId) {
-              debug('impersonating user', impersonateUserId);
-              headers['X-Impersonate-User-Id'] = impersonateUserId;
+            const impersonateEmail = sessionStorage.getItem('impersonateEmail');
+            if (impersonateEmail) {
+              debug('impersonating user', impersonateEmail);
+              headers['X-Impersonate-Email'] = impersonateEmail;
             }
 
             if (Object.keys(headers).length > 0) {

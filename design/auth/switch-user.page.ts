@@ -32,7 +32,7 @@ export class SwitchUserPage extends Page {
   @method({ callOnLoad: true })
   async initialize(): Promise<void> {
     this.currentUser = await this.authService.getCurrentUser();
-    this.isImpersonating = !!sessionStorage.getItem('impersonateUserId');
+    this.isImpersonating = !!sessionStorage.getItem('impersonateEmail');
     if (!this.isImpersonating) {
       await this.users.read();
     }
@@ -50,13 +50,13 @@ export class SwitchUserPage extends Page {
 
   /** Switch To - Set impersonation and reload */
   switchTo(user: User): void {
-    sessionStorage.setItem('impersonateUserId', String(user.id));
+    sessionStorage.setItem('impersonateEmail', user.email);
     window.location.href = '/switch-user';
   }
 
   /** Stop Impersonating - Clear impersonation and reload */
   stopImpersonating(): void {
-    sessionStorage.removeItem('impersonateUserId');
+    sessionStorage.removeItem('impersonateEmail');
     window.location.href = '/switch-user';
   }
 }

@@ -28,7 +28,6 @@ All design artifacts are TypeScript files in the `/design` directory using the A
 | External Type | Importable types from libraries | `.claude/skills/apex-designer/docs/dsl/external-types.md` |
 | Function | Reusable callable utilities (client, server, or both) | `.claude/skills/apex-designer/docs/dsl/functions.md` |
 | Interface Definition | Non-persisted data shapes for typed parameters | `.claude/skills/apex-designer/docs/dsl/interface-definitions.md` |
-| Library Override | Extend library design items | `.claude/skills/apex-designer/docs/dsl/library-overrides.md` |
 | Mixin | Reusable properties for business objects | `.claude/skills/apex-designer/docs/dsl/mixins.md` |
 | Page | Routable views in the application | `.claude/skills/apex-designer/docs/dsl/pages.md` |
 | Persistence | Override default table/storage naming | `.claude/skills/apex-designer/docs/dsl/persistence.md` |
@@ -93,6 +92,33 @@ Key commands:
 - `ad3 gen` — generate code from design files
 - `ad3 stop` / `ad3 start` — manage the ad3 server
 - Any ad3 command starts the server if it isn't already running
+
+## API CLI
+
+The API CLI script makes authenticated requests to the running server. It handles OIDC login, token caching/refresh, and API calls.
+
+```bash
+# Login (opens browser for OIDC authentication)
+npx api login
+
+# Make API requests
+npx api get /api/candidates
+npx api post /api/candidates '{"name":"Alice"}'
+npx api delete /api/candidates/123
+
+# Impersonate a user
+npx api --as user@example.com get /api/items
+
+# Logout
+npx api logout
+```
+
+Tokens are cached in `.api.json` at the project root. The callback port range (default 3100-3149) can be customized there:
+```json
+{ "callbackPorts": [3100, 3149] }
+```
+
+The server must be running before login. The script reads the server port from `.workspace.json` or defaults to 3000.
 
 ## Rules
 

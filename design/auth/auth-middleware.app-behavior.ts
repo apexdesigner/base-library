@@ -149,10 +149,10 @@ addAppBehavior(
       debug('roles %j', roles);
 
       // Impersonation: if requested, check that it's enabled and the user is an admin
-      const impersonateUserId = req.headers['x-impersonate-user-id'];
+      const impersonateEmail = req.headers['x-impersonate-email'];
 
-      if (impersonateUserId) {
-        debug('impersonateUserId %j', impersonateUserId);
+      if (impersonateEmail) {
+        debug('impersonateEmail %j', impersonateEmail);
 
         debug('process.env.ALLOW_IMPERSONATION %j', process.env.ALLOW_IMPERSONATION);
 
@@ -170,7 +170,7 @@ addAppBehavior(
         }
 
         const targetUser = await User.findOne({
-          where: { id: Number(impersonateUserId) },
+          where: { email: { eq: impersonateEmail } },
           include: { roleAssignments: { include: { role: {} } } }
         });
 
