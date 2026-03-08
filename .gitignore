@@ -32,4 +32,5 @@ Thumbs.db
 .apex-designer/
 .claude/settings.local.json
 .workspace.json
+.api.json
 .env
