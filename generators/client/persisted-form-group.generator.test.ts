@@ -184,6 +184,31 @@ describe('persistedFormGroupGenerator', () => {
     });
   });
 
+  describe('read() with non-id where clause', () => {
+    it('should include find method on EntityClass interface', async () => {
+      const code = await generateRuntime();
+
+      // EntityClass (not EntityArrayClass) should have find()
+      const entityClassSection = code.split('export interface EntityClass')[1]?.split('}')[0] || '';
+      expect(entityClassSection).toContain('find(');
+    });
+
+    it('should use find() when where clause does not contain the id property', async () => {
+      const code = await generateRuntime();
+
+      // PersistedFormGroup.read() should fall back to find + first result when id is missing from where
+      const readMethod = code.split('async read(')[1]?.split('\n  protected ')[0] || '';
+      expect(readMethod).toContain('this._entityClass.find(');
+    });
+
+    it('should still use findById() when where clause contains the id property', async () => {
+      const code = await generateRuntime();
+
+      const readMethod = code.split('async read(')[1]?.split('\n  protected ')[0] || '';
+      expect(readMethod).toContain('this._entityClass.findById(');
+    });
+  });
+
   it('should include entityName property on PersistedArray', async () => {
     const code = await generateRuntime();
     expect(code).toContain('readonly entityName: string');
