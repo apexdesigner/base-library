@@ -271,6 +271,31 @@ const businessObjectRouteGenerator: DesignGenerator = {
 
     lines.push('');
 
+    // GET /find-one - Find one record matching filter (must be before /:id)
+    lines.push(`// GET /${pluralKebab}/find-one - Find one ${entityLabel}`);
+    lines.push('router.get("/find-one", async (req: Request, res: Response, next: NextFunction) => {');
+    lines.push('  const debug = Debug.extend("findOne");');
+    lines.push('  debug("req.query.filter %j", req.query.filter);');
+    lines.push('');
+    for (const line of defaultRoleGuard) lines.push(line);
+    lines.push('  try {');
+    lines.push('    const filter = parseFilter(req.query.filter);');
+    lines.push(`    const result = await ${className}.findOne(filter);`);
+    lines.push('    debug("result %j", result);');
+    lines.push('');
+    lines.push('    if (!result) {');
+    lines.push('      res.status(404).json({ error: "No matching record found" });');
+    lines.push('      return;');
+    lines.push('    }');
+    lines.push('    res.json(result);');
+    lines.push('  } catch (error) {');
+    lines.push('    debug("error %j", error);');
+    lines.push('');
+    lines.push('    next(error);');
+    lines.push('  }');
+    lines.push('});');
+    lines.push('');
+
     // GET /:id - Get by ID
     lines.push(`// GET /${pluralKebab}/:id - Get ${entityLabel} by ID`);
     lines.push('router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {');
