@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.114] - 2026-03-08
+
+- a196d12 fix: support debounceMilliseconds on page methods
+
+
 ## [1.0.113] - 2026-03-08
 
 - d492301 chore: add .api.json to gitignore
