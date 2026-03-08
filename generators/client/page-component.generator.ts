@@ -404,7 +404,7 @@ const pageComponentGenerator: DesignGenerator = {
         optsParts.push(`filter: { include: ${fg.include} }`);
       }
       if (optsParts.length > 0) {
-        prop.setInitializer(`new ${fg.typeName}({ ${optsParts.join(', ')} })`);
+        prop.setInitializer(`new ${fg.typeName}(null, { ${optsParts.join(', ')} })`);
       } else {
         prop.setInitializer(`new ${fg.typeName}()`);
       }

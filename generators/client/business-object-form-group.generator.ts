@@ -166,8 +166,8 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push('');
     lines.push(`  declare value: Partial<${className}>;`);
     lines.push('');
-    lines.push(`  constructor(options?: PersistedFormGroupOptions) {`);
-    lines.push(`    super(${schemaVarName}, ${className}, options);`);
+    lines.push(`  constructor(data?: Record<string, any> | null, options?: PersistedFormGroupOptions) {`);
+    lines.push(`    super(${schemaVarName}, ${className}, data, options);`);
     lines.push(`  }`);
     lines.push('');
     lines.push(`  get object(): ${className} {`);

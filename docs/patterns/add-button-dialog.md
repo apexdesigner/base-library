@@ -25,8 +25,8 @@ export class FooPersistedArray extends PersistedArray<Foo> {
     super(Foo, options);
   }
 
-  createFormGroup(options?: PersistedFormGroupOptions): FooFormGroup {
-    return new FooFormGroup(options);
+  createFormGroup(data?: Record<string, any> | null, options?: PersistedFormGroupOptions): FooFormGroup {
+    return new FooFormGroup(data, options);
   }
 }
 ```

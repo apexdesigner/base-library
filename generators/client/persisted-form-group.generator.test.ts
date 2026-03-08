@@ -184,28 +184,37 @@ describe('persistedFormGroupGenerator', () => {
     });
   });
 
-  describe('initial data option', () => {
-    it('should include data in PersistedFormGroupOptions', async () => {
+  describe('initial data as positional argument', () => {
+    it('should accept data as third positional argument in constructor', async () => {
       const code = await generateRuntime();
 
-      expect(code).toContain('data?: Record<string, any>');
+      const constructorMatch = code.match(/constructor\(\s*schema.*?\n\s*\)/s);
+      expect(constructorMatch).toBeTruthy();
+      expect(constructorMatch![0]).toContain('data?: Record<string, any> | null');
     });
 
-    it('should call _populate with initial data in constructor', async () => {
+    it('should call _populate with data argument in constructor', async () => {
       const code = await generateRuntime();
 
-      const constructor = code.split('constructor(')[1]?.split('\n  }')[0] || '';
-      expect(constructor).toContain('options?.data');
-      expect(constructor).toContain('this._populate(options.data)');
+      expect(code).toContain('if (data)');
+      expect(code).toContain('this._populate(data)');
     });
 
-    it('should include data in the type declaration options', async () => {
+    it('should not include data in PersistedFormGroupOptions', async () => {
+      const code = await generateRuntime();
+
+      const optionsInterface = code.split('export interface PersistedFormGroupOptions')[1]?.split('}')[0] || '';
+      expect(optionsInterface).not.toContain('data');
+    });
+
+    it('should include data parameter in the type declaration constructor', async () => {
       const workspace = createSimpleMockWorkspace();
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
 
-      expect(dts).toContain('data?: Record<string, any>');
+      expect(dts).toContain('data?: Record<string, any> | null');
+      expect(dts).toContain('constructor(schema: any, entityClass: any, data?: Record<string, any> | null, options?: PersistedFormGroupOptions');
     });
   });
 

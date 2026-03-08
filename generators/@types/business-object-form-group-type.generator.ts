@@ -165,7 +165,7 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     fgLines.push('');
     fgLines.push(`  declare value: Partial<${className}>;`);
     fgLines.push('');
-    fgLines.push(`  constructor(options?: PersistedFormGroupOptions);`);
+    fgLines.push(`  constructor(data?: Record<string, any> | null, options?: PersistedFormGroupOptions);`);
     fgLines.push(`  get object(): ${className};`);
 
     // Instance behavior method declarations
