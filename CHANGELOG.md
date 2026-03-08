@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.113] - 2026-03-08
+
+- d492301 chore: add .api.json to gitignore
+- a110df6 chore: update package-lock.json
+- 2afb3a4 feat: add API CLI and switch impersonation to email-based lookup
+- 70b3405 docs: update generated design documentation
+- 64c03b9 fix: use find() when FormGroup.read() where clause lacks id property
+
+
 ## [1.0.112] - 2026-03-07
 
 - 866fb79 chore: update dependencies and apply formatting fixes
