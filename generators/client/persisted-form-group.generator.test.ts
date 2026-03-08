@@ -184,6 +184,31 @@ describe('persistedFormGroupGenerator', () => {
     });
   });
 
+  describe('initial data option', () => {
+    it('should include data in PersistedFormGroupOptions', async () => {
+      const code = await generateRuntime();
+
+      expect(code).toContain('data?: Record<string, any>');
+    });
+
+    it('should call _populate with initial data in constructor', async () => {
+      const code = await generateRuntime();
+
+      const constructor = code.split('constructor(')[1]?.split('\n  }')[0] || '';
+      expect(constructor).toContain('options?.data');
+      expect(constructor).toContain('this._populate(options.data)');
+    });
+
+    it('should include data in the type declaration options', async () => {
+      const workspace = createSimpleMockWorkspace();
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await persistedFormGroupGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = result.get('design/@types/business-objects-client/persisted-form-group.d.ts')!;
+
+      expect(dts).toContain('data?: Record<string, any>');
+    });
+  });
+
   describe('read() with non-id where clause', () => {
     it('should include find method on EntityClass interface', async () => {
       const code = await generateRuntime();

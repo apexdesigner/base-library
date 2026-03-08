@@ -41,6 +41,7 @@ export interface PersistedFormGroupOptions {
   filter?: Record<string, any>;
   required?: string[];
   disabled?: string[];
+  data?: Record<string, any>;
 }
 
 export class PersistedFormGroup extends SchemaFormGroup {
@@ -76,6 +77,9 @@ export class PersistedFormGroup extends SchemaFormGroup {
         const control = this.controls[name];
         if (control) control.disable();
       }
+    }
+    if (options?.data) {
+      this._populate(options.data);
     }
     this.updateOriginalValue();
   }
@@ -439,6 +443,7 @@ export interface PersistedFormGroupOptions {
   filter?: Record<string, any>;
   required?: string[];
   disabled?: string[];
+  data?: Record<string, any>;
 }
 
 export declare class PersistedFormGroup extends SchemaFormGroup {

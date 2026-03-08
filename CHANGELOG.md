@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.115] - 2026-03-08
+
+- fa097c5 feat: add data option to PersistedFormGroup constructor
+
+
 ## [1.0.114] - 2026-03-08
 
 - a196d12 fix: support debounceMilliseconds on page methods
