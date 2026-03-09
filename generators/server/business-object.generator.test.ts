@@ -877,6 +877,17 @@ describe('businessObjectGenerator', () => {
         expect(method).toContain('if (!filter) filter = {}');
         expect(method).toContain('if (!filter.where) filter.where = {}');
       });
+
+      it('should use non-null assertion for where variable in lifecycle block', async () => {
+        const workspace = createLifecycleWorkspace(type, 'addDefaultFilter', funcParams, funcBody);
+        const metadata = workspace.context.listMetadata('BusinessObject')[0];
+        const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+        const method = extractMethod(result, 'static async find(', 'static async findOne(');
+
+        // After the guard ensures filter.where is defined, the lifecycle block should use !
+        // to tell TypeScript the value is non-null
+        expect(method).toContain('const where = filter.where!');
+      });
     });
 
     describe('After Read', () => {

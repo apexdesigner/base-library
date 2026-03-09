@@ -296,10 +296,11 @@ const appGenerator: DesignGenerator = {
           .join(', ');
 
         const asyncPrefix = isAsync ? 'async ' : '';
+        const returnType = func.returnType ? `: ${func.returnType}` : '';
 
         const methodLines: string[] = [];
         methodLines.push('');
-        methodLines.push(`  static ${asyncPrefix}${func.name}(${paramStr}) {`);
+        methodLines.push(`  static ${asyncPrefix}${func.name}(${paramStr})${returnType} {`);
         methodLines.push(`    const debug = Debug.extend("${func.name}");`);
 
         // Add the body lines unchanged
