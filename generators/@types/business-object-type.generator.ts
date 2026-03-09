@@ -398,7 +398,10 @@ const businessObjectTypeGenerator: DesignGenerator = {
         name: 'upsert',
         isStatic: true,
         parameters: [
-          { name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: { [K in keyof ${className}]?: ${className}[K] | null } }` }
+          {
+            name: 'options',
+            type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: { [K in keyof ${className}]?: ${className}[K] | null } }`
+          }
         ],
         returnType: `Promise<${className}>`
       });
