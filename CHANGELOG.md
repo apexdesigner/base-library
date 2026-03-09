@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.118] - 2026-03-09
+
+- f0aaba1 fix: use z.coerce.date() for Date properties in server schemas
+
+
 ## [1.0.117] - 2026-03-08
 
 - 8bc636d fix: make data the first positional arg in FormGroup constructor
