@@ -378,7 +378,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         isStatic: true,
         parameters: [
           { name: 'filter', type: `UpdateFilter<${className}>` },
-          { name: 'data', type: `Partial<${className}>` }
+          { name: 'data', type: `{ [K in keyof ${className}]?: ${className}[K] | null }` }
         ],
         returnType: `Promise<${className}[]>`
       });
@@ -388,7 +388,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         isStatic: true,
         parameters: [
           { name: 'id', type: idType },
-          { name: 'data', type: `Partial<${className}>` }
+          { name: 'data', type: `{ [K in keyof ${className}]?: ${className}[K] | null }` }
         ],
         returnType: `Promise<${className}>`
       });
@@ -398,7 +398,10 @@ const businessObjectTypeGenerator: DesignGenerator = {
         name: 'upsert',
         isStatic: true,
         parameters: [
-          { name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }` }
+          {
+            name: 'options',
+            type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: { [K in keyof ${className}]?: ${className}[K] | null } }`
+          }
         ],
         returnType: `Promise<${className}>`
       });

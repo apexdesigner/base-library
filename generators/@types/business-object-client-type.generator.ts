@@ -213,10 +213,12 @@ const businessObjectClientTypeGenerator: DesignGenerator = {
     lines.push(`  static count(filter?: Pick<FindFilter<${className}>, 'where'>): Promise<number>;`);
 
     if (!isView) {
-      lines.push(`  static update(filter: UpdateFilter<${className}>, data: Partial<${className}>): Promise<${className}[]>;`);
-      lines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
       lines.push(
-        `  static upsert(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: Partial<${className}> }): Promise<${className}>;`
+        `  static update(filter: UpdateFilter<${className}>, data: { [K in keyof ${className}]?: ${className}[K] | null }): Promise<${className}[]>;`
+      );
+      lines.push(`  static updateById(id: ${idType}, data: { [K in keyof ${className}]?: ${className}[K] | null }): Promise<${className}>;`);
+      lines.push(
+        `  static upsert(options: { where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: { [K in keyof ${className}]?: ${className}[K] | null } }): Promise<${className}>;`
       );
       lines.push(`  static delete(filter: DeleteFilter<${className}>): Promise<number>;`);
       lines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);

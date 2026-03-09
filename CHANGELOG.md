@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.119] - 2026-03-09
+
+- 6442347 docs: update generated design documentation
+- 0506dbf style: apply formatting fixes
+- 08c5636 fix: allow null in updateById/update data parameter to clear fields
+
+
 ## [1.0.118] - 2026-03-09
 
 - f0aaba1 fix: use z.coerce.date() for Date properties in server schemas
