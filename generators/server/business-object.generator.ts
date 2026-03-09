@@ -152,7 +152,7 @@ function emitLifecycleInline(
     lines.push(`      const Model = this;`);
     const isMixin = mixinNames.includes(entry.parentName);
     if (isMixin && mixinOptionsMap.has(entry.parentName)) {
-      lines.push(`      const mixinOptions = ${mixinOptionsMap.get(entry.parentName)};`);
+      lines.push(`      const mixinOptions = ${mixinOptionsMap.get(entry.parentName)} as const;`);
     }
     for (const [varName, value] of Object.entries(contextVars)) {
       lines.push(`      const ${varName} = ${value};`);

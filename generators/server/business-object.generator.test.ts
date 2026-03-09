@@ -674,6 +674,64 @@ describe('businessObjectGenerator', () => {
         // Should import TokenHistory (referenced in mixin apply options)
         expect(result).toContain('TokenHistory');
       });
+
+      it('should emit mixinOptions with as const for literal type narrowing', async () => {
+        const workspace = createSimpleMockWorkspace();
+        workspace.addMetadata('Mixin', 'HistoryTracking', {
+          sourceCode: `
+            import { Mixin } from '@apexdesigner/dsl';
+            export interface HistoryTrackingConfig {
+              historyModel: any;
+              foreignKey: string;
+            }
+            export class HistoryTracking extends Mixin {}
+          `
+        });
+        workspace.addMetadata('BusinessObject', 'Token', {
+          sourceCode: `
+            import { BusinessObject } from '@apexdesigner/dsl';
+            import { HistoryTracking } from '@mixins';
+            import { applyHistoryTrackingMixin } from '@mixins';
+            import { TokenHistory } from '@business-objects';
+            export class Token extends BusinessObject {
+              id!: string;
+              static mixins = [HistoryTracking];
+            }
+            applyHistoryTrackingMixin(Token, { historyModel: TokenHistory, foreignKey: "tokenId" });
+          `
+        });
+        workspace.addMetadata('BusinessObject', 'TokenHistory', {
+          sourceCode: `
+            import { BusinessObject } from '@apexdesigner/dsl';
+            export class TokenHistory extends BusinessObject {
+              id!: string;
+            }
+          `
+        });
+        workspace.addMetadata('Behavior', 'HistoryTrackingCreateHistory', {
+          sourceCode: `
+            import { addBehavior } from '@apexdesigner/dsl';
+            import { HistoryTracking, HistoryTrackingConfig } from '@mixins';
+            addBehavior(
+              HistoryTracking,
+              { type: 'After Create' },
+              async function createHistory(Model: any, mixinOptions: HistoryTrackingConfig, instances: any[]) {
+                for (const instance of instances) {
+                  await mixinOptions.historyModel.create({ [mixinOptions.foreignKey]: instance.id });
+                }
+              }
+            );
+          `
+        });
+
+        const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Token')!;
+        const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+        // mixinOptions must use "as const" so foreignKey narrows to literal "tokenId"
+        // Without it, [mixinOptions.foreignKey] produces { [x: string]: any } which
+        // doesn't satisfy Partial<TokenHistory> requiring { tokenId: ... }
+        expect(result).toContain('const mixinOptions = { historyModel: TokenHistory, foreignKey: "tokenId" } as const;');
+      });
     });
 
     describe('Before Update', () => {
