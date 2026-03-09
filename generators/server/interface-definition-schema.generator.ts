@@ -115,7 +115,7 @@ const interfaceDefinitionSchemaGenerator: DesignGenerator = {
         } else if (typeText === 'boolean') {
           zodType = 'z.boolean()';
         } else if (typeText === 'Date') {
-          zodType = 'z.date()';
+          zodType = 'z.coerce.date()';
         } else if (typeText === 'string[]') {
           zodType = 'z.array(z.string())';
         } else if (typeText === 'number[]') {
