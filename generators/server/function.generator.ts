@@ -60,6 +60,16 @@ const serverFunctionGenerator: DesignGenerator = {
     const slug = kebabCase(metadata.name);
     const sourceFile = metadata.sourceFile;
 
+    // Extract the declared function name from addFunction() to avoid self-imports
+    const addFnCall = getModuleLevelCall(sourceFile, 'addFunction');
+    let declaredFnName: string | undefined;
+    if (addFnCall) {
+      const fnArg = addFnCall.getArguments()[addFnCall.getArguments().length - 1];
+      if (fnArg && Node.isFunctionExpression(fnArg)) {
+        declaredFnName = fnArg.getName() || metadata.name;
+      }
+    }
+
     // Collect imports with design-time alias mapping
     const defaultImports = new Map<string, string>();
     const namedImports = new Map<string, Set<string>>();
@@ -96,6 +106,8 @@ const serverFunctionGenerator: DesignGenerator = {
           if (!namedImports.has(boModule)) namedImports.set(boModule, new Set());
           namedImports.get(boModule)!.add(name);
         } else if (moduleSpecifier === '@functions') {
+          // Skip self-referencing import (function importing its own name for tests)
+          if (name === declaredFnName) continue;
           const fnModule = `../functions/${kebabCase(name)}.js`;
           if (!namedImports.has(fnModule)) namedImports.set(fnModule, new Set());
           namedImports.get(fnModule)!.add(name);

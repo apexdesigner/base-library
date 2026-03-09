@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.120] - 2026-03-09
+
+- 5c4a34a chore: add envisioning-studio-cli.json config
+- 82ba651 fix: resolve strict TypeScript errors in generated code
+- f28dab6 fix: skip self-referencing @functions import in function generator
+- 8142fa5 fix: emit mixinOptions with as const for literal type narrowing
+- 05c30df fix: skip CRUD routes for view-backed business objects
+
+
 ## [1.0.119] - 2026-03-09
 
 - 6442347 docs: update generated design documentation

@@ -229,6 +229,55 @@ describe('businessObjectRouteGenerator', () => {
     });
   });
 
+  describe('view business objects', () => {
+    it('should not generate create/update/delete routes for view BOs', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'LatestProcessDesign', {
+        sourceCode: `
+          import { BusinessObject, setView } from '@apexdesigner/dsl';
+          export class LatestProcessDesign extends BusinessObject {
+            id!: number;
+            name?: string;
+          }
+          setView(LatestProcessDesign, \`SELECT * FROM process_design\`);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should have read routes
+      expect(result).toContain('router.get("/",');
+      expect(result).toContain('router.get("/:id",');
+      expect(result).toContain('router.get("/find-one",');
+
+      // Should NOT have write routes
+      expect(result).not.toContain('router.post("/",');
+      expect(result).not.toContain('router.patch("/:id",');
+      expect(result).not.toContain('router.delete("/:id",');
+    });
+
+    it('should still generate read routes for view BOs', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'MyUserTask', {
+        sourceCode: `
+          import { BusinessObject, setView } from '@apexdesigner/dsl';
+          export class MyUserTask extends BusinessObject {
+            id!: number;
+          }
+          setView(MyUserTask, \`SELECT * FROM user_task WHERE user_id = :currentUserId\`);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('router.get("/",');
+      expect(result).toContain('router.get("/find-one",');
+      expect(result).toContain('router.get("/:id",');
+    });
+  });
+
   it('should unwrap scalar parameters from req.body for instance behaviors', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'UserTask', {

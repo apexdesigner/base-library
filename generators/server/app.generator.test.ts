@@ -112,7 +112,7 @@ describe('appGenerator', () => {
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appGenerator.generate(metadata, workspace.context)) as string;
 
-      expect(result).toContain('static async computeSha1(data: unknown) {');
+      expect(result).toContain('static async computeSha1(data: unknown): Promise<string> {');
       expect(result).toContain('const debug = Debug.extend("computeSha1")');
       expect(result).toContain("return 'abc123'");
     });

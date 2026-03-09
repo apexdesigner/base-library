@@ -120,7 +120,8 @@ const businessObjectRouteGenerator: DesignGenerator = {
     const pluralKebab = kebabCase(pluralize(metadata.name));
     const entityLabel = metadata.name;
 
-    debug('className %j, pluralKebab %j', className, pluralKebab);
+    const isView = !!getModuleLevelCall(metadata.sourceFile, 'setView');
+    debug('className %j, pluralKebab %j, isView %j', className, pluralKebab, isView);
 
     // Get id property info — resolve to a primitive TS type
     const resolvedId = resolveIdType(metadata.sourceFile, context);
@@ -213,9 +214,13 @@ const businessObjectRouteGenerator: DesignGenerator = {
     // Imports
     lines.push(`import createDebug from "debug";`);
     lines.push(`import { Router, Request, Response, NextFunction } from "express";`);
-    lines.push(`import { z } from "zod";`);
+    if (!isView) {
+      lines.push(`import { z } from "zod";`);
+    }
     lines.push(`import { ${className} } from "../business-objects/${kebabCase(metadata.name)}.js";`);
-    lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${kebabCase(metadata.name)}.js";`);
+    if (!isView) {
+      lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${kebabCase(metadata.name)}.js";`);
+    }
     if (needsHasRole) {
       lines.push('import { missingRole } from "./missing-role.js";');
     }
@@ -321,83 +326,85 @@ const businessObjectRouteGenerator: DesignGenerator = {
     lines.push('});');
     lines.push('');
 
-    // POST / - Create
-    lines.push(`// POST /${pluralKebab} - Create ${entityLabel}`);
-    lines.push('router.post("/", async (req: Request, res: Response, next: NextFunction) => {');
-    lines.push('  const debug = Debug.extend("create");');
-    lines.push('  debug("req.body %j", req.body);');
-    lines.push('');
-    for (const line of defaultRoleGuard) lines.push(line);
-    lines.push('  try {');
-    lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).parse(req.body);`);
-    lines.push(`    const ${varName} = await ${className}.create(validated);`);
-    lines.push(`    debug("${varName} %j", ${varName});`);
-    lines.push('');
-    lines.push(`    res.status(201).json(${varName});`);
-    lines.push('  } catch (error) {');
-    lines.push('    debug("error %j", error);');
-    lines.push('');
-    lines.push('    if (error instanceof z.ZodError) {');
-    lines.push('      res.status(422).json({ error: "Validation failed", details: error.issues });');
-    lines.push('      return;');
-    lines.push('    }');
-    lines.push('    next(error);');
-    lines.push('  }');
-    lines.push('});');
-    lines.push('');
+    if (!isView) {
+      // POST / - Create
+      lines.push(`// POST /${pluralKebab} - Create ${entityLabel}`);
+      lines.push('router.post("/", async (req: Request, res: Response, next: NextFunction) => {');
+      lines.push('  const debug = Debug.extend("create");');
+      lines.push('  debug("req.body %j", req.body);');
+      lines.push('');
+      for (const line of defaultRoleGuard) lines.push(line);
+      lines.push('  try {');
+      lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).parse(req.body);`);
+      lines.push(`    const ${varName} = await ${className}.create(validated);`);
+      lines.push(`    debug("${varName} %j", ${varName});`);
+      lines.push('');
+      lines.push(`    res.status(201).json(${varName});`);
+      lines.push('  } catch (error) {');
+      lines.push('    debug("error %j", error);');
+      lines.push('');
+      lines.push('    if (error instanceof z.ZodError) {');
+      lines.push('      res.status(422).json({ error: "Validation failed", details: error.issues });');
+      lines.push('      return;');
+      lines.push('    }');
+      lines.push('    next(error);');
+      lines.push('  }');
+      lines.push('});');
+      lines.push('');
 
-    // PATCH /:id - Update
-    lines.push(`// PATCH /${pluralKebab}/:id - Update ${entityLabel}`);
-    lines.push('router.patch("/:id", async (req: Request, res: Response, next: NextFunction) => {');
-    lines.push('  const debug = Debug.extend("updateById");');
-    lines.push('  debug("req.params.id %j", req.params.id);');
-    lines.push('  debug("req.body %j", req.body);');
-    lines.push('');
-    for (const line of defaultRoleGuard) lines.push(line);
-    lines.push('  try {');
-    lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).partial().parse(req.body);`);
-    lines.push(`    const ${varName} = await ${className}.updateById(${idCoerce}, validated);`);
-    lines.push(`    debug("${varName} %j", ${varName});`);
-    lines.push('');
-    lines.push(`    res.json(${varName});`);
-    lines.push('  } catch (error) {');
-    lines.push('    debug("error %j", error);');
-    lines.push('');
-    lines.push('    if (error instanceof z.ZodError) {');
-    lines.push('      res.status(422).json({ error: "Validation failed", details: error.issues });');
-    lines.push('      return;');
-    lines.push('    }');
-    lines.push(`    if (error instanceof Error && error.message.includes("not found")) {`);
-    lines.push('      res.status(404).json({ error: error.message });');
-    lines.push('      return;');
-    lines.push('    }');
-    lines.push('    next(error);');
-    lines.push('  }');
-    lines.push('});');
-    lines.push('');
+      // PATCH /:id - Update
+      lines.push(`// PATCH /${pluralKebab}/:id - Update ${entityLabel}`);
+      lines.push('router.patch("/:id", async (req: Request, res: Response, next: NextFunction) => {');
+      lines.push('  const debug = Debug.extend("updateById");');
+      lines.push('  debug("req.params.id %j", req.params.id);');
+      lines.push('  debug("req.body %j", req.body);');
+      lines.push('');
+      for (const line of defaultRoleGuard) lines.push(line);
+      lines.push('  try {');
+      lines.push(`    const validated = ${schemaVarName}Schema.omit({ ${idName}: true }).partial().parse(req.body);`);
+      lines.push(`    const ${varName} = await ${className}.updateById(${idCoerce}, validated);`);
+      lines.push(`    debug("${varName} %j", ${varName});`);
+      lines.push('');
+      lines.push(`    res.json(${varName});`);
+      lines.push('  } catch (error) {');
+      lines.push('    debug("error %j", error);');
+      lines.push('');
+      lines.push('    if (error instanceof z.ZodError) {');
+      lines.push('      res.status(422).json({ error: "Validation failed", details: error.issues });');
+      lines.push('      return;');
+      lines.push('    }');
+      lines.push(`    if (error instanceof Error && error.message.includes("not found")) {`);
+      lines.push('      res.status(404).json({ error: error.message });');
+      lines.push('      return;');
+      lines.push('    }');
+      lines.push('    next(error);');
+      lines.push('  }');
+      lines.push('});');
+      lines.push('');
 
-    // DELETE /:id - Delete
-    lines.push(`// DELETE /${pluralKebab}/:id - Delete ${entityLabel}`);
-    lines.push('router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {');
-    lines.push('  const debug = Debug.extend("deleteById");');
-    lines.push('  debug("req.params.id %j", req.params.id);');
-    lines.push('');
-    for (const line of defaultRoleGuard) lines.push(line);
-    lines.push('  try {');
-    lines.push(`    const deleted = await ${className}.deleteById(${idCoerce});`);
-    lines.push('    debug("deleted %j", deleted);');
-    lines.push('');
-    lines.push('    if (!deleted) {');
-    lines.push(`      res.status(404).json({ error: "${entityLabel} not found" });`);
-    lines.push('      return;');
-    lines.push('    }');
-    lines.push('    res.status(204).send();');
-    lines.push('  } catch (error) {');
-    lines.push('    debug("error %j", error);');
-    lines.push('');
-    lines.push('    next(error);');
-    lines.push('  }');
-    lines.push('});');
+      // DELETE /:id - Delete
+      lines.push(`// DELETE /${pluralKebab}/:id - Delete ${entityLabel}`);
+      lines.push('router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {');
+      lines.push('  const debug = Debug.extend("deleteById");');
+      lines.push('  debug("req.params.id %j", req.params.id);');
+      lines.push('');
+      for (const line of defaultRoleGuard) lines.push(line);
+      lines.push('  try {');
+      lines.push(`    const deleted = await ${className}.deleteById(${idCoerce});`);
+      lines.push('    debug("deleted %j", deleted);');
+      lines.push('');
+      lines.push('    if (!deleted) {');
+      lines.push(`      res.status(404).json({ error: "${entityLabel} not found" });`);
+      lines.push('      return;');
+      lines.push('    }');
+      lines.push('    res.status(204).send();');
+      lines.push('  } catch (error) {');
+      lines.push('    debug("error %j", error);');
+      lines.push('');
+      lines.push('    next(error);');
+      lines.push('  }');
+      lines.push('});');
+    }
 
     // Instance behavior routes (after /:id routes)
     for (const route of instanceBehaviorRoutes) {

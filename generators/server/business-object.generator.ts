@@ -152,7 +152,7 @@ function emitLifecycleInline(
     lines.push(`      const Model = this;`);
     const isMixin = mixinNames.includes(entry.parentName);
     if (isMixin && mixinOptionsMap.has(entry.parentName)) {
-      lines.push(`      const mixinOptions = ${mixinOptionsMap.get(entry.parentName)};`);
+      lines.push(`      const mixinOptions = ${mixinOptionsMap.get(entry.parentName)} as const;`);
     }
     for (const [varName, value] of Object.entries(contextVars)) {
       lines.push(`      const ${varName} = ${value};`);
@@ -493,7 +493,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    if (!filter) filter = {};');
       lines.push('    if (!filter.where) filter.where = {} as any;');
     }
-    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
+    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where!' }, mixinNames, mixinOptionsMap);
     lines.push(`    const results = await this.dataSource.find(this.entityName, filter);`);
     lines.push('    debug("results.length %j", results.length);');
     lines.push('');
@@ -515,7 +515,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    if (!filter) filter = {} as any;');
       lines.push('    if (!filter.where) filter.where = {} as any;');
     }
-    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where' }, mixinNames, mixinOptionsMap);
+    emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where!' }, mixinNames, mixinOptionsMap);
     lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter);`);
     lines.push('    debug("data %j", data);');
     lines.push('');
