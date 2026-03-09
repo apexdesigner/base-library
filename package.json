@@ -48,6 +48,9 @@
     "ts-morph": "^27.0.2",
     "vitest": "^4.0.18"
   },
+  "optionalDependencies": {
+    "@apexbpm/envisioning-studio-cli": "^1.0.3"
+  },
   "bin": {
     "api": ".claude/skills/apex-designer/scripts/api.cjs"
   }

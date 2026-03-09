@@ -49,7 +49,8 @@
       "Bash(.claude/skills/typescript-test-management/scripts/toggle-skip.cjs:*)",
       "Skill(apex-designer)",
       "Bash(.claude/skills/apex-designer/scripts/dev.sh:*)",
-      "Bash(.claude/skills/apex-designer/scripts/resolve.cjs:*)"
+      "Bash(.claude/skills/apex-designer/scripts/resolve.cjs:*)",
+      "Bash(npx es *)"
     ],
     "deny": [
       "Read(**/.env)",

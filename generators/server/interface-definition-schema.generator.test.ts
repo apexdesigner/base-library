@@ -25,7 +25,7 @@ describe('interfaceDefinitionSchemaGenerator', () => {
       expect(result).toContain('isPrimary: z.boolean()');
     });
 
-    it('should map Date to z.date()', async () => {
+    it('should map Date to z.coerce.date()', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('InterfaceDefinition', 'Event', {
         sourceCode: `
@@ -39,7 +39,7 @@ describe('interfaceDefinitionSchemaGenerator', () => {
       const metadata = workspace.context.listMetadata('InterfaceDefinition')[0];
       const result = (await interfaceDefinitionSchemaGenerator.generate(metadata, workspace.context)) as string;
 
-      expect(result).toContain('startDate: z.date()');
+      expect(result).toContain('startDate: z.coerce.date()');
     });
   });
 

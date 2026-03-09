@@ -19,6 +19,9 @@ export class TestItem extends BusinessObject {
   /** Email - Contact email */
   email?: Email;
 
+  /** Due Date - Target completion date */
+  dueDate?: Date;
+
   /** Test Setting - Referenced test setting */
   @relationship({ type: 'References' })
   testSetting?: TestSetting;

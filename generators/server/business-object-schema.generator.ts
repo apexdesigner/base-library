@@ -287,7 +287,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         } else if (typeText === 'boolean') {
           zodType = 'z.boolean()';
         } else if (typeText === 'Date') {
-          zodType = 'z.date()';
+          zodType = 'z.coerce.date()';
         } else if (typeText === 'DateTime') {
           zodType = 'datetime()';
           imports.add('datetime');
