@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.128] - 2026-03-10
+
+- d3df08d feat: add REQUIRE_KNOWN_USERS env var to block unregistered users
+
+
 ## [1.0.127] - 2026-03-10
 
 - f5d57f5 style: apply prettier formatting
