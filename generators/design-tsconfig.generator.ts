@@ -14,7 +14,7 @@ const designTsconfigGenerator: DesignGenerator = {
   triggers: [
     {
       metadataType: 'Project',
-      condition: (metadata) => !isLibrary(metadata)
+      condition: metadata => !isLibrary(metadata)
     }
   ],
 
@@ -43,12 +43,7 @@ const designTsconfigGenerator: DesignGenerator = {
         emitDecoratorMetadata: true,
         useDefineForClassFields: false,
         baseUrl: '.',
-        typeRoots: [
-          './node_modules/@types',
-          '../client/node_modules/@types',
-          '../server/node_modules/@types',
-          '../node_modules/@types'
-        ],
+        typeRoots: ['./node_modules/@types', '../client/node_modules/@types', '../server/node_modules/@types', '../node_modules/@types'],
         paths: {
           '@base-types': ['./@types/base-types'],
           '@business-objects': ['./@types/business-objects'],

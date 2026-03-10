@@ -343,7 +343,12 @@ const businessObjectTypeGenerator: DesignGenerator = {
     classDecl.addMethod({
       name: 'findOne',
       isStatic: true,
-      parameters: [{ name: 'filter', type: `{ where: ${className}WhereFilter; include?: ${className}ArrayFilter['include']; fields?: string[]; omit?: string[] }` }],
+      parameters: [
+        {
+          name: 'filter',
+          type: `{ where: ${className}WhereFilter; include?: ${className}ArrayFilter['include']; fields?: string[]; omit?: string[] }`
+        }
+      ],
       returnType: `Promise<${className} | null>`
     });
 
