@@ -422,23 +422,9 @@ const businessObjectGenerator: DesignGenerator = {
 
     // --- Imports ---
     lines.push('import createDebug from "debug";');
-    if (isView) {
-      lines.push('import type {');
-      lines.push('  FindFilter,');
-      lines.push('  FindOneFilter,');
-      lines.push('  WhereClause,');
-      lines.push('} from "@apexdesigner/schema-persistence";');
-    } else {
-      lines.push('import type {');
-      lines.push('  FindFilter,');
-      lines.push('  FindOneFilter,');
-      lines.push('  UpdateFilter,');
-      lines.push('  DeleteFilter,');
-      lines.push('  WhereClause,');
-      lines.push('} from "@apexdesigner/schema-persistence";');
-    }
     lines.push('import type { z } from "zod";');
     lines.push(`import { ${schemaVarName}Schema } from "../schemas/business-objects/${boKebab}.js";`);
+    lines.push(`import type { ${className}ArrayFilter, ${className}ObjectFilter, ${className}WhereFilter } from "../filters/${boKebab}.js";`);
     lines.push('import { dataSource } from "../data-sources/index.js";');
 
     // Add behavior-referenced imports
@@ -484,7 +470,7 @@ const businessObjectGenerator: DesignGenerator = {
 
     // find
     lines.push('');
-    lines.push(`  static async find(filter?: FindFilter<${dataTypeName}>): Promise<${className}[]> {`);
+    lines.push(`  static async find(filter?: ${className}ArrayFilter): Promise<${className}[]> {`);
     lines.push('    const debug = Debug.extend("find");');
     lines.push('    debug("filter %j", filter);');
     lines.push('');
@@ -494,7 +480,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    if (!filter.where) filter.where = {} as any;');
     }
     emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where!' }, mixinNames, mixinOptionsMap);
-    lines.push(`    const results = await this.dataSource.find(this.entityName, filter);`);
+    lines.push(`    const results = await this.dataSource.find(this.entityName, filter as any);`);
     lines.push('    debug("results.length %j", results.length);');
     lines.push('');
     // Inline After Read lifecycle behaviors
@@ -505,7 +491,7 @@ const businessObjectGenerator: DesignGenerator = {
     // findOne
     lines.push('');
     lines.push(`  static async findOne(`);
-    lines.push(`    filter: FindOneFilter<${dataTypeName}>,`);
+    lines.push(`    filter: { where: ${className}WhereFilter; include?: ${className}ArrayFilter['include']; fields?: string[]; omit?: string[] },`);
     lines.push(`  ): Promise<${className} | null> {`);
     lines.push('    const debug = Debug.extend("findOne");');
     lines.push('    debug("filter %j", filter);');
@@ -516,7 +502,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    if (!filter.where) filter.where = {} as any;');
     }
     emitLifecycleInline(beforeReadEntries, lines, { where: 'filter.where!' }, mixinNames, mixinOptionsMap);
-    lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter);`);
+    lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter as any);`);
     lines.push('    debug("data %j", data);');
     lines.push('');
     lines.push(`    return data ? new ${className}(data) : null;`);
@@ -526,16 +512,12 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('');
     lines.push(`  static async findById(`);
     lines.push(`    id: ${idType},`);
-    lines.push('    filter?: {');
-    lines.push(`      include?: FindFilter<${dataTypeName}>["include"];`);
-    lines.push(`      fields?: FindFilter<${dataTypeName}>["fields"];`);
-    lines.push(`      omit?: FindFilter<${dataTypeName}>["omit"];`);
-    lines.push('    },');
+    lines.push(`    filter?: ${className}ObjectFilter,`);
     lines.push(`  ): Promise<${className}> {`);
     lines.push('    const debug = Debug.extend("findById");');
     lines.push('    debug("id %j", id);');
     lines.push('');
-    lines.push(`    const data = await this.dataSource.findById(this.entityName, id, filter);`);
+    lines.push(`    const data = await this.dataSource.findById(this.entityName, id, filter as any);`);
     lines.push('    debug("data %j", data);');
     lines.push('');
     lines.push(`    if (!data) throw new Error(\`${className} not found: \${id}\`);`);
@@ -544,7 +526,7 @@ const businessObjectGenerator: DesignGenerator = {
 
     // count
     lines.push('');
-    lines.push(`  static async count(where?: WhereClause<${dataTypeName}>): Promise<number> {`);
+    lines.push(`  static async count(where?: ${className}WhereFilter): Promise<number> {`);
     lines.push('    const debug = Debug.extend("count");');
     lines.push('    debug("where %j", where);');
     lines.push('');
@@ -561,7 +543,7 @@ const businessObjectGenerator: DesignGenerator = {
       // findOrCreate
       lines.push('');
       lines.push(`  static async findOrCreate(options: {`);
-      lines.push(`    where: WhereClause<${dataTypeName}>;`);
+      lines.push(`    where: ${className}WhereFilter;`);
       lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
       lines.push(`  }): Promise<{ entity: ${className}; created: boolean }> {`);
       lines.push('    const debug = Debug.extend("findOrCreate");');
@@ -569,7 +551,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('');
       lines.push(`    const result = await this.dataSource.findOrCreate(`);
       lines.push(`      this.entityName,`);
-      lines.push(`      options,`);
+      lines.push(`      options as any,`);
       lines.push(`    );`);
       lines.push('    debug("result.created %j", result.created);');
       lines.push('');
@@ -629,7 +611,7 @@ const businessObjectGenerator: DesignGenerator = {
       // update
       lines.push('');
       lines.push(`  static async update(`);
-      lines.push(`    filter: UpdateFilter<${dataTypeName}>,`);
+      lines.push(`    filter: { where: ${className}WhereFilter; limit?: number },`);
       lines.push(`    data: Partial<${dataTypeName}>,`);
       lines.push(`  ): Promise<${className}[]> {`);
       lines.push('    const debug = Debug.extend("update");');
@@ -649,7 +631,7 @@ const businessObjectGenerator: DesignGenerator = {
       }
       lines.push(`    const results = await this.dataSource.update(`);
       lines.push(`      this.entityName,`);
-      lines.push(`      filter,`);
+      lines.push(`      filter as any,`);
       lines.push(`      data,`);
       lines.push(`    );`);
       lines.push('    debug("results.length %j", results.length);');
@@ -696,14 +678,14 @@ const businessObjectGenerator: DesignGenerator = {
       // upsert
       lines.push('');
       lines.push(`  static async upsert(options: {`);
-      lines.push(`    where: WhereClause<${dataTypeName}>;`);
+      lines.push(`    where: ${className}WhereFilter;`);
       lines.push(`    create: Omit<${dataTypeName}, "${idName}">;`);
       lines.push(`    update: Partial<${dataTypeName}>;`);
       lines.push(`  }): Promise<${className}> {`);
       lines.push('    const debug = Debug.extend("upsert");');
       lines.push('    debug("options.where %j", options.where);');
       lines.push('');
-      lines.push(`    const result = await this.dataSource.upsert(this.entityName, options);`);
+      lines.push(`    const result = await this.dataSource.upsert(this.entityName, options as any);`);
       lines.push('    debug("result %j", result);');
       lines.push('');
       lines.push(`    return new ${className}(result);`);
@@ -711,7 +693,7 @@ const businessObjectGenerator: DesignGenerator = {
 
       // delete
       lines.push('');
-      lines.push(`  static async delete(filter: DeleteFilter<${dataTypeName}>): Promise<number> {`);
+      lines.push(`  static async delete(filter: { where: ${className}WhereFilter; limit?: number }): Promise<number> {`);
       lines.push('    const debug = Debug.extend("delete");');
       lines.push('    debug("filter %j", filter);');
       lines.push('');
@@ -721,7 +703,7 @@ const businessObjectGenerator: DesignGenerator = {
       if (afterDeleteEntries.length > 0) {
         lines.push(`    const deletedInstances = await this.find({ where: filter.where });`);
       }
-      lines.push(`    const result = await this.dataSource.delete(this.entityName, filter);`);
+      lines.push(`    const result = await this.dataSource.delete(this.entityName, filter as any);`);
       lines.push('    debug("result %j", result);');
       lines.push('');
       // Inline After Delete lifecycle behaviors

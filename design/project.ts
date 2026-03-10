@@ -10,7 +10,7 @@ export class BaseLibrary extends Project {
 
   isLibrary = true;
 
-  designDependencies = [{ package: '@apexdesigner/doc-generators', versionSelector: '^0.0.10' }];
+  designDependencies = [{ package: '@apexdesigner/doc-generators', versionSelector: '^0.0.11' }];
 
   parameterValues = {
     formFieldAppearance: 'outline',
@@ -58,13 +58,14 @@ export class BaseLibrary extends Project {
   };
 
   serverDependencies = {
-    '@apexdesigner/schema-persistence': '^0.1.87',
+    '@apexdesigner/schema-persistence': '^0.1.88',
     '@apexdesigner/schema-tools': '^0.1.76',
     debug: '^4.4.3',
     express: '^5.1.0',
     zod: '^4.1.13',
     jsonwebtoken: '^9.0.0',
     'jwks-rsa': '^3.0.0',
+    pg: '^8.16.0',
     'path-to-regexp': '^8.0.0',
     '@types/debug': { versionSelector: '^4.1.12', developmentOnly: true },
     '@types/express': { versionSelector: '^5.0.3', developmentOnly: true },

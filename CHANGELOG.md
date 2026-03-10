@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.124] - 2026-03-10
+
+- 39e10df style: apply prettier formatting to bo-filter generator
+- 5898881 style: apply prettier formatting to generators
+- 6bea758 chore: update design package.json for doc-generators version
+- d7f3dfc chore: bump @apexdesigner dependency selectors to latest versions
+- 43cc717 feat: generate typed filter interfaces for business objects
+
+
 ## [1.0.123] - 2026-03-10
 
 - f6c2d1a fix: add pglite as server dev dependency for test support
