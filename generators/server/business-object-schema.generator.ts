@@ -9,7 +9,7 @@ import {
   getTemplateString
 } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
-import { Node } from 'ts-morph';
+import { Node, Project } from 'ts-morph';
 import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectSchema');
@@ -64,34 +64,45 @@ function extractFieldsFromArgs(args: Node[]): string[] {
  * Strip schema-persistence-specific extensions from a schema file
  * to produce a client-safe version that only depends on zod and schema-tools.
  */
+const PERSISTENCE_METHODS = new Set(['column', 'unique', 'index', 'view']);
+
+/**
+ * Strip schema-persistence-specific extensions from a generated schema file
+ * using ts-morph AST manipulation. Removes .column(), .unique(), .index(), .view()
+ * calls and the schema-persistence/extensions import.
+ */
 function stripPersistenceExtensions(content: string): string {
-  const lines = content.split('\n');
-  const result: string[] = [];
+  const project = new Project({ useInMemoryFileSystem: true });
+  const sourceFile = project.createSourceFile('temp.ts', content);
 
-  for (const line of lines) {
-    // Remove the schema-persistence extensions import
-    if (line.includes('@apexdesigner/schema-persistence/extensions')) continue;
-
-    // Remove .column({...}), .unique({...}), .index({...}), .view({...}) calls
-    let cleaned = line;
-    for (const method of ['column', 'unique', 'index', 'view']) {
-      // Handle as entire line (e.g. "  .index({ ... })")
-      if (cleaned.trimStart().startsWith(`.${method}(`)) {
-        cleaned = '';
-        break;
-      }
-      // Handle inline (e.g. "z.number().column({ ... })")
-      const re = new RegExp(`\\.${method}\\([^)]*(?:\\([^)]*\\))*[^)]*\\)`, 'g');
-      cleaned = cleaned.replace(re, '');
+  // Remove the schema-persistence extensions import
+  for (const imp of sourceFile.getImportDeclarations()) {
+    if (imp.getModuleSpecifierValue().includes('@apexdesigner/schema-persistence')) {
+      imp.remove();
     }
-
-    // Skip empty lines that result from stripping (but keep intentional blank lines)
-    if (cleaned === '' && line !== '') continue;
-
-    result.push(cleaned);
   }
 
-  return result.join('\n');
+  // Remove .column(), .unique(), .index(), .view() call expressions
+  // We need to iterate repeatedly because removing a node changes the tree
+  let changed = true;
+  while (changed) {
+    changed = false;
+    sourceFile.forEachDescendant((node, traversal) => {
+      if (!Node.isCallExpression(node)) return;
+      const expr = node.getExpression();
+      if (!Node.isPropertyAccessExpression(expr)) return;
+      const methodName = expr.getName();
+      if (!PERSISTENCE_METHODS.has(methodName)) return;
+
+      // Replace this call expression with its object (the expression before the dot)
+      const objectExpr = expr.getExpression();
+      node.replaceWithText(objectExpr.getText());
+      changed = true;
+      traversal.stop();
+    });
+  }
+
+  return sourceFile.getFullText();
 }
 
 const businessObjectSchemaGenerator: DesignGenerator = {

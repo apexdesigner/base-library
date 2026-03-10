@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.126] - 2026-03-10
+
+- e5226a7 chore: remove test view BO that breaks PGlite tests
+- e0b06bf style: apply prettier formatting to test-item-summary design file
+- 699906d fix: use ts-morph AST for stripping persistence extensions from client schemas
+
+
 ## [1.0.125] - 2026-03-10
 
 - 96334ea feat: generate client-side schemas and filters without server dependencies

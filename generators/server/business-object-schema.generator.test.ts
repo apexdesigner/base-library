@@ -9,6 +9,13 @@ function serverContent(result: Map<string, string>): string {
   throw new Error('No server file found in result');
 }
 
+function clientContent(result: Map<string, string>): string {
+  for (const [key, value] of result) {
+    if (key.startsWith('client/')) return value;
+  }
+  throw new Error('No client file found in result');
+}
+
 describe('businessObjectSchemaGenerator', () => {
   describe('id column config', () => {
     it('should infer autoIncrement for plain number id on Postgres data source', async () => {
@@ -442,6 +449,60 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).toContain('.view({');
       expect(result).toContain('sql:');
       expect(result).toContain('SELECT DISTINCT ON');
+    });
+  });
+
+  describe('client output', () => {
+    it('should strip .column(), .unique(), .index() from client schemas', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint, addIndex } from '@apexdesigner/dsl';
+          export class User extends BusinessObject {
+            email!: string;
+          }
+          addUniqueConstraint(User, { fields: ['email'] });
+          addIndex(User, { name: 'user_email_idx', properties: [{ name: 'email' }] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = clientContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).not.toContain('.column(');
+      expect(result).not.toContain('.unique(');
+      expect(result).not.toContain('.index(');
+      expect(result).not.toContain('schema-persistence');
+      expect(result).toContain('.describe(');
+      expect(result).toContain('.as("User")');
+    });
+
+    it('should strip multi-line .view() from client schemas', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'LatestProcessDesign', {
+        sourceCode: `
+          import { BusinessObject, setView } from '@apexdesigner/dsl';
+          export class LatestProcessDesign extends BusinessObject {
+            id!: number;
+            name?: string;
+            version?: number;
+          }
+          setView(LatestProcessDesign, \`
+            SELECT DISTINCT ON (pd.design_uuid)
+              pd.id, pd.name, pd.version
+            FROM process_design pd
+            ORDER BY pd.design_uuid, pd.version DESC
+          \`);
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = clientContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).not.toContain('.view(');
+      expect(result).not.toContain('SELECT');
+      expect(result).not.toContain('schema-persistence');
+      expect(result).toContain('.as("LatestProcessDesign")');
     });
   });
 
