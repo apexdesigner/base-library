@@ -2,6 +2,7 @@ import { Component, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { SchemaFormsService } from '@apexdesigner/schema-forms';
 import { SelectUserFieldComponent } from '@components';
 import { SelectRoleFieldComponent } from '@components';
+import { AuthService } from '@services';
 
 /**
  * App
@@ -9,6 +10,9 @@ import { SelectRoleFieldComponent } from '@components';
  * Root application component.
  */
 export class AppComponent extends Component {
+  /** Auth Service */
+  authService!: AuthService;
+
   /** Schema Forms Service */
   schemaFormsService!: SchemaFormsService;
 
@@ -28,7 +32,9 @@ applyTemplate(
       <flex-row [gap]="16" [alignCenter]="true" grow>
         <a routerLink="/" style="color: inherit; text-decoration: none">PROJECT_METADATA.displayName</a>
         <span grow></span>
-        <avatar></avatar>
+        <if condition="authService.authenticated | async">
+          <avatar></avatar>
+        </if>
       </flex-row>
     </mat-toolbar>
     <div grow style="padding: 0 16px">
