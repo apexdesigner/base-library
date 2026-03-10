@@ -90,3 +90,17 @@ npx es opp fields --json
 ```
 
 Use field keys with `--field key=value` when creating or updating opportunities.
+
+## News
+
+Create news items for the instance. The command supports progressive abbreviation: `news`, `new`, or `n`.
+
+### Create a news item
+
+The `--content` option accepts markdown (without a `# Title` heading — the server adds it).
+
+```bash
+npx es news create --title "Project Kickoff"
+npx es news create --title "Update" --description "Brief summary" --content "Full markdown body"
+npx es news create --title "Update" --json
+```

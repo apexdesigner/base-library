@@ -19,6 +19,9 @@ export class TestItem extends BusinessObject {
   /** Email - Contact email */
   email?: Email;
 
+  /** Description - Optional description */
+  description?: string;
+
   /** Due Date - Target completion date */
   dueDate?: Date;
 
