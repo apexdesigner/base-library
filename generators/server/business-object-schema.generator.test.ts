@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { businessObjectSchemaGenerator } from './business-object-schema.generator.js';
 import { createSimpleMockWorkspace } from '@apexdesigner/generator';
 
+function serverContent(result: Map<string, string>): string {
+  for (const [key, value] of result) {
+    if (key.startsWith('server/')) return value;
+  }
+  throw new Error('No server file found in result');
+}
+
 describe('businessObjectSchemaGenerator', () => {
   describe('id column config', () => {
     it('should infer autoIncrement for plain number id on Postgres data source', async () => {
@@ -30,7 +37,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.column({ autoIncrement: true, type: "INTEGER" })');
     });
@@ -45,7 +52,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).not.toContain('.column(');
     });
@@ -78,7 +85,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.column({ type: "BIGINT", autoIncrement: true })');
     });
@@ -96,7 +103,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.column({ type: "DECIMAL" })');
     });
@@ -117,7 +124,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('parentProcessInstanceId: z.number()\n      .nullable()\n      .optional()');
     });
@@ -143,7 +150,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('customerId: z.number()');
       expect(result).not.toContain('customerId: z.number()\n      .optional()');
@@ -171,7 +178,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.column({ type: "jsonb" })');
     });
@@ -196,7 +203,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.column({ type: "uuid" })');
     });
@@ -221,7 +228,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.presentAs("json")');
     });
@@ -253,7 +260,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('z.enum(["Deployed", "Suspended", "Resumed", "Replaced"])');
       expect(result).not.toContain('z.unknown()');
@@ -282,7 +289,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('z.enum(["active", "inactive"])');
       expect(result).not.toContain('z.unknown()');
@@ -311,7 +318,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('email: z.string()');
       expect(result).not.toContain('z.unknown()');
@@ -354,7 +361,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('id: z.uuid()');
       expect(result).toContain('.column({ type: "uuid" })');
@@ -400,7 +407,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('processDesignId: z.uuid()');
       expect(result).toContain('.column({ type: "uuid" })');
@@ -430,7 +437,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.view({');
       expect(result).toContain('sql:');
@@ -452,7 +459,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.unique({ fields: ["email"] })');
     });
@@ -470,7 +477,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.unique({ fields: ["name"] })');
     });
@@ -489,7 +496,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.unique({ fields: ["userId", "roleId"] })');
     });
@@ -509,7 +516,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.unique({ fields: ["email"] })');
       expect(result).toContain('.unique({ fields: ["slug"] })');
@@ -530,7 +537,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.index({ name: "user_email_idx", properties: [{ name: "email" }] })');
     });
@@ -549,7 +556,7 @@ describe('businessObjectSchemaGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
-      const result = (await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as string;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.index({ name: "task_project_id_status_idx", properties: [{ name: "projectId" }, { name: "status" }] })');
     });

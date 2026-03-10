@@ -60,6 +60,40 @@ function extractFieldsFromArgs(args: Node[]): string[] {
   return fields;
 }
 
+/**
+ * Strip schema-persistence-specific extensions from a schema file
+ * to produce a client-safe version that only depends on zod and schema-tools.
+ */
+function stripPersistenceExtensions(content: string): string {
+  const lines = content.split('\n');
+  const result: string[] = [];
+
+  for (const line of lines) {
+    // Remove the schema-persistence extensions import
+    if (line.includes('@apexdesigner/schema-persistence/extensions')) continue;
+
+    // Remove .column({...}), .unique({...}), .index({...}), .view({...}) calls
+    let cleaned = line;
+    for (const method of ['column', 'unique', 'index', 'view']) {
+      // Handle as entire line (e.g. "  .index({ ... })")
+      if (cleaned.trimStart().startsWith(`.${method}(`)) {
+        cleaned = '';
+        break;
+      }
+      // Handle inline (e.g. "z.number().column({ ... })")
+      const re = new RegExp(`\\.${method}\\([^)]*(?:\\([^)]*\\))*[^)]*\\)`, 'g');
+      cleaned = cleaned.replace(re, '');
+    }
+
+    // Skip empty lines that result from stripping (but keep intentional blank lines)
+    if (cleaned === '' && line !== '') continue;
+
+    result.push(cleaned);
+  }
+
+  return result.join('\n');
+}
+
 const businessObjectSchemaGenerator: DesignGenerator = {
   name: 'business-object-schema',
 
@@ -73,7 +107,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     }
   ],
 
-  outputs: (metadata: DesignMetadata) => [`server/src/schemas/business-objects/${kebabCase(metadata.name)}.ts`],
+  outputs: (metadata: DesignMetadata) => [
+    `server/src/schemas/business-objects/${kebabCase(metadata.name)}.ts`,
+    `client/src/schemas/business-objects/${kebabCase(metadata.name)}.ts`
+  ],
 
   async generate(metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -632,7 +669,14 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     const content = lines.join('\n');
     debug('Generated schema file for %j', metadata.name);
 
-    return content;
+    // Generate client version: strip schema-persistence extensions
+    const clientContent = stripPersistenceExtensions(content);
+
+    const boKebab = kebabCase(metadata.name);
+    const result = new Map<string, string>();
+    result.set(`server/src/schemas/business-objects/${boKebab}.ts`, content);
+    result.set(`client/src/schemas/business-objects/${boKebab}.ts`, clientContent);
+    return result;
   }
 };
 

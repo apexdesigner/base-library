@@ -43,6 +43,8 @@ export class BaseLibrary extends Project {
     'angular-auth-oidc-client': '^19.0.0',
     rxjs: '~7.8.1',
     tslib: '~2.8.0',
+    zod: '^4.1.13',
+    '@apexdesigner/schema-tools': '^0.1.76',
     'zone.js': '~0.15.0',
     '@angular/cli': { versionSelector: '~19.2.0', developmentOnly: true },
     '@angular/compiler-cli': { versionSelector: '~19.2.0', developmentOnly: true },
