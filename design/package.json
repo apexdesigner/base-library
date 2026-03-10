@@ -1,6 +1,6 @@
 {
   "name": "BaseLibrary",
-  "version": "1.0.123",
+  "version": "1.0.124",
   "publishConfig": {
     "access": "restricted"
   },
