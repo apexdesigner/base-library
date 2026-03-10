@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.127] - 2026-03-10
+
+- f5d57f5 style: apply prettier formatting
+- c4b3979 feat: add debug logging of PG env vars before postgres connection
+
+
 ## [1.0.126] - 2026-03-10
 
 - e5226a7 chore: remove test view BO that breaks PGlite tests
