@@ -46,10 +46,9 @@
     "change-case": "^5.4.4",
     "prettier": "^3.8.1",
     "ts-morph": "^27.0.2",
-    "vitest": "^4.0.18"
-  },
-  "optionalDependencies": {
-    "@apexbpm/envisioning-studio-cli": "^1.0.4"
+    "vitest": "^4.0.18",
+    "@apexdesigner/server": "^0.8.35",
+    "@apexbpm/envisioning-studio-cli": "^1.0.5"
   },
   "bin": {
     "api": ".claude/skills/apex-designer/scripts/api.cjs"

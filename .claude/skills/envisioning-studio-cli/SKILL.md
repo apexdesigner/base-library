@@ -93,14 +93,48 @@ Use field keys with `--field key=value` when creating or updating opportunities.
 
 ## News
 
-Create news items for the instance. The command supports progressive abbreviation: `news`, `new`, or `n`.
+Manage news items for the instance. The command supports progressive abbreviation: `news`, `new`, `ne`, or `n`.
+
+### List news items
+
+```bash
+npx es news list
+npx es news list --json
+```
+
+### Get a news item
+
+```bash
+npx es news get <id>
+npx es news get <id> --json
+```
 
 ### Create a news item
 
 The `--content` option accepts markdown (without a `# Title` heading — the server adds it).
 
+News content can include links to opportunities using relative URLs:
+
+```markdown
+[View opportunity](opportunities?view=development&opportunity=3088)
+```
+
+Where `view` is the view that sets the status on the opportunity (e.g., `development`, `design`).
+
 ```bash
 npx es news create --title "Project Kickoff"
 npx es news create --title "Update" --description "Brief summary" --content "Full markdown body"
-npx es news create --title "Update" --json
+```
+
+### Update a news item
+
+```bash
+npx es news update <id> --title "New Title"
+npx es news update <id> --description "New summary" --content "New body"
+```
+
+### Delete a news item
+
+```bash
+npx es news delete <id>
 ```
