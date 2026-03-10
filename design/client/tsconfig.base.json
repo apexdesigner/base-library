@@ -21,7 +21,8 @@
       "@components/*": ["./src/app/components/*"],
       "@pages/*": ["./src/app/pages/*"],
       "@business-objects/*": ["./src/app/business-objects/*"],
-      "@schemas/*": ["../server/src/schemas/*"],
+      "@schemas/*": ["./src/schemas/*"],
+      "@filters": ["./src/filters"],
       "@app/*": ["./src/app/*"]
     }
   },

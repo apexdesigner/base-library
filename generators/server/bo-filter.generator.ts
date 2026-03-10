@@ -276,6 +276,44 @@ function buildBaseTypeMaps(context: GenerationContext) {
   return { baseTypeValidValues, baseTypeNativeMap };
 }
 
+/**
+ * Generate a standalone WhereOperator type file for client-side filters
+ * (avoids depending on @apexdesigner/schema-persistence in the client).
+ */
+function generateWhereOperatorTypes(): string {
+  return `export interface ComparisonOperators<T> {
+  eq?: T;
+  ne?: T;
+  gt?: T;
+  gte?: T;
+  lt?: T;
+  lte?: T;
+}
+
+export interface ArrayOperators<T> {
+  in?: T[];
+  notIn?: T[];
+}
+
+export interface StringOperators {
+  like?: string;
+  ilike?: string;
+  startsWith?: string;
+  endsWith?: string;
+  contains?: string;
+}
+
+export interface NullOperator {
+  isNull?: boolean;
+}
+
+export interface RangeOperator<T> {
+  between?: [T, T];
+}
+
+export type WhereOperator<T> = T | (ComparisonOperators<T> & ArrayOperators<T> & NullOperator & RangeOperator<T> & (T extends string ? StringOperators : unknown));`;
+}
+
 const boFilterGenerator: DesignGenerator = {
   name: 'bo-filter',
   isAggregate: true,
@@ -295,7 +333,13 @@ const boFilterGenerator: DesignGenerator = {
 
   outputs: (_metadata: DesignMetadata, context: GenerationContext) => {
     const bos = context.listMetadata('BusinessObject').filter(bo => !!getDataSource(bo.sourceFile, context));
-    return [...bos.map(bo => `server/src/filters/${kebabCase(bo.name)}.ts`), 'server/src/filters/index.ts'];
+    return [
+      ...bos.map(bo => `server/src/filters/${kebabCase(bo.name)}.ts`),
+      'server/src/filters/index.ts',
+      ...bos.map(bo => `client/src/filters/${kebabCase(bo.name)}.ts`),
+      'client/src/filters/index.ts',
+      'client/src/filters/types.ts'
+    ];
   },
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
@@ -312,11 +356,20 @@ const boFilterGenerator: DesignGenerator = {
     for (const bo of bos) {
       const content = generateFilterFile(bo, context, baseTypeValidValues, baseTypeNativeMap);
       result.set(`server/src/filters/${kebabCase(bo.name)}.ts`, content);
+
+      // Client version: replace schema-persistence import with local types
+      const clientContent = content.replace(
+        'import type { WhereOperator } from "@apexdesigner/schema-persistence";',
+        'import type { WhereOperator } from "./types.js";'
+      );
+      result.set(`client/src/filters/${kebabCase(bo.name)}.ts`, clientContent);
     }
 
     result.set('server/src/filters/index.ts', generateBarrel(bos));
+    result.set('client/src/filters/index.ts', generateBarrel(bos));
+    result.set('client/src/filters/types.ts', generateWhereOperatorTypes());
 
-    debug('generated %d filter files + barrel', bos.length);
+    debug('generated %d filter files + barrel (server + client)', bos.length);
     return result;
   }
 };
