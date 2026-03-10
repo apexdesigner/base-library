@@ -294,18 +294,14 @@ const boFilterGenerator: DesignGenerator = {
   ],
 
   outputs: (_metadata: DesignMetadata, context: GenerationContext) => {
-    const bos = context
-      .listMetadata('BusinessObject')
-      .filter(bo => !!getDataSource(bo.sourceFile, context));
+    const bos = context.listMetadata('BusinessObject').filter(bo => !!getDataSource(bo.sourceFile, context));
     return [...bos.map(bo => `server/src/filters/${kebabCase(bo.name)}.ts`), 'server/src/filters/index.ts'];
   },
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
-    const bos = context
-      .listMetadata('BusinessObject')
-      .filter(bo => !!getDataSource(bo.sourceFile, context));
+    const bos = context.listMetadata('BusinessObject').filter(bo => !!getDataSource(bo.sourceFile, context));
 
     debug('generating filters for %d business objects', bos.length);
 
