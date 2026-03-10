@@ -22,6 +22,7 @@
       "@business-objects-client": ["./@types/business-objects-client"],
       "@data-sources": ["./@types/data-sources"],
       "@external-types": ["./@types/external-types"],
+      "@filters": ["../server/src/filters"],
       "@functions": ["./@types/functions"],
       "@interface-definitions": ["./@types/interface-definitions"],
       "@mixins": ["./@types/mixins"],

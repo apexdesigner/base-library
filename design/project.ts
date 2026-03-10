@@ -65,6 +65,7 @@ export class BaseLibrary extends Project {
     zod: '^4.1.13',
     jsonwebtoken: '^9.0.0',
     'jwks-rsa': '^3.0.0',
+    pg: '^8.16.0',
     'path-to-regexp': '^8.0.0',
     '@types/debug': { versionSelector: '^4.1.12', developmentOnly: true },
     '@types/express': { versionSelector: '^5.0.3', developmentOnly: true },

@@ -112,12 +112,15 @@ const businessObjectTypeGenerator: DesignGenerator = {
       sourceFile.addImportDeclarations(importDecls);
     }
 
-    // Add import for persistence filter types
+    // Add import for typed filter interfaces
+    const filterImports = isView
+      ? [`${className}ArrayFilter`, `${className}ObjectFilter`, `${className}WhereFilter`]
+      : [`${className}ArrayFilter`, `${className}ObjectFilter`, `${className}WhereFilter`];
     sourceFile.addImportDeclaration({
       kind: StructureKind.ImportDeclaration,
       isTypeOnly: true,
-      moduleSpecifier: '@apexdesigner/schema-persistence',
-      namedImports: isView ? ['FindFilter', 'FindOneFilter'] : ['FindFilter', 'FindOneFilter', 'UpdateFilter', 'DeleteFilter']
+      moduleSpecifier: '@filters',
+      namedImports: filterImports
     });
 
     // Get description and add as comment
@@ -333,14 +336,14 @@ const businessObjectTypeGenerator: DesignGenerator = {
     classDecl.addMethod({
       name: 'find',
       isStatic: true,
-      parameters: [{ name: 'filter?', type: `FindFilter<${className}>` }],
+      parameters: [{ name: 'filter?', type: `${className}ArrayFilter` }],
       returnType: `Promise<${className}[]>`
     });
 
     classDecl.addMethod({
       name: 'findOne',
       isStatic: true,
-      parameters: [{ name: 'filter', type: `FindOneFilter<${className}>` }],
+      parameters: [{ name: 'filter', type: `{ where: ${className}WhereFilter; include?: ${className}ArrayFilter['include']; fields?: string[]; omit?: string[] }` }],
       returnType: `Promise<${className} | null>`
     });
 
@@ -349,7 +352,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       isStatic: true,
       parameters: [
         { name: 'id', type: idType },
-        { name: 'filter?', type: `Pick<FindFilter<${className}>, 'include' | 'fields' | 'omit'>` }
+        { name: 'filter?', type: `${className}ObjectFilter` }
       ],
       returnType: `Promise<${className}>`
     });
@@ -358,7 +361,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       classDecl.addMethod({
         name: 'findOrCreate',
         isStatic: true,
-        parameters: [{ name: 'options', type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}> }` }],
+        parameters: [{ name: 'options', type: `{ where: ${className}WhereFilter; create: Partial<${className}> }` }],
         returnType: `Promise<{ entity: ${className}; created: boolean }>`
       });
     }
@@ -367,7 +370,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
     classDecl.addMethod({
       name: 'count',
       isStatic: true,
-      parameters: [{ name: 'filter?', type: `Pick<FindFilter<${className}>, 'where'>` }],
+      parameters: [{ name: 'where?', type: `${className}WhereFilter` }],
       returnType: `Promise<number>`
     });
 
@@ -377,7 +380,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         name: 'update',
         isStatic: true,
         parameters: [
-          { name: 'filter', type: `UpdateFilter<${className}>` },
+          { name: 'filter', type: `{ where: ${className}WhereFilter; limit?: number }` },
           { name: 'data', type: `{ [K in keyof ${className}]?: ${className}[K] | null }` }
         ],
         returnType: `Promise<${className}[]>`
@@ -400,7 +403,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
         parameters: [
           {
             name: 'options',
-            type: `{ where: FindOneFilter<${className}>['where']; create: Partial<${className}>; update: { [K in keyof ${className}]?: ${className}[K] | null } }`
+            type: `{ where: ${className}WhereFilter; create: Partial<${className}>; update: { [K in keyof ${className}]?: ${className}[K] | null } }`
           }
         ],
         returnType: `Promise<${className}>`
@@ -410,7 +413,7 @@ const businessObjectTypeGenerator: DesignGenerator = {
       classDecl.addMethod({
         name: 'delete',
         isStatic: true,
-        parameters: [{ name: 'filter', type: `DeleteFilter<${className}>` }],
+        parameters: [{ name: 'filter', type: `{ where: ${className}WhereFilter; limit?: number }` }],
         returnType: `Promise<number>`
       });
 

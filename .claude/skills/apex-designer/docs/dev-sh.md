@@ -44,8 +44,8 @@ Ports can be pinned per project in `.workspace.json`:
 
 Priority: `.workspace.json` → environment variables → defaults (3000/4200).
 
-| Source | Server Port | Client Port |
-|---|---|---|
-| `.workspace.json` | `ports.server` | `ports.client` |
-| Environment variable | `PORT` | `CLIENT_PORT` |
-| Default | `3000` | `4200` |
+| Source | Server Port | Client Port | Design Server Port |
+|---|---|---|---|
+| `.workspace.json` | `ports.server` | `ports.client` | `ports.design` |
+| Environment variable | `PORT` | `CLIENT_PORT` | — |
+| Default | `3000` | `4200` | `0` (random) |
