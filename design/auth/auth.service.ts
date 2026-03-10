@@ -45,6 +45,9 @@ export class AuthService extends Service {
   /** Return URL - URL to navigate to after login */
   returnUrl?: string;
 
+  /** Rejected - Whether the current user was rejected by the server (not registered) */
+  private _rejected = false;
+
   /** Ready Resolve - Resolves the ready promise when initialization completes */
   private readyResolve!: () => void;
 
@@ -71,7 +74,20 @@ export class AuthService extends Service {
       if (hasConfig && authResult?.isAuthenticated) {
         this._authenticated.next(true);
 
-        const user = await User.currentUser();
+        let user: User | undefined;
+        try {
+          user = await User.currentUser();
+        } catch (err: any) {
+          if (err?.status === 403) {
+            debug('user not authorized, redirecting');
+            this._rejected = true;
+            this._authenticated.next(false);
+            this.router.navigate(['/not-authorized'], { queryParams: { email: err.error?.email } });
+            this.readyResolve();
+            return;
+          }
+          throw err;
+        }
         debug('user', user);
 
         if (user) {
@@ -99,6 +115,12 @@ export class AuthService extends Service {
       this._currentUser.next(undefined);
     }
     this.readyResolve();
+  }
+
+  /** Get Rejected - Returns whether the user was rejected by the server */
+  async getRejected(): Promise<boolean> {
+    await this.readyPromise;
+    return this._rejected;
   }
 
   /** Get Auth Enabled - Returns whether auth is configured once initialization completes */

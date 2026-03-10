@@ -35,9 +35,12 @@ addAppBehavior(
     const user = await authService.getCurrentUser();
 
     if (!user) {
-      debug('not authenticated, redirecting to login');
-      authService.returnUrl = state.url;
-      router.navigate(['/login']);
+      const rejected = await authService.getRejected();
+      debug('not authenticated, rejected %s, current url %s', rejected, state.url);
+      if (!rejected && !state.url.startsWith('/login')) {
+        authService.returnUrl = state.url;
+        router.navigate(['/login']);
+      }
       return false;
     }
 

@@ -140,6 +140,11 @@ addAppBehavior(
       });
 
       if (!user) {
+        if (process.env.REQUIRE_KNOWN_USERS === 'true') {
+          debug('unknown user rejected: %j', email);
+          res.status(403).json({ error: 'User not registered in the system', code: 'AUTH_UNKNOWN_USER', email });
+          return;
+        }
         user = await User.create({ email });
         debug('created user %j', user.id);
       }
