@@ -69,7 +69,8 @@ export class BaseLibrary extends Project {
     '@types/debug': { versionSelector: '^4.1.12', developmentOnly: true },
     '@types/express': { versionSelector: '^5.0.3', developmentOnly: true },
     '@types/jsonwebtoken': { versionSelector: '^9.0.0', developmentOnly: true },
-    tsx: { versionSelector: '^4.0.0', developmentOnly: true }
+    tsx: { versionSelector: '^4.0.0', developmentOnly: true },
+    '@electric-sql/pglite': { versionSelector: '^0.3.14', developmentOnly: true }
   };
 
   serverScripts = {

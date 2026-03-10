@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.123] - 2026-03-10
+
+- f6c2d1a fix: add pglite as server dev dependency for test support
+
+
 ## [1.0.122] - 2026-03-10
 
 - 1b4e7ed chore: sort devDependencies alphabetically
