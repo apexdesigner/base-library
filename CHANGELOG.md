@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.121] - 2026-03-10
+
+- 33aff94 chore: update package-lock.json
+- d97b7b2 feat: add express.static middleware to serve built client files
+
+
 ## [1.0.120] - 2026-03-09
 
 - 5c4a34a chore: add envisioning-studio-cli.json config
