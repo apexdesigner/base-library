@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.125] - 2026-03-10
+
+- 96334ea feat: generate client-side schemas and filters without server dependencies
+
+
 ## [1.0.124] - 2026-03-10
 
 - 39e10df style: apply prettier formatting to bo-filter generator
