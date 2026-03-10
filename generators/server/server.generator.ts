@@ -138,6 +138,9 @@ const serverGenerator: DesignGenerator = {
     const lines: string[] = [];
 
     lines.push('import "./env.js";');
+    lines.push('import { existsSync } from "fs";');
+    lines.push('import { dirname, join } from "path";');
+    lines.push('import { fileURLToPath } from "url";');
     lines.push('import express from "express";');
     lines.push('import createDebug from "debug";');
     lines.push('import router from "./routes/index.js";');
@@ -166,6 +169,23 @@ const serverGenerator: DesignGenerator = {
     lines.push('const port = Number(process.env.PORT) || 3000;');
     lines.push('');
     lines.push('app.use(express.json());');
+
+    // Serve built client files if present (before auth middleware so static files bypass auth)
+    lines.push('');
+    lines.push('const clientDir = join(dirname(fileURLToPath(import.meta.url)), "../client");');
+    lines.push('if (existsSync(clientDir)) {');
+    lines.push('  app.use(express.static(clientDir));');
+    lines.push('  const indexHtml = join(clientDir, "index.html");');
+    lines.push('  if (existsSync(indexHtml)) {');
+    lines.push('    app.use((req, res, next) => {');
+    lines.push('      if (req.method === "GET" && !req.path.startsWith("/api")) {');
+    lines.push('        return res.sendFile(indexHtml);');
+    lines.push('      }');
+    lines.push('      next();');
+    lines.push('    });');
+    lines.push('  }');
+    lines.push('}');
+    lines.push('');
 
     // Register middleware behaviors (sorted by sequence, before routes)
     for (const behavior of middlewareBehaviors) {
