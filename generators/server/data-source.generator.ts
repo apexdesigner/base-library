@@ -135,7 +135,9 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
   lines.push('');
   lines.push(`debug("Creating ${ds.persistenceType} persistence");`);
   if (ds.persistenceType === 'Postgres') {
-    lines.push('debug("PG env: PGHOST=%s PGPORT=%s PGDATABASE=%s PGUSER=%s DATABASE_URL=%s", process.env.PGHOST, process.env.PGPORT, process.env.PGDATABASE, process.env.PGUSER, process.env.DATABASE_URL ? "[set]" : undefined);');
+    lines.push(
+      'debug("PG env: PGHOST=%s PGPORT=%s PGDATABASE=%s PGUSER=%s DATABASE_URL=%s", process.env.PGHOST, process.env.PGPORT, process.env.PGDATABASE, process.env.PGUSER, process.env.DATABASE_URL ? "[set]" : undefined);'
+    );
   }
   const factoryArg = ds.configOptions.length > 0 ? `{ ${ds.configOptions.join(', ')} }` : '';
   lines.push(`export const dataSource = await ${ds.factoryName}(${factoryArg});`);
@@ -211,7 +213,9 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
     const allArgs = [...ds.configOptions, entitiesArg];
     lines.push(`debug("Creating ${ds.persistenceType} persistence for ${ds.className}");`);
     if (ds.persistenceType === 'Postgres') {
-      lines.push('debug("PG env: PGHOST=%s PGPORT=%s PGDATABASE=%s PGUSER=%s DATABASE_URL=%s", process.env.PGHOST, process.env.PGPORT, process.env.PGDATABASE, process.env.PGUSER, process.env.DATABASE_URL ? "[set]" : undefined);');
+      lines.push(
+        'debug("PG env: PGHOST=%s PGPORT=%s PGDATABASE=%s PGUSER=%s DATABASE_URL=%s", process.env.PGHOST, process.env.PGPORT, process.env.PGDATABASE, process.env.PGUSER, process.env.DATABASE_URL ? "[set]" : undefined);'
+      );
     }
     lines.push(`const ${varName} = await ${ds.factoryName}({ ${allArgs.join(', ')} });`);
   }
