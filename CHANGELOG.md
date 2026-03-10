@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.122] - 2026-03-10
+
+- 1b4e7ed chore: sort devDependencies alphabetically
+- 1471af0 chore: remove redundant .npmignore and move studio CLI to devDependencies
+
+
 ## [1.0.121] - 2026-03-10
 
 - 33aff94 chore: update package-lock.json
