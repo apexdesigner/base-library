@@ -22,7 +22,9 @@ export class TestItemSummary extends BusinessObject {
   itemCount?: number;
 }
 
-setView(TestItemSummary, `
+setView(
+  TestItemSummary,
+  `
   SELECT
     ti.id,
     ti.name,
@@ -36,4 +38,5 @@ setView(TestItemSummary, `
     FROM test_item
     GROUP BY test_setting_id
   ) counts ON counts.test_setting_id = ti.test_setting_id
-`);
+`
+);
