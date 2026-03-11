@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.131] - 2026-03-11
+
+- 348598c feat: support timeout option in addTest for generated test files
+
+
 ## [1.0.130] - 2026-03-11
 
 - 6df5c94 chore: update @apexdesigner/schema-forms version selector to ^0.1.65

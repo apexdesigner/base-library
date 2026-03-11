@@ -14,6 +14,7 @@ interface TestCase {
   name: string;
   body: string;
   isAsync: boolean;
+  timeout?: number;
 }
 
 /**
@@ -44,11 +45,25 @@ function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
       if (!Node.isBlock(bodyNode)) continue;
 
       const text = bodyNode.getText();
-      tests.push({
+      const testCase: TestCase = {
         name,
         body: text.slice(1, -1),
         isAsync: fnArg.isAsync()
-      });
+      };
+
+      // Extract options (3rd argument)
+      const optionsArg = args[2];
+      if (optionsArg && Node.isObjectLiteralExpression(optionsArg)) {
+        const timeoutProp = optionsArg.getProperty('timeout');
+        if (timeoutProp && Node.isPropertyAssignment(timeoutProp)) {
+          const init = timeoutProp.getInitializer();
+          if (init && Node.isNumericLiteral(init)) {
+            testCase.timeout = Number(init.getLiteralValue());
+          }
+        }
+      }
+
+      tests.push(testCase);
     }
   }
   return tests;
@@ -209,6 +224,7 @@ const functionTestGenerator: DesignGenerator = {
 
     for (const test of tests) {
       const asyncPrefix = test.isAsync ? 'async ' : '';
+      const timeoutSuffix = test.timeout ? `, ${test.timeout}` : '';
       lines.push(`  it("${test.name}", ${asyncPrefix}() => {`);
 
       // Indent body
@@ -216,7 +232,7 @@ const functionTestGenerator: DesignGenerator = {
         lines.push(`  ${line}`);
       }
 
-      lines.push('  });');
+      lines.push(`  }${timeoutSuffix});`);
     }
 
     lines.push('});');
