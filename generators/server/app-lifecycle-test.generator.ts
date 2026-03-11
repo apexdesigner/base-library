@@ -11,6 +11,7 @@ interface TestCase {
   name: string;
   body: string;
   isAsync: boolean;
+  timeout?: number;
 }
 
 function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
@@ -37,11 +38,25 @@ function getTestCases(sourceFile: DesignMetadata['sourceFile']): TestCase[] {
       if (!Node.isBlock(bodyNode)) continue;
 
       const text = bodyNode.getText();
-      tests.push({
+      const testCase: TestCase = {
         name: nameArg.getLiteralValue(),
         body: text.slice(1, -1),
         isAsync: fnArg.isAsync()
-      });
+      };
+
+      // Extract options (3rd argument)
+      const optionsArg = args[2];
+      if (optionsArg && Node.isObjectLiteralExpression(optionsArg)) {
+        const timeoutProp = optionsArg.getProperty('timeout');
+        if (timeoutProp && Node.isPropertyAssignment(timeoutProp)) {
+          const init = timeoutProp.getInitializer();
+          if (init && Node.isNumericLiteral(init)) {
+            testCase.timeout = Number(init.getLiteralValue());
+          }
+        }
+      }
+
+      tests.push(testCase);
     }
   }
   return tests;
@@ -147,13 +162,14 @@ const appLifecycleTestGenerator: DesignGenerator = {
     for (const test of tests) {
       lines.push('');
       const asyncPrefix = test.isAsync ? 'async ' : '';
+      const timeoutSuffix = test.timeout ? `, ${test.timeout}` : '';
       lines.push(`  it("${test.name}", ${asyncPrefix}() => {`);
 
       for (const line of test.body.split('\n')) {
         lines.push(`  ${line}`);
       }
 
-      lines.push('  });');
+      lines.push(`  }${timeoutSuffix});`);
     }
 
     lines.push('});');

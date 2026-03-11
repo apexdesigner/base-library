@@ -216,6 +216,72 @@ describe('businessObjectTestGenerator', () => {
     expect(result).toContain('import { currentUser } from "../functions/current-user.js"');
   });
 
+  it('should pass timeout option to it() when specified', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+      sourceCode: `
+        import { BusinessObject } from '@apexdesigner/dsl';
+        export class ProcessDesign extends BusinessObject {
+          id!: string;
+        }
+      `
+    });
+    workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
+      sourceCode: `
+        import { addBehavior, addTest } from '@apexdesigner/dsl';
+        import { ProcessDesign } from '@business-objects';
+        import { expect } from 'vitest';
+        addBehavior(
+          ProcessDesign,
+          { type: 'Instance' },
+          async function disable(pd: ProcessDesign) { return; }
+        );
+        addTest("should complete within timeout", async () => {
+          const design = await ProcessDesign.testFixtures.simple();
+          expect(design).toBeDefined();
+        }, { timeout: 30000 });
+      `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = (await businessObjectTestGenerator.generate(metadata, workspace.context)) as string;
+
+    expect(result).toContain('it("should complete within timeout", async () => {');
+    expect(result).toContain('}, 30000);');
+  });
+
+  it('should not add timeout when options are omitted', async () => {
+    const workspace = createSimpleMockWorkspace();
+    workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+      sourceCode: `
+        import { BusinessObject } from '@apexdesigner/dsl';
+        export class ProcessDesign extends BusinessObject {
+          id!: string;
+        }
+      `
+    });
+    workspace.addMetadata('Behavior', 'ProcessDesignDisable', {
+      sourceCode: `
+        import { addBehavior, addTest } from '@apexdesigner/dsl';
+        import { ProcessDesign } from '@business-objects';
+        import { expect } from 'vitest';
+        addBehavior(
+          ProcessDesign,
+          { type: 'Instance' },
+          async function disable(pd: ProcessDesign) { return; }
+        );
+        addTest("should work normally", async () => {
+          expect(true).toBe(true);
+        });
+      `
+    });
+
+    const metadata = workspace.context.listMetadata('BusinessObject')[0];
+    const result = (await businessObjectTestGenerator.generate(metadata, workspace.context)) as string;
+
+    expect(result).not.toMatch(/\}, \d+\);/);
+  });
+
   it('should collect tests from multiple behaviors into one file', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'ProcessDesign', {
