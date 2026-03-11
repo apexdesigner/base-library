@@ -19,8 +19,8 @@ Authenticated user identified by email address.
 |------|------|--------------|-------------|
 | roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many | Role Assignments - Roles assigned to this user |
 
-## Class Behaviors
+## Behaviors
 
-| Name | Description | Input | Type | Output |
-|------|-------------|-------|------|--------|
-| currentUser | GET |  |  |  |
+| Name | Type | Method | Description |
+|------|------|--------|-------------|
+| [currentUser](user.current-user.behavior.md) | Class | Get | Returns the authenticated user with role assignments and roles included. |
