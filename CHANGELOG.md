@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.129] - 2026-03-11
+
+- 0fbf457 style: apply prettier formatting
+- d163662 feat: add @apexdesigner/slack-alerts integration
+
+
 ## [1.0.128] - 2026-03-10
 
 - d3df08d feat: add REQUIRE_KNOWN_USERS env var to block unregistered users

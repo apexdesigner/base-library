@@ -10,4 +10,5 @@ generated-by: design-docs.readme.md
 - [Auth](./auth.app-properties.md)
 - [Business Objects](./business-objects/README.md)
 - [Components](./components/README.md)
+- [Slack Alerts](./slack-alerts/README.md)
 
