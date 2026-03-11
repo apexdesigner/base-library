@@ -23,12 +23,12 @@ addAppBehavior(
       return;
     }
 
-    process.on('uncaughtException', async (err) => {
+    process.on('uncaughtException', async err => {
       debug('uncaughtException %O', err);
       await alerts.error(err, 'Uncaught Exception');
     });
 
-    process.on('unhandledRejection', async (reason) => {
+    process.on('unhandledRejection', async reason => {
       debug('unhandledRejection %O', reason);
       const err = reason instanceof Error ? reason : new Error(String(reason));
       await alerts.error(err, 'Unhandled Rejection');
