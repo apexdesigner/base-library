@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.130] - 2026-03-11
+
+- 6df5c94 chore: update @apexdesigner/schema-forms version selector to ^0.1.65
+
+
 ## [1.0.129] - 2026-03-11
 
 - 0fbf457 style: apply prettier formatting
