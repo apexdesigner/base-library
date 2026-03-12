@@ -214,6 +214,37 @@ describe('businessObjectFormGroupGenerator', () => {
       expect(content).toContain('async assign(userId: string, role?: string)');
       expect(content).toContain('instance.assign(userId, role)');
     });
+
+    it('should resolve Header<T> to inner type T in behavior method signatures', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'TestItem', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class TestItem extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'TestItemExport', {
+        sourceCode: `
+          import { addBehavior, Header } from '@apexdesigner/dsl';
+          import { TestItem } from '@business-objects';
+          addBehavior(
+            TestItem,
+            { type: 'Instance', httpMethod: 'Get' },
+            async function exportItem(testItem: TestItem, accept: Header<string>) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
+      const content = result instanceof Map ? result.get('client/src/app/business-objects/test-item-form-group.ts')! : (result as string);
+
+      // Should use inner type 'string', not 'Header<string>'
+      expect(content).toContain('accept: string');
+      expect(content).not.toContain('Header<string>');
+    });
   });
 
   it('should generate entityName on PersistedArray subclass', async () => {

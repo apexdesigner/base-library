@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.135] - 2026-03-12
+
+- b5dc95e fix: resolve Header<T> to inner type T in form group generator
+
+
 ## [1.0.134] - 2026-03-12
 
 - c3478d1 style: apply prettier formatting
