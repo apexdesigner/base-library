@@ -8,7 +8,6 @@ generated-by: design-docs.readme.md
 - [Roles](./roles.md)
 - [Auth](./auth/README.md)
 - [Auth](./auth.app-properties.md)
-- [Business Objects](./business-objects/README.md)
-- [Components](./components/README.md)
 - [Slack Alerts](./slack-alerts/README.md)
+- [User Interfaces](./user-interfaces/README.md)
 

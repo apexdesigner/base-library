@@ -4,6 +4,16 @@ generated-by: design-docs.readme.md
 ---
 # Auth
 
+- [Avatar](./avatar/README.md)
+- [Manage Role Assignments](./manage-role-assignments/README.md)
+- [Select Role Field](./select-role-field/README.md)
+- [Select User Field](./select-user-field/README.md)
+## Business Objects
+
+- [Role](./role.business-object.md) - Named authorization role that can be assigned to users.
+- [User](./user.business-object.md) - Authenticated user identified by email address.
+  - [Role Assignment](./role-assignment.business-object.md) - Associates a user with a role. Belongs to User (cascade delete),
+
 ## Interface Definitions
 
 - [Auth Config](./auth-config.interface-definition.md)

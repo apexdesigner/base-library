@@ -83,6 +83,10 @@ W: server/src/index.ts - Static file overrides generator "server" output
 
 Overriding generated files is a last-resort workaround that creates maintenance burden — the static copy won't receive generator improvements or bug fixes. The better approach is to request changes to the generator so the generated output meets your needs directly.
 
+## Design Documentation
+
+Each concept directory in `/design` must have a markdown file documenting its design assets (e.g., `process-design/process-design.md`). The root `/design/design.md` file provides a map of all concept directories. All design artifacts must be referenced by at least one `.md` file in the design directory. See `.claude/skills/apex-designer/docs/design-docs-style.md` for the style guide covering structure, linking conventions, and formatting patterns.
+
 ## CLI
 
 See `.claude/skills/apex-designer/docs/cli.md` for the full ad3 command reference.
