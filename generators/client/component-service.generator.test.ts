@@ -156,6 +156,154 @@ describe('componentServiceGenerator', () => {
     });
   });
 
+  describe('component metadata', () => {
+    it('should include name, selector, and description for each component', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'AddButtonComponent', {
+        sourceCode: `
+          import { Component } from '@apexdesigner/dsl/component';
+
+          /**
+           * Add Button
+           *
+           * A button that opens a dialog for adding a new record.
+           */
+          export class AddButtonComponent extends Component {}
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("name: 'AddButton'");
+      expect(ts).toContain("selector: 'add-button'");
+      expect(ts).toContain("displayName: 'Add Button'");
+      expect(ts).toContain("description: 'A button that opens a dialog for adding a new record.'");
+    });
+
+    it('should extract inputs with name and type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'AddButtonComponent', {
+        sourceCode: `
+          import { Component, property } from '@apexdesigner/dsl/component';
+
+          /** Add Button */
+          export class AddButtonComponent extends Component {
+            @property({ isInput: true })
+            label?: string;
+
+            @property({ isInput: true })
+            count!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("{ name: 'label', type: 'string' }");
+      expect(ts).toContain("{ name: 'count', type: 'number' }");
+    });
+
+    it('should extract outputs with name and type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'TestDialogComponent', {
+        sourceCode: `
+          import { Component, property } from '@apexdesigner/dsl/component';
+          import { EventEmitter } from '@angular/core';
+
+          /** Test Dialog */
+          export class TestDialogComponent extends Component {
+            @property({ isOutput: true })
+            saved!: EventEmitter<void>;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("{ name: 'saved', type: 'EventEmitter<void>' }");
+    });
+
+    it('should include isDialog, isCustomElement, and allowChildren flags', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'TestDialogComponent', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+
+          /** Test Dialog */
+          @component({ isDialog: true })
+          export class TestDialogComponent extends Component {}
+        `
+      });
+      workspace.addMetadata('Component', 'BreadcrumbComponent', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+
+          /** Breadcrumb */
+          @component({ allowChildren: true })
+          export class BreadcrumbComponent extends Component {}
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      // Dialog should have isDialog: true
+      const dialogSection = ts.split("name: 'TestDialog'")[1]?.split('}')[0] || '';
+      expect(dialogSection).toContain('isDialog: true');
+
+      // Breadcrumb should have allowChildren: true
+      const breadcrumbSection = ts.split("name: 'Breadcrumb'")[1]?.split('}')[0] || '';
+      expect(breadcrumbSection).toContain('allowChildren: true');
+    });
+
+    it('should default flags to false when not set', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'PlainComponent', {
+        sourceCode: `
+          import { Component } from '@apexdesigner/dsl/component';
+
+          /** Plain */
+          export class PlainComponent extends Component {}
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      const section = ts.split("name: 'Plain'")[1]?.split('}')[0] || '';
+      expect(section).toContain('isDialog: false');
+      expect(section).toContain('isCustomElement: false');
+      expect(section).toContain('allowChildren: false');
+    });
+
+    it('should include ComponentMetadata type in type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addComponent(workspace, 'BreadcrumbComponent');
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = getOutput(result, TYPE_PATH);
+
+      expect(dts).toContain('interface ComponentMetadata');
+      expect(dts).toContain('readonly metadata: readonly ComponentMetadata[]');
+      expect(dts).toContain('getMetadata(name: string): ComponentMetadata | undefined');
+    });
+  });
+
   describe('empty state', () => {
     it('should generate valid service with no components', async () => {
       const workspace = createSimpleMockWorkspace();
