@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.132] - 2026-03-12
+
+- 0879fe9 chore: update @apexdesigner/server to ^0.8.36
+- 2e49311 style: apply prettier formatting
+- 9cb7706 fix: emit afterRead lifecycle hook in findOne and findById generators
+
+
 ## [1.0.131] - 2026-03-11
 
 - 348598c feat: support timeout option in addTest for generated test files
