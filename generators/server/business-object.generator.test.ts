@@ -525,6 +525,38 @@ describe('businessObjectGenerator', () => {
     });
   });
 
+  describe('behavior return types', () => {
+    it('should include return type annotation in generated method signature', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ProcessDesign', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ProcessDesign extends BusinessObject {
+            id!: string;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'ProcessDesignPreprocessJson', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ProcessDesign } from '@business-objects';
+          addBehavior(
+            ProcessDesign,
+            { type: 'Class', httpMethod: 'Post' },
+            async function preprocessJson(value: any): Promise<any> {
+              return value;
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static async preprocessJson(value: any): Promise<any>');
+    });
+  });
+
   describe('lifecycle behaviors', () => {
     // Helper: create workspace with a BO and a lifecycle behavior
     function createLifecycleWorkspace(type: string, funcName: string, funcParams: string, funcBody: string) {

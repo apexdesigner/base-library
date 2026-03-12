@@ -791,10 +791,11 @@ const businessObjectGenerator: DesignGenerator = {
         // Build method
         const asyncPrefix = isAsync ? 'async ' : '';
         const staticPrefix = isInstance ? '' : 'static ';
+        const returnType = func.returnType ? `: ${func.returnType}` : '';
 
         const methodLines: string[] = [];
         methodLines.push('');
-        methodLines.push(`  ${staticPrefix}${asyncPrefix}${func.name}(${paramStr}) {`);
+        methodLines.push(`  ${staticPrefix}${asyncPrefix}${func.name}(${paramStr})${returnType} {`);
 
         // For instance behaviors, alias 'this' to the original parameter name
         if (instanceParamName) {

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.137] - 2026-03-12
+
+- b5ec136 fix: include return type annotation in generated behavior methods
+
+
 ## [1.0.136] - 2026-03-12
 
 - b6fdb2a fix: resolve Header<T> to inner type and coerce route param types
