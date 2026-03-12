@@ -1,11 +1,11 @@
 ---
-generated-from: design/components/select-role-field/select-role-field.component.ts
+generated-from: design/auth/select-user-field/select-user-field.component.ts
 generated-by: design-docs.component.doc.md
 ---
-# Select Role Field Component
+# Select User Field Component
 
-Schema form field that displays a dropdown of roles.
-The control value is the role id.
+Schema form field that displays a dropdown of users.
+The control value is the user id.
 
 ## Inputs
 

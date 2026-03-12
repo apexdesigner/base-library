@@ -1,5 +1,5 @@
 ---
-generated-from: design/business-objects/role-assignment/role-assignment.business-object.ts
+generated-from: design/auth/role-assignment/role-assignment.business-object.ts
 generated-by: design-docs.business-object.doc.md
 ---
 # Role Assignment Business Object

@@ -13,5 +13,4 @@ export class DtTableComponentComponentInterface {
   dataSource!: any;
   routerLinkTemplate!: any;
   routeFunction!: any;
-  hideEmptyState!: boolean;
 }

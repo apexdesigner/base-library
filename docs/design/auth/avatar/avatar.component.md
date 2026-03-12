@@ -1,5 +1,5 @@
 ---
-generated-from: design/components/avatar/avatar.component.ts
+generated-from: design/auth/avatar/avatar.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Avatar Component

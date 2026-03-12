@@ -1,5 +1,5 @@
 ---
-generated-from: design/components/manage-role-assignments/manage-role-assignments.component.ts
+generated-from: design/auth/manage-role-assignments/manage-role-assignments.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Manage Role Assignments Component

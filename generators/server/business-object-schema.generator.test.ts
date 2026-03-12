@@ -584,6 +584,86 @@ describe('businessObjectSchemaGenerator', () => {
     });
   });
 
+  describe('onDelete', () => {
+    it('should emit .onDelete() when relationship has onDelete option', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Token', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Token extends BusinessObject {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Token } from '@business-objects';
+          export class ProcessInstance extends BusinessObject {
+            @relationship({ type: 'References', onDelete: 'Cascade' })
+            parentToken?: Token;
+            parentTokenId?: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.onDelete("CASCADE")');
+    });
+
+    it('should not emit .onDelete() when relationship has no onDelete option', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Category', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Category extends BusinessObject {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Post', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Category } from '@business-objects';
+          export class Post extends BusinessObject {
+            @relationship({ type: 'References' })
+            category?: Category;
+            categoryId?: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Post')!;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).not.toContain('.onDelete(');
+    });
+
+    it('should strip .onDelete() from client schemas', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Token', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Token extends BusinessObject {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'ProcessInstance', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Token } from '@business-objects';
+          export class ProcessInstance extends BusinessObject {
+            @relationship({ type: 'References', onDelete: 'Cascade' })
+            parentToken?: Token;
+            parentTokenId?: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'ProcessInstance')!;
+      const result = clientContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).not.toContain('.onDelete(');
+    });
+  });
+
   describe('indexes', () => {
     it('should emit .index() for addIndex on a single field', async () => {
       const workspace = createSimpleMockWorkspace();

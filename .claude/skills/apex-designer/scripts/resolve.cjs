@@ -28,6 +28,11 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 
+  // Only process .ts design files
+  if (!filePath.endsWith('.ts')) {
+    process.exit(0);
+  }
+
   // Skip static files in design/client/ and design/server/ — these are copied
   // to the generated directories, not DSL design objects
   if (/(?:^|\/design\/)(?:client|server)\//.test(filePath)) {

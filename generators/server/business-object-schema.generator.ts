@@ -64,7 +64,7 @@ function extractFieldsFromArgs(args: Node[]): string[] {
  * Strip schema-persistence-specific extensions from a schema file
  * to produce a client-safe version that only depends on zod and schema-tools.
  */
-const PERSISTENCE_METHODS = new Set(['column', 'unique', 'index', 'view']);
+const PERSISTENCE_METHODS = new Set(['column', 'unique', 'index', 'view', 'onDelete']);
 
 /**
  * Strip schema-persistence-specific extensions from a generated schema file
@@ -568,6 +568,13 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         } else {
           relExpression = `references("${rel.businessObjectName}")`;
         }
+      }
+
+      // Append .onDelete() if the relationship has an onDelete option
+      const onDelete = rel.options?.onDelete as string | undefined;
+      if (onDelete) {
+        const mapped = onDelete.replace(/\s+/g, ' ').toUpperCase();
+        relExpression += `.onDelete("${mapped}")`;
       }
 
       schemaProps.push(`    ${rel.relationshipName}: ${relExpression}`);

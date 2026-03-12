@@ -1,5 +1,5 @@
 ---
-generated-from: design/business-objects/user/user.business-object.ts
+generated-from: design/auth/user/user.business-object.ts
 generated-by: design-docs.business-object.doc.md
 ---
 # User Business Object

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.133] - 2026-03-12
+
+- 911ef48 chore: update extracted external-items and bump @apexdesigner/dsl to ^0.8.62
+- d571d8f fix: emit onDelete option in schema generator for relationships
+- 07f8f24 refactor: reorganize design directory by feature area and add design docs
+
+
 ## [1.0.132] - 2026-03-12
 
 - 0879fe9 chore: update @apexdesigner/server to ^0.8.36
