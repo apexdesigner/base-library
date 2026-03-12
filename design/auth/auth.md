@@ -4,32 +4,32 @@ The auth feature provides OIDC-based authentication and role-based access contro
 
 ## Configuration
 
-The [setup-auth](setup-auth.app-behavior.ts) app behavior loads OIDC configuration from `auth-config.json` at startup, with environment variable overrides for each property (e.g., `AUTH_ISSUER`, `AUTH_CLIENT_ID`). The configuration is validated against the [auth config](auth-config.interface-definition.ts) schema. Auth is enabled by default; set `AUTH_DISABLED=true` to disable. The [auth](auth.app-properties.ts) app properties hold the runtime auth state including the JWKS client, token caches, and public route matcher.
+The [setup-auth](configuration/setup-auth.app-behavior.ts) app behavior loads OIDC configuration from `auth-config.json` at startup, with environment variable overrides for each property (e.g., `AUTH_ISSUER`, `AUTH_CLIENT_ID`). The configuration is validated against the [auth config](configuration/auth-config.interface-definition.ts) schema. Auth is enabled by default; set `AUTH_DISABLED=true` to disable. The [auth](configuration/auth.app-properties.ts) app properties hold the runtime auth state including the JWKS client, token caches, and public route matcher.
 
-The [provide-auth](provide-auth.app-behavior.ts) app behavior registers the OIDC module with the Angular client, and the [get-auth-config](get-auth-config.app-behavior.ts) app behavior exposes the client-facing configuration via API.
+The [provide-auth](configuration/provide-auth.app-behavior.ts) app behavior registers the OIDC module with the Angular client, and the [get-auth-config](configuration/get-auth-config.app-behavior.ts) app behavior exposes the client-facing configuration via API.
 
 ## Server Middleware
 
-The [auth middleware](auth-middleware.app-behavior.ts) app behavior validates JWT tokens on incoming requests and resolves the authenticated user. The [auth interceptor](auth-interceptor.app-behavior.ts) app behavior attaches the access token to outgoing HTTP requests from the client. The [auth context](auth-context.interface-definition.ts) interface definition carries the authenticated user through async request handling.
+The [auth middleware](middleware/auth-middleware.app-behavior.ts) app behavior validates JWT tokens on incoming requests and resolves the authenticated user. The [auth interceptor](middleware/auth-interceptor.app-behavior.ts) app behavior attaches the access token to outgoing HTTP requests from the client. The [auth context](middleware/auth-context.interface-definition.ts) interface definition carries the authenticated user through async request handling.
 
 ## Users and Roles
 
-A [User](user/user.business-object.ts) business object represents an authenticated person. The [current user](user/user.current-user.behavior.ts) behavior fetches the user record for the active session. The [current-user](current-user.function.ts) function provides a server-side helper to retrieve the user from the auth context.
+A [User](users-and-roles/user.business-object.ts) business object represents an authenticated person. The [current user](users-and-roles/user.current-user.behavior.ts) behavior fetches the user record for the active session. The [current-user](users-and-roles/current-user.function.ts) function provides a server-side helper to retrieve the user from the auth context.
 
-A [Role](role/role.business-object.ts) business object defines a named permission group. A [Role Assignment](role-assignment/role-assignment.business-object.ts) business object links a user to a role. The [sync-static-roles](sync-static-roles.app-behavior.ts) app behavior ensures roles declared in design files exist in the database at startup. The [assign-default-administrators](assign-default-administrators.app-behavior.ts) app behavior grants the [administrator](administrator.role.ts) role to initial users.
+A [Role](users-and-roles/role.business-object.ts) business object defines a named permission group. A [Role Assignment](users-and-roles/role-assignment.business-object.ts) business object links a user to a role. The [sync-static-roles](users-and-roles/sync-static-roles.app-behavior.ts) app behavior ensures roles declared in design files exist in the database at startup. The [assign-default-administrators](users-and-roles/assign-default-administrators.app-behavior.ts) app behavior grants the [administrator](users-and-roles/administrator.role.ts) role to initial users.
 
-The [has-role](has-role.function.ts) function checks whether a user holds a given role.
+The [has-role](users-and-roles/has-role.function.ts) function checks whether a user holds a given role.
 
 ## Client
 
-The [auth service](auth.service.ts) service manages client-side authentication state. It checks the OIDC session on load, fetches the current user, and exposes observables for authentication status and the current user. It also provides login, logout, and role-checking methods.
+The [auth service](client/auth.service.ts) service manages client-side authentication state. It checks the OIDC session on load, fetches the current user, and exposes observables for authentication status and the current user. It also provides login, logout, and role-checking methods.
 
-The [role guard](role-guard.app-behavior.ts) guard protects routes by checking authentication and required roles. If the user was rejected by the server (not a known user), it skips the login redirect and allows the not-authorized page to handle it.
+The [role guard](client/role-guard.app-behavior.ts) guard protects routes by checking authentication and required roles. If the user was rejected by the server (not a known user), it skips the login redirect and allows the not-authorized page to handle it.
 
 ## Pages
 
-The [login](login.page.ts) page initiates the OIDC login flow. The [not-authorized](not-authorized.page.ts) page displays when a user is authenticated but not permitted. The [switch-user](switch-user.page.ts) page allows switching between user accounts during development.
+The [login](pages/login.page.ts) page initiates the OIDC login flow. The [not-authorized](pages/not-authorized.page.ts) page displays when a user is authenticated but not permitted. The [switch-user](pages/switch-user.page.ts) page allows switching between user accounts during development.
 
 ## Components
 
-The [avatar](avatar/avatar.component.ts) component displays the current user's identity in the toolbar with a menu for logout and user switching. The [manage role assignments](manage-role-assignments/manage-role-assignments.component.ts) component provides a UI for assigning roles to users. The [select user field](select-user-field/select-user-field.component.ts) and [select role field](select-role-field/select-role-field.component.ts) components are schema form fields for picking users and roles.
+The [avatar](components/avatar.component.ts) component displays the current user's identity in the toolbar with a menu for logout and user switching. The [manage role assignments](components/manage-role-assignments.component.ts) component provides a UI for assigning roles to users. The [select user field](components/select-user-field.component.ts) and [select role field](components/select-role-field.component.ts) components are schema form fields for picking users and roles.
