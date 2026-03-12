@@ -505,6 +505,12 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`    const data = await this.dataSource.findOne(this.entityName, filter as any);`);
     lines.push('    debug("data %j", data);');
     lines.push('');
+    if (afterReadEntries.length > 0) {
+      lines.push(`    if (data) {`);
+      emitLifecycleInline(afterReadEntries, lines, { instances: '[data]' }, mixinNames, mixinOptionsMap);
+      lines.push(`    }`);
+      lines.push('');
+    }
     lines.push(`    return data ? new ${className}(data) : null;`);
     lines.push('  }');
 
@@ -521,6 +527,10 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push('    debug("data %j", data);');
     lines.push('');
     lines.push(`    if (!data) throw new Error(\`${className} not found: \${id}\`);`);
+    if (afterReadEntries.length > 0) {
+      emitLifecycleInline(afterReadEntries, lines, { instances: '[data]' }, mixinNames, mixinOptionsMap);
+      lines.push('');
+    }
     lines.push(`    return new ${className}(data);`);
     lines.push('  }');
 
