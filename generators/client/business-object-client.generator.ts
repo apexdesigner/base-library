@@ -279,7 +279,7 @@ const businessObjectClientGenerator: DesignGenerator = {
           .map(p => {
             const cp = classified.all.find(c => c.name === p.name);
             const optional = p.isOptional ? '?' : '';
-            const type = cp?.source === 'header' ? (cp.innerType || 'string') : (p.type || 'any');
+            const type = cp?.source === 'header' ? cp.innerType || 'string' : p.type || 'any';
             return `${p.name}${optional}: ${type}`;
           })
           .join(', ');
@@ -287,19 +287,13 @@ const businessObjectClientGenerator: DesignGenerator = {
         // Build the body arg from body-only parameters
         const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
         const bodyIsPassthrough =
-          classified.body.length === 1 &&
-          (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
-        const bodyArg = classified.body.length === 0
-          ? '{}'
-          : bodyIsPassthrough
-            ? classified.body[0].name
-            : `{ ${classified.body.map(p => p.name).join(', ')} }`;
+          classified.body.length === 1 && (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
+        const bodyArg =
+          classified.body.length === 0 ? '{}' : bodyIsPassthrough ? classified.body[0].name : `{ ${classified.body.map(p => p.name).join(', ')} }`;
 
         // Build headers arg from header params
         const hasHeaders = classified.header.length > 0;
-        const headersArg = hasHeaders
-          ? `{ ${classified.header.map(p => p.name).join(', ')} }`
-          : undefined;
+        const headersArg = hasHeaders ? `{ ${classified.header.map(p => p.name).join(', ')} }` : undefined;
 
         const behaviorKebab = kebabCase(func.name);
         const returnType = func.returnType || 'any';
@@ -330,13 +324,9 @@ const businessObjectClientGenerator: DesignGenerator = {
           const hArg = headersArg ? `, ${headersArg}` : '';
           switch (httpMethod) {
             case 'get':
-              return hasHeaders
-                ? `${base}.get<${returnType}>(url, undefined, ${headersArg})`
-                : `${base}.get<${returnType}>(url)`;
+              return hasHeaders ? `${base}.get<${returnType}>(url, undefined, ${headersArg})` : `${base}.get<${returnType}>(url)`;
             case 'delete':
-              return hasHeaders
-                ? `${base}.del<${returnType}>(url, ${headersArg})`
-                : `${base}.del<${returnType}>(url)`;
+              return hasHeaders ? `${base}.del<${returnType}>(url, ${headersArg})` : `${base}.del<${returnType}>(url)`;
             case 'patch':
               return `${base}.patch<${returnType}>(url, ${bodyArg}${hArg})`;
             default:

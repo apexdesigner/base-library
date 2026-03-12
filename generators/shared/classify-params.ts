@@ -28,10 +28,7 @@ export interface ClassifiedParams {
  * - Header params: type starts with `Header<`
  * - Body params: everything else
  */
-export function classifyBehaviorParams(
-  params: BehaviorParam[],
-  path?: string,
-): ClassifiedParams {
+export function classifyBehaviorParams(params: BehaviorParam[], path?: string): ClassifiedParams {
   // Extract :paramName tokens from path
   const pathParamNames = new Set<string>();
   if (path) {
@@ -56,7 +53,7 @@ export function classifyBehaviorParams(
         ...param,
         source: 'header',
         headerName: kebabCase(param.name),
-        innerType,
+        innerType
       };
       all.push(classified);
       headerParams.push(classified);

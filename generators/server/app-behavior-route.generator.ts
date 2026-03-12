@@ -87,8 +87,7 @@ const appBehaviorRouteGenerator: DesignGenerator = {
         // Determine passthrough for body params
         const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
         const bodyIsPassthrough =
-          classified.body.length === 1 &&
-          (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
+          classified.body.length === 1 && (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
 
         const callArg = !hasParams
           ? ''

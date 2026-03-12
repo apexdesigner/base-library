@@ -5,7 +5,7 @@ describe('classifyBehaviorParams', () => {
   it('should classify all params as body when no path and no Header types', () => {
     const params = [
       { name: 'name', type: 'string', isOptional: false },
-      { name: 'age', type: 'number', isOptional: true },
+      { name: 'age', type: 'number', isOptional: true }
     ];
 
     const result = classifyBehaviorParams(params);
@@ -20,7 +20,7 @@ describe('classifyBehaviorParams', () => {
   it('should classify params matching :paramName in path as path params', () => {
     const params = [
       { name: 'orderId', type: 'number', isOptional: false },
-      { name: 'details', type: 'any', isOptional: false },
+      { name: 'details', type: 'any', isOptional: false }
     ];
 
     const result = classifyBehaviorParams(params, '/orders/:orderId/ship');
@@ -35,7 +35,7 @@ describe('classifyBehaviorParams', () => {
   it('should classify Header<T> params as header params with innerType', () => {
     const params = [
       { name: 'authorization', type: 'Header<string>', isOptional: false },
-      { name: 'details', type: 'any', isOptional: false },
+      { name: 'details', type: 'any', isOptional: false }
     ];
 
     const result = classifyBehaviorParams(params);
@@ -49,9 +49,7 @@ describe('classifyBehaviorParams', () => {
   });
 
   it('should kebab-case multi-word header names', () => {
-    const params = [
-      { name: 'apiKey', type: 'Header<string>', isOptional: false },
-    ];
+    const params = [{ name: 'apiKey', type: 'Header<string>', isOptional: false }];
 
     const result = classifyBehaviorParams(params);
 
@@ -62,7 +60,7 @@ describe('classifyBehaviorParams', () => {
     const params = [
       { name: 'orderId', type: 'number', isOptional: false },
       { name: 'authorization', type: 'Header<string>', isOptional: false },
-      { name: 'shipmentDetails', type: 'ShipmentDetails', isOptional: false },
+      { name: 'shipmentDetails', type: 'ShipmentDetails', isOptional: false }
     ];
 
     const result = classifyBehaviorParams(params, '/orders/:orderId/ship');
@@ -81,7 +79,7 @@ describe('classifyBehaviorParams', () => {
     const params = [
       { name: 'orgId', type: 'string', isOptional: false },
       { name: 'userId', type: 'string', isOptional: false },
-      { name: 'data', type: 'any', isOptional: false },
+      { name: 'data', type: 'any', isOptional: false }
     ];
 
     const result = classifyBehaviorParams(params, '/orgs/:orgId/users/:userId');
@@ -100,9 +98,7 @@ describe('classifyBehaviorParams', () => {
   });
 
   it('should strip /api prefix from path before matching', () => {
-    const params = [
-      { name: 'id', type: 'number', isOptional: false },
-    ];
+    const params = [{ name: 'id', type: 'number', isOptional: false }];
 
     const result = classifyBehaviorParams(params, '/api/items/:id');
 
