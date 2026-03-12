@@ -1,0 +1,19 @@
+---
+generated-from: design/project.ts
+generated-by: design-docs.design-md.md
+---
+# User Interfaces
+
+The user-interfaces directory contains shared UI components used across the application.
+
+## App Component
+
+The [app](app.component.md) component is the root application component. It renders the toolbar with the project name, an [avatar](../auth/avatar/avatar.component.md) for authenticated users, and the router outlet. It also registers the select-user and select-role schema form fields on load.
+
+## Add Button
+
+The [add button](add-button/add-button.component.md) component and associated [dialog](add-button/add-dialog.component.md) provide a standard way to add records to a persisted array. The button opens a dialog that dynamically loads a schema-driven form for the array's entity type. It accepts an optional label and dialog width, and emits the newly added record.
+
+## Breadcrumb
+
+The [breadcrumb](breadcrumb/breadcrumb.component.md) component displays navigation breadcrumbs. It contains [breadcrumb level](breadcrumb/breadcrumb-level.component.md) children, each rendering as a router link when a path is set or plain text for the current level. Levels are separated by a delimiter automatically.
