@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.134] - 2026-03-12
+
+- c3478d1 style: apply prettier formatting
+- 1fbc29a docs: add generated design documentation
+- c06222b feat: support path and header parameter sources in behavior route generators
+
+
 ## [1.0.133] - 2026-03-12
 
 - 911ef48 chore: update extracted external-items and bump @apexdesigner/dsl to ^0.8.62
