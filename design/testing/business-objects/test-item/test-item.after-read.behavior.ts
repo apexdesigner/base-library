@@ -10,15 +10,11 @@ const debug = createDebug('Test:TestItem:afterRead');
  *
  * Sets a computed description suffix after reading test items.
  */
-addBehavior(
-  TestItem,
-  { type: 'After Read' },
-  async function afterRead(instances: TestItem[]) {
-    for (const item of instances) {
-      debug('afterRead item %j', item.id);
-    }
+addBehavior(TestItem, { type: 'After Read' }, async function afterRead(instances: TestItem[]) {
+  for (const item of instances) {
+    debug('afterRead item %j', item.id);
   }
-);
+});
 
 addTest('afterRead runs on find', async () => {
   const item = await TestItem.create({ name: 'afterRead test' });
