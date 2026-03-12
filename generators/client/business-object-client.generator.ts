@@ -4,6 +4,7 @@ import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorPar
 import { kebabCase, pascalCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
+import { classifyBehaviorParams } from '../shared/classify-params.js';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectClient');
 
@@ -269,21 +270,36 @@ const businessObjectClientGenerator: DesignGenerator = {
         const params = func.parameters || [];
         const methodParams = isInstance ? params.slice(1) : params;
 
-        // Build parameter string
+        // Classify params by source
+        const routePath = options.path as string | undefined;
+        const classified = classifyBehaviorParams(methodParams, routePath);
+
+        // Build parameter string — use inner type for Header<T> params
         const paramStr = methodParams
           .map(p => {
+            const cp = classified.all.find(c => c.name === p.name);
             const optional = p.isOptional ? '?' : '';
-            return `${p.name}${optional}: ${p.type || 'any'}`;
+            const type = cp?.source === 'header' ? (cp.innerType || 'string') : (p.type || 'any');
+            return `${p.name}${optional}: ${type}`;
           })
           .join(', ');
 
-        // Build the body arg from parameters
-        // Single object/any param: pass directly (server passes req.body as the argument)
-        // Scalar or multiple params: wrap in object (server unwraps by name)
+        // Build the body arg from body-only parameters
         const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
-        const isPassthrough =
-          methodParams.length === 1 && (OBJECT_TYPES.has(methodParams[0].type || 'any') || (methodParams[0].type || '').startsWith('{'));
-        const bodyArg = methodParams.length === 0 ? '{}' : isPassthrough ? methodParams[0].name : `{ ${methodParams.map(p => p.name).join(', ')} }`;
+        const bodyIsPassthrough =
+          classified.body.length === 1 &&
+          (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
+        const bodyArg = classified.body.length === 0
+          ? '{}'
+          : bodyIsPassthrough
+            ? classified.body[0].name
+            : `{ ${classified.body.map(p => p.name).join(', ')} }`;
+
+        // Build headers arg from header params
+        const hasHeaders = classified.header.length > 0;
+        const headersArg = hasHeaders
+          ? `{ ${classified.header.map(p => p.name).join(', ')} }`
+          : undefined;
 
         const behaviorKebab = kebabCase(func.name);
         const returnType = func.returnType || 'any';
@@ -293,32 +309,51 @@ const businessObjectClientGenerator: DesignGenerator = {
 
         const httpMethod = ((options.httpMethod as string) || 'Post').toLowerCase();
 
+        // Build URL expression — interpolate path params if custom path
+        let urlExpr: string;
+        if (routePath && classified.path.length > 0) {
+          // Custom path with path params — build URL with interpolation
+          let urlPath = routePath.replace(/^\/api/, '');
+          for (const pp of classified.path) {
+            urlPath = urlPath.replace(`:${pp.name}`, `\${${pp.name}}`);
+          }
+          const base = isInstance ? 'BusinessObjectBase.baseUrl' : 'this.baseUrl';
+          urlExpr = `\`\${${base}}${urlPath}\``;
+        } else if (isInstance) {
+          urlExpr = `\`\${BusinessObjectBase.baseUrl}/\${${className}.plural}/\${(this as any).${idName}}/${behaviorKebab}\``;
+        } else {
+          urlExpr = `\`\${this.baseUrl}/\${this.plural}/${behaviorKebab}\``;
+        }
+
         // Map httpMethod to base class method call
         const callForMethod = (base: string) => {
+          const hArg = headersArg ? `, ${headersArg}` : '';
           switch (httpMethod) {
             case 'get':
-              return `${base}.get<${returnType}>(url)`;
+              return hasHeaders
+                ? `${base}.get<${returnType}>(url, undefined, ${headersArg})`
+                : `${base}.get<${returnType}>(url)`;
             case 'delete':
-              return `${base}.del<${returnType}>(url)`;
+              return hasHeaders
+                ? `${base}.del<${returnType}>(url, ${headersArg})`
+                : `${base}.del<${returnType}>(url)`;
             case 'patch':
-              return `${base}.patch<${returnType}>(url, ${bodyArg})`;
+              return `${base}.patch<${returnType}>(url, ${bodyArg}${hArg})`;
             default:
-              return `${base}.post<${returnType}>(url, ${bodyArg})`;
+              return `${base}.post<${returnType}>(url, ${bodyArg}${hArg})`;
           }
         };
 
         if (isInstance) {
           // Instance behavior: /api/{plural}/:id/{behavior-kebab}
           methodLines.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
-          methodLines.push(
-            `    const url = \`\${BusinessObjectBase.baseUrl}/\${${className}.plural}/\${(this as any).${idName}}/${behaviorKebab}\`;`
-          );
+          methodLines.push(`    const url = ${urlExpr};`);
           methodLines.push(`    return ${callForMethod('BusinessObjectBase')};`);
           methodLines.push('  }');
         } else {
           // Class behavior: /api/{plural}/{behavior-kebab}
           methodLines.push(`  static async ${func.name}(${paramStr}): Promise<${returnType}> {`);
-          methodLines.push(`    const url = \`\${this.baseUrl}/\${this.plural}/${behaviorKebab}\`;`);
+          methodLines.push(`    const url = ${urlExpr};`);
           methodLines.push(`    return ${callForMethod('this')};`);
           methodLines.push('  }');
         }

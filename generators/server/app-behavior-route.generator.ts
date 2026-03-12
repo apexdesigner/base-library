@@ -3,6 +3,7 @@ import { isLibrary } from '@apexdesigner/generator';
 import { getBehaviorFunction, getBehaviorOptions } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
+import { classifyBehaviorParams } from '../shared/classify-params.js';
 
 const Debug = createDebug('BaseLibrary:generators:appBehaviorRoute');
 
@@ -79,7 +80,27 @@ const appBehaviorRouteGenerator: DesignGenerator = {
 
         const params = func.parameters || [];
         const hasParams = params.length > 0;
-        const callArg = hasParams ? 'req.body' : '';
+
+        // Classify params by source: path (from URL), header, body
+        const classified = classifyBehaviorParams(params, routePath);
+
+        // Determine passthrough for body params
+        const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
+        const bodyIsPassthrough =
+          classified.body.length === 1 &&
+          (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
+
+        const callArg = !hasParams
+          ? ''
+          : params
+              .map(p => {
+                const cp = classified.all.find(c => c.name === p.name)!;
+                if (cp.source === 'path') return `req.params.${p.name}`;
+                if (cp.source === 'header') return `req.headers["${cp.headerName}"]`;
+                if (bodyIsPassthrough && classified.body.length === 1) return 'req.body';
+                return `req.body.${p.name}`;
+              })
+              .join(', ');
 
         // Compute role guard
         const behaviorRoles = Array.isArray(options.roles) ? (options.roles as string[]) : [];
@@ -117,7 +138,9 @@ const appBehaviorRouteGenerator: DesignGenerator = {
       lines.push(`// ${route.httpMethod.toUpperCase()} ${route.routePath} - ${route.func.name}`);
       lines.push(`router.${route.httpMethod}("${route.routePath}", async (req: Request, res: Response, next: NextFunction) => {`);
       lines.push(`  const debug = Debug.extend("${route.func.name}");`);
-      if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
+      if (route.hasParams) {
+        lines.push('  debug("req.body %j", req.body);');
+      }
       lines.push('');
       for (const line of route.roleGuard) lines.push(line);
       lines.push('  try {');

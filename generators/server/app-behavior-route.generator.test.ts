@@ -154,6 +154,87 @@ describe('appBehaviorRouteGenerator', () => {
     });
   });
 
+  describe('parameter sources', () => {
+    it('should extract path parameters from req.params', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'ShipOrder', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Post', path: '/api/orders/:orderId/ship' },
+            async function shipOrder(orderId: number, details: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).toContain('req.params.orderId');
+      expect(content).not.toContain('req.body.orderId');
+    });
+
+    it('should extract Header<T> parameters from req.headers', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'ShipOrder', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          import { Header } from '@apexdesigner/dsl';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Post' },
+            async function shipOrder(authorization: Header<string>, details: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).toContain('req.headers["authorization"]');
+      expect(content).not.toContain('req.body.authorization');
+    });
+
+    it('should pass mixed path, header, and body args in correct order', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'ShipOrder', {
+        sourceCode: `
+          import { addAppBehavior, Header } from '@apexdesigner/dsl';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Post', path: '/api/orders/:orderId/ship' },
+            async function shipOrder(orderId: number, authorization: Header<string>, notes: string) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).toContain('App.shipOrder(req.params.orderId, req.headers["authorization"], req.body.notes)');
+    });
+
+    it('should pass single body object param as req.body when mixed with path params', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('AppBehavior', 'ShipOrder', {
+        sourceCode: `
+          import { addAppBehavior } from '@apexdesigner/dsl';
+          addAppBehavior(
+            { type: 'Class Behavior', httpMethod: 'Post', path: '/api/orders/:orderId/ship' },
+            async function shipOrder(orderId: number, details: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('AppBehavior')[0];
+      const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const content = result.get('server/src/routes/app-behaviors.ts')!;
+
+      expect(content).toContain('App.shipOrder(req.params.orderId, req.body)');
+    });
+  });
+
   describe('role enforcement', () => {
     it('should add missingRole check when roles are specified', async () => {
       const workspace = createSimpleMockWorkspace();
