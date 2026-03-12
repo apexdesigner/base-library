@@ -173,6 +173,101 @@ describe('businessObjectClientGenerator', () => {
     });
   });
 
+  describe('parameter sources', () => {
+    it('should use inner type for Header<T> parameters in method signature', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderExport', {
+        sourceCode: `
+          import { addBehavior, Header } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Class', httpMethod: 'Get' },
+            async function exportOrders(authorization: Header<string>) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should use inner type 'string', not 'Header<string>'
+      expect(result).toContain('authorization: string');
+      expect(result).not.toContain('Header<string>');
+    });
+
+    it('should pass Header params as headers option, not in body', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderShip', {
+        sourceCode: `
+          import { addBehavior, Header } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function ship(order: Order, authorization: Header<string>, details: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should pass headers and body separately
+      expect(result).toContain('{ authorization }');
+      expect(result).toContain('details');
+      // Body should not include authorization
+      expect(result).not.toContain('{ authorization, details }');
+    });
+
+    it('should interpolate path params into URL for app-path behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderShipTo', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Class', httpMethod: 'Post', path: '/api/orders/:orderId/ship' },
+            async function shipTo(orderId: number, address: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      // URL should interpolate path param
+      expect(result).toContain('${orderId}');
+      // Body should not include path param
+      expect(result).not.toContain('{ orderId');
+    });
+  });
+
   describe('findOne method', () => {
     it('should generate a findOne static method that returns a single instance or null', async () => {
       const workspace = createSimpleMockWorkspace();

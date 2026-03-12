@@ -12,6 +12,7 @@ import { Node } from 'ts-morph';
 import { kebabCase, pascalCase, camelCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
+import { classifyBehaviorParams } from '../shared/classify-params.js';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectRoute');
 
@@ -147,6 +148,8 @@ const businessObjectRouteGenerator: DesignGenerator = {
       func: NonNullable<ReturnType<typeof getBehaviorFunction>>;
       httpMethod: string;
       behaviorKebab: string;
+      /** Custom route path from options.path (stripped of /api prefix), or undefined for default */
+      customRoutePath?: string;
       hasParams: boolean;
       callArg: string;
       roleGuard: string[];
@@ -176,18 +179,43 @@ const businessObjectRouteGenerator: DesignGenerator = {
         const methodParams = isInstance ? params.slice(1) : params;
         const hasParams = methodParams.length > 0;
 
-        // Single object/any param: pass req.body directly (it IS the param)
-        // Scalar or multiple params: unwrap from req.body by name
+        // Classify params by source: path (from URL), header, body
+        const routePath = options.path as string | undefined;
+        const classified = classifyBehaviorParams(methodParams, routePath);
+
+        // Single object/any body param: pass req.body directly (it IS the param)
         const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
-        const isPassthrough =
-          methodParams.length === 1 && (OBJECT_TYPES.has(methodParams[0].type || 'any') || (methodParams[0].type || '').startsWith('{'));
-        const callArg = !hasParams ? '' : isPassthrough ? 'req.body' : methodParams.map(p => `req.body.${p.name}`).join(', ');
+        const bodyIsPassthrough =
+          classified.body.length === 1 && (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
+
+        const callArg = !hasParams
+          ? ''
+          : methodParams
+              .map(p => {
+                const cp = classified.all.find(c => c.name === p.name)!;
+                if (cp.source === 'path') return `req.params.${p.name}`;
+                if (cp.source === 'header') return `req.headers["${cp.headerName}"]`;
+                if (bodyIsPassthrough && classified.body.length === 1) return 'req.body';
+                return `req.body.${p.name}`;
+              })
+              .join(', ');
 
         // Behavior-level roles override default roles
         const behaviorRoles = Array.isArray(options.roles) ? (options.roles as string[]) : [];
         const roleGuard = behaviorRoles.length > 0 ? emitRoleGuard(behaviorRoles) : defaultRoleGuard;
 
-        const route: BehaviorRoute = { func, httpMethod, behaviorKebab, hasParams, callArg, roleGuard };
+        // Compute custom route path: strip /api and the BO plural prefix
+        let customRoutePath: string | undefined;
+        if (routePath) {
+          let stripped = routePath.replace(/^\/api/, '');
+          const boPrefix = `/${pluralKebab}`;
+          if (stripped.startsWith(boPrefix)) {
+            stripped = stripped.slice(boPrefix.length);
+          }
+          customRoutePath = stripped || undefined;
+        }
+
+        const route: BehaviorRoute = { func, httpMethod, behaviorKebab, customRoutePath, hasParams, callArg, roleGuard };
 
         if (isInstance) {
           instanceBehaviorRoutes.push(route);
@@ -254,9 +282,10 @@ const businessObjectRouteGenerator: DesignGenerator = {
 
     // Class behavior routes must come before /:id to avoid being caught by the param route
     for (const route of classBehaviorRoutes) {
+      const routeSegment = route.customRoutePath || `/${route.behaviorKebab}`;
       lines.push('');
-      lines.push(`// ${route.httpMethod.toUpperCase()} /${pluralKebab}/${route.behaviorKebab} - ${route.func.name}`);
-      lines.push(`router.${route.httpMethod}("/${route.behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
+      lines.push(`// ${route.httpMethod.toUpperCase()} /${pluralKebab}${routeSegment} - ${route.func.name}`);
+      lines.push(`router.${route.httpMethod}("${routeSegment}", async (req: Request, res: Response, next: NextFunction) => {`);
       lines.push(`  const debug = Debug.extend("${route.func.name}");`);
       if (route.hasParams) lines.push('  debug("req.body %j", req.body);');
       lines.push('');
@@ -408,9 +437,10 @@ const businessObjectRouteGenerator: DesignGenerator = {
 
     // Instance behavior routes (after /:id routes)
     for (const route of instanceBehaviorRoutes) {
+      const routeSegment = route.customRoutePath || `/:id/${route.behaviorKebab}`;
       lines.push('');
-      lines.push(`// ${route.httpMethod.toUpperCase()} /${pluralKebab}/:id/${route.behaviorKebab} - ${route.func.name}`);
-      lines.push(`router.${route.httpMethod}("/:id/${route.behaviorKebab}", async (req: Request, res: Response, next: NextFunction) => {`);
+      lines.push(`// ${route.httpMethod.toUpperCase()} /${pluralKebab}${routeSegment} - ${route.func.name}`);
+      lines.push(`router.${route.httpMethod}("${routeSegment}", async (req: Request, res: Response, next: NextFunction) => {`);
       lines.push(`  const debug = Debug.extend("${route.func.name}");`);
       lines.push('  debug("req.params.id %j", req.params.id);');
       if (route.hasParams) lines.push('  debug("req.body %j", req.body);');

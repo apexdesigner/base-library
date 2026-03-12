@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 export class BusinessObjectBase {
@@ -13,25 +13,42 @@ export class BusinessObjectBase {
     if (data) Object.assign(this, data);
   }
 
-  protected static get<T>(url: string, params?: Record<string, string>): Promise<T> {
+  protected static get<T>(url: string, params?: Record<string, string>, headers?: Record<string, string>): Promise<T> {
     let httpParams = new HttpParams();
     if (params) {
       for (const [key, value] of Object.entries(params)) {
         httpParams = httpParams.set(key, value);
       }
     }
-    return firstValueFrom(this.httpClient.get<T>(url, { params: httpParams }));
+    return firstValueFrom(
+      this.httpClient.get<T>(url, {
+        params: httpParams,
+        headers: headers ? new HttpHeaders(headers) : undefined
+      })
+    );
   }
 
-  protected static post<T>(url: string, body: any): Promise<T> {
-    return firstValueFrom(this.httpClient.post<T>(url, body));
+  protected static post<T>(url: string, body: any, headers?: Record<string, string>): Promise<T> {
+    return firstValueFrom(
+      this.httpClient.post<T>(url, body, {
+        headers: headers ? new HttpHeaders(headers) : undefined
+      })
+    );
   }
 
-  protected static patch<T>(url: string, body: any): Promise<T> {
-    return firstValueFrom(this.httpClient.patch<T>(url, body));
+  protected static patch<T>(url: string, body: any, headers?: Record<string, string>): Promise<T> {
+    return firstValueFrom(
+      this.httpClient.patch<T>(url, body, {
+        headers: headers ? new HttpHeaders(headers) : undefined
+      })
+    );
   }
 
-  protected static del<T>(url: string): Promise<T> {
-    return firstValueFrom(this.httpClient.delete<T>(url));
+  protected static del<T>(url: string, headers?: Record<string, string>): Promise<T> {
+    return firstValueFrom(
+      this.httpClient.delete<T>(url, {
+        headers: headers ? new HttpHeaders(headers) : undefined
+      })
+    );
   }
 }

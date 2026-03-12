@@ -278,6 +278,98 @@ describe('businessObjectRouteGenerator', () => {
     });
   });
 
+  describe('parameter sources', () => {
+    it('should extract Header<T> parameters from req.headers for class behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderExport', {
+        sourceCode: `
+          import { addBehavior, Header } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Class', httpMethod: 'Get' },
+            async function exportOrders(authorization: Header<string>) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('req.headers["authorization"]');
+      expect(result).not.toContain('req.body.authorization');
+    });
+
+    it('should use custom path with path params for class behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderSearchByCategory', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Class', httpMethod: 'Post', path: '/api/orders/categories/:categoryId/search' },
+            async function searchByCategory(categoryId: number, filters: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      // Route path should include :categoryId
+      expect(result).toContain('"/categories/:categoryId/search"');
+      expect(result).toContain('req.params.categoryId');
+      expect(result).not.toContain('req.body.categoryId');
+    });
+
+    it('should extract Header<T> parameters from req.headers for instance behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderShip', {
+        sourceCode: `
+          import { addBehavior, Header } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function ship(order: Order, authorization: Header<string>, details: any) {}
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectRouteGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('req.headers["authorization"]');
+      expect(result).toContain('req.body');
+      expect(result).not.toContain('req.body.authorization');
+    });
+  });
+
   it('should unwrap scalar parameters from req.body for instance behaviors', async () => {
     const workspace = createSimpleMockWorkspace();
     workspace.addMetadata('BusinessObject', 'UserTask', {
