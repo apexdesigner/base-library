@@ -94,8 +94,10 @@ const appBehaviorRouteGenerator: DesignGenerator = {
           : params
               .map(p => {
                 const cp = classified.all.find(c => c.name === p.name)!;
-                if (cp.source === 'path') return `req.params.${p.name}`;
-                if (cp.source === 'header') return `req.headers["${cp.headerName}"]`;
+                if (cp.source === 'path') {
+                  return p.type === 'number' ? `Number(req.params.${p.name})` : `req.params.${p.name}`;
+                }
+                if (cp.source === 'header') return `String(req.headers["${cp.headerName}"])`;
                 if (bodyIsPassthrough && classified.body.length === 1) return 'req.body';
                 return `req.body.${p.name}`;
               })

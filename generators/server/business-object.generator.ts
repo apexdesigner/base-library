@@ -780,7 +780,11 @@ const businessObjectGenerator: DesignGenerator = {
         const paramStr = methodParams
           .map(p => {
             const optional = p.isOptional ? '?' : '';
-            return `${p.name}${optional}: ${p.type}`;
+            // Resolve Header<T> to inner type T
+            let type = p.type || 'any';
+            const headerMatch = type.match(/^Header<(.+)>$/);
+            if (headerMatch) type = headerMatch[1];
+            return `${p.name}${optional}: ${type}`;
           })
           .join(', ');
 
