@@ -212,7 +212,7 @@ describe('appBehaviorRouteGenerator', () => {
       const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
-      expect(content).toContain('App.shipOrder(req.params.orderId, req.headers["authorization"], req.body.notes)');
+      expect(content).toContain('App.shipOrder(Number(req.params.orderId), String(req.headers["authorization"]), req.body.notes)');
     });
 
     it('should pass single body object param as req.body when mixed with path params', async () => {
@@ -231,7 +231,7 @@ describe('appBehaviorRouteGenerator', () => {
       const result = (await appBehaviorRouteGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const content = result.get('server/src/routes/app-behaviors.ts')!;
 
-      expect(content).toContain('App.shipOrder(req.params.orderId, req.body)');
+      expect(content).toContain('App.shipOrder(Number(req.params.orderId), req.body)');
     });
   });
 

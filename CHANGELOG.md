@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.136] - 2026-03-12
+
+- b6fdb2a fix: resolve Header<T> to inner type and coerce route param types
+
+
 ## [1.0.135] - 2026-03-12
 
 - b5dc95e fix: resolve Header<T> to inner type T in form group generator

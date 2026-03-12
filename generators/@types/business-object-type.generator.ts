@@ -300,10 +300,16 @@ const businessObjectTypeGenerator: DesignGenerator = {
         classDecl.addMethod({
           name: func.name,
           isStatic,
-          parameters: methodParams.map(p => ({
-            name: p.isOptional ? `${p.name}?` : p.name,
-            type: p.type || 'any'
-          })),
+          parameters: methodParams.map(p => {
+            // Resolve Header<T> to inner type T
+            let type = p.type || 'any';
+            const headerMatch = type.match(/^Header<(.+)>$/);
+            if (headerMatch) type = headerMatch[1];
+            return {
+              name: p.isOptional ? `${p.name}?` : p.name,
+              type
+            };
+          }),
           returnType: isAsync ? `Promise<${func.returnType || 'any'}>` : func.returnType || 'any'
         });
 
