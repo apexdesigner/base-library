@@ -24,29 +24,50 @@ interface ComponentEntry {
   isDialog: boolean;
   isCustomElement: boolean;
   allowChildren: boolean;
+  metadata: Record<string, unknown>;
 }
 
-/** Extract boolean flags from @component() decorator options */
-function getDecoratorFlags(metadata: DesignMetadata): { isDialog: boolean; isCustomElement: boolean; allowChildren: boolean } {
+/** Extract boolean flags and metadata from @component() decorator options */
+function getDecoratorOptions(metadata: DesignMetadata): { isDialog: boolean; isCustomElement: boolean; allowChildren: boolean; metadata: Record<string, unknown> } {
   const cls = getClassByBase(metadata.sourceFile, 'Component');
   let isDialog = false;
   let isCustomElement = false;
   let allowChildren = false;
+  let componentMetadata: Record<string, unknown> = {};
 
   if (cls) {
     const decorator = cls.getDecorator('component');
     if (decorator) {
       const args = decorator.getArguments();
-      if (args.length > 0) {
+      if (args.length > 0 && Node.isObjectLiteralExpression(args[0])) {
         const text = args[0].getText();
         if (/isDialog:\s*true/.test(text)) isDialog = true;
         if (/isCustomElement:\s*true/.test(text)) isCustomElement = true;
         if (/allowChildren:\s*true/.test(text)) allowChildren = true;
+
+        const metadataProp = args[0].getProperty('metadata');
+        if (metadataProp && Node.isPropertyAssignment(metadataProp)) {
+          const init = metadataProp.getInitializerOrThrow();
+          if (Node.isObjectLiteralExpression(init)) {
+            for (const prop of init.getProperties()) {
+              if (Node.isPropertyAssignment(prop)) {
+                const key = prop.getName();
+                const valueText = prop.getInitializerOrThrow().getText();
+                // Parse simple literal values
+                if (valueText === 'true') componentMetadata[key] = true;
+                else if (valueText === 'false') componentMetadata[key] = false;
+                else if (/^-?\d+(\.\d+)?$/.test(valueText)) componentMetadata[key] = Number(valueText);
+                else if (/^['"]/.test(valueText)) componentMetadata[key] = valueText.slice(1, -1);
+                else componentMetadata[key] = valueText;
+              }
+            }
+          }
+        }
       }
     }
   }
 
-  return { isDialog, isCustomElement, allowChildren };
+  return { isDialog, isCustomElement, allowChildren, metadata: componentMetadata };
 }
 
 /** Extract input and output properties from a component class */
@@ -118,7 +139,7 @@ const componentServiceGenerator: DesignGenerator = {
       const baseName = getBaseName(c.name);
       const kebab = kebabCase(baseName);
       const cls = getClassByBase(c.sourceFile, 'Component');
-      const flags = getDecoratorFlags(c);
+      const flags = getDecoratorOptions(c);
       const { inputs, outputs } = getInputsAndOutputs(c);
 
       return {
@@ -155,6 +176,7 @@ const componentServiceGenerator: DesignGenerator = {
     lines.push('  isDialog: boolean;');
     lines.push('  isCustomElement: boolean;');
     lines.push('  allowChildren: boolean;');
+    lines.push('  metadata: Record<string, unknown>;');
     lines.push('}');
     lines.push('');
 
@@ -181,6 +203,7 @@ const componentServiceGenerator: DesignGenerator = {
       lines.push(`      isDialog: ${entry.isDialog},`);
       lines.push(`      isCustomElement: ${entry.isCustomElement},`);
       lines.push(`      allowChildren: ${entry.allowChildren},`);
+      lines.push(`      metadata: ${JSON.stringify(entry.metadata)},`);
       lines.push('    },');
     }
     lines.push('  ];');
@@ -223,6 +246,7 @@ const componentServiceGenerator: DesignGenerator = {
     typeLines.push('  isDialog: boolean;');
     typeLines.push('  isCustomElement: boolean;');
     typeLines.push('  allowChildren: boolean;');
+    typeLines.push('  metadata: Record<string, unknown>;');
     typeLines.push('}');
     typeLines.push('');
     typeLines.push('export declare class ComponentService {');

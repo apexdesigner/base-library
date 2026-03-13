@@ -8,7 +8,7 @@ import { Validators } from '@angular/forms';
  *
  * Dialog component for testing.
  */
-@component({ isDialog: true })
+@component({ isDialog: true, metadata: { category: 'testing', version: 1 } })
 export class TestDialogComponent extends Component {
   /** Title - Dialog title text */
   @property({ isInput: true })

@@ -1,4 +1,4 @@
-import { Component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
+import { Component, component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { Role } from '@business-objects-client';
 import { SchemaFormControl } from '@apexdesigner/schema-forms';
 
@@ -8,6 +8,7 @@ import { SchemaFormControl } from '@apexdesigner/schema-forms';
  * Schema form field that displays a dropdown of roles.
  * The control value is the role name.
  */
+@component({ metadata: { schemaFormsField: true } })
 export class SelectRoleNameFieldComponent extends Component {
   /** Control - The schema form control bound to this field */
   @property({ isInput: true })

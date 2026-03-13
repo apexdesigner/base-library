@@ -259,15 +259,15 @@ describe('componentServiceGenerator', () => {
       const ts = getOutput(result, SERVICE_PATH);
 
       // Dialog should have isDialog: true
-      const dialogSection = ts.split("name: 'TestDialog'")[1]?.split('}')[0] || '';
+      const dialogSection = ts.split("name: 'TestDialog'")[1]?.split('    },')[0] || '';
       expect(dialogSection).toContain('isDialog: true');
 
       // Breadcrumb should have allowChildren: true
-      const breadcrumbSection = ts.split("name: 'Breadcrumb'")[1]?.split('}')[0] || '';
+      const breadcrumbSection = ts.split("name: 'Breadcrumb'")[1]?.split('    },')[0] || '';
       expect(breadcrumbSection).toContain('allowChildren: true');
     });
 
-    it('should default flags to false when not set', async () => {
+    it('should default flags to false and metadata to empty when not set', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
       workspace.addMetadata('Component', 'PlainComponent', {
@@ -283,10 +283,33 @@ describe('componentServiceGenerator', () => {
       const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
-      const section = ts.split("name: 'Plain'")[1]?.split('}')[0] || '';
+      const section = ts.split("name: 'Plain'")[1]?.split('    },')[0] || '';
       expect(section).toContain('isDialog: false');
       expect(section).toContain('isCustomElement: false');
       expect(section).toContain('allowChildren: false');
+      expect(section).toContain('metadata: {},');
+    });
+
+    it('should extract metadata from @component() decorator', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'SelectUserFieldComponent', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+
+          /** Select User Field */
+          @component({ metadata: { fieldType: 'select-user', category: 'form' } })
+          export class SelectUserFieldComponent extends Component {}
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      const section = ts.split("name: 'SelectUserField'")[1]?.split('},')[0] || '';
+      expect(section).toContain('"fieldType":"select-user"');
+      expect(section).toContain('"category":"form"');
     });
 
     it('should include ComponentMetadata type in type declaration', async () => {

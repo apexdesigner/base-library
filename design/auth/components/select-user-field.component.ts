@@ -1,4 +1,4 @@
-import { Component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
+import { Component, component, property, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { User } from '@business-objects-client';
 import { SchemaFormControl } from '@apexdesigner/schema-forms';
 
@@ -8,6 +8,7 @@ import { SchemaFormControl } from '@apexdesigner/schema-forms';
  * Schema form field that displays a dropdown of users.
  * The control value is the user id.
  */
+@component({ metadata: { schemaFormsField: true } })
 export class SelectUserFieldComponent extends Component {
   /** Control - The schema form control bound to this field */
   @property({ isInput: true })
