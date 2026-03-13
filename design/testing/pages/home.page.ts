@@ -1,4 +1,9 @@
-import { Page, page, applyTemplate } from '@apexdesigner/dsl/page';
+import { Page, page, method, applyTemplate } from '@apexdesigner/dsl/page';
+import { BusinessObjectService } from '@services';
+import { AppService } from '@services';
+import createDebug from 'debug';
+
+const debug = createDebug('HomePage');
 
 /**
  * Home
@@ -9,7 +14,19 @@ import { Page, page, applyTemplate } from '@apexdesigner/dsl/page';
   path: '/home',
   isDefault: true
 })
-export class HomePage extends Page {}
+export class HomePage extends Page {
+  /** Business Object Service */
+  businessObjectService!: BusinessObjectService;
+  /** App Service */
+  appService!: AppService;
+
+  /** Log Services */
+  @method({ callOnLoad: true })
+  async logServices(): Promise<void> {
+    debug('businessObjectService.metadata %o', this.businessObjectService.metadata);
+    debug('appService.behaviors %o', this.appService.behaviors);
+  }
+}
 
 applyTemplate(
   HomePage,
