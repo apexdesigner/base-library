@@ -108,6 +108,7 @@ const pageComponentGenerator: DesignGenerator = {
     // Build set of injectable external type names (e.g. Router, HttpClient, MatDialog)
     // and map each to its module specifier (e.g. Router → @angular/router)
     const injectableExternalTypes = new Map<string, string>();
+    const injectLocallyTypes = new Set<string>();
     for (const et of context.listMetadata('ExternalType') || []) {
       const etClass = et.sourceFile.getClasses()[0];
       if (!etClass) continue;
@@ -119,10 +120,12 @@ const pageComponentGenerator: DesignGenerator = {
         if (moduleSpec.includes('@apexdesigner/dsl')) continue;
         for (const named of imp.getNamedImports()) {
           injectableExternalTypes.set(named.getName(), moduleSpec);
+          if (opts.injectLocally) injectLocallyTypes.add(named.getName());
         }
       }
     }
     debug('injectable external types %j', Object.fromEntries(injectableExternalTypes));
+    debug('injectLocally external types %j', [...injectLocallyTypes]);
 
     // Remove DSL and design-time alias imports
     // Design aliases are single-segment (@pages, @base-types, etc.)
@@ -289,6 +292,15 @@ const pageComponentGenerator: DesignGenerator = {
     // Remove extends Page
     if (exportedClass.getExtends()) {
       exportedClass.removeExtends();
+    }
+
+    // Build set of services that use provideInComponent
+    const injectLocallyServices = new Set<string>();
+    for (const m of context.listMetadata('Service') || []) {
+      const svcClass = m.sourceFile.getClasses().find(c => c.isExported());
+      if (svcClass?.getProperty('injectLocally')?.getInitializer()?.getText() === 'true') {
+        injectLocallyServices.add(m.name);
+      }
     }
 
     // Convert service-typed properties to inject() calls
@@ -631,6 +643,18 @@ const pageComponentGenerator: DesignGenerator = {
 
     if (componentImports.length > 0) {
       decoratorConfig += `,\n  imports: [${componentImports.join(', ')}]`;
+    }
+
+    // Add providers for provideInComponent services/types
+    const componentProviders: string[] = [];
+    for (const et of injectedExternalTypes) {
+      if (injectLocallyTypes.has(et.typeName)) componentProviders.push(et.typeName);
+    }
+    for (const svc of injectedServices) {
+      if (injectLocallyServices.has(svc.typeName)) componentProviders.push(svc.typeName);
+    }
+    if (componentProviders.length > 0) {
+      decoratorConfig += `,\n  providers: [${componentProviders.join(', ')}]`;
     }
 
     decoratorConfig += `\n}`;

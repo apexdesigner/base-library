@@ -1,6 +1,8 @@
 import { Page, page, method, applyTemplate } from '@apexdesigner/dsl/page';
 import { BusinessObjectService } from '@services';
 import { AppService } from '@services';
+import { SchemaFormsService } from '@apexdesigner/schema-forms';
+import { SchemaFormsTypescriptService } from '@apexdesigner/schema-forms';
 import createDebug from 'debug';
 
 const debug = createDebug('HomePage');
@@ -19,12 +21,18 @@ export class HomePage extends Page {
   businessObjectService!: BusinessObjectService;
   /** App Service */
   appService!: AppService;
+  /** Schema Forms Service */
+  schemaFormsService!: SchemaFormsService;
+  /** Schema Forms Typescript Service */
+  schemaFormsTypescriptService!: SchemaFormsTypescriptService;
 
   /** Log Services */
   @method({ callOnLoad: true })
   async logServices(): Promise<void> {
     debug('businessObjectService.metadata %o', this.businessObjectService.metadata);
     debug('appService.behaviors %o', this.appService.behaviors);
+    debug('schemaFormsService %o', this.schemaFormsService);
+    debug('schemaFormsTypescriptService %o', this.schemaFormsTypescriptService);
   }
 }
 
