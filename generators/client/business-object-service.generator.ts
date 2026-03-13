@@ -1,13 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, resolveRelationships, resolveMixins, resolveIdType } from '@apexdesigner/generator';
-import {
-  getClassByBase,
-  getDisplayName,
-  getDescription,
-  getBehaviorFunction,
-  getBehaviorOptions,
-  getBehaviorParent
-} from '@apexdesigner/utilities';
+import { getClassByBase, getDisplayName, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 
@@ -84,9 +77,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
         const parentName = getBehaviorParent(metadata.sourceFile);
         if (!parentName) return false;
         if (!conditionContext?.context) return true;
-        const boMeta = conditionContext.context
-          .listMetadata('BusinessObject')
-          .find((bo) => pascalCase(bo.name) === parentName);
+        const boMeta = conditionContext.context.listMetadata('BusinessObject').find(bo => pascalCase(bo.name) === parentName);
         return !!boMeta;
       }
     },
@@ -95,16 +86,13 @@ const businessObjectServiceGenerator: DesignGenerator = {
     }
   ],
 
-  outputs: () => [
-    'client/src/app/services/business-object/business-object.service.ts',
-    'design/@types/services/business-object.d.ts'
-  ],
+  outputs: () => ['client/src/app/services/business-object/business-object.service.ts', 'design/@types/services/business-object.d.ts'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
 
     // Get project name for debug namespace
-    const projectMeta = context.listMetadata('Project').find((p) => !isLibrary(p));
+    const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
     // Collect all business objects, sorted by name
@@ -115,7 +103,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
     // Collect all behaviors once
     const allBehaviors = context.listMetadata('Behavior');
 
-    const entries: BusinessObjectEntry[] = businessObjects.map((bo) => {
+    const entries: BusinessObjectEntry[] = businessObjects.map(bo => {
       const className = pascalCase(bo.name);
       const boClass = getClassByBase(bo.sourceFile, 'BusinessObject');
 
@@ -123,7 +111,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
       const relationships = resolveRelationships(bo.sourceFile, context);
       const resolvedId = resolveIdType(bo.sourceFile, context);
       const skipNames = new Set<string>([resolvedId.name]);
-      relationships.forEach((rel) => {
+      relationships.forEach(rel => {
         skipNames.add(rel.relationshipName);
         if (rel.foreignKey) skipNames.add(rel.foreignKey);
       });
@@ -150,7 +138,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
       // Add mixin properties
       const mixins = resolveMixins(bo.sourceFile, context);
-      const mixinNames = mixins.map((m) => m.name);
+      const mixinNames = mixins.map(m => m.name);
       for (const mixin of mixins) {
         const mixinClass = getClassByBase(mixin.metadata.sourceFile, 'Mixin');
         if (!mixinClass) continue;
@@ -171,7 +159,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
       }
 
       // Relationships
-      const relationshipEntries: RelationshipEntry[] = relationships.map((rel) => ({
+      const relationshipEntries: RelationshipEntry[] = relationships.map(rel => ({
         name: rel.relationshipName,
         type: rel.businessObjectName,
         kind: toRelationshipKind(rel.relationshipType)
@@ -258,9 +246,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
     // toKebab helper
     lines.push('function toKebab(name: string): string {');
-    lines.push(
-      "  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z][a-z])/g, '$1-$2').toLowerCase();"
-    );
+    lines.push("  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z][a-z])/g, '$1-$2').toLowerCase();");
     lines.push('}');
     lines.push('');
 
@@ -268,21 +254,18 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push('export class BusinessObjectService {');
 
     // names array
-    const namesList = entries.map((e) => `'${e.name}'`).join(', ');
+    const namesList = entries.map(e => `'${e.name}'`).join(', ');
     lines.push(`  readonly names = [${namesList}] as const;`);
     lines.push('');
 
     // metadata array
     lines.push('  readonly metadata: readonly BusinessObjectMetadata[] = [');
     for (const entry of entries) {
-      const propsStr = entry.properties.map((p) => `{ name: '${p.name}', type: '${p.type}' }`).join(', ');
-      const relsStr = entry.relationships
-        .map((r) => `{ name: '${r.name}', type: '${r.type}', kind: '${r.kind}' }`)
-        .join(', ');
+      const propsStr = entry.properties.map(p => `{ name: '${p.name}', type: '${p.type}' }`).join(', ');
+      const relsStr = entry.relationships.map(r => `{ name: '${r.name}', type: '${r.type}', kind: '${r.kind}' }`).join(', ');
       const behaviorsStr = entry.behaviors
-        .map((b) => {
-          const metadataStr =
-            Object.keys(b.metadata).length > 0 ? `, metadata: ${JSON.stringify(b.metadata)}` : '';
+        .map(b => {
+          const metadataStr = Object.keys(b.metadata).length > 0 ? `, metadata: ${JSON.stringify(b.metadata)}` : '';
           return `{ name: '${b.name}', displayName: '${b.displayName}', description: '${b.description.replace(/'/g, "\\'").replace(/\n/g, ' ')}'${metadataStr} }`;
         })
         .join(', ');
@@ -290,9 +273,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
       lines.push('    {');
       lines.push(`      name: '${entry.name}',`);
       lines.push(`      displayName: '${entry.displayName}',`);
-      lines.push(
-        `      description: '${entry.description.replace(/'/g, "\\'").replace(/\n/g, ' ')}',`
-      );
+      lines.push(`      description: '${entry.description.replace(/'/g, "\\'").replace(/\n/g, ' ')}',`);
       lines.push(`      properties: [${propsStr}],`);
       lines.push(`      relationships: [${relsStr}],`);
       lines.push(`      behaviors: [${behaviorsStr}],`);

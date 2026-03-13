@@ -380,7 +380,7 @@ describe('businessObjectServiceGenerator', () => {
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('getMetadata(name: string): BusinessObjectMetadata | undefined');
-      expect(ts).toContain("return this.metadata.find(m => m.name === name)");
+      expect(ts).toContain('return this.metadata.find(m => m.name === name)');
     });
   });
 });

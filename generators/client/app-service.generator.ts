@@ -55,10 +55,7 @@ const appServiceGenerator: DesignGenerator = {
     }
   ],
 
-  outputs: () => [
-    'client/src/app/services/app/app.service.ts',
-    'design/@types/services/app.d.ts'
-  ],
+  outputs: () => ['client/src/app/services/app/app.service.ts', 'design/@types/services/app.d.ts'],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
     const debug = Debug.extend('generate');
@@ -141,7 +138,7 @@ const appServiceGenerator: DesignGenerator = {
       if (entry.layer) lines.push(`      layer: '${entry.layer}',`);
       if (entry.httpMethod) lines.push(`      httpMethod: '${entry.httpMethod}',`);
       if (entry.path) lines.push(`      path: '${entry.path}',`);
-      if (entry.roles) lines.push(`      roles: [${entry.roles.map((r) => `'${r}'`).join(', ')}],`);
+      if (entry.roles) lines.push(`      roles: [${entry.roles.map(r => `'${r}'`).join(', ')}],`);
       if (entry.stage) lines.push(`      stage: '${entry.stage}',`);
       if (entry.sequence != null) lines.push(`      sequence: ${entry.sequence},`);
       if (entry.eventName) lines.push(`      eventName: '${entry.eventName}',`);

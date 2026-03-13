@@ -34,7 +34,10 @@ describe('appServiceGenerator', () => {
     it('should generate an @Injectable service', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'systemHealthCheck', `
+      addAppBehavior(
+        workspace,
+        'systemHealthCheck',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         /** System Health Check */
@@ -42,7 +45,8 @@ describe('appServiceGenerator', () => {
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
           async function systemHealthCheck() { return { ok: true }; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -55,14 +59,22 @@ describe('appServiceGenerator', () => {
     it('should sort behaviors alphabetically', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'zebra', `
+      addAppBehavior(
+        workspace,
+        'zebra',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
         addAppBehavior({ type: 'Class Behavior', httpMethod: 'Get', path: '/api/zebra' }, async function zebra() {});
-      `);
-      addAppBehavior(workspace, 'alpha', `
+      `
+      );
+      addAppBehavior(
+        workspace,
+        'alpha',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
         addAppBehavior({ type: 'Class Behavior', httpMethod: 'Get', path: '/api/alpha' }, async function alpha() {});
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -78,7 +90,10 @@ describe('appServiceGenerator', () => {
     it('should include httpMethod and path', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'healthCheck', `
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         /** Health Check - Returns server status */
@@ -86,7 +101,8 @@ describe('appServiceGenerator', () => {
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
           async function healthCheck() { return { ok: true }; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -101,7 +117,10 @@ describe('appServiceGenerator', () => {
     it('should include roles', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'adminReport', `
+      addAppBehavior(
+        workspace,
+        'adminReport',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
         import { Administrator } from '@roles';
 
@@ -110,7 +129,8 @@ describe('appServiceGenerator', () => {
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/admin-report', roles: [Administrator] },
           async function adminReport() { return {}; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -123,7 +143,10 @@ describe('appServiceGenerator', () => {
     it('should include metadata when present', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'adminReport', `
+      addAppBehavior(
+        workspace,
+        'adminReport',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         /** Admin Report */
@@ -131,7 +154,8 @@ describe('appServiceGenerator', () => {
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/admin-report', metadata: { category: 'reporting' } },
           async function adminReport() { return {}; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -144,14 +168,18 @@ describe('appServiceGenerator', () => {
     it('should omit metadata when empty', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'healthCheck', `
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         addAppBehavior(
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
           async function healthCheck() { return { ok: true }; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -166,7 +194,10 @@ describe('appServiceGenerator', () => {
     it('should include stage and sequence', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'setupAuth', `
+      addAppBehavior(
+        workspace,
+        'setupAuth',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         /** Setup Auth - Initializes authentication */
@@ -174,7 +205,8 @@ describe('appServiceGenerator', () => {
           { type: 'Lifecycle Behavior', stage: 'Startup', sequence: 100 },
           async function setupAuth() {}
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -189,14 +221,18 @@ describe('appServiceGenerator', () => {
     it('should omit httpMethod and path for lifecycle behaviors', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'setupAuth', `
+      addAppBehavior(
+        workspace,
+        'setupAuth',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         addAppBehavior(
           { type: 'Lifecycle Behavior', stage: 'Startup', sequence: 100 },
           async function setupAuth() {}
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -212,7 +248,10 @@ describe('appServiceGenerator', () => {
     it('should extract displayName and description from JSDoc', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'healthCheck', `
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         /**
@@ -224,7 +263,8 @@ describe('appServiceGenerator', () => {
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
           async function healthCheck() { return { ok: true }; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -237,13 +277,17 @@ describe('appServiceGenerator', () => {
     it('should default displayName to function name when no JSDoc', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'healthCheck', `
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
         addAppBehavior(
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
           async function healthCheck() { return { ok: true }; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -257,7 +301,10 @@ describe('appServiceGenerator', () => {
     it('should include layer and stage for client guards', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'roleGuard', `
+      addAppBehavior(
+        workspace,
+        'roleGuard',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
 
         /** Role Guard - Checks role-based access */
@@ -265,7 +312,8 @@ describe('appServiceGenerator', () => {
           { type: 'Guard', stage: 'Activate', sequence: 100, layer: 'Client' },
           async function roleGuard() { return true; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
@@ -283,13 +331,17 @@ describe('appServiceGenerator', () => {
     it('should generate type declaration with interface and class', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
-      addAppBehavior(workspace, 'healthCheck', `
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
         import { addAppBehavior } from '@apexdesigner/dsl';
         addAppBehavior(
           { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
           async function healthCheck() { return { ok: true }; }
         );
-      `);
+      `
+      );
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
