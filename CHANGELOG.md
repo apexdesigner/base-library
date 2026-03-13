@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.143] - 2026-03-13
+
+- 58ca893 fix: resolve base type id properties to native types in BO service and client generators
+
+
 ## [1.0.142] - 2026-03-13
 
 - 114690f chore: update @apexdesigner/dsl minimum to ^0.8.67
