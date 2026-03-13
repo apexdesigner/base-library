@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.141] - 2026-03-13
+
+- 28ce7a1 style: apply prettier formatting
+- b02f506 fix: sanitize multi-line types in component service generator
+
+
 ## [1.0.140] - 2026-03-13
 
 - ac61cb8 feat: include all behaviors in business object service metadata
