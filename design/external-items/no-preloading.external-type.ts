@@ -2,5 +2,5 @@
 import { externalType } from '@apexdesigner/dsl';
 import { NoPreloading } from '@angular/router';
 
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class NoPreloadingExternalType {}

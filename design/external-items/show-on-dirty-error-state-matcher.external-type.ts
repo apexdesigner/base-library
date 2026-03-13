@@ -5,5 +5,5 @@ import { ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 /**
  * Error state matcher that matches when a control is invalid and dirty.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class ShowOnDirtyErrorStateMatcherExternalType {}

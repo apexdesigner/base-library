@@ -5,5 +5,5 @@ import { ErrorStateMatcher } from '@angular/material/core';
 /**
  * Provider that defines how form controls behave with regards to displaying error messages.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class ErrorStateMatcherExternalType {}

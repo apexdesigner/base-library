@@ -10,5 +10,5 @@ of re-usable components rather than developers building end-user applications.
 
 An overlay *is* a PortalOutlet, so any kind of Portal can be loaded into one.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class OverlayExternalType {}

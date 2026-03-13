@@ -5,5 +5,5 @@ import { FocusMonitor } from '@angular/cdk/a11y';
 /**
  * Monitors mouse and keyboard events to determine the cause of focus events.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class FocusMonitorExternalType {}

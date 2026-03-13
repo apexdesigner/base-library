@@ -13,5 +13,5 @@ single data type of the response.
 A single overload version of the method handles each response type.
 The value of `responseType` cannot be a union, as the combined signature could imply.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class HttpClientExternalType {}

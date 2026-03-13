@@ -2,5 +2,5 @@
 import { externalType } from '@apexdesigner/dsl';
 import { PathLocationStrategy } from '@angular/common';
 
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class PathLocationStrategyExternalType {}

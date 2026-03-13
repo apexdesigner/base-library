@@ -5,5 +5,5 @@ import { ViewportScroller } from '@angular/common';
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class ViewportScrollerExternalType {}

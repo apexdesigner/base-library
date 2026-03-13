@@ -5,5 +5,5 @@ import { HttpXhrBackend } from '@angular/common/http';
 /**
  * Uses `XMLHttpRequest` to send requests to a backend server.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class HttpXhrBackendExternalType {}

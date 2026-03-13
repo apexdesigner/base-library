@@ -6,5 +6,5 @@ import { JsonpClientBackend } from '@angular/common/http';
  * Processes an `HttpRequest` with the JSONP method,
 by performing JSONP style requests.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class JsonpClientBackendExternalType {}

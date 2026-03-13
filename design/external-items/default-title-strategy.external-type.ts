@@ -5,5 +5,5 @@ import { DefaultTitleStrategy } from '@angular/router';
 /**
  * The default `TitleStrategy` used by the router that updates the title using the `Title` service.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class DefaultTitleStrategyExternalType {}

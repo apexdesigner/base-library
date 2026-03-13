@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.145] - 2026-03-13
+
+- 34cde4a style: apply prettier formatting to extracted design files
+- 5e25935 fix: re-extract interfaces to remove incorrect injectLocally from external types
+
+
 ## [1.0.144] - 2026-03-13
 
 - b22266b chore: update @apexdesigner/server to ^0.8.39

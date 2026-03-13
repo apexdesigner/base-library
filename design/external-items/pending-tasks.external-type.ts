@@ -13,5 +13,5 @@ The concept of stability comes into play in several important scenarios:
 HTML;
 - tests might want to delay assertions until the application becomes stable;
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class PendingTasksExternalType {}

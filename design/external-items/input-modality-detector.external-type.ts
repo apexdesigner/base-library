@@ -16,5 +16,5 @@ When a user is not navigating but *interacting* with a screen reader, this servi
 update the input modality to keyboard, but in general this service's behavior is largely
 undefined.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class InputModalityDetectorExternalType {}

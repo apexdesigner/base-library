@@ -9,5 +9,5 @@ import { MatIconRegistry } from '@angular/material/icon';
 - Registers aliases for CSS classes, for use with icon fonts.
 - Loads icons from URLs and extracts individual icons from icon sets.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class MatIconRegistryExternalType {}

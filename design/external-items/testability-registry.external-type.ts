@@ -5,5 +5,5 @@ import { TestabilityRegistry } from '@angular/core';
 /**
  * A global registry of {@link Testability} instances for specific elements.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class TestabilityRegistryExternalType {}

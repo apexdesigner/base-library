@@ -9,5 +9,5 @@ to every Angular application running on the page are bound in its scope.
 A page's platform is initialized implicitly when a platform is created using a platform
 factory such as `PlatformBrowser`, or explicitly by calling the `createPlatform()` function.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class PlatformRefExternalType {}

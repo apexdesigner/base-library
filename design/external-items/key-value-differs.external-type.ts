@@ -5,5 +5,5 @@ import { KeyValueDiffers } from '@angular/core';
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class KeyValueDiffersExternalType {}

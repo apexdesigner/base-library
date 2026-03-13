@@ -5,5 +5,5 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 /**
  * Container inside which all overlays will render.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class OverlayContainerExternalType {}

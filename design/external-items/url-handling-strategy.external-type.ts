@@ -2,5 +2,5 @@
 import { externalType } from '@apexdesigner/dsl';
 import { UrlHandlingStrategy } from '@angular/router';
 
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class UrlHandlingStrategyExternalType {}

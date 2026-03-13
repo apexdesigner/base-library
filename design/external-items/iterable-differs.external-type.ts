@@ -5,5 +5,5 @@ import { IterableDiffers } from '@angular/core';
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class IterableDiffersExternalType {}

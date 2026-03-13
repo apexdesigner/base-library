@@ -7,5 +7,5 @@ import { BrowserPlatformLocation } from '@angular/common';
 This class should not be used directly by an application developer. Instead, use
 {@link Location}.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class BrowserPlatformLocationExternalType {}

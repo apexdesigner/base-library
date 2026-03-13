@@ -17,5 +17,5 @@ and `PathLocationStrategy` produces
 
 See these two classes for more.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class LocationStrategyExternalType {}

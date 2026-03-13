@@ -6,5 +6,5 @@ import { ScrollDispatcher } from '@angular/cdk/overlay';
  * Service contained all registered Scrollable references and emits an event when any one of the
 Scrollable references emit a scrolled event.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class ScrollDispatcherExternalType {}

@@ -5,5 +5,5 @@ import { NgLocaleLocalization } from '@angular/common';
 /**
  * Returns the plural case based on the locale
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class NgLocaleLocalizationExternalType {}

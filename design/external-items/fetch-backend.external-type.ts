@@ -9,5 +9,5 @@ This `FetchBackend` requires the support of the
 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) which is available on all
 supported browsers and on Node.js v18 or later.
  */
-@externalType({ injectable: true, injectLocally: true })
+@externalType({ injectable: true })
 export class FetchBackendExternalType {}
