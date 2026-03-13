@@ -39,7 +39,7 @@
   "devDependencies": {
     "@apexbpm/envisioning-studio-cli": "^1.0.5",
     "@apexdesigner/claude-skills": "^1.0.48",
-    "@apexdesigner/dsl": "^0.8.63",
+    "@apexdesigner/dsl": "^0.8.64",
     "@apexdesigner/generator": "^0.8.53",
     "@apexdesigner/server": "^0.8.36",
     "@apexdesigner/utilities": "^0.1.24",

@@ -9,9 +9,11 @@ function getOutput(result: Map<string, string>, path: string): string {
 const SERVICE_PATH = 'client/src/app/services/business-object/business-object.service.ts';
 const TYPE_PATH = 'design/@types/services/business-object.d.ts';
 
-function addBusinessObject(workspace: ReturnType<typeof createSimpleMockWorkspace>, name: string) {
+function addBusinessObject(workspace: ReturnType<typeof createSimpleMockWorkspace>, name: string, sourceCode?: string) {
   workspace.addMetadata('BusinessObject', name, {
-    sourceCode: `
+    sourceCode:
+      sourceCode ||
+      `
       import { BusinessObject } from '@apexdesigner/dsl';
       export class ${name} extends BusinessObject {
         id!: number;
@@ -160,7 +162,7 @@ describe('businessObjectServiceGenerator', () => {
   });
 
   describe('type declaration', () => {
-    it('should generate type declaration with all load method signatures', async () => {
+    it('should generate type declaration with all method signatures and metadata types', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
       addBusinessObject(workspace, 'Task');
@@ -171,10 +173,16 @@ describe('businessObjectServiceGenerator', () => {
 
       expect(dts).toContain('export declare class BusinessObjectService');
       expect(dts).toContain('readonly names: readonly string[]');
+      expect(dts).toContain('readonly metadata: readonly BusinessObjectMetadata[]');
+      expect(dts).toContain('getMetadata(name: string): BusinessObjectMetadata | undefined');
       expect(dts).toContain('loadFormGroup(');
       expect(dts).toContain('loadFormArray(');
       expect(dts).toContain('loadPersistedArray(');
       expect(dts).toContain('loadEntity(');
+      expect(dts).toContain('interface BusinessObjectMetadata');
+      expect(dts).toContain('interface BusinessObjectProperty');
+      expect(dts).toContain('interface BusinessObjectRelationship');
+      expect(dts).toContain('interface BusinessObjectBehavior');
     });
   });
 
@@ -203,6 +211,176 @@ describe('businessObjectServiceGenerator', () => {
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('createDebug("TestProject:BusinessObjectService")');
+    });
+  });
+
+  describe('metadata', () => {
+    it('should include name, displayName, and description', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(
+        workspace,
+        'Task',
+        `
+        import { BusinessObject } from '@apexdesigner/dsl';
+
+        /**
+         * Task
+         *
+         * A unit of work to be completed.
+         */
+        export class Task extends BusinessObject {
+          id!: number;
+        }
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("name: 'Task'");
+      expect(ts).toContain("displayName: 'Task'");
+      expect(ts).toContain("description: 'A unit of work to be completed.'");
+    });
+
+    it('should include properties with name and type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(
+        workspace,
+        'Task',
+        `
+        import { BusinessObject } from '@apexdesigner/dsl';
+
+        /** Task */
+        export class Task extends BusinessObject {
+          id!: number;
+          title!: string;
+          done?: boolean;
+        }
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("{ name: 'id', type: 'number' }");
+      expect(ts).toContain("{ name: 'title', type: 'string' }");
+      expect(ts).toContain("{ name: 'done', type: 'boolean' }");
+    });
+
+    it('should include relationships with name, type, and kind', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(
+        workspace,
+        'Task',
+        `
+        import { BusinessObject, relationship } from '@apexdesigner/dsl';
+        import { User } from '@business-objects';
+
+        /** Task */
+        export class Task extends BusinessObject {
+          id!: number;
+
+          @relationship({ type: 'Belongs To' })
+          user?: User;
+        }
+      `
+      );
+      addBusinessObject(workspace, 'User');
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      const taskSection = ts.split("name: 'Task'")[1]?.split('    },')[0] || '';
+      expect(taskSection).toContain("{ name: 'user', type: 'User', kind: 'belongsTo' }");
+    });
+
+    it('should include behaviors with name and metadata', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(workspace, 'Task');
+      workspace.addMetadata('Behavior', 'Task.findActive', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Task } from '@business-objects';
+
+          /** Find Active - Returns all active tasks */
+          addBehavior(Task, { type: 'Class', metadata: { category: 'query' } }, async function findActive(): Promise<Task[]> {
+            return [];
+          });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      const taskSection = ts.split("name: 'Task'")[1]?.split('    },')[0] || '';
+      expect(taskSection).toContain("name: 'findActive'");
+      expect(taskSection).toContain('"category":"query"');
+    });
+
+    it('should exclude lifecycle behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(workspace, 'Task');
+      workspace.addMetadata('Behavior', 'Task.beforeCreate', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Task } from '@business-objects';
+
+          addBehavior(Task, { type: 'Before Create' }, async function beforeCreate(task: Task): Promise<void> {});
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).not.toContain("'beforeCreate'");
+    });
+
+    it('should omit metadata key when behavior has no metadata', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(workspace, 'Task');
+      workspace.addMetadata('Behavior', 'Task.findAll', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Task } from '@business-objects';
+
+          /** Find All */
+          addBehavior(Task, { type: 'Class' }, async function findAll(): Promise<Task[]> {
+            return [];
+          });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      const taskSection = ts.split("name: 'Task'")[1]?.split('    },')[0] || '';
+      expect(taskSection).toContain("name: 'findAll'");
+      expect(taskSection).not.toContain('metadata:');
+    });
+
+    it('should include getMetadata method', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addBusinessObject(workspace, 'Task');
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain('getMetadata(name: string): BusinessObjectMetadata | undefined');
+      expect(ts).toContain("return this.metadata.find(m => m.name === name)");
     });
   });
 });

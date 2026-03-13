@@ -287,7 +287,7 @@ describe('componentServiceGenerator', () => {
       expect(section).toContain('isDialog: false');
       expect(section).toContain('isCustomElement: false');
       expect(section).toContain('allowChildren: false');
-      expect(section).toContain('metadata: {},');
+      expect(section).not.toContain('metadata:');
     });
 
     it('should extract metadata from @component() decorator', async () => {

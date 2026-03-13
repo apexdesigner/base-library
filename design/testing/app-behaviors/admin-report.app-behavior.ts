@@ -11,7 +11,8 @@ addAppBehavior(
     type: 'Class Behavior',
     httpMethod: 'Get',
     path: '/api/admin-report',
-    roles: [Administrator]
+    roles: [Administrator],
+    metadata: { category: 'reporting' }
   },
   async function adminReport() {
     return { report: 'admin-only data' };

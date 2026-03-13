@@ -15,7 +15,8 @@ addBehavior(
   TestItem,
   {
     type: 'Instance',
-    httpMethod: 'Get'
+    httpMethod: 'Get',
+    metadata: { category: 'export' }
   },
   async function exportItem(testItem: TestItem, accept: Header<string>) {
     debug('testItem.id %j accept %j', testItem.id, accept);

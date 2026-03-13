@@ -24,7 +24,7 @@ interface ComponentEntry {
   isDialog: boolean;
   isCustomElement: boolean;
   allowChildren: boolean;
-  metadata: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
 /** Extract boolean flags and metadata from @component() decorator options */
@@ -181,7 +181,7 @@ const componentServiceGenerator: DesignGenerator = {
     lines.push('  isDialog: boolean;');
     lines.push('  isCustomElement: boolean;');
     lines.push('  allowChildren: boolean;');
-    lines.push('  metadata: Record<string, unknown>;');
+    lines.push('  metadata?: Record<string, unknown>;');
     lines.push('}');
     lines.push('');
 
@@ -208,7 +208,9 @@ const componentServiceGenerator: DesignGenerator = {
       lines.push(`      isDialog: ${entry.isDialog},`);
       lines.push(`      isCustomElement: ${entry.isCustomElement},`);
       lines.push(`      allowChildren: ${entry.allowChildren},`);
-      lines.push(`      metadata: ${JSON.stringify(entry.metadata)},`);
+      if (entry.metadata && Object.keys(entry.metadata).length > 0) {
+        lines.push(`      metadata: ${JSON.stringify(entry.metadata)},`);
+      }
       lines.push('    },');
     }
     lines.push('  ];');
@@ -251,7 +253,7 @@ const componentServiceGenerator: DesignGenerator = {
     typeLines.push('  isDialog: boolean;');
     typeLines.push('  isCustomElement: boolean;');
     typeLines.push('  allowChildren: boolean;');
-    typeLines.push('  metadata: Record<string, unknown>;');
+    typeLines.push('  metadata?: Record<string, unknown>;');
     typeLines.push('}');
     typeLines.push('');
     typeLines.push('export declare class ComponentService {');
