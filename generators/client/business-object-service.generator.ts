@@ -6,19 +6,6 @@ import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectService');
 
-// Lifecycle behavior types to exclude from metadata
-const LIFECYCLE_TYPES = new Set([
-  'Before Create',
-  'After Create',
-  'Before Update',
-  'After Update',
-  'Before Delete',
-  'After Delete',
-  'Before Read',
-  'After Read',
-  'After Start'
-]);
-
 interface PropertyEntry {
   name: string;
   type: string;
@@ -175,7 +162,6 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
         const options = getBehaviorOptions(behavior.sourceFile);
         if (!options) continue;
-        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
 
         const func = getBehaviorFunction(behavior.sourceFile);
         if (!func) continue;

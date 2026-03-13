@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.140] - 2026-03-13
+
+- ac61cb8 feat: include all behaviors in business object service metadata
+
+
 ## [1.0.139] - 2026-03-13
 
 - 21ddb48 chore: remove stale generated doc files

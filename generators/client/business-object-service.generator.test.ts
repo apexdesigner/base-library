@@ -325,7 +325,7 @@ describe('businessObjectServiceGenerator', () => {
       expect(taskSection).toContain('"category":"query"');
     });
 
-    it('should exclude lifecycle behaviors', async () => {
+    it('should include lifecycle behaviors', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
       addBusinessObject(workspace, 'Task');
@@ -334,6 +334,7 @@ describe('businessObjectServiceGenerator', () => {
           import { addBehavior } from '@apexdesigner/dsl';
           import { Task } from '@business-objects';
 
+          /** Before Create */
           addBehavior(Task, { type: 'Before Create' }, async function beforeCreate(task: Task): Promise<void> {});
         `
       });
@@ -342,7 +343,8 @@ describe('businessObjectServiceGenerator', () => {
       const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
-      expect(ts).not.toContain("'beforeCreate'");
+      const taskSection = ts.split("name: 'Task'")[1]?.split('    },')[0] || '';
+      expect(taskSection).toContain("name: 'beforeCreate'");
     });
 
     it('should omit metadata key when behavior has no metadata', async () => {
