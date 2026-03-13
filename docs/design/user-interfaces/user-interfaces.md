@@ -8,7 +8,7 @@ The user-interfaces directory contains shared UI components used across the appl
 
 ## App Component
 
-The [app](app.component.md) component is the root application component. It renders the toolbar with the project name, an [avatar](../auth/avatar/avatar.component.md) for authenticated users, and the router outlet. It also registers the select-user and select-role schema form fields on load.
+The [app](app.component.md) component is the root application component. It renders the toolbar with the project name, an [avatar](../auth/components/avatar.component.md) for authenticated users, and the router outlet. It also registers the select-user and select-role schema form fields on load.
 
 ## Add Button
 
