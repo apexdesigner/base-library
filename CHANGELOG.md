@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.144] - 2026-03-13
+
+- b22266b chore: update @apexdesigner/server to ^0.8.39
+- 741271f style: apply prettier formatting
+- d905ba1 feat: add baseTypes metadata to BO service with semantic type names
+
+
 ## [1.0.143] - 2026-03-13
 
 - 58ca893 fix: resolve base type id properties to native types in BO service and client generators
