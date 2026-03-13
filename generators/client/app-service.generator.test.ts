@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { appBehaviorServiceGenerator } from './app-behavior-service.generator.js';
+import { appServiceGenerator } from './app-service.generator.js';
 import { createSimpleMockWorkspace } from '@apexdesigner/generator';
 
 function getOutput(result: Map<string, string>, path: string): string {
   return result.get(path)!;
 }
 
-const SERVICE_PATH = 'client/src/app/services/app-behavior/app-behavior.service.ts';
-const TYPE_PATH = 'design/@types/services/app-behavior.d.ts';
+const SERVICE_PATH = 'client/src/app/services/app/app.service.ts';
+const TYPE_PATH = 'design/@types/services/app.d.ts';
 
 function addProject(workspace: ReturnType<typeof createSimpleMockWorkspace>, name = 'TestProject') {
   workspace.addMetadata('Project', name, {
@@ -22,10 +22,10 @@ function addAppBehavior(workspace: ReturnType<typeof createSimpleMockWorkspace>,
   workspace.addMetadata('AppBehavior', name, { sourceCode });
 }
 
-describe('appBehaviorServiceGenerator', () => {
+describe('appServiceGenerator', () => {
   describe('outputs', () => {
     it('should output service and type declaration', () => {
-      const outputs = appBehaviorServiceGenerator.outputs({} as any);
+      const outputs = appServiceGenerator.outputs({} as any);
       expect(outputs).toEqual([SERVICE_PATH, TYPE_PATH]);
     });
   });
@@ -45,11 +45,11 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("@Injectable({ providedIn: 'root' })");
-      expect(ts).toContain('export class AppBehaviorService');
+      expect(ts).toContain('export class AppService');
     });
 
     it('should sort behaviors alphabetically', async () => {
@@ -65,7 +65,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const alphaIndex = ts.indexOf("name: 'alpha'");
@@ -89,7 +89,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'healthCheck'")[1]?.split('    },')[0] || '';
@@ -113,7 +113,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'adminReport'")[1]?.split('    },')[0] || '';
@@ -134,7 +134,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'adminReport'")[1]?.split('    },')[0] || '';
@@ -154,7 +154,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'healthCheck'")[1]?.split('    },')[0] || '';
@@ -177,7 +177,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'setupAuth'")[1]?.split('    },')[0] || '';
@@ -199,7 +199,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'setupAuth'")[1]?.split('    },')[0] || '';
@@ -227,7 +227,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("displayName: 'Health Check'");
@@ -246,7 +246,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain("displayName: 'healthCheck'");
@@ -268,7 +268,7 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       const section = ts.split("name: 'roleGuard'")[1]?.split('    },')[0] || '';
@@ -292,11 +292,11 @@ describe('appBehaviorServiceGenerator', () => {
       `);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const dts = getOutput(result, TYPE_PATH);
 
       expect(dts).toContain('export interface AppBehaviorEntry');
-      expect(dts).toContain('export declare class AppBehaviorService');
+      expect(dts).toContain('export declare class AppService');
       expect(dts).toContain('readonly behaviors: readonly AppBehaviorEntry[]');
       expect(dts).toContain('name: string');
       expect(dts).toContain('displayName: string');
@@ -319,11 +319,11 @@ describe('appBehaviorServiceGenerator', () => {
       addProject(workspace);
 
       const metadata = workspace.context.listMetadata('Project')[0];
-      const result = (await appBehaviorServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('readonly behaviors: readonly AppBehaviorEntry[] = [');
-      expect(ts).toContain('export class AppBehaviorService');
+      expect(ts).toContain('export class AppService');
     });
   });
 });

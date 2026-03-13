@@ -3,7 +3,7 @@ import { getBehaviorFunction, getBehaviorOptions, getModuleLevelCall } from '@ap
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
 
-const Debug = createDebug('BaseLibrary:generators:appBehaviorService');
+const Debug = createDebug('BaseLibrary:generators:appService');
 
 interface AppBehaviorEntry {
   name: string;
@@ -42,8 +42,8 @@ function extractJsDoc(metadata: DesignMetadata): { displayName?: string; descrip
   return { displayName: displayName || undefined, description };
 }
 
-const appBehaviorServiceGenerator: DesignGenerator = {
-  name: 'app-behavior-service',
+const appServiceGenerator: DesignGenerator = {
+  name: 'app-service',
   isAggregate: true,
 
   triggers: [
@@ -56,8 +56,8 @@ const appBehaviorServiceGenerator: DesignGenerator = {
   ],
 
   outputs: () => [
-    'client/src/app/services/app-behavior/app-behavior.service.ts',
-    'design/@types/services/app-behavior.d.ts'
+    'client/src/app/services/app/app.service.ts',
+    'design/@types/services/app.d.ts'
   ],
 
   async generate(_metadata: DesignMetadata, context: GenerationContext) {
@@ -128,7 +128,7 @@ const appBehaviorServiceGenerator: DesignGenerator = {
     lines.push('');
 
     lines.push("@Injectable({ providedIn: 'root' })");
-    lines.push('export class AppBehaviorService {');
+    lines.push('export class AppService {');
 
     // metadata array
     lines.push('  readonly behaviors: readonly AppBehaviorEntry[] = [');
@@ -172,20 +172,20 @@ const appBehaviorServiceGenerator: DesignGenerator = {
     typeLines.push('  metadata?: Record<string, unknown>;');
     typeLines.push('}');
     typeLines.push('');
-    typeLines.push('export declare class AppBehaviorService {');
+    typeLines.push('export declare class AppService {');
     typeLines.push('  readonly behaviors: readonly AppBehaviorEntry[];');
     typeLines.push('}');
 
     const typeContent = typeLines.join('\n') + '\n';
 
-    debug('Generated app behavior service with %d behaviors', entries.length);
+    debug('Generated app service with %d behaviors', entries.length);
 
     const outputs = new Map<string, string>();
-    outputs.set('client/src/app/services/app-behavior/app-behavior.service.ts', serviceContent);
-    outputs.set('design/@types/services/app-behavior.d.ts', typeContent);
+    outputs.set('client/src/app/services/app/app.service.ts', serviceContent);
+    outputs.set('design/@types/services/app.d.ts', typeContent);
 
     return outputs;
   }
 };
 
-export { appBehaviorServiceGenerator };
+export { appServiceGenerator };
