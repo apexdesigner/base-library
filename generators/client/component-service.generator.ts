@@ -197,8 +197,10 @@ const componentServiceGenerator: DesignGenerator = {
     lines.push('  readonly metadata: readonly ComponentMetadata[] = [');
     for (const entry of entries) {
       const sanitizeType = (t: string) => t.replace(/\s+/g, ' ').replace(/'/g, "\\'");
-      const inputsStr = entry.inputs.length === 0 ? '[]' : `[${entry.inputs.map(i => `{ name: '${i.name}', type: '${sanitizeType(i.type)}' }`).join(', ')}]`;
-      const outputsStr = entry.outputs.length === 0 ? '[]' : `[${entry.outputs.map(o => `{ name: '${o.name}', type: '${sanitizeType(o.type)}' }`).join(', ')}]`;
+      const inputsStr =
+        entry.inputs.length === 0 ? '[]' : `[${entry.inputs.map(i => `{ name: '${i.name}', type: '${sanitizeType(i.type)}' }`).join(', ')}]`;
+      const outputsStr =
+        entry.outputs.length === 0 ? '[]' : `[${entry.outputs.map(o => `{ name: '${o.name}', type: '${sanitizeType(o.type)}' }`).join(', ')}]`;
       lines.push('    {');
       lines.push(`      name: '${entry.name}',`);
       lines.push(`      selector: '${entry.selector}',`);
