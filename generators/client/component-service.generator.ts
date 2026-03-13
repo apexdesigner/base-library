@@ -28,7 +28,12 @@ interface ComponentEntry {
 }
 
 /** Extract boolean flags and metadata from @component() decorator options */
-function getDecoratorOptions(metadata: DesignMetadata): { isDialog: boolean; isCustomElement: boolean; allowChildren: boolean; metadata: Record<string, unknown> } {
+function getDecoratorOptions(metadata: DesignMetadata): {
+  isDialog: boolean;
+  isCustomElement: boolean;
+  allowChildren: boolean;
+  metadata: Record<string, unknown>;
+} {
   const cls = getClassByBase(metadata.sourceFile, 'Component');
   let isDialog = false;
   let isCustomElement = false;
