@@ -257,7 +257,9 @@ const businessObjectServiceGenerator: DesignGenerator = {
         if (baseTypeMap.has(prop.type)) usedTypes.add(prop.type);
       }
     }
-    const baseTypeEntries = Array.from(usedTypes).sort().map(name => [name, baseTypeMap.get(name)!] as const);
+    const baseTypeEntries = Array.from(usedTypes)
+      .sort()
+      .map(name => [name, baseTypeMap.get(name)!] as const);
     if (baseTypeEntries.length > 0) {
       const baseTypeStr = baseTypeEntries.map(([name, native]) => `'${name}': '${native}'`).join(', ');
       lines.push(`  readonly baseTypes: Record<string, string> = { ${baseTypeStr} };`);
