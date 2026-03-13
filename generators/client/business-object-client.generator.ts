@@ -5,6 +5,7 @@ import { kebabCase, pascalCase } from 'change-case';
 import pluralize from 'pluralize';
 import createDebug from 'debug';
 import { classifyBehaviorParams } from '../shared/classify-params.js';
+import { buildBaseTypeMap, resolvePropertyType } from '../shared/base-type-map.js';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectClient');
 
@@ -64,28 +65,20 @@ const businessObjectClientGenerator: DesignGenerator = {
     const boKebab = kebabCase(metadata.name);
     const plural = pluralize(boKebab);
 
+    // Build base type name → native type map (e.g. Email → string, Uuid → string)
+    const baseTypeMap = buildBaseTypeMap(context);
+    debug('baseTypeMap %O', Object.fromEntries(baseTypeMap));
+
     // Get id property info — resolve to a primitive TS type
     const resolvedId = resolveIdType(metadata.sourceFile, context);
     const idName = resolvedId.name;
     let idType = resolvedId.type;
     if (idType !== 'string' && idType !== 'number') {
-      idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+      const match = idType.match(/\.(\w+)$/);
+      const typeName = match ? match[1] : idType;
+      idType = baseTypeMap.get(typeName) || (idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType);
     }
     debug('className %j, idName %j, idType %j, plural %j', className, idName, idType, plural);
-
-    // Build base type name → native type map (e.g. Email → string, Uuid → string)
-    const baseTypeMap = new Map<string, string>();
-    for (const bt of context.listMetadata('BaseType')) {
-      const btClass = getClassByBase(bt.sourceFile, 'BaseType');
-      if (!btClass) continue;
-      const heritage = btClass.getExtends();
-      if (!heritage) continue;
-      const typeArgs = heritage.getTypeArguments();
-      if (typeArgs.length > 0) {
-        baseTypeMap.set(pascalCase(bt.name), typeArgs[0].getText());
-      }
-    }
-    debug('baseTypeMap %O', Object.fromEntries(baseTypeMap));
 
     // Get the BO class and its properties
     const boClass = getClassByBase(metadata.sourceFile, 'BusinessObject');
@@ -137,9 +130,7 @@ const businessObjectClientGenerator: DesignGenerator = {
       const propName = prop.getName();
       if (skipNames.has(propName)) continue;
 
-      let propType = prop.getTypeNode()?.getText() || prop.getType().getText();
-      propType = propType.replace(' | undefined', '');
-      propType = baseTypeMap.get(propType) || propType;
+      const propType = resolvePropertyType(prop, baseTypeMap);
 
       const optional = prop.hasQuestionToken() ? '?' : '';
       lines.push(`  readonly ${propName}${optional}: ${propType};`);
