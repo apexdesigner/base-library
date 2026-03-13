@@ -27,6 +27,7 @@ export { businessObjectFormGroupGenerator } from './client/business-object-form-
 export { serviceGenerator } from './client/service.generator.js';
 export { componentServiceGenerator } from './client/component-service.generator.js';
 export { businessObjectServiceGenerator } from './client/business-object-service.generator.js';
+export { appBehaviorServiceGenerator } from './client/app-behavior-service.generator.js';
 export { clientProviderGenerator } from './client/client-provider.generator.js';
 export { clientInterceptorGenerator } from './client/client-interceptor.generator.js';
 export { clientGuardGenerator } from './client/client-guard.generator.js';
