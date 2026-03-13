@@ -232,6 +232,33 @@ describe('componentServiceGenerator', () => {
       expect(ts).toContain("{ name: 'saved', type: 'EventEmitter<void>' }");
     });
 
+    it('should collapse multi-line types in outputs', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('Component', 'TokenStatusComponent', {
+        sourceCode: `
+          import { Component, property } from '@apexdesigner/dsl/component';
+          import { EventEmitter } from '@angular/core';
+
+          /** Token Status */
+          export class TokenStatusComponent extends Component {
+            @property({ isOutput: true })
+            activitySelected!: EventEmitter<{
+              activityId: string;
+              designUuid: string;
+            } | null>;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await componentServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("name: 'activitySelected'");
+      expect(ts).not.toMatch(/type: '[^']*\n/);
+    });
+
     it('should include isDialog, isCustomElement, and allowChildren flags', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
