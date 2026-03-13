@@ -3,6 +3,7 @@ import { isLibrary, resolveRelationships, resolveMixins, resolveIdType } from '@
 import { getClassByBase, getDisplayName, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
+import { buildBaseTypeMap, resolvePropertyType } from '../shared/base-type-map.js';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectService');
 
@@ -82,6 +83,10 @@ const businessObjectServiceGenerator: DesignGenerator = {
     const projectMeta = context.listMetadata('Project').find(p => !isLibrary(p));
     const debugNamespace = pascalCase((projectMeta?.name || 'App').replace(/Project$/, ''));
 
+    // Build base type map for resolving types like Uuid → string, Json → any
+    const baseTypeMap = buildBaseTypeMap(context);
+    debug('baseTypeMap %O', Object.fromEntries(baseTypeMap));
+
     // Collect all business objects, sorted by name
     const businessObjects = context.listMetadata('BusinessObject').sort((a, b) => a.name.localeCompare(b.name));
 
@@ -105,10 +110,13 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
       const properties: PropertyEntry[] = [];
 
-      // Add id
+      // Add id — resolve base types (e.g. Uuid → string)
       let idType = resolvedId.type;
       if (idType !== 'string' && idType !== 'number') {
-        idType = idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType;
+        // resolvedId.type may be a fully qualified import path like import("...").Uuid
+        const match = idType.match(/\.(\w+)$/);
+        const typeName = match ? match[1] : idType;
+        idType = baseTypeMap.get(typeName) || (idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType);
       }
       properties.push({ name: resolvedId.name, type: idType });
 
@@ -117,8 +125,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
         for (const prop of boClass.getProperties()) {
           const propName = prop.getName();
           if (skipNames.has(propName)) continue;
-          let propType = prop.getType().getText();
-          propType = propType.replace(' | undefined', '');
+          const propType = resolvePropertyType(prop, baseTypeMap);
           properties.push({ name: propName, type: propType });
         }
       }
@@ -132,8 +139,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
         for (const prop of mixinClass.getProperties()) {
           const propName = prop.getName();
           if (skipNames.has(propName)) continue;
-          let propType = prop.getType().getText();
-          propType = propType.replace(' | undefined', '');
+          const propType = resolvePropertyType(prop, baseTypeMap);
           properties.push({ name: propName, type: propType });
         }
       }

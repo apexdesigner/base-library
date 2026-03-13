@@ -372,6 +372,49 @@ describe('businessObjectServiceGenerator', () => {
       expect(taskSection).not.toContain('metadata:');
     });
 
+    it('should resolve base types to native types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      workspace.addMetadata('BaseType', 'Uuid', {
+        sourceCode: `
+          import { BaseType } from '@apexdesigner/dsl';
+          export class Uuid extends BaseType<string> {}
+        `
+      });
+      workspace.addMetadata('BaseType', 'Json', {
+        sourceCode: `
+          import { BaseType } from '@apexdesigner/dsl';
+          export class Json extends BaseType<any> {}
+        `
+      });
+      addBusinessObject(
+        workspace,
+        'Task',
+        `
+        import { BusinessObject } from '@apexdesigner/dsl';
+        import { Uuid } from '@base-types';
+        import { Json } from '@base-types';
+
+        /** Task */
+        export class Task extends BusinessObject {
+          id!: Uuid;
+          title!: string;
+          data?: Json;
+        }
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain("{ name: 'id', type: 'string' }");
+      expect(ts).toContain("{ name: 'title', type: 'string' }");
+      expect(ts).toContain("{ name: 'data', type: 'any' }");
+      expect(ts).not.toContain('Uuid');
+      expect(ts).not.toContain('Json');
+    });
+
     it('should include getMetadata method', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
