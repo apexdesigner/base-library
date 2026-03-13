@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.139] - 2026-03-13
+
+- 21ddb48 chore: remove stale generated doc files
+- 7b94e45 style: apply prettier formatting
+- 4959e3b feat: inject BusinessObjectService and AppService on home page
+- bf8d193 refactor: rename app behavior service generator to app service
+- 3a321cd feat: add app behavior service generator
+- afbedb1 feat: add metadata support to business object service generator
+
+
 ## [1.0.138] - 2026-03-13
 
 - c1b9a3c style: apply prettier formatting to component service generator
