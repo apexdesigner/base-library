@@ -173,6 +173,7 @@ describe('businessObjectServiceGenerator', () => {
 
       expect(dts).toContain('export declare class BusinessObjectService');
       expect(dts).toContain('readonly names: readonly string[]');
+      expect(dts).toContain('readonly baseTypes: Record<string, string>');
       expect(dts).toContain('readonly metadata: readonly BusinessObjectMetadata[]');
       expect(dts).toContain('getMetadata(name: string): BusinessObjectMetadata | undefined');
       expect(dts).toContain('loadFormGroup(');
@@ -372,7 +373,7 @@ describe('businessObjectServiceGenerator', () => {
       expect(taskSection).not.toContain('metadata:');
     });
 
-    it('should resolve base types to native types', async () => {
+    it('should preserve base type names in properties and include baseTypes map', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
       workspace.addMetadata('BaseType', 'Uuid', {
@@ -408,11 +409,11 @@ describe('businessObjectServiceGenerator', () => {
       const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
-      expect(ts).toContain("{ name: 'id', type: 'string' }");
+      expect(ts).toContain("{ name: 'id', type: 'Uuid' }");
       expect(ts).toContain("{ name: 'title', type: 'string' }");
-      expect(ts).toContain("{ name: 'data', type: 'any' }");
-      expect(ts).not.toContain('Uuid');
-      expect(ts).not.toContain('Json');
+      expect(ts).toContain("{ name: 'data', type: 'Json' }");
+      expect(ts).toContain("'Json': 'any'");
+      expect(ts).toContain("'Uuid': 'string'");
     });
 
     it('should include getMetadata method', async () => {

@@ -3,7 +3,7 @@ import { isLibrary, resolveRelationships, resolveMixins, resolveIdType } from '@
 import { getClassByBase, getDisplayName, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
-import { buildBaseTypeMap, resolvePropertyType } from '../shared/base-type-map.js';
+import { buildBaseTypeMap } from '../shared/base-type-map.js';
 
 const Debug = createDebug('BaseLibrary:generators:businessObjectService');
 
@@ -110,13 +110,11 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
       const properties: PropertyEntry[] = [];
 
-      // Add id — resolve base types (e.g. Uuid → string)
+      // Add id — extract source-level type name from resolved import path
       let idType = resolvedId.type;
       if (idType !== 'string' && idType !== 'number') {
-        // resolvedId.type may be a fully qualified import path like import("...").Uuid
         const match = idType.match(/\.(\w+)$/);
-        const typeName = match ? match[1] : idType;
-        idType = baseTypeMap.get(typeName) || (idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType);
+        if (match) idType = match[1];
       }
       properties.push({ name: resolvedId.name, type: idType });
 
@@ -125,7 +123,8 @@ const businessObjectServiceGenerator: DesignGenerator = {
         for (const prop of boClass.getProperties()) {
           const propName = prop.getName();
           if (skipNames.has(propName)) continue;
-          const propType = resolvePropertyType(prop, baseTypeMap);
+          let propType = prop.getTypeNode()?.getText() || prop.getType().getText();
+          propType = propType.replace(' | undefined', '');
           properties.push({ name: propName, type: propType });
         }
       }
@@ -139,7 +138,8 @@ const businessObjectServiceGenerator: DesignGenerator = {
         for (const prop of mixinClass.getProperties()) {
           const propName = prop.getName();
           if (skipNames.has(propName)) continue;
-          const propType = resolvePropertyType(prop, baseTypeMap);
+          let propType = prop.getTypeNode()?.getText() || prop.getType().getText();
+          propType = propType.replace(' | undefined', '');
           properties.push({ name: propName, type: propType });
         }
       }
@@ -250,6 +250,24 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push(`  readonly names = [${namesList}] as const;`);
     lines.push('');
 
+    // baseTypes record — only include types actually used in BO properties
+    const usedTypes = new Set<string>();
+    for (const entry of entries) {
+      for (const prop of entry.properties) {
+        if (baseTypeMap.has(prop.type)) usedTypes.add(prop.type);
+      }
+    }
+    const baseTypeEntries = Array.from(usedTypes)
+      .sort()
+      .map(name => [name, baseTypeMap.get(name)!] as const);
+    if (baseTypeEntries.length > 0) {
+      const baseTypeStr = baseTypeEntries.map(([name, native]) => `'${name}': '${native}'`).join(', ');
+      lines.push(`  readonly baseTypes: Record<string, string> = { ${baseTypeStr} };`);
+    } else {
+      lines.push('  readonly baseTypes: Record<string, string> = {};');
+    }
+    lines.push('');
+
     // metadata array
     lines.push('  readonly metadata: readonly BusinessObjectMetadata[] = [');
     for (const entry of entries) {
@@ -354,6 +372,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
     typeLines.push('');
     typeLines.push('export declare class BusinessObjectService {');
     typeLines.push('  readonly names: readonly string[];');
+    typeLines.push('  readonly baseTypes: Record<string, string>;');
     typeLines.push('  readonly metadata: readonly BusinessObjectMetadata[];');
     typeLines.push('  getMetadata(name: string): BusinessObjectMetadata | undefined;');
     typeLines.push('  loadFormGroup(entityName: string, options?: any): Promise<PersistedFormGroup>;');
