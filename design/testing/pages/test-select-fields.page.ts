@@ -33,6 +33,14 @@ export class TestSelectFieldsPage extends Page {
     return this.roleControl.value ?? '(none)';
   }
 
+  /** Role Name Control - Form control for the selected role name */
+  roleNameControl: SchemaFormControl = new SchemaFormControl();
+
+  /** Selected Role Name - Display the current role name control value */
+  get selectedRoleName(): string {
+    return this.roleNameControl.value ?? '(none)';
+  }
+
   /** Set First User - Set the user control to the first user's id */
   async setFirstUser(): Promise<void> {
     const [first] = await User.find({ limit: 1 });
@@ -64,15 +72,20 @@ applyTemplate(
     <flex-row gap="24">
       <flex-column>
         <h3>Select User</h3>
-        <select-user-field [control]="userControl" label="User"></select-user-field>
+        <select-user-field [control]="userControl" label="User" [hideHelpText]="true"></select-user-field>
         <p>Selected: {{selectedUserId}}</p>
         <button mat-raised-button (click)="setFirstUser()">Set First User</button>
       </flex-column>
       <flex-column>
         <h3>Select Role</h3>
-        <select-role-field [control]="roleControl" label="Role"></select-role-field>
+        <select-role-field [control]="roleControl" label="Role" [hideHelpText]="true"></select-role-field>
         <p>Selected: {{selectedRoleId}}</p>
         <button mat-raised-button (click)="setFirstRole()">Set First Role</button>
+      </flex-column>
+      <flex-column>
+        <h3>Select Role Name</h3>
+        <select-role-name-field [control]="roleNameControl" label="Role Name" [hideHelpText]="true"></select-role-name-field>
+        <p>Selected: {{selectedRoleName}}</p>
       </flex-column>
     </flex-row>
     <h2>SF Fields on Test Assignment</h2>

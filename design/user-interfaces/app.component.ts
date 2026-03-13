@@ -2,6 +2,7 @@ import { Component, method, applyTemplate } from '@apexdesigner/dsl/component';
 import { SchemaFormsService } from '@apexdesigner/schema-forms';
 import { SelectUserFieldComponent } from '@components';
 import { SelectRoleFieldComponent } from '@components';
+import { SelectRoleNameFieldComponent } from '@components';
 import { AuthService } from '@services';
 
 /**
@@ -21,6 +22,7 @@ export class AppComponent extends Component {
   registerFields(): void {
     this.schemaFormsService.registerField('select-user', () => Promise.resolve(SelectUserFieldComponent as any));
     this.schemaFormsService.registerField('select-role', () => Promise.resolve(SelectRoleFieldComponent as any));
+    this.schemaFormsService.registerField('select-role-name', () => Promise.resolve(SelectRoleNameFieldComponent as any));
   }
 }
 

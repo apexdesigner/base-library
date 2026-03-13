@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.138] - 2026-03-13
+
+- c1b9a3c style: apply prettier formatting to component service generator
+- 1ad6501 feat: add metadata support to component service generator
+- 982e659 docs: add SelectRoleNameField to auth design docs
+- d9d3a48 feat: add SelectRoleNameField component
+- 3399b97 feat: reorganize auth design folder and add hideHelpText to select fields
+- b8e4ec8 feat: add component metadata to ComponentService
+
+
 ## [1.0.137] - 2026-03-12
 
 - b5ec136 fix: include return type annotation in generated behavior methods
