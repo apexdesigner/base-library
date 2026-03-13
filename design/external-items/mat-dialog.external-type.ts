@@ -5,5 +5,5 @@ import { MatDialog } from '@angular/material/dialog';
 /**
  * Service to open Material Design modal dialogs.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class MatDialogExternalType {}

@@ -8,6 +8,10 @@ Each concept directory has a markdown file (e.g., `process-design/process-design
 
 ## Structure
 
+### Heading
+
+Every markdown file in `/design` must start with an `# H1` heading — the concept name or directory purpose.
+
 ### Opening
 
 For directories with a primary business object, start with it as a sentence. Link to the `.business-object.ts` file and include the DSL type after the link. Follow with sentences that explain what it is and what you can do with it.

@@ -5,5 +5,5 @@ import { ApplicationInitStatus } from '@angular/core';
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER} functions.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class ApplicationInitStatusExternalType {}

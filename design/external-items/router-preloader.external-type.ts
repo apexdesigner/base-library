@@ -12,5 +12,5 @@ will check if any configurations can be loaded lazily.
 
 If a route is protected by `canLoad` guards, the preloaded will not load it.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class RouterPreloaderExternalType {}

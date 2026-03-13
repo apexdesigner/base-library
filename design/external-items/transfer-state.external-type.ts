@@ -15,5 +15,5 @@ The values in the store are serialized/deserialized using JSON.stringify/JSON.pa
 boolean, number, string, null and non-class objects will be serialized and deserialized in a
 non-lossy manner.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class TransferStateExternalType {}

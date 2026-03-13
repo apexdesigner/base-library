@@ -7,5 +7,5 @@ import { OverlayKeyboardDispatcher } from '@angular/cdk/overlay';
 if any. It maintains a list of attached overlays to determine best suited overlay based
 on event target and order of overlay opens.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class OverlayKeyboardDispatcherExternalType {}

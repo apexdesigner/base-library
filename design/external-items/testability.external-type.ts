@@ -20,5 +20,5 @@ import {provideProtractorTestingSupport} from '@angular/platform-browser';
 await bootstrapApplication(RootComponent, providers: [provideProtractorTestingSupport()]);
 ```
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class TestabilityExternalType {}

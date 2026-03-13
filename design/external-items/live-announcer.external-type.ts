@@ -2,5 +2,5 @@
 import { externalType } from '@apexdesigner/dsl';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class LiveAnnouncerExternalType {}

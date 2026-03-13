@@ -11,5 +11,5 @@ being selected, and we still need to uncheck the previous selection.
 This service does not *store* any IDs and names because they may change at any time, so it is
 less error-prone if they are simply passed through when the events occur.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class UniqueSelectionDispatcherExternalType {}

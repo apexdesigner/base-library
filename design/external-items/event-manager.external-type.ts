@@ -6,5 +6,5 @@ import { EventManager } from '@angular/platform-browser';
  * An injectable service that provides event management for Angular
 through a browser plug-in.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class EventManagerExternalType {}

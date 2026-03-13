@@ -6,5 +6,5 @@ import { InteractivityChecker } from '@angular/cdk/a11y';
  * Utility for checking the interactivity of an element, such as whether it is focusable or
 tabbable.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class InteractivityCheckerExternalType {}

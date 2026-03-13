@@ -8,5 +8,5 @@ of the stack) in order to perform closing actions. Upon the MenuStack being empt
 from the `empty` observable specifying the next focus action which the listener should perform
 as requested by the closer.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class MenuStackExternalType {}

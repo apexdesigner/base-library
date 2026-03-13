@@ -6,5 +6,5 @@ import { HammerGestureConfig } from '@angular/platform-browser';
  * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
 for gesture recognition. Configures specific event recognition.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class HammerGestureConfigExternalType {}

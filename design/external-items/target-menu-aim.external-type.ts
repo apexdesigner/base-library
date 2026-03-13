@@ -12,5 +12,5 @@ pair of points determines if the trajectory line points into the submenu. It use
 approach by checking if at least NUM_POINTS / 2 pairs determine that the user is moving towards
 to submenu.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class TargetMenuAimExternalType {}

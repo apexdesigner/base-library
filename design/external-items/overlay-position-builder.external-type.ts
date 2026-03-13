@@ -5,5 +5,5 @@ import { OverlayPositionBuilder } from '@angular/cdk/overlay';
 /**
  * Builder for overlay position strategy.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class OverlayPositionBuilderExternalType {}

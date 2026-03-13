@@ -5,5 +5,5 @@ import { DefaultMatCalendarRangeStrategy } from '@angular/material/datepicker';
 /**
  * Provides the default date range selection behavior.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class DefaultMatCalendarRangeStrategyExternalType {}

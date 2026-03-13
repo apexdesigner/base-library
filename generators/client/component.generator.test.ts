@@ -287,6 +287,88 @@ describe('componentGenerator', () => {
     });
   });
 
+  describe('injectLocally', () => {
+    it('should add service to providers when injectLocally is true', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PanelService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class PanelService extends Service {
+            injectLocally = true;
+          }
+        `
+      });
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+          import { PanelService } from '@services';
+          export class DashboardComponent extends Component {
+            panelService!: PanelService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).toContain('providers: [PanelService]');
+      expect(ts).toContain('panelService = inject(PanelService)');
+    });
+
+    it('should not add providers when service does not use injectLocally', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PersonService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class PersonService extends Service {}
+        `
+      });
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+          import { PersonService } from '@services';
+          export class DashboardComponent extends Component {
+            personService!: PersonService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).not.toContain('providers');
+    });
+
+    it('should add external type to providers when injectLocally is true', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('ExternalType', 'SomeClient', {
+        sourceCode: `
+          import { ExternalType, externalType } from '@apexdesigner/dsl/external-type';
+          import { SomeClient } from 'some-library';
+          @externalType({ injectable: true, injectLocally: true })
+          export class SomeClientExternalType extends ExternalType {}
+        `
+      });
+      workspace.addMetadata('Component', 'Dashboard', {
+        sourceCode: `
+          import { Component, component } from '@apexdesigner/dsl/component';
+          import { SomeClient } from 'some-library';
+          export class DashboardComponent extends Component {
+            someClient!: SomeClient;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Component')[0];
+      const result = (await componentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/components/dashboard/dashboard.component.ts')!;
+
+      expect(ts).toContain('providers: [SomeClient]');
+    });
+  });
+
   describe('persisted array read options', () => {
     it('should pass all read options through to .read() call', async () => {
       const ts = await generateComponent(`

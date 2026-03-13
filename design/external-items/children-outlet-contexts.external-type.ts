@@ -5,5 +5,5 @@ import { ChildrenOutletContexts } from '@angular/router';
 /**
  * Store contextual information about the children (= nested) `RouterOutlet`
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class ChildrenOutletContextsExternalType {}

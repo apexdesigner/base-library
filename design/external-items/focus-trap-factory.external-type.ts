@@ -5,5 +5,5 @@ import { FocusTrapFactory } from '@angular/cdk/a11y';
 /**
  * Factory that allows easy instantiation of focus traps.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class FocusTrapFactoryExternalType {}

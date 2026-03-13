@@ -12,5 +12,5 @@ for different parts of the application.
 The service uses Angular signals for reactivity. TypeScript field components
 can subscribe to changes using effect().
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class SchemaFormsTypescriptServiceExternalType {}

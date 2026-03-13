@@ -6,5 +6,5 @@ import { Directionality } from '@angular/cdk/bidi';
  * The directionality (LTR / RTL) context for the application (or a subtree of it).
 Exposes the current direction and a stream of direction changes.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class DirectionalityExternalType {}

@@ -49,6 +49,13 @@ const serviceGenerator: DesignGenerator = {
       throw new Error(`Could not find exported class in ${metadata.name}`);
     }
 
+    // Check injectLocally before transforms (DSL property on Service base class)
+    const injectLocally = exportedClass.getProperty('injectLocally')?.getInitializer()?.getText() === 'true';
+    debug('injectLocally %j', injectLocally);
+
+    // Remove DSL-only injectLocally property from output
+    exportedClass.getProperty('injectLocally')?.remove();
+
     // Capture BO imports before removing design aliases
     const boNamedImports = captureBoImports(writableFile);
     debug('captured bo imports %j', boNamedImports);
@@ -297,7 +304,7 @@ const serviceGenerator: DesignGenerator = {
     // Add @Injectable decorator
     exportedClass.addDecorator({
       name: 'Injectable',
-      arguments: [`{ providedIn: 'root' }`]
+      arguments: injectLocally ? [] : [`{ providedIn: 'root' }`]
     });
 
     // Add Angular import at top

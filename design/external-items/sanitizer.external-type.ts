@@ -5,5 +5,5 @@ import { Sanitizer } from '@angular/core';
 /**
  * Sanitizer is used by the views to sanitize potentially dangerous values.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class SanitizerExternalType {}

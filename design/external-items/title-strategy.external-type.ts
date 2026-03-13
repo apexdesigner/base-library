@@ -22,5 +22,5 @@ own class that extends the `TitleStrategy`. Note that in the above example, the 
 from the named outlet is never used. However, a custom strategy might be implemented to
 incorporate titles in named outlets.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class TitleStrategyExternalType {}

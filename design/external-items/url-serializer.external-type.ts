@@ -2,5 +2,5 @@
 import { externalType } from '@apexdesigner/dsl';
 import { UrlSerializer } from '@angular/router';
 
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class UrlSerializerExternalType {}

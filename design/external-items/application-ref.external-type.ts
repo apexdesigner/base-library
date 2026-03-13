@@ -5,5 +5,5 @@ import { ApplicationRef } from '@angular/core';
 /**
  * A reference to an Angular application running on a page.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class ApplicationRefExternalType {}

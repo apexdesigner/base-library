@@ -6,5 +6,5 @@ import { JsonpInterceptor } from '@angular/common/http';
  * Identifies requests with the method JSONP and
 shifts them to the `JsonpClientBackend`.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class JsonpInterceptorExternalType {}

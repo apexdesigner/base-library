@@ -322,4 +322,61 @@ describe('pageComponentGenerator', () => {
       expect(ts).not.toContain('inject(ViewContainerRef)');
     });
   });
+
+  describe('injectLocally', () => {
+    it('should add service to providers when injectLocally is true', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PanelService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class PanelService extends Service {
+            injectLocally = true;
+          }
+        `
+      });
+      workspace.addMetadata('Page', 'Home', {
+        sourceCode: `
+          import { Page, page } from '@apexdesigner/dsl/page';
+          import { PanelService } from '@services';
+          @page({ path: '/' })
+          export class HomePage extends Page {
+            panelService!: PanelService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Page')[0];
+      const result = (await pageComponentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/pages/home/home.page.ts')!;
+
+      expect(ts).toContain('providers: [PanelService]');
+      expect(ts).toContain('panelService = inject(PanelService)');
+    });
+
+    it('should not add providers when service does not use injectLocally', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PersonService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class PersonService extends Service {}
+        `
+      });
+      workspace.addMetadata('Page', 'Home', {
+        sourceCode: `
+          import { Page, page } from '@apexdesigner/dsl/page';
+          import { PersonService } from '@services';
+          @page({ path: '/' })
+          export class HomePage extends Page {
+            personService!: PersonService;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Page')[0];
+      const result = (await pageComponentGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = result.get('client/src/app/pages/home/home.page.ts')!;
+
+      expect(ts).not.toContain('providers');
+    });
+  });
 });

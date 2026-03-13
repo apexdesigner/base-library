@@ -22,5 +22,5 @@ by the {@link /api/router/Router Router} in order to navigate between routes. Si
 {@link Location} / {@link LocationStrategy} and DOM APIs flow through the `PlatformLocation`
 class, they are all platform-agnostic.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class PlatformLocationExternalType {}

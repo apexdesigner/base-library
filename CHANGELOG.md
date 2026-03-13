@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.142] - 2026-03-13
+
+- 114690f chore: update @apexdesigner/dsl minimum to ^0.8.67
+- 08686f3 style: apply prettier formatting to extracted design files
+- 55ca037 feat: support injectLocally option for services and external types
+
+
 ## [1.0.141] - 2026-03-13
 
 - 28ce7a1 style: apply prettier formatting

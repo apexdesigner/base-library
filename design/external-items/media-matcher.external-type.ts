@@ -5,5 +5,5 @@ import { MediaMatcher } from '@angular/cdk/layout';
 /**
  * A utility for calling matchMedia queries.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class MediaMatcherExternalType {}

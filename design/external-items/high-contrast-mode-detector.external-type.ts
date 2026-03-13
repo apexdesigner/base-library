@@ -13,5 +13,5 @@ IE, Edge, and Firefox currently support this mode. Chrome does not support Windo
 Mode. This service does not detect high-contrast mode as added by the Chrome "High Contrast"
 browser extension.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class HighContrastModeDetectorExternalType {}

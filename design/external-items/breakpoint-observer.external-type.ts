@@ -5,5 +5,5 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 /**
  * Utility for checking the matching state of `@media` queries.
  */
-@externalType({ injectable: true })
+@externalType({ injectable: true, injectLocally: true })
 export class BreakpointObserverExternalType {}

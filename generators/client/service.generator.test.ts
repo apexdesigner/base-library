@@ -200,6 +200,61 @@ describe('serviceGenerator', () => {
     });
   });
 
+  describe('injectLocally', () => {
+    it('should use bare @Injectable() when injectLocally is true', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PanelService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class PanelService extends Service {
+            injectLocally = true;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Service')[0];
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getServiceOutput(result, 'panel');
+
+      expect(ts).toContain('@Injectable()');
+      expect(ts).not.toContain("providedIn: 'root'");
+    });
+
+    it('should remove injectLocally property from output', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'PanelService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class PanelService extends Service {
+            injectLocally = true;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Service')[0];
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getServiceOutput(result, 'panel');
+
+      expect(ts).not.toContain('injectLocally');
+    });
+
+    it('should use providedIn root when injectLocally is not set', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Service', 'AuthService', {
+        sourceCode: `
+          import { Service } from '@apexdesigner/dsl/service';
+          export class AuthService extends Service {}
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('Service')[0];
+      const result = (await serviceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getServiceOutput(result, 'auth');
+
+      expect(ts).toContain("@Injectable({ providedIn: 'root' })");
+    });
+  });
+
   describe('form group properties', () => {
     it('should initialize form group properties with new instances', async () => {
       const workspace = createSimpleMockWorkspace();
