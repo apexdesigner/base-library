@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.146] - 2026-03-13
+
+- c1b30b4 chore: update @apexdesigner/server to ^0.8.40
+- f03d699 docs: regenerate design docs with updated doc-generators library
+
+
 ## [1.0.145] - 2026-03-13
 
 - 34cde4a style: apply prettier formatting to extracted design files
