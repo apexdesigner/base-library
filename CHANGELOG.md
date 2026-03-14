@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.147] - 2026-03-14
+
+- 5ba11db docs: add missing generated design docs
+
+
 ## [1.0.146] - 2026-03-13
 
 - c1b30b4 chore: update @apexdesigner/server to ^0.8.40

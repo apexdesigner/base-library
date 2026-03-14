@@ -10,7 +10,7 @@ export class BaseLibrary extends Project {
 
   isLibrary = true;
 
-  designDependencies = [{ package: '@apexdesigner/doc-generators', versionSelector: '^0.1.0' }];
+  designDependencies = [{ package: '@apexdesigner/doc-generators', versionSelector: '^0.1.2' }];
 
   parameterValues = {
     formFieldAppearance: 'outline',
