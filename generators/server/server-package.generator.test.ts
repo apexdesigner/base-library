@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 import { serverPackageGenerator } from './server-package.generator.js';
-import { createSimpleMockWorkspace } from '@apexdesigner/generator';
+import { createSimpleMockWorkspace, createMockWorkspace } from '@apexdesigner/generator';
 
 describe('serverPackageGenerator', () => {
   it('should generate package.json with project name and version', async () => {
@@ -26,6 +28,25 @@ describe('serverPackageGenerator', () => {
     expect(pkg.types).toBe('dist/index.d.ts');
   });
 
+  it('should read version from root package.json when no version on Project class', async () => {
+    const workspace = await createMockWorkspace({
+      useTempDir: true,
+      projectSourceCode: `
+        import { Project } from '@apexdesigner/dsl';
+        export class TestProject extends Project {
+          packageName = 'test-project';
+        }
+      `
+    });
+    writeFileSync(join(workspace.context.workspacePath, 'package.json'), JSON.stringify({ version: '3.5.0' }));
+
+    const metadata = workspace.context.listMetadata('Project')[0];
+    const result = (await serverPackageGenerator.generate(metadata, workspace.context)) as string;
+    const pkg = JSON.parse(result);
+
+    expect(pkg.version).toBe('3.5.0');
+    await workspace.cleanup();
+  });
   it('should fall back to kebab-case project name', async () => {
     const workspace = createSimpleMockWorkspace({
       name: 'MyTestProject',
