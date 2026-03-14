@@ -11,6 +11,7 @@ Available downstream via `App.auth.context.getStore()`.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+| user | [`User`](../users-and-roles/user.business-object.md) | No | User - Authenticated user instance from the database |
 | accessToken | `any` | No | Access Token - Decoded JWT access token claims |
 | tenantId | `string` | No | Tenant ID - Tenant identifier extracted from token claims |
-| roles | `Role[]` | No | Roles - Authorization roles assigned to this user |
+| roles | [`Role[]`](../users-and-roles/role.business-object.md) | No | Roles - Authorization roles assigned to this user |

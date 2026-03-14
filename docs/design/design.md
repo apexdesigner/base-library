@@ -22,7 +22,7 @@ The `external-items` directory contains Angular, CDK, and Material framework typ
 
 ## Testing
 
-The [testing](testing/testing.md) directory provides business objects, pages, and behaviors used to exercise the base library's generators and runtime features.
+The testing directory provides business objects, pages, and behaviors used to exercise the base library's generators and runtime features.
 
 ## Static Files
 
