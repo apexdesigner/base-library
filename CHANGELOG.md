@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.149] - 2026-03-14
+
+- fb508d7 chore: add test-temp to gitignore
+- 8222f4c feat: sync version from root package.json into generated client and server packages
+
+
 ## [1.0.148] - 2026-03-14
 
 - 2931b9f docs: add regenerated design docs and restore patterns
