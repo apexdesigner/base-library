@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.148] - 2026-03-14
+
+- 2931b9f docs: add regenerated design docs and restore patterns
+- b0ac6d4 docs: regenerate all design docs after doc-generators update
+
+
 ## [1.0.147] - 2026-03-14
 
 - 5ba11db docs: add missing generated design docs
