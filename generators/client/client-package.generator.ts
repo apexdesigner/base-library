@@ -3,6 +3,8 @@ import { isLibrary } from '@apexdesigner/generator';
 import { getClassByBase, getObjectLiteralValue, getArrayLiteralValue, getClassPropertyInitializer } from '@apexdesigner/utilities';
 import { Node } from 'ts-morph';
 import { kebabCase } from 'change-case';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import createDebug from 'debug';
 
 const Debug = createDebug('BaseLibrary:generators:clientPackage');
@@ -88,7 +90,16 @@ const clientPackageGenerator: DesignGenerator = {
 
     // Get main project properties
     const packageName = getStringPropertyValue(mainProject.sourceFile, 'packageName') || kebabCase(mainProject.name);
-    const version = getStringPropertyValue(mainProject.sourceFile, 'version') || '0.0.1';
+    let version = getStringPropertyValue(mainProject.sourceFile, 'version');
+    if (!version) {
+      try {
+        const rootPkg = JSON.parse(readFileSync(join(context.workspacePath, 'package.json'), 'utf-8'));
+        version = rootPkg.version;
+      } catch {
+        debug('could not read root package.json');
+      }
+    }
+    version = version || '0.0.1';
     const description = getStringPropertyValue(mainProject.sourceFile, 'description');
     const displayName = getStringPropertyValue(mainProject.sourceFile, 'displayName');
 

@@ -28,6 +28,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+test-temp/
 *.tgz
 .apex-designer/
 .claude/settings.local.json
