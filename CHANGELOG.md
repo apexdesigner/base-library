@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.150] - 2026-03-15
+
+- 26055da chore: formatting
+- f2cf412 feat: add datetime with timezone to server startup message
+- 83d2142 fix: resolve base type properties to native types in server BO type declarations
+- 6aa9c2b feat: add schema to generated BO type declaration
+- 0281cae feat: expose schema as static property on generated server BO class
+- 05f163c fix: bind mixinOptions for Before Create and Before Update lifecycle behaviors
+
+
 ## [1.0.149] - 2026-03-14
 
 - fb508d7 chore: add test-temp to gitignore
