@@ -144,6 +144,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
       isStatic: true
     });
 
+    // Add static schema property
+    classDecl.addProperty({
+      name: 'schema',
+      type: 'any',
+      isStatic: true
+    });
+
     // Add static testFixtures property
     classDecl.addProperty({
       name: 'testFixtures',
@@ -165,6 +172,19 @@ const businessObjectTypeGenerator: DesignGenerator = {
       type: idType
     });
 
+    // Build base type name → native type map (e.g. Email → string, Uuid → string)
+    const baseTypeMap = new Map<string, string>();
+    for (const bt of context.listMetadata('BaseType')) {
+      const btClass = getClassByBase(bt.sourceFile, 'BaseType');
+      if (!btClass) continue;
+      const heritage = btClass.getExtends();
+      if (!heritage) continue;
+      const typeArgs = heritage.getTypeArguments();
+      if (typeArgs.length > 0) {
+        baseTypeMap.set(pascalCase(bt.name), typeArgs[0].getText());
+      }
+    }
+
     // Get properties from the class
     const properties = boClass?.getProperties() || [];
     debug('properties count %j', properties.length);
@@ -184,8 +204,9 @@ const businessObjectTypeGenerator: DesignGenerator = {
       const propName = prop.getName();
       if (skipNames.has(propName)) continue;
 
-      let propType = prop.getType().getText();
+      let propType = prop.getTypeNode()?.getText() || prop.getType().getText();
       propType = propType.replace(' | undefined', '');
+      propType = baseTypeMap.get(propType) || propType;
 
       classDecl.addProperty({
         name: propName,
@@ -205,8 +226,9 @@ const businessObjectTypeGenerator: DesignGenerator = {
         const propName = prop.getName();
         if (skipNames.has(propName)) continue;
 
-        let propType = prop.getType().getText();
+        let propType = prop.getTypeNode()?.getText() || prop.getType().getText();
         propType = propType.replace(' | undefined', '');
+        propType = baseTypeMap.get(propType) || propType;
 
         classDecl.addProperty({
           name: propName,
