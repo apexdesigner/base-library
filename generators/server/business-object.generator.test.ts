@@ -152,6 +152,25 @@ describe('businessObjectGenerator', () => {
     });
   });
 
+  describe('schema property', () => {
+    it('should expose schema as a static property on the class', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Tutor', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Tutor extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static schema = tutorSchema;');
+    });
+  });
+
   describe('behavior imports', () => {
     it('should import App when a behavior uses @app', async () => {
       const workspace = createSimpleMockWorkspace();

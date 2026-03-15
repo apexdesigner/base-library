@@ -458,6 +458,7 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`export interface ${className} extends Readonly<${dataTypeName}> {}`);
     lines.push(`export class ${className} {`);
     lines.push(`  static readonly entityName = "${className}" as const;`);
+    lines.push(`  static schema = ${schemaVarName}Schema;`);
     lines.push(`  static dataSource = dataSource;`);
     lines.push('');
     lines.push(`  constructor(data: ${dataTypeName}) {`);
