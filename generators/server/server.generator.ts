@@ -206,7 +206,7 @@ const serverGenerator: DesignGenerator = {
     lines.push('const server = app.listen(port);');
     lines.push('');
     lines.push('server.on("listening", async () => {');
-    lines.push('  console.log("Server listening on port", port);');
+    lines.push('  console.log(`Server listening on port ${port} at ${new Date().toLocaleString(undefined, { dateStyle: "short", timeStyle: "long" })}`);');
     lines.push('  debug("Server listening on port %d", port);');
 
     // Call Running lifecycle behaviors
