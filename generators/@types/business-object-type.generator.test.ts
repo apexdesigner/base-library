@@ -94,6 +94,34 @@ describe('businessObjectTypeGenerator', () => {
     });
   });
 
+  describe('base type properties', () => {
+    it('should resolve base type properties to native types instead of import paths', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'Email', {
+        sourceCode: `
+          import { BaseType } from '@apexdesigner/dsl';
+          export class Email extends BaseType<string> {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Tutor', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { Email } from '@base-types';
+          export class Tutor extends BusinessObject {
+            id!: number;
+            email?: Email;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('email?: string');
+      expect(result).not.toContain('import(');
+    });
+  });
+
   describe('test fixtures', () => {
     it('should have a TestFixture trigger', () => {
       const trigger = businessObjectTypeGenerator.triggers.find(t => t.metadataType === 'TestFixture');
