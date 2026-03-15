@@ -764,6 +764,58 @@ describe('businessObjectGenerator', () => {
         // doesn't satisfy Partial<TokenHistory> requiring { tokenId: ... }
         expect(result).toContain('const mixinOptions = { historyModel: TokenHistory, foreignKey: "tokenId" } as const;');
       });
+
+
+      it('should provide mixinOptions for Before Create mixin behaviors with config', async () => {
+        const workspace = createSimpleMockWorkspace();
+        workspace.addMetadata('Mixin', 'Audit', {
+          sourceCode: `
+            import { Mixin } from '@apexdesigner/dsl';
+            export interface AuditConfig {
+              excludeProperties?: string[];
+            }
+            export class Audit extends Mixin {}
+          `
+        });
+        workspace.addMetadata('BusinessObject', 'Tutor', {
+          sourceCode: `
+            import { BusinessObject } from '@apexdesigner/dsl';
+            import { Audit } from '@mixins';
+            import { applyAuditMixin } from '@mixins';
+            export class Tutor extends BusinessObject {
+              id!: number;
+              static mixins = [Audit];
+            }
+            applyAuditMixin(Tutor, { excludeProperties: ["password"] });
+          `
+        });
+        workspace.addMetadata('Behavior', 'AuditRecordCreateEvent', {
+          sourceCode: `
+            import { addBehavior } from '@apexdesigner/dsl';
+            import { Audit, AuditConfig } from '@mixins';
+            addBehavior(
+              Audit,
+              { type: 'Before Create' },
+              async function recordCreateEvent(Model: any, mixinOptions: AuditConfig, dataItems: Partial<any>[]) {
+                if (mixinOptions.excludeProperties?.length) {
+                  for (const item of dataItems) {
+                    for (const name of mixinOptions.excludeProperties) {
+                      delete item[name];
+                    }
+                  }
+                }
+              }
+            );
+          `
+        });
+
+        const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Tutor')!;
+        const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+        // Before Create body should have mixinOptions bound
+        expect(result).toContain('const mixinOptions = { excludeProperties: ["password"] } as const;');
+        expect(result).toContain('mixinOptions.excludeProperties');
+      });
     });
 
     describe('Before Update', () => {
@@ -790,6 +842,54 @@ describe('businessObjectGenerator', () => {
 
         expect(method).toContain(marker);
         expect(method.indexOf(marker)).toBeLessThan(method.indexOf('this.dataSource.updateById('));
+      });
+
+      it('should provide mixinOptions for Before Update mixin behaviors with config', async () => {
+        const workspace = createSimpleMockWorkspace();
+        workspace.addMetadata('Mixin', 'Audit', {
+          sourceCode: `
+            import { Mixin } from '@apexdesigner/dsl';
+            export interface AuditConfig {
+              excludeProperties?: string[];
+            }
+            export class Audit extends Mixin {}
+          `
+        });
+        workspace.addMetadata('BusinessObject', 'Tutor', {
+          sourceCode: `
+            import { BusinessObject } from '@apexdesigner/dsl';
+            import { Audit } from '@mixins';
+            import { applyAuditMixin } from '@mixins';
+            export class Tutor extends BusinessObject {
+              id!: number;
+              static mixins = [Audit];
+            }
+            applyAuditMixin(Tutor, { excludeProperties: ["password"] });
+          `
+        });
+        workspace.addMetadata('Behavior', 'AuditRecordUpdateEvent', {
+          sourceCode: `
+            import { addBehavior } from '@apexdesigner/dsl';
+            import { Audit, AuditConfig } from '@mixins';
+            addBehavior(
+              Audit,
+              { type: 'Before Update' },
+              async function recordUpdateEvent(Model: any, mixinOptions: AuditConfig, where: any, updates: Partial<any>) {
+                if (mixinOptions.excludeProperties?.length) {
+                  for (const name of mixinOptions.excludeProperties) {
+                    delete updates[name];
+                  }
+                }
+              }
+            );
+          `
+        });
+
+        const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Tutor')!;
+        const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+        expect(result).toContain('const mixinOptions = { excludeProperties: ["password"] } as const;');
+        expect(result).toContain('mixinOptions.excludeProperties');
       });
     });
 

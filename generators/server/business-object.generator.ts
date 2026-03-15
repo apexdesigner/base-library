@@ -409,8 +409,8 @@ const businessObjectGenerator: DesignGenerator = {
     const dataTypeName = `${className}Data`;
 
     // Collect lifecycle behavior bodies
-    const beforeCreateBodies = (lifecycleBodies.get('Before Create') || []).map(e => e.body);
-    const beforeUpdateBodies = (lifecycleBodies.get('Before Update') || []).map(e => e.body);
+    const beforeCreateEntries = lifecycleBodies.get('Before Create') || [];
+    const beforeUpdateEntries = lifecycleBodies.get('Before Update') || [];
     const afterCreateEntries = lifecycleBodies.get('After Create') || [];
     const afterUpdateEntries = lifecycleBodies.get('After Update') || [];
     const beforeDeleteEntries = lifecycleBodies.get('Before Delete') || [];
@@ -575,15 +575,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    debug("data %j", data);');
       lines.push('');
       // Inline Before Create lifecycle behaviors
-      if (beforeCreateBodies.length > 0) {
-        lines.push(`    const Model = this;`);
-        lines.push(`    const dataItems = [data];`);
-        for (const body of beforeCreateBodies) {
-          for (const line of body.split('\n')) {
-            lines.push(`  ${line}`);
-          }
-        }
-      }
+      emitLifecycleInline(beforeCreateEntries, lines, { dataItems: '[data]' }, mixinNames, mixinOptionsMap);
       lines.push(`    const created = await this.dataSource.create(this.entityName, data);`);
       lines.push('    debug("created %j", created);');
       lines.push('');
@@ -601,15 +593,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    debug("data.length %j", data.length);');
       lines.push('');
       // Inline Before Create lifecycle behaviors (data is already an array)
-      if (beforeCreateBodies.length > 0) {
-        lines.push(`    const Model = this;`);
-        lines.push(`    const dataItems = data;`);
-        for (const body of beforeCreateBodies) {
-          for (const line of body.split('\n')) {
-            lines.push(`  ${line}`);
-          }
-        }
-      }
+      emitLifecycleInline(beforeCreateEntries, lines, { dataItems: 'data' }, mixinNames, mixinOptionsMap);
       lines.push(`    const results = await this.dataSource.createMany(this.entityName, data);`);
       lines.push('    debug("results.length %j", results.length);');
       lines.push('');
@@ -629,16 +613,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    debug("data %j", data);');
       lines.push('');
       // Inline Before Update lifecycle behaviors
-      if (beforeUpdateBodies.length > 0) {
-        lines.push(`    const Model = this;`);
-        lines.push(`    const where = filter.where;`);
-        lines.push(`    const updates = data;`);
-        for (const body of beforeUpdateBodies) {
-          for (const line of body.split('\n')) {
-            lines.push(`  ${line}`);
-          }
-        }
-      }
+      emitLifecycleInline(beforeUpdateEntries, lines, { where: 'filter.where', updates: 'data' }, mixinNames, mixinOptionsMap);
       lines.push(`    const results = await this.dataSource.update(`);
       lines.push(`      this.entityName,`);
       lines.push(`      filter as any,`);
@@ -662,16 +637,7 @@ const businessObjectGenerator: DesignGenerator = {
       lines.push('    debug("data %j", data);');
       lines.push('');
       // Inline Before Update lifecycle behaviors
-      if (beforeUpdateBodies.length > 0) {
-        lines.push(`    const Model = this;`);
-        lines.push(`    const where = { id };`);
-        lines.push(`    const updates = data;`);
-        for (const body of beforeUpdateBodies) {
-          for (const line of body.split('\n')) {
-            lines.push(`  ${line}`);
-          }
-        }
-      }
+      emitLifecycleInline(beforeUpdateEntries, lines, { where: '{ id }', updates: 'data' }, mixinNames, mixinOptionsMap);
       lines.push(`    const updated = await this.dataSource.updateById(`);
       lines.push(`      this.entityName,`);
       lines.push(`      id,`);
