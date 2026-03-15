@@ -784,7 +784,6 @@ describe('businessObjectGenerator', () => {
         expect(result).toContain('const mixinOptions = { historyModel: TokenHistory, foreignKey: "tokenId" } as const;');
       });
 
-
       it('should provide mixinOptions for Before Create mixin behaviors with config', async () => {
         const workspace = createSimpleMockWorkspace();
         workspace.addMetadata('Mixin', 'Audit', {
