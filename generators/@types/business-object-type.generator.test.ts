@@ -75,6 +75,23 @@ describe('businessObjectTypeGenerator', () => {
 
       expect(result).toContain('static dataSource: any');
     });
+
+    it('should include static schema property', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectTypeGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('static schema: any');
+    });
   });
 
   describe('test fixtures', () => {

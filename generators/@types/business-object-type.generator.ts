@@ -144,6 +144,13 @@ const businessObjectTypeGenerator: DesignGenerator = {
       isStatic: true
     });
 
+    // Add static schema property
+    classDecl.addProperty({
+      name: 'schema',
+      type: 'any',
+      isStatic: true
+    });
+
     // Add static testFixtures property
     classDecl.addProperty({
       name: 'testFixtures',
