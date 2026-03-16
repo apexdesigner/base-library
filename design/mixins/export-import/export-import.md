@@ -202,6 +202,14 @@ export interface ExportImportConfig {
   excludeProperties?: string[];
 
   /**
+   * Child relationship names to exclude from export.
+   * Use this to skip large or irrelevant subtrees.
+   * Names correspond to the has-many or has-one relationship name on the business object
+   * (e.g., "auditLogs", "sessionActivities").
+   */
+  excludeChildren?: string[];
+
+  /**
    * Override anchor properties for referenced types.
    * Key is the business object name, value is the list of properties to use as the anchor.
    * When not specified, unique constraints are used, falling back to all non-null scalars.
@@ -215,6 +223,7 @@ Example usage:
 ```typescript
 applyExportImportMixin(TutoringSession, {
   excludeProperties: ["createdAt", "updatedAt"],
+  excludeChildren: ["auditLogs"],
   referenceAnchors: {
     Instructor: ["email"],
     Room: ["name", "schoolId"],
@@ -238,7 +247,7 @@ applyExportImportMixin(TutoringSession, {
 
 7. **File-based data sources (non-database) may not support transactions.** The transaction safety guarantee depends on the data source supporting transactions. File-based data sources like `TestFile` may not roll back cleanly on failure.
 
-8. **No partial export.** The export always includes the full object tree from the root down. There is no option to export only certain children or to a certain depth.
+8. **No depth-limited export.** The export always traverses the full depth of the object tree. The `excludeChildren` config can skip specific relationship names, but there is no option to limit traversal to a certain depth.
 
 9. **Anchor resolution depends on unique constraints or explicit configuration.** If a referenced business object has no unique constraint and no `referenceAnchors` configuration, the fallback (all non-null scalars) may not reliably identify the object. Explicit `referenceAnchors` configuration is recommended for any referenced type without a unique constraint.
 
