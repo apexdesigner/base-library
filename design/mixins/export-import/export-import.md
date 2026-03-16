@@ -255,24 +255,14 @@ applyExportImportMixin(TutoringSession, {
 
 2. **Circular child ownership is not supported.** If object A belongs to B and B belongs to A, the traversal would loop. The mixin only follows belongs-to-parent relationships in a tree structure (parent to children downward).
 
-3. **Self-referencing children require ordering.** If a business object has a self-referencing belongs-to (e.g., a category tree), children must be imported in dependency order — parents before children. The iterative pass approach handles this naturally since a child whose parent hasn't been created yet will be retried on the next pass.
+## Runtime Context Overrides
 
-4. **Many-to-many relationships are not directly supported.** If two objects are related through a join table (a business object with two belongs-to relationships), the join object is exported as a child of the root. The other side of the join must be a reference that exists in the target database.
+The import needs to bypass certain runtime behaviors that would interfere with bulk data operations. These are generic capabilities managed via `AsyncLocalStorage`, available to any server-side code — not specific to the export/import mixin.
 
-5. **Computed and virtual properties are not exported.** Only persisted scalar properties appear in the export. If a business object has computed behaviors or after-read enrichment, those values are not captured.
+### Disable Event Handlers
 
-6. **Embedded objects are exported as opaque JSON.** Interface definitions stored as embedded JSON are included verbatim. If the embedded structure references IDs from other tables, those IDs will not be translated during import.
+Wraps a callback in an `AsyncLocalStorage` context that suppresses Before/After Create and Before/After Update event handlers on business objects. This prevents side effects like sending notification emails or triggering workflow processes during import.
 
-7. **File-based data sources (non-database) may not support transactions.** The transaction safety guarantee depends on the data source supporting transactions. File-based data sources like `TestFile` may not roll back cleanly on failure.
+### Disable Role Checking
 
-8. **No depth-limited export.** The export always traverses the full depth of the object tree. The `excludeRelationships` config can skip specific relationships, but there is no option to limit traversal to a certain depth.
-
-9. **Anchor resolution depends on unique constraints or explicit configuration.** If a referenced business object has no unique constraint and no `referenceAnchors` configuration, the fallback (all non-null scalars) may not reliably identify the object. Explicit `referenceAnchors` configuration is recommended for any referenced type without a unique constraint.
-
-10. **Schema compatibility.** The export file does not embed the schema version. If the schema changes between export and import (properties added, removed, or renamed), the import may fail or produce incomplete data. The `version` field in the export is for format versioning, not schema versioning.
-
-11. **Large object graphs.** The export loads the entire object tree into memory. For business objects with thousands of children, this could be slow or exceed memory limits. Consider pagination or streaming for very large graphs.
-
-12. **Lifecycle hooks fire during import.** Before/After Create and Before/After Update hooks on the business object will run for each created or updated object during import. This is usually desirable (e.g., setting defaults) but could cause unintended side effects (e.g., sending notification emails). The mixin does not suppress lifecycle hooks.
-
-13. **Child matching depends on identifiable properties.** The update conflict mode matches existing children to file entries using unique constraints or natural keys. If children have no distinguishing properties beyond their parent foreign key, matching may be ambiguous. In this case, `"replace"` mode (which deletes and recreates) is more reliable than `"update"`.
+Wraps a callback in an `AsyncLocalStorage` context that bypasses role-based access control. The import behavior runs as a system operation and should not be constrained by the current user's roles.
