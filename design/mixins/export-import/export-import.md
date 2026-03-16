@@ -7,7 +7,7 @@ The [Export Import](export-import.mixin.ts) mixin adds portable JSON export and 
 An **export root** is the business object instance the export starts from. The mixin walks the schema from the root and collects three categories of data:
 
 - **The root object** itself (all scalar properties).
-- **Children** — objects that belong to the root (or to its children, recursively). These are owned and will be created during import.
+- **Children** — objects that belong to the root (or to its children, recursively). These are owned and will be created, updated, or removed during import.
 - **References** — objects that the root or its children point to via `References` relationships. These are not owned; they must already exist in the target database. The export captures enough information to find them by unique constraint or natural key.
 
 A **reference anchor** is the set of properties needed to locate a referenced object in the target database. For a `Room` that belongs to a `School`, the anchor includes both the room's identifying properties and the school's identifying properties, since the room cannot be found without first finding the school.
@@ -21,9 +21,30 @@ The mixin leverages two runtime entry points to discover the object graph:
 
 By reading `App.businessObjects` and each schema's shape, the mixin can dynamically discover all relationships and properties at runtime without hard-coding any specific business object names.
 
-## Export Logic
+## Export Behaviors
 
-Export is an instance behavior exposed as `GET /api/<plural>/:id/export`. It returns a JSON document.
+The mixin provides three levels of export: a single instance, a filtered set from one entity, and a multi-entity bulk export.
+
+### Instance Export
+
+Export is an instance behavior exposed as `GET /api/<plural>/:id/export`. It returns a JSON document containing the single root and its graph.
+
+### Export Many (Class Behavior)
+
+The [exportMany](export-import.export-many.behavior.ts) class behavior is exposed as `POST /api/<plural>/export-many`. It accepts a `where` filter in the request body and exports every matching instance as a root, combining them into a single file. Each matched instance is traversed independently using the same graph-walking logic as the instance export. References that appear in multiple roots are deduplicated in the flat object map.
+
+### Bulk Export (App Behavior)
+
+The [bulkExport](export-import.bulk-export.app-behavior.ts) app behavior is exposed as `POST /api/bulk-export`. It accepts a map of entity names to where filters and produces a single combined export file. Only business objects that have the Export Import mixin applied can be included; the behavior throws if a requested entity name does not have the mixin. Each entity's matches are traversed as roots, and references are deduplicated across all entities.
+
+```json
+{
+  "TutoringSession": { "instructorId": 3 },
+  "Workshop": { "status": "published" }
+}
+```
+
+## Export Logic
 
 ### Graph Traversal
 
@@ -53,80 +74,99 @@ For each object (root, child, or reference):
 
 ## File Content Structure
 
-The export produces a single JSON document:
+The export produces a single JSON document. The `objects` map is organized by entity type, then by source ID, making the structure normalized and flat.
 
 ```json
 {
   "version": 1,
+  "exportedFrom": "https://app.example.com",
   "exportedAt": "2026-03-16T12:00:00.000Z",
   "rootType": "TutoringSession",
-  "rootRef": "TutoringSession:42",
+  "rootIds": ["42"],
   "objects": {
-    "TutoringSession:42": {
-      "type": "TutoringSession",
-      "role": "root",
-      "properties": {
-        "name": "Monday Session",
-        "scheduledAt": "2026-03-17T10:00:00.000Z",
-        "notes": "Bring workbook"
+    "TutoringSession": {
+      "42": {
+        "role": "root",
+        "properties": {
+          "name": "Monday Session",
+          "scheduledAt": "2026-03-17T10:00:00.000Z",
+          "notes": "Bring workbook"
+        },
+        "references": {
+          "room": { "ref": "Room.7" },
+          "instructor": { "ref": "Instructor.3" }
+        },
+        "children": {
+          "sessionActivities": ["SessionActivity.101", "SessionActivity.102"]
+        }
+      }
+    },
+    "SessionActivity": {
+      "101": {
+        "role": "child",
+        "parentRef": "TutoringSession.42",
+        "parentRelationship": "tutoringSession",
+        "properties": {
+          "title": "Warm-up quiz",
+          "durationMinutes": 15
+        },
+        "references": {
+          "activityTemplate": { "ref": "ActivityTemplate.50" }
+        },
+        "children": {}
       },
-      "references": {
-        "room": { "ref": "Room:7" },
-        "instructor": { "ref": "Instructor:3" }
-      },
-      "children": {
-        "sessionActivities": ["SessionActivity:101", "SessionActivity:102"]
+      "102": {
+        "role": "child",
+        "parentRef": "TutoringSession.42",
+        "parentRelationship": "tutoringSession",
+        "properties": {
+          "title": "Main lesson",
+          "durationMinutes": 30
+        },
+        "references": {},
+        "children": {}
       }
     },
-    "SessionActivity:101": {
-      "type": "SessionActivity",
-      "role": "child",
-      "parentRef": "TutoringSession:42",
-      "parentRelationship": "tutoringSession",
-      "properties": {
-        "title": "Warm-up quiz",
-        "durationMinutes": 15
-      },
-      "references": {
-        "activityTemplate": { "ref": "ActivityTemplate:50" }
-      },
-      "children": {}
-    },
-    "Room:7": {
-      "type": "Room",
-      "role": "reference",
-      "anchor": {
-        "name": "Room 204",
-        "school": { "ref": "School:1" }
+    "Room": {
+      "7": {
+        "role": "reference",
+        "anchor": {
+          "name": "Room 204",
+          "school": { "ref": "School.1" }
+        }
       }
     },
-    "School:1": {
-      "type": "School",
-      "role": "reference",
-      "anchor": {
-        "name": "Lincoln Elementary"
+    "School": {
+      "1": {
+        "role": "reference",
+        "anchor": {
+          "name": "Lincoln Elementary"
+        }
       }
     },
-    "Instructor:3": {
-      "type": "Instructor",
-      "role": "reference",
-      "anchor": {
-        "email": "jane.doe@example.com"
+    "Instructor": {
+      "3": {
+        "role": "reference",
+        "anchor": {
+          "email": "jane.doe@example.com"
+        }
       }
     },
-    "ActivityTemplate:50": {
-      "type": "ActivityTemplate",
-      "role": "reference",
-      "anchor": {
-        "name": "Warm-up quiz",
-        "category": { "ref": "ActivityCategory:10" }
+    "ActivityTemplate": {
+      "50": {
+        "role": "reference",
+        "anchor": {
+          "name": "Warm-up quiz",
+          "category": { "ref": "ActivityCategory.10" }
+        }
       }
     },
-    "ActivityCategory:10": {
-      "type": "ActivityCategory",
-      "role": "reference",
-      "anchor": {
-        "name": "Quizzes"
+    "ActivityCategory": {
+      "10": {
+        "role": "reference",
+        "anchor": {
+          "name": "Quizzes"
+        }
       }
     }
   }
@@ -135,46 +175,53 @@ The export produces a single JSON document:
 
 ### Key Design Decisions
 
-- **Keyed by `Type:sourceId`** — the source ID is only used as a local key within the file to wire up internal references. It is never used during import for database lookups.
+- **`exportedFrom`** — set from `process.env.appUrl`, falling back to `os.hostname()`. Identifies which environment produced the export so consumers know where the data came from.
+- **Nested by type then ID** — `objects.TutoringSession.42` instead of a flat `objects["TutoringSession:42"]`. This normalizes the structure by entity type, makes it easy to iterate all objects of a given type, and avoids encoding conventions in string keys.
+- **Dot-separated ref pointers** — references within the file use `Type.sourceId` (e.g., `"Room.7"`) to point to entries in the nested map. The source ID is only used as a local key within the file to wire up internal references; it is never used during import for database lookups.
+- **`rootIds` array** — supports single and multi-root exports. For a single instance export this contains one ID; for `exportMany` and `bulkExport` it contains all matched root IDs.
+- **`rootType`** — present for single-entity exports. For `bulkExport` with multiple entity types, this field is omitted and the roots are identified by their `role: "root"` entries across multiple type keys in the `objects` map.
 - **Role field** — `root`, `child`, or `reference` makes the role of each object explicit.
-- **References use `ref` pointers** — within the file, references point to other entries by their `Type:sourceId` key rather than embedding the anchor inline. This avoids duplicating anchor data when the same object is referenced from multiple places.
-- **Children listed by relationship name** — the `children` map uses the has-many/has-one relationship name as the key, with an array of `Type:sourceId` refs.
-- **Flat object map** — all objects live in a single `objects` map regardless of depth. The parent-child and reference relationships are captured via `ref` pointers. This keeps the structure simple and avoids deep nesting.
+- **References use `ref` pointers** — within the file, references point to other entries by their `Type.sourceId` key rather than embedding the anchor inline. This avoids duplicating anchor data when the same object is referenced from multiple places.
+- **Children listed by relationship name** — the `children` map uses the has-many/has-one relationship name as the key, with an array of `Type.sourceId` refs.
+- **Flat normalized map** — all objects live in the `objects` map keyed by type then ID. The parent-child and reference relationships are captured via `ref` pointers. This keeps the structure simple and avoids deep nesting.
 
 ### ID Type Handling
 
-The `Type:sourceId` key format works with any ID type:
+The nested key format works with any ID type:
 
-| ID Type | Example Key |
-|---|---|
-| `number` | `Room:7` |
-| `Uuid` | `TestSetting:a1b2c3d4-...` |
-| `string` | `Tenant:acme-corp` |
+| ID Type | Example Path | Ref Pointer |
+|---|---|---|
+| `number` | `objects.Room["7"]` | `Room.7` |
+| `Uuid` | `objects.TestSetting["a1b2c3d4-..."]` | `TestSetting.a1b2c3d4-...` |
+| `string` | `objects.Tenant["acme-corp"]` | `Tenant.acme-corp` |
 
 ## Import Logic
 
-Import is a class behavior exposed as `POST /api/<plural>/import` that accepts the JSON document as the request body.
+Import is a class behavior exposed as `POST /api/<plural>/import` that accepts the JSON document as the request body. The import uses an iterative multi-pass approach to resolve references and create objects, controlled by a `_targetId` field that tracks what has been resolved.
 
-### Phase 1 — Resolve References
+### Iterative Resolution
 
-For each object with `role: "reference"`:
+Rather than requiring a strict ordering of operations, the import iterates in passes until all items are processed:
 
-1. Build a `where` clause from the anchor properties.
-2. For anchor properties that are themselves references (e.g., `school` in the room anchor), resolve those first (depth-first). Replace the `ref` with the resolved ID.
-3. Query the database: `Model.findOne({ where })`.
-4. If not found, throw an error listing the unresolved reference with its anchor. Do not create reference objects — they must already exist.
-5. Build a map of `Type:sourceId` to the real database ID.
+1. **Initialize** — parse the file and annotate each item with `_targetId: null`. This internal tracking field indicates the item has not yet been resolved to a real database ID.
+2. **Reference resolution pass** — for each reference object where `_targetId` is null, attempt to resolve it. Build a `where` clause from the anchor. If the anchor contains `ref` pointers to other references, check whether those references already have a `_targetId`. If they do, substitute the real ID and query. If they don't, skip this reference for now — it will be retried on the next pass.
+3. **Repeat** until all references have a `_targetId` or a pass makes no progress. If a pass completes with no new resolutions and unresolved references remain, throw an error listing the unresolved references with their anchors.
 
-### Phase 2 — Create Root and Children
+### Root and Children Import
 
-Process objects in parent-before-child order:
+Once all references are resolved, the import creates the root and synchronizes children:
 
-1. Start with the root object.
-2. For each scalar property, copy the value.
-3. For each `references` entry, look up the real ID from the reference map and set the foreign key.
-4. Create the object via `Model.create(...)`.
-5. Record the new real ID in the ID map (`Type:sourceId` to new ID).
-6. Process children in the order listed. For each child, set its parent foreign key from the ID map, resolve its references, and create it. Recurse for grandchildren.
+1. **Check for existing root** — use the anchor or conflict-handling strategy to determine whether the root already exists in the target database.
+2. **If the root does not exist** — create the root object, setting scalar properties and resolving reference foreign keys from the `_targetId` map. Record the new ID as the root's `_targetId`.
+3. **If the root exists** (and `onConflict` is `"update"`) — update the root's scalar properties and reference foreign keys.
+4. **Synchronize children** — for each child relationship on the root (and recursively on children):
+   - **Add** — children present in the file but not in the database are created.
+   - **Update** — children present in both are updated with the file's property values.
+   - **Remove** — children present in the database but not in the file are deleted.
+   - Matching existing children to file entries uses the same anchor logic as references: unique constraints or natural keys. If a child has no unique constraint, fall back to matching on all non-null scalar properties (excluding `id` and foreign keys).
+5. **Record each child's `_targetId`** as it is created or matched, so that grandchildren can reference their parent's real ID on subsequent iterations.
+
+The child synchronization is itself iterative — children are processed in passes just like references, since a child may reference another child that hasn't been created yet. Passes continue until all children have a `_targetId`.
 
 ### Conflict Handling
 
@@ -184,13 +231,14 @@ The import behavior accepts an optional `onConflict` parameter:
 |---|---|
 | `"skip"` (default) | If root already exists (matched by anchor), skip the entire import and return the existing object. |
 | `"error"` | Throw if root already exists. |
-| `"replace"` | Delete the existing root (cascading to children) and re-import. |
+| `"update"` | Update the existing root's properties and synchronize children (add/update/remove). |
+| `"replace"` | Delete the existing root (cascading to children) and re-import from scratch. |
 
 Root existence is checked using the same anchor logic as references — unique constraints or natural keys.
 
 ### Transaction Safety
 
-The entire import runs inside a database transaction. If any step fails (missing reference, validation error, constraint violation), the transaction rolls back and no partial data is created.
+The entire import runs inside a database transaction. If any step fails (missing reference, validation error, constraint violation), the transaction rolls back and no partial data is created or modified.
 
 ## Configuration
 
@@ -239,7 +287,7 @@ applyExportImportMixin(TutoringSession, {
 
 2. **Circular child ownership is not supported.** If object A belongs to B and B belongs to A, the traversal would loop. The mixin only follows belongs-to-parent relationships in a tree structure (parent to children downward).
 
-3. **Self-referencing children require ordering.** If a business object has a self-referencing belongs-to (e.g., a category tree), children must be imported in dependency order — parents before children. The import sorts by depth in the self-reference chain.
+3. **Self-referencing children require ordering.** If a business object has a self-referencing belongs-to (e.g., a category tree), children must be imported in dependency order — parents before children. The iterative pass approach handles this naturally since a child whose parent hasn't been created yet will be retried on the next pass.
 
 4. **Many-to-many relationships are not directly supported.** If two objects are related through a join table (a business object with two belongs-to relationships), the join object is exported as a child of the root. The other side of the join must be a reference that exists in the target database.
 
@@ -257,4 +305,6 @@ applyExportImportMixin(TutoringSession, {
 
 11. **Large object graphs.** The export loads the entire object tree into memory. For business objects with thousands of children, this could be slow or exceed memory limits. Consider pagination or streaming for very large graphs.
 
-12. **Lifecycle hooks fire during import.** Before/After Create hooks on the business object will run for each created object during import. This is usually desirable (e.g., setting defaults) but could cause unintended side effects (e.g., sending notification emails). The mixin does not suppress lifecycle hooks.
+12. **Lifecycle hooks fire during import.** Before/After Create and Before/After Update hooks on the business object will run for each created or updated object during import. This is usually desirable (e.g., setting defaults) but could cause unintended side effects (e.g., sending notification emails). The mixin does not suppress lifecycle hooks.
+
+13. **Child matching depends on identifiable properties.** The update conflict mode matches existing children to file entries using unique constraints or natural keys. If children have no distinguishing properties beyond their parent foreign key, matching may be ambiguous. In this case, `"replace"` mode (which deletes and recreates) is more reliable than `"update"`.
