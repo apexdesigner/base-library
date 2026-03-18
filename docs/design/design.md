@@ -10,6 +10,8 @@ The base library provides authentication, shared UI components, and common base 
 
 The [auth](auth/auth.md) feature provides OIDC-based authentication and role-based access control, including users, roles, role assignments, route guards, and auth-related UI components.
 
+The [audit](audit/audit.md) feature records create, update, and delete events for business objects that apply the Audit mixin, with configurable property exclusion and AsyncLocalStorage-based context coordination.
+
 The [slack-alerts](slack-alerts/slack-alerts.md) feature sends lifecycle notifications (startup, shutdown, errors) to a Slack channel via webhook.
 
 The [user-interfaces](user-interfaces/user-interfaces.md) directory contains the root app component and shared UI components including add-button dialogs and breadcrumb navigation.

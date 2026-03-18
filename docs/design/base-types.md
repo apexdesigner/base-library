@@ -6,6 +6,8 @@ generated-by: design-docs.base-types.doc.md
 
 | Name | Native Type | Description |
 |------|-------------|-------------|
+| <span id="auditeventoperation">Audit Event Operation</span> | `string` | The type of operation that triggered an audit event. |
+| <span id="auditeventstatus">Audit Event Status</span> | `string` | The completion status of an audit event. |
 | <span id="calendardate">Calendar Date</span> | `string` | Date value for calendar selection. |
 | <span id="currency">Currency</span> | `number` | Monetary currency value. |
 | <span id="duration">Duration</span> | `string` | Time duration value. |
