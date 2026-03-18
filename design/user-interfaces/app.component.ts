@@ -3,7 +3,7 @@ import { SchemaFormsService } from '@apexdesigner/schema-forms';
 import { SelectUserFieldComponent } from '@components';
 import { SelectRoleFieldComponent } from '@components';
 import { SelectRoleNameFieldComponent } from '@components';
-import { AuthService } from '@services';
+import { AuthService, PackageService } from '@services';
 
 /**
  * App
@@ -13,6 +13,9 @@ import { AuthService } from '@services';
 export class AppComponent extends Component {
   /** Auth Service */
   authService!: AuthService;
+
+  /** Package Service */
+  packageService!: PackageService;
 
   /** Schema Forms Service */
   schemaFormsService!: SchemaFormsService;
@@ -29,8 +32,8 @@ export class AppComponent extends Component {
 applyTemplate(
   AppComponent,
   `
-  <flex-column>
-    <mat-toolbar color="primary">
+  <flex-column [gap]="0">
+    <mat-toolbar color="primary" style="margin-bottom: 1rem">
       <flex-row [gap]="16" [alignCenter]="true" grow>
         <a routerLink="/" style="color: inherit; text-decoration: none">PROJECT_METADATA.displayName</a>
         <span grow></span>
@@ -42,6 +45,9 @@ applyTemplate(
     <div grow style="padding: 0 16px">
       <router-outlet></router-outlet>
     </div>
+    <mat-toolbar color="primary" style="font-size: 12px; min-height: 32px; height: 32px">
+      Version {{packageService.version}}
+    </mat-toolbar>
   </flex-column>
 `
 );
