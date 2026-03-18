@@ -20,4 +20,7 @@ export class AuthContext extends InterfaceDefinition {
 
   /** Roles - Authorization roles assigned to this user */
   roles?: Role[];
+
+  /** System Request - When true, role checking is bypassed for this request */
+  systemRequest?: boolean;
 }

@@ -1,6 +1,10 @@
+---
+generated-from: design/project.ts
+generated-by: design-docs.design-md.md
+---
 # Export Import
 
-The [Export Import](export-import.mixin.ts) mixin adds portable JSON export and import to any business object. It traverses the object graph — following child relationships (belongs-to-parent) downward and capturing referenced objects with their identifying context — so that an exported object can be imported into a different database where IDs differ.
+The [Export Import](export-import.mixin.md) mixin adds portable JSON export and import to any business object. It traverses the object graph — following child relationships (belongs-to-parent) downward and capturing referenced objects with their identifying context — so that an exported object can be imported into a different database where IDs differ.
 
 ## Concepts
 
@@ -31,11 +35,11 @@ Export is an instance behavior exposed as `GET /api/<plural>/:id/export`. It ret
 
 ### Export Many (Class Behavior)
 
-The [exportMany](export-import.export-many.behavior.ts) class behavior is exposed as `POST /api/<plural>/export-many`. It accepts a `where` filter in the request body and exports every matching instance as a root, combining them into a single file. Each matched instance is traversed independently using the same graph-walking logic as the instance export. References that appear in multiple roots are deduplicated in the flat object map.
+The [exportMany](export-import.export-many.behavior.md) class behavior is exposed as `POST /api/<plural>/export-many`. It accepts a `where` filter in the request body and exports every matching instance as a root, combining them into a single file. Each matched instance is traversed independently using the same graph-walking logic as the instance export. References that appear in multiple roots are deduplicated in the flat object map.
 
 ### Bulk Export (App Behavior)
 
-The [bulkExport](export-import.bulk-export.app-behavior.ts) app behavior is exposed as `POST /api/bulk-export`. It accepts a map of entity names to where filters and produces a single combined export file. Only business objects that have the Export Import mixin applied can be included; the behavior throws if a requested entity name does not have the mixin. Each entity's matches are traversed as roots, and references are deduplicated across all entities.
+The [bulkExport](export-import.bulk-export.app-behavior.md) app behavior is exposed as `POST /api/bulk-export`. It accepts a map of entity names to where filters and produces a single combined export file. Only business objects that have the Export Import mixin applied can be included; the behavior throws if a requested entity name does not have the mixin. Each entity's matches are traversed as roots, and references are deduplicated across all entities.
 
 ```json
 {

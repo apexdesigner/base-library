@@ -15,3 +15,4 @@ Available downstream via `App.auth.context.getStore()`.
 | accessToken | `any` | No | Access Token - Decoded JWT access token claims |
 | tenantId | `string` | No | Tenant ID - Tenant identifier extracted from token claims |
 | roles | [`Role[]`](../users-and-roles/role.business-object.md) | No | Roles - Authorization roles assigned to this user |
+| systemRequest | `boolean` | No | System Request - When true, role checking is bypassed for this request |
