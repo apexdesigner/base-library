@@ -365,6 +365,157 @@ describe('appServiceGenerator', () => {
     });
   });
 
+  describe('HTTP call wrappers', () => {
+    it('should generate a typed method for a GET class behavior', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
+          async function healthCheck(): { ok: boolean } { return { ok: true }; }
+        );
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain('async healthCheck()');
+      expect(ts).toContain("this.http.get");
+      expect(ts).toContain('/api/health');
+    });
+
+    it('should generate a typed method for a POST class behavior with body params', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addAppBehavior(
+        workspace,
+        'createReport',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Class Behavior', httpMethod: 'Post', path: '/api/reports' },
+          async function createReport(title: string, data: any): any { return {}; }
+        );
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain('async createReport(title: string, data: any)');
+      expect(ts).toContain('this.http.post');
+    });
+
+    it('should generate a typed method with path params', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addAppBehavior(
+        workspace,
+        'getCategory',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Class Behavior', httpMethod: 'Get', path: '/api/categories/:categoryId/details' },
+          async function getCategory(categoryId: number): any { return {}; }
+        );
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain('async getCategory(categoryId: number)');
+      expect(ts).toContain('${categoryId}');
+    });
+
+    it('should not generate methods for lifecycle or middleware behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addAppBehavior(
+        workspace,
+        'setupAuth',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Lifecycle Behavior', stage: 'Startup', sequence: 100 },
+          async function setupAuth() {}
+        );
+      `
+      );
+      addAppBehavior(
+        workspace,
+        'authMiddleware',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Middleware', sequence: 100 },
+          async function authMiddleware(req: any, res: any, next: () => void) {}
+        );
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).not.toContain('async setupAuth(');
+      expect(ts).not.toContain('async authMiddleware(');
+    });
+
+    it('should include typed methods in the type declaration', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
+          async function healthCheck(): { ok: boolean } { return { ok: true }; }
+        );
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const dts = getOutput(result, TYPE_PATH);
+
+      expect(dts).toContain('healthCheck(): Promise<{ ok: boolean }>');
+    });
+
+    it('should import HttpClient in generated service when class behaviors exist', async () => {
+      const workspace = createSimpleMockWorkspace();
+      addProject(workspace);
+      addAppBehavior(
+        workspace,
+        'healthCheck',
+        `
+        import { addAppBehavior } from '@apexdesigner/dsl';
+        addAppBehavior(
+          { type: 'Class Behavior', httpMethod: 'Get', path: '/api/health' },
+          async function healthCheck(): any { return {}; }
+        );
+      `
+      );
+
+      const metadata = workspace.context.listMetadata('Project')[0];
+      const result = (await appServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
+      const ts = getOutput(result, SERVICE_PATH);
+
+      expect(ts).toContain('HttpClient');
+      expect(ts).toContain('inject(HttpClient)');
+    });
+  });
+
   describe('empty state', () => {
     it('should generate valid service with no app behaviors', async () => {
       const workspace = createSimpleMockWorkspace();
