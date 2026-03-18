@@ -30,12 +30,13 @@ function toObjectLiteral(obj: Record<string, unknown>): string {
 }
 
 /**
- * Extract field names from addUniqueConstraint args.
+ * Extract unique constraint options from addUniqueConstraint args.
  * Supports: addUniqueConstraint(Class, 'field1', 'field2') — string args
- * and: addUniqueConstraint(Class, { fields: ['field1', 'field2'] }) — object form
+ * and: addUniqueConstraint(Class, { name?: '...', fields: ['field1', 'field2'] }) — object form
  */
-function extractFieldsFromArgs(args: Node[]): string[] {
+function extractUniqueConstraintFromArgs(args: Node[]): { name?: string; fields: string[] } {
   const fields: string[] = [];
+  let name: string | undefined;
   // Skip first arg (class reference), check remaining
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
@@ -43,7 +44,14 @@ function extractFieldsFromArgs(args: Node[]): string[] {
       // String args form: addUniqueConstraint(Class, 'field1', 'field2')
       fields.push(arg.getLiteralValue());
     } else if (Node.isObjectLiteralExpression(arg)) {
-      // Object form: addUniqueConstraint(Class, { fields: ['field1'] })
+      // Object form: addUniqueConstraint(Class, { name?: '...', fields: ['field1'] })
+      const nameProp = arg.getProperty('name');
+      if (nameProp && Node.isPropertyAssignment(nameProp)) {
+        const nameInit = nameProp.getInitializer();
+        if (nameInit && Node.isStringLiteral(nameInit)) {
+          name = nameInit.getLiteralValue();
+        }
+      }
       const fieldsProp = arg.getProperty('fields');
       if (fieldsProp && Node.isPropertyAssignment(fieldsProp)) {
         const init = fieldsProp.getInitializer();
@@ -57,7 +65,7 @@ function extractFieldsFromArgs(args: Node[]): string[] {
       }
     }
   }
-  return fields;
+  return { name, fields };
 }
 
 /**
@@ -598,7 +606,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     debug('viewSql %j', viewSql);
 
     // Detect addUniqueConstraint() and addIndex() calls
-    const uniqueConstraints: string[][] = [];
+    const uniqueConstraints: { name?: string; fields: string[] }[] = [];
     const indexes: { name: string; properties: { name: string; descending?: boolean }[] }[] = [];
     for (const statement of metadata.sourceFile.getStatements()) {
       if (!Node.isExpressionStatement(statement)) continue;
@@ -610,9 +618,9 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       const args = expr.getArguments();
 
       if (calleeName === 'addUniqueConstraint') {
-        const fields = extractFieldsFromArgs(args);
-        if (fields.length > 0) {
-          uniqueConstraints.push(fields);
+        const constraint = extractUniqueConstraintFromArgs(args);
+        if (constraint.fields.length > 0) {
+          uniqueConstraints.push(constraint);
         }
       } else if (calleeName === 'addIndex') {
         // addIndex(ClassName, { name: '...', properties: [{ name: '...' }] })
@@ -666,9 +674,10 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     lines.push(schemaProps.join(',\n\n'));
     lines.push('  })');
     lines.push(`  .describe("${entityDescription.replace(/"/g, '\\"').replace(/\n/g, ' ')}")`);
-    for (const fields of uniqueConstraints) {
-      const fieldList = fields.map(f => `"${f}"`).join(', ');
-      lines.push(`  .unique({ fields: [${fieldList}] })`);
+    for (const constraint of uniqueConstraints) {
+      const fieldList = constraint.fields.map(f => `"${f}"`).join(', ');
+      const nameClause = constraint.name ? `name: "${constraint.name}", ` : '';
+      lines.push(`  .unique({ ${nameClause}fields: [${fieldList}] })`);
     }
     for (const idx of indexes) {
       const propsList = idx.properties.map(p => (p.descending ? `{ name: "${p.name}", descending: true }` : `{ name: "${p.name}" }`)).join(', ');
