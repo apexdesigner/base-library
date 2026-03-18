@@ -13,32 +13,32 @@ All design artifacts are TypeScript files in the `/design` directory using the A
 
 | Design Type | Description | Doc |
 |---|---|---|
-| Business Object | Core entity classes with properties and relationships | `.claude/skills/apex-designer/docs/dsl/business-objects.md` |
-| Behavior | Custom logic for business objects | `.claude/skills/apex-designer/docs/dsl/behaviors.md` |
-| App Behavior | Application-level server logic | `.claude/skills/apex-designer/docs/dsl/app-behaviors.md` |
-| App Properties | Server-side singleton state (caches, clients) | `.claude/skills/apex-designer/docs/dsl/app-properties.md` |
-| Agent | AI-powered participants for processes | `.claude/skills/apex-designer/docs/dsl/agents.md` |
-| Base Type | Type wrappers with validation constraints | `.claude/skills/apex-designer/docs/dsl/base-types.md` |
-| Component | Reusable UI elements | `.claude/skills/apex-designer/docs/dsl/components.md` |
-| Component Interface | Template API for Angular components | `.claude/skills/apex-designer/docs/dsl/component-interfaces.md` |
-| Data Flow | Computation with dependency-based execution | `.claude/skills/apex-designer/docs/dsl/data-flows.md` |
-| Data Source | Persistence layer for business objects | `.claude/skills/apex-designer/docs/dsl/data-sources.md` |
-| Decision Table | Business rules evaluator | `.claude/skills/apex-designer/docs/dsl/decision-tables.md` |
-| Directive Interface | Template API for Angular directives | `.claude/skills/apex-designer/docs/dsl/directive-interfaces.md` |
-| External Type | Importable types from libraries | `.claude/skills/apex-designer/docs/dsl/external-types.md` |
-| Function | Reusable callable utilities (client, server, or both) | `.claude/skills/apex-designer/docs/dsl/functions.md` |
-| Interface Definition | Non-persisted data shapes for typed parameters | `.claude/skills/apex-designer/docs/dsl/interface-definitions.md` |
-| Mixin | Reusable properties for business objects | `.claude/skills/apex-designer/docs/dsl/mixins.md` |
-| Page | Routable views in the application | `.claude/skills/apex-designer/docs/dsl/pages.md` |
-| Persistence | Override default table/storage naming | `.claude/skills/apex-designer/docs/dsl/persistence.md` |
-| Pipe Interface | Template pipes for filter syntax | `.claude/skills/apex-designer/docs/dsl/pipe-interfaces.md` |
-| Process | Workflow defined as class methods | `.claude/skills/apex-designer/docs/dsl/processes.md` |
-| Project | Application settings and dependencies | `.claude/skills/apex-designer/docs/dsl/project.md` |
-| Role | Access control for objects and pages | `.claude/skills/apex-designer/docs/dsl/roles.md` |
-| Service | Shared injectable logic | `.claude/skills/apex-designer/docs/dsl/services.md` |
-| Template | Markup for pages and components | `.claude/skills/apex-designer/docs/dsl/templates.md` |
-| Test Fixture | Reusable test data setup functions | `.claude/skills/apex-designer/docs/dsl/test-fixtures.md` |
-| Validator | Source file checkers with auto-fix | `.claude/skills/apex-designer/docs/dsl/validators.md` |
+| Business Object | Core entity classes with properties and relationships | `node_modules/@apexdesigner/dsl/docs/business-objects.md` |
+| Behavior | Custom logic for business objects | `node_modules/@apexdesigner/dsl/docs/behaviors.md` |
+| App Behavior | Application-level server logic | `node_modules/@apexdesigner/dsl/docs/app-behaviors.md` |
+| App Properties | Server-side singleton state (caches, clients) | `node_modules/@apexdesigner/dsl/docs/app-properties.md` |
+| Agent | AI-powered participants for processes | `node_modules/@apexdesigner/dsl/docs/agents.md` |
+| Base Type | Type wrappers with validation constraints | `node_modules/@apexdesigner/dsl/docs/base-types.md` |
+| Component | Reusable UI elements | `node_modules/@apexdesigner/dsl/docs/components.md` |
+| Component Interface | Template API for Angular components | `node_modules/@apexdesigner/dsl/docs/component-interfaces.md` |
+| Data Flow | Computation with dependency-based execution | `node_modules/@apexdesigner/dsl/docs/data-flows.md` |
+| Data Source | Persistence layer for business objects | `node_modules/@apexdesigner/dsl/docs/data-sources.md` |
+| Decision Table | Business rules evaluator | `node_modules/@apexdesigner/dsl/docs/decision-tables.md` |
+| Directive Interface | Template API for Angular directives | `node_modules/@apexdesigner/dsl/docs/directive-interfaces.md` |
+| External Type | Importable types from libraries | `node_modules/@apexdesigner/dsl/docs/external-types.md` |
+| Function | Reusable callable utilities (client, server, or both) | `node_modules/@apexdesigner/dsl/docs/functions.md` |
+| Interface Definition | Non-persisted data shapes for typed parameters | `node_modules/@apexdesigner/dsl/docs/interface-definitions.md` |
+| Mixin | Reusable properties for business objects | `node_modules/@apexdesigner/dsl/docs/mixins.md` |
+| Page | Routable views in the application | `node_modules/@apexdesigner/dsl/docs/pages.md` |
+| Persistence | Override default table/storage naming | `node_modules/@apexdesigner/dsl/docs/persistence.md` |
+| Pipe Interface | Template pipes for filter syntax | `node_modules/@apexdesigner/dsl/docs/pipe-interfaces.md` |
+| Process | Workflow defined as class methods | `node_modules/@apexdesigner/dsl/docs/processes.md` |
+| Project | Application settings and dependencies | `node_modules/@apexdesigner/dsl/docs/project.md` |
+| Role | Access control for objects and pages | `node_modules/@apexdesigner/dsl/docs/roles.md` |
+| Service | Shared injectable logic | `node_modules/@apexdesigner/dsl/docs/services.md` |
+| Template | Markup for pages and components | `node_modules/@apexdesigner/dsl/docs/templates.md` |
+| Test Fixture | Reusable test data setup functions | `node_modules/@apexdesigner/dsl/docs/test-fixtures.md` |
+| Validator | Source file checkers with auto-fix | `node_modules/@apexdesigner/dsl/docs/validators.md` |
 
 ## Libraries
 
@@ -86,6 +86,10 @@ Overriding generated files is a last-resort workaround that creates maintenance 
 ## Design Documentation
 
 Each concept directory in `/design` must have a markdown file documenting its design assets (e.g., `process-design/process-design.md`). The root `/design/design.md` file provides a map of all concept directories. All design artifacts must be referenced by at least one `.md` file in the design directory. See `.claude/skills/apex-designer/docs/design-docs-style.md` for the style guide covering structure, linking conventions, and formatting patterns.
+
+## AD2 Migration
+
+See `.claude/skills/apex-designer/docs/ad2-migration.md` for pulling AD2 design data and migrating to AD3.
 
 ## CLI
 
