@@ -144,8 +144,8 @@ const appGenerator: DesignGenerator = {
           mappedModule = moduleSpecifier.replace('@server/', './') + '.js';
         }
 
-        // Map @business-objects to relative paths (per-named-import)
-        const resolvedModule = mappedModule === '@business-objects' ? null : mappedModule;
+        // Map @business-objects and @functions to relative paths (per-named-import)
+        const resolvedModule = (mappedModule === '@business-objects' || mappedModule === '@functions') ? null : mappedModule;
 
         // Handle default import
         const defaultImport = importDecl.getDefaultImport();
@@ -161,6 +161,10 @@ const appGenerator: DesignGenerator = {
             const boModule = `./business-objects/${kebabCase(name)}.js`;
             if (!namedImports.has(boModule)) namedImports.set(boModule, new Set());
             namedImports.get(boModule)!.add(name);
+          } else if (moduleSpecifier === '@functions') {
+            const fnModule = `./functions/${kebabCase(name)}.js`;
+            if (!namedImports.has(fnModule)) namedImports.set(fnModule, new Set());
+            namedImports.get(fnModule)!.add(name);
           } else if (resolvedModule) {
             if (!namedImports.has(resolvedModule)) namedImports.set(resolvedModule, new Set());
             namedImports.get(resolvedModule)!.add(name);

@@ -746,11 +746,19 @@ const businessObjectGenerator: DesignGenerator = {
 
         const isInstance = options.type === 'Instance';
         const isAsync = func.isAsync;
+        const isMixinBehavior = mixinNames.includes(parent);
 
-        // Get parameters: skip first for instance behaviors (it's the instance itself)
+        // Get parameters: skip framework-injected params
+        // Mixin instance behaviors: (Model, mixinOptions, instance, ...rest) — skip first 3
+        // Mixin class behaviors: (Model, mixinOptions, ...rest) — skip first 2
+        // BO instance behaviors: (instance, ...rest) — skip first 1
+        // BO class behaviors: (...rest) — skip none
         const params = func.parameters || [];
-        const methodParams = isInstance ? params.slice(1) : params;
-        const instanceParamName = isInstance && params.length > 0 ? params[0].name : undefined;
+        const skipCount = isMixinBehavior ? (isInstance ? 3 : 2) : (isInstance ? 1 : 0);
+        const methodParams = params.slice(skipCount);
+        const instanceParamName = isInstance
+          ? (isMixinBehavior ? (params.length > 2 ? params[2].name : undefined) : (params.length > 0 ? params[0].name : undefined))
+          : undefined;
 
         // Get the function body from the AST (unchanged)
         const body = getBehaviorBody(behavior.sourceFile);
@@ -779,6 +787,18 @@ const businessObjectGenerator: DesignGenerator = {
         const methodLines: string[] = [];
         methodLines.push('');
         methodLines.push(`  ${staticPrefix}${asyncPrefix}${func.name}(${paramStr})${returnType} {`);
+
+        // Inject mixin context variables
+        if (isMixinBehavior) {
+          if (isInstance) {
+            methodLines.push(`    const Model = (this as any).constructor;`);
+          } else {
+            methodLines.push(`    const Model = this;`);
+          }
+          if (allMixinOptions.has(parent)) {
+            methodLines.push(`    const mixinOptions = ${isInstance ? '(this as any).constructor' : 'this'}.mixinOptions.${camelCase(parent)} as const;`);
+          }
+        }
 
         // For instance behaviors, alias 'this' to the original parameter name
         if (instanceParamName) {

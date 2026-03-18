@@ -174,9 +174,12 @@ const businessObjectRouteGenerator: DesignGenerator = {
         const isInstance = options.type === 'Instance';
         const httpMethod = BEHAVIOR_HTTP_METHODS[(options.httpMethod as string) || 'Post'] || 'post';
         const behaviorKebab = kebabCase(func.name);
+        const isMixinBehavior = mixins.some(m => m.name === parent);
 
+        // Skip framework-injected params: mixin behaviors have (Model, mixinOptions, [instance], ...)
         const params = func.parameters || [];
-        const methodParams = isInstance ? params.slice(1) : params;
+        const skipCount = isMixinBehavior ? (isInstance ? 3 : 2) : (isInstance ? 1 : 0);
+        const methodParams = params.slice(skipCount);
         const hasParams = methodParams.length > 0;
 
         // Classify params by source: path (from URL), header, body

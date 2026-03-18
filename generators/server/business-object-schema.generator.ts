@@ -303,8 +303,8 @@ const businessObjectSchemaGenerator: DesignGenerator = {
       }
     }
 
-    // Get properties from the class
-    const properties = boClass?.getProperties() || [];
+    // Get properties from the class (skip static properties like 'mixins')
+    const properties = (boClass?.getProperties() || []).filter((p: any) => !p.isStatic());
     debug('properties count %j', properties.length);
 
     // Create a set of names to skip

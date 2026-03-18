@@ -542,6 +542,103 @@ describe('businessObjectGenerator', () => {
 
       expect(result).toContain('const debug = Debug.extend("claim")');
     });
+
+    it('should inject Model and mixinOptions for mixin Instance behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Mixin', 'ExportImport', {
+        sourceCode: `
+          import { Mixin } from '@apexdesigner/dsl';
+          export interface ExportImportConfig {
+            excludeProperties?: string[];
+          }
+          export class ExportImport extends Mixin {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { ExportImport } from '@mixins';
+          import { applyExportImportMixin } from '@mixins';
+          export class Order extends BusinessObject {
+            id!: number;
+            static mixins = [ExportImport];
+          }
+          applyExportImportMixin(Order, { excludeProperties: ["secret"] });
+        `
+      });
+      workspace.addMetadata('Behavior', 'ExportImportExport', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ExportImport, ExportImportConfig } from '@mixins';
+          addBehavior(
+            ExportImport,
+            { type: 'Instance', httpMethod: 'Get' },
+            async function exportInstance(Model: any, mixinOptions: ExportImportConfig, instance: any) {
+              return { entity: Model.entityName, config: mixinOptions };
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should be an instance method (not static)
+      expect(result).toContain('async exportInstance()');
+      expect(result).not.toContain('static async exportInstance');
+      // Should inject Model and mixinOptions
+      expect(result).toContain('const Model = (this as any).constructor;');
+      expect(result).toContain('const mixinOptions = (this as any).constructor.mixinOptions.exportImport as const;');
+      // Should alias instance to 'this'
+      expect(result).toContain('const instance = this;');
+    });
+
+    it('should inject Model and mixinOptions for mixin Class behaviors', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('Mixin', 'ExportImport', {
+        sourceCode: `
+          import { Mixin } from '@apexdesigner/dsl';
+          export interface ExportImportConfig {
+            excludeProperties?: string[];
+          }
+          export class ExportImport extends Mixin {}
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { ExportImport } from '@mixins';
+          import { applyExportImportMixin } from '@mixins';
+          export class Order extends BusinessObject {
+            id!: number;
+            static mixins = [ExportImport];
+          }
+          applyExportImportMixin(Order, { excludeProperties: ["secret"] });
+        `
+      });
+      workspace.addMetadata('Behavior', 'ExportImportExportMany', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { ExportImport, ExportImportConfig } from '@mixins';
+          addBehavior(
+            ExportImport,
+            { type: 'Class', httpMethod: 'Post' },
+            async function exportMany(Model: any, mixinOptions: ExportImportConfig, body: any) {
+              return { entity: Model.entityName, filter: body.where };
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+      // Should be a static method
+      expect(result).toContain('static async exportMany(body: any)');
+      // Should inject Model and mixinOptions
+      expect(result).toContain('const Model = this;');
+      expect(result).toContain('const mixinOptions = this.mixinOptions.exportImport as const;');
+    });
   });
 
   describe('behavior return types', () => {
