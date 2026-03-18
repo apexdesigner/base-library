@@ -125,19 +125,23 @@ describe('businessObjectServiceGenerator', () => {
     });
   });
 
-  describe('parameterized imports', () => {
-    it('should use parameterized import paths instead of switch/case', async () => {
+  describe('explicit imports', () => {
+    it('should use switch/case with explicit import paths to avoid Webpack glob resolution', async () => {
       const workspace = createSimpleMockWorkspace();
       addProject(workspace);
       addBusinessObject(workspace, 'Task');
+      addBusinessObject(workspace, 'User');
 
       const metadata = workspace.context.listMetadata('Project')[0];
       const result = (await businessObjectServiceGenerator.generate(metadata, workspace.context)) as Map<string, string>;
       const ts = getOutput(result, SERVICE_PATH);
 
-      // All methods should use parameterized imports, not a switch/case per BO
-      expect(ts).not.toContain('switch');
-      expect(ts).toContain('import(`');
+      // Should use explicit switch/case, not template literal imports
+      expect(ts).not.toContain('import(`');
+      expect(ts).toContain("case 'Task':");
+      expect(ts).toContain("import('../../business-objects/task-form-group')");
+      expect(ts).toContain("case 'User':");
+      expect(ts).toContain("import('../../business-objects/user-form-group')");
     });
   });
 
