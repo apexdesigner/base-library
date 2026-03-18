@@ -47,6 +47,7 @@ applyTemplate(
     <a routerLink="/manage-roles">Manage Roles</a>
     <a routerLink="/test-select-fields">Select Fields</a>
     <a routerLink="/switch-user">Switch User</a>
+    <a routerLink="/service-test-app-behaviors">App Behavior Tests</a>
   </flex-column>
 `
 );
