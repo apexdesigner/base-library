@@ -298,9 +298,11 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push('    switch (entityName) {');
     for (const entry of entries) {
       lines.push(`      case '${entry.name}':`);
-      lines.push(`        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}FormGroup(options));`);
+      lines.push(
+        `        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}FormGroup(options));`
+      );
     }
-    lines.push("      default: throw new Error(`Unknown entity: ${entityName}`);");
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
     lines.push('    }');
     lines.push('  }');
     lines.push('');
@@ -311,9 +313,11 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push('    switch (entityName) {');
     for (const entry of entries) {
       lines.push(`      case '${entry.name}':`);
-      lines.push(`        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}FormArray(options));`);
+      lines.push(
+        `        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}FormArray(options));`
+      );
     }
-    lines.push("      default: throw new Error(`Unknown entity: ${entityName}`);");
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
     lines.push('    }');
     lines.push('  }');
     lines.push('');
@@ -324,9 +328,11 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push('    switch (entityName) {');
     for (const entry of entries) {
       lines.push(`      case '${entry.name}':`);
-      lines.push(`        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}PersistedArray(options));`);
+      lines.push(
+        `        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}PersistedArray(options));`
+      );
     }
-    lines.push("      default: throw new Error(`Unknown entity: ${entityName}`);");
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
     lines.push('    }');
     lines.push('  }');
     lines.push('');
@@ -339,7 +345,7 @@ const businessObjectServiceGenerator: DesignGenerator = {
       lines.push(`      case '${entry.name}':`);
       lines.push(`        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => m.${entry.name});`);
     }
-    lines.push("      default: throw new Error(`Unknown entity: ${entityName}`);");
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
     lines.push('    }');
     lines.push('  }');
 

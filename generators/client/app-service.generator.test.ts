@@ -386,7 +386,7 @@ describe('appServiceGenerator', () => {
       const ts = getOutput(result, SERVICE_PATH);
 
       expect(ts).toContain('async healthCheck()');
-      expect(ts).toContain("this.http.get");
+      expect(ts).toContain('this.http.get');
       expect(ts).toContain('/api/health');
     });
 
