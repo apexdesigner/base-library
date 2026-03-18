@@ -582,6 +582,45 @@ describe('businessObjectSchemaGenerator', () => {
       expect(result).toContain('.unique({ fields: ["email"] })');
       expect(result).toContain('.unique({ fields: ["slug"] })');
     });
+
+    it('should pass through name from addUniqueConstraint to .unique()', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'ActivityAssignment', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint } from '@apexdesigner/dsl';
+          export class ActivityAssignment extends BusinessObject {
+            termId!: number;
+            tutorId!: number;
+            slotId!: number;
+          }
+          addUniqueConstraint(ActivityAssignment, { name: 'aa_term_tutor_slot', fields: ['termId', 'tutorId', 'slotId'] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.unique({ name: "aa_term_tutor_slot", fields: ["termId", "tutorId", "slotId"] })');
+    });
+
+    it('should omit name when addUniqueConstraint does not provide one', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'User', {
+        sourceCode: `
+          import { BusinessObject, addUniqueConstraint } from '@apexdesigner/dsl';
+          export class User extends BusinessObject {
+            email!: string;
+          }
+          addUniqueConstraint(User, { fields: ['email'] });
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.unique({ fields: ["email"] })');
+      expect(result).not.toContain('name:');
+    });
   });
 
   describe('onDelete', () => {

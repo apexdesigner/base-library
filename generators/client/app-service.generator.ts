@@ -1,5 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { getBehaviorFunction, getBehaviorOptions, getModuleLevelCall } from '@apexdesigner/utilities';
+import { classifyBehaviorParams } from '../shared/classify-params.js';
 import { Node } from 'ts-morph';
 import createDebug from 'debug';
 
@@ -101,10 +102,76 @@ const appServiceGenerator: DesignGenerator = {
 
     entries.sort((a, b) => a.name.localeCompare(b.name));
 
+    // Build typed HTTP method wrappers for Class Behaviors
+    const NON_HTTP_TYPES = new Set(['Lifecycle Behavior', 'Middleware', 'Guard', 'Event']);
+    interface HttpMethodEntry {
+      name: string;
+      paramStr: string;
+      returnType: string;
+      httpMethod: string;
+      urlExpr: string;
+      bodyArg: string;
+      hasHeaders: boolean;
+      headersArg?: string;
+    }
+    const httpMethods: HttpMethodEntry[] = [];
+
+    for (const ab of appBehaviors) {
+      const options = getBehaviorOptions(ab.sourceFile);
+      if (!options) continue;
+      if (NON_HTTP_TYPES.has(options.type as string)) continue;
+      if (!options.path) continue;
+
+      const func = getBehaviorFunction(ab.sourceFile);
+      if (!func) continue;
+
+      const params = func.parameters || [];
+      const routePath = options.path as string;
+      const classified = classifyBehaviorParams(params, routePath);
+
+      const paramStr = params
+        .map(p => {
+          const cp = classified.all.find(c => c.name === p.name);
+          const optional = p.isOptional ? '?' : '';
+          const type = cp?.source === 'header' ? cp.innerType || 'string' : p.type || 'any';
+          return `${p.name}${optional}: ${type}`;
+        })
+        .join(', ');
+
+      // Build URL expression with path param interpolation
+      let urlPath = routePath;
+      for (const pp of classified.path) {
+        urlPath = urlPath.replace(`:${pp.name}`, `\${${pp.name}}`);
+      }
+      const urlExpr = classified.path.length > 0 ? `\`${urlPath}\`` : `'${urlPath}'`;
+
+      // Build body arg
+      const OBJECT_TYPES = new Set(['any', 'object', 'Record']);
+      const bodyIsPassthrough =
+        classified.body.length === 1 && (OBJECT_TYPES.has(classified.body[0].type || 'any') || (classified.body[0].type || '').startsWith('{'));
+      const bodyArg =
+        classified.body.length === 0 ? '{}' : bodyIsPassthrough ? classified.body[0].name : `{ ${classified.body.map(p => p.name).join(', ')} }`;
+
+      // Build headers arg
+      const hasHeaders = classified.header.length > 0;
+      const headersArg = hasHeaders ? `{ headers: { ${classified.header.map(p => `'${p.name}': String(${p.name})`).join(', ')} } }` : undefined;
+
+      const httpMethod = ((options.httpMethod as string) || 'Post').toLowerCase();
+      const returnType = func.returnType || 'any';
+
+      httpMethods.push({ name: func.name, paramStr, returnType, httpMethod, urlExpr, bodyArg, hasHeaders, headersArg });
+    }
+
+    const hasHttpMethods = httpMethods.length > 0;
+
     // --- Runtime service ---
     const lines: string[] = [];
 
-    lines.push("import { Injectable } from '@angular/core';");
+    lines.push("import { Injectable, inject } from '@angular/core';");
+    if (hasHttpMethods) {
+      lines.push("import { HttpClient } from '@angular/common/http';");
+      lines.push("import { firstValueFrom } from 'rxjs';");
+    }
     lines.push('');
 
     // AppBehaviorEntry interface
@@ -147,6 +214,39 @@ const appServiceGenerator: DesignGenerator = {
     }
     lines.push('  ];');
 
+    // HTTP call wrapper methods
+    if (hasHttpMethods) {
+      lines.push('');
+      lines.push('  private http = inject(HttpClient);');
+
+      for (const m of httpMethods) {
+        lines.push('');
+        lines.push(`  async ${m.name}(${m.paramStr}): Promise<${m.returnType}> {`);
+        lines.push(`    const url = ${m.urlExpr};`);
+
+        const opts = m.headersArg || '';
+        switch (m.httpMethod) {
+          case 'get':
+            lines.push(`    return firstValueFrom(this.http.get<${m.returnType}>(url${opts ? `, ${opts}` : ''}));`);
+            break;
+          case 'delete':
+            lines.push(`    return firstValueFrom(this.http.delete<${m.returnType}>(url${opts ? `, ${opts}` : ''}));`);
+            break;
+          case 'put':
+            lines.push(`    return firstValueFrom(this.http.put<${m.returnType}>(url, ${m.bodyArg}${opts ? `, ${opts}` : ''}));`);
+            break;
+          case 'patch':
+            lines.push(`    return firstValueFrom(this.http.patch<${m.returnType}>(url, ${m.bodyArg}${opts ? `, ${opts}` : ''}));`);
+            break;
+          default:
+            lines.push(`    return firstValueFrom(this.http.post<${m.returnType}>(url, ${m.bodyArg}${opts ? `, ${opts}` : ''}));`);
+            break;
+        }
+
+        lines.push('  }');
+      }
+    }
+
     lines.push('}');
 
     const serviceContent = lines.join('\n') + '\n';
@@ -171,6 +271,9 @@ const appServiceGenerator: DesignGenerator = {
     typeLines.push('');
     typeLines.push('export declare class AppService {');
     typeLines.push('  readonly behaviors: readonly AppBehaviorEntry[];');
+    for (const m of httpMethods) {
+      typeLines.push(`  ${m.name}(${m.paramStr}): Promise<${m.returnType}>;`);
+    }
     typeLines.push('}');
 
     const typeContent = typeLines.join('\n') + '\n';

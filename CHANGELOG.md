@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.151] - 2026-03-18
+
+- cebb1ca chore: format audit design files and update docs
+- 3961e4f chore: formatting
+- aea94b0 fix: revert server dependency to published version ^0.8.40
+- 79434a4 test: add app behavior test page for AppService HTTP wrappers
+- 8b076fb feat: generate typed HTTP call wrappers in AppService for class behaviors
+- 280f549 fix: use explicit switch/case imports in BusinessObjectService to fix Angular compilation
+- 8eab842 docs: add before/after lifecycle context coordination pattern
+- 064ec02 fix: use name/value pairs for State valid values
+- 44285dd feat: add State base type for US state abbreviations
+- 1e42bc2 chore: update claude-skills and dependencies
+- db53419 feat: add Audit mixin to the base library
+- 525321c feat: pass name from addUniqueConstraint to generated .unique() call
+- 2dfcd91 feat: add version footer to app component using PackageService
+- 5208116 feat: add PackageService generator for exposing package metadata in UIs
+
+
 ## [1.0.150] - 2026-03-15
 
 - 26055da chore: formatting

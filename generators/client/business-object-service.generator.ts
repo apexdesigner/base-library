@@ -236,12 +236,6 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push('}');
     lines.push('');
 
-    // toKebab helper
-    lines.push('function toKebab(name: string): string {');
-    lines.push("  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z][a-z])/g, '$1-$2').toLowerCase();");
-    lines.push('}');
-    lines.push('');
-
     lines.push("@Injectable({ providedIn: 'root' })");
     lines.push('export class BusinessObjectService {');
 
@@ -301,36 +295,58 @@ const businessObjectServiceGenerator: DesignGenerator = {
     // loadFormGroup method
     lines.push('  async loadFormGroup(entityName: string, options?: any): Promise<PersistedFormGroup> {');
     lines.push('    debug("loadFormGroup %s", entityName);');
-    lines.push('    const kebab = toKebab(entityName);');
-    lines.push('    const m = await import(`../../business-objects/${kebab}-form-group`);');
-    lines.push('    return new m[`${entityName}FormGroup`](options);');
+    lines.push('    switch (entityName) {');
+    for (const entry of entries) {
+      lines.push(`      case '${entry.name}':`);
+      lines.push(
+        `        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}FormGroup(options));`
+      );
+    }
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
+    lines.push('    }');
     lines.push('  }');
     lines.push('');
 
     // loadFormArray method
     lines.push('  async loadFormArray(entityName: string, options?: any): Promise<PersistedFormArray> {');
     lines.push('    debug("loadFormArray %s", entityName);');
-    lines.push('    const kebab = toKebab(entityName);');
-    lines.push('    const m = await import(`../../business-objects/${kebab}-form-group`);');
-    lines.push('    return new m[`${entityName}FormArray`](options);');
+    lines.push('    switch (entityName) {');
+    for (const entry of entries) {
+      lines.push(`      case '${entry.name}':`);
+      lines.push(
+        `        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}FormArray(options));`
+      );
+    }
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
+    lines.push('    }');
     lines.push('  }');
     lines.push('');
 
     // loadPersistedArray method
     lines.push('  async loadPersistedArray(entityName: string, options?: any): Promise<PersistedArray> {');
     lines.push('    debug("loadPersistedArray %s", entityName);');
-    lines.push('    const kebab = toKebab(entityName);');
-    lines.push('    const m = await import(`../../business-objects/${kebab}-form-group`);');
-    lines.push('    return new m[`${entityName}PersistedArray`](options);');
+    lines.push('    switch (entityName) {');
+    for (const entry of entries) {
+      lines.push(`      case '${entry.name}':`);
+      lines.push(
+        `        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => new m.${entry.name}PersistedArray(options));`
+      );
+    }
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
+    lines.push('    }');
     lines.push('  }');
     lines.push('');
 
     // loadEntity method
     lines.push('  async loadEntity(entityName: string): Promise<any> {');
     lines.push('    debug("loadEntity %s", entityName);');
-    lines.push('    const kebab = toKebab(entityName);');
-    lines.push('    const m = await import(`../../business-objects/${kebab}-form-group`);');
-    lines.push('    return m[entityName];');
+    lines.push('    switch (entityName) {');
+    for (const entry of entries) {
+      lines.push(`      case '${entry.name}':`);
+      lines.push(`        return import('../../business-objects/${kebabCase(entry.name)}-form-group').then(m => m.${entry.name});`);
+    }
+    lines.push('      default: throw new Error(`Unknown entity: ${entityName}`);');
+    lines.push('    }');
     lines.push('  }');
 
     lines.push('}');
