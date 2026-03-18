@@ -167,7 +167,7 @@ The nested key format works with any ID type:
 
 ## Import Logic
 
-Import is a class behavior exposed as `POST /api/<plural>/import` that accepts the JSON document as the request body. The import uses an iterative multi-pass approach to resolve references and create objects, controlled by a `_targetId` field that tracks what has been resolved.
+The [import](export-import.import.app-behavior.ts) app behavior is exposed as `POST /api/import`. It accepts the JSON export document as the request body and an optional `dryRun` query parameter. The import uses an iterative multi-pass approach to resolve references and create objects, controlled by a `_targetId` field that tracks what has been resolved.
 
 ### Iterative Resolution
 
@@ -191,6 +191,10 @@ When importing roots (whether new or existing), children are synchronized:
 
 Matching existing children to file entries uses the same anchor logic as references: unique constraints or natural keys. If a child has no unique constraint, fall back to matching on all non-null scalar properties (excluding `id` and foreign keys).
 
+### Dry Run
+
+When `dryRun=true` is passed as a query parameter, the import runs the full resolution and validation logic inside a transaction, then rolls back instead of committing. The response includes a summary of what would happen: roots to create/update, children to add/update/remove, and resolved references. This lets users preview the import without modifying data.
+
 ### Transaction Safety
 
 The entire import runs inside a database transaction. If any step fails (missing reference, validation error, constraint violation), the transaction rolls back and no partial data is created or modified.
@@ -205,8 +209,9 @@ export interface ExportImportConfig {
   excludeProperties?: string[];
 
   /**
-   * Relationship names to exclude from export.
-   * For child relationships (has-many, has-one), the entire subtree is skipped.
+   * Relationship names to exclude from export and import.
+   * For child relationships (has-many, has-one), the entire subtree is skipped
+   * on export and ignored during child synchronization on import.
    * For reference relationships (belongs-to, references), the foreign key is
    * excluded and the referenced object is not included in the export.
    * Names correspond to the relationship name on the business object

@@ -726,6 +726,38 @@ describe('businessObjectGenerator', () => {
         expect(result).toContain('TokenHistory');
       });
 
+      it('should emit static mixinOptions property with all applied mixin configs', async () => {
+        const workspace = createSimpleMockWorkspace();
+        workspace.addMetadata('Mixin', 'Audit', {
+          sourceCode: `
+            import { Mixin } from '@apexdesigner/dsl';
+            export interface AuditConfig {
+              excludeProperties?: string[];
+            }
+            export class Audit extends Mixin {}
+          `
+        });
+        workspace.addMetadata('BusinessObject', 'Invoice', {
+          sourceCode: `
+            import { BusinessObject } from '@apexdesigner/dsl';
+            import { Audit } from '@mixins';
+            import { applyAuditMixin } from '@mixins';
+            export class Invoice extends BusinessObject {
+              id!: number;
+              static mixins = [Audit];
+            }
+            applyAuditMixin(Invoice, { excludeProperties: ["password"] });
+          `
+        });
+
+        const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Invoice')!;
+        const result = (await businessObjectGenerator.generate(metadata, workspace.context)) as string;
+
+        expect(result).toContain('static readonly mixinOptions = {');
+        expect(result).toContain('audit: { excludeProperties: ["password"] },');
+        expect(result).toContain('} as const;');
+      });
+
       it('should emit mixinOptions with as const for literal type narrowing', async () => {
         const workspace = createSimpleMockWorkspace();
         workspace.addMetadata('Mixin', 'HistoryTracking', {

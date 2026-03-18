@@ -14,7 +14,7 @@ The [provide-auth](configuration/provide-auth.app-behavior.md) app behavior regi
 
 ## Server Middleware
 
-The [auth middleware](middleware/auth-middleware.app-behavior.md) app behavior validates JWT tokens on incoming requests and resolves the authenticated user. The [auth interceptor](middleware/auth-interceptor.app-behavior.md) app behavior attaches the access token to outgoing HTTP requests from the client. The [auth context](middleware/auth-context.interface-definition.md) interface definition carries the authenticated user through async request handling.
+The [auth middleware](middleware/auth-middleware.app-behavior.md) app behavior validates JWT tokens on incoming requests and resolves the authenticated user. The [auth interceptor](middleware/auth-interceptor.app-behavior.md) app behavior attaches the access token to outgoing HTTP requests from the client. The [auth context](middleware/auth-context.interface-definition.md) interface definition carries the authenticated user through async request handling. The [is-system-request](middleware/is-system-request.function.md) function checks whether the current request is a system request (bypassing role checks), and the [set-system-request](middleware/set-system-request.function.md) function runs a callback within a system request context.
 
 ## Users and Roles
 

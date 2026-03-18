@@ -23,4 +23,7 @@ export class AuthContext extends InterfaceDefinition {
 
   /** System Request - When true, role checking is bypassed for this request */
   systemRequest?: boolean;
+
+  /** Importing - When true, indicates the request is within an import operation */
+  importing?: boolean;
 }

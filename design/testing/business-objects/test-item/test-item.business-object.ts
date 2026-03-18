@@ -2,6 +2,8 @@ import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
 
 import { TestSetting, TestItemDetail } from '@business-objects';
 import { Uuid, Email } from '@base-types';
+import { Audit } from '@mixins';
+import { applyAuditMixin } from '@mixins';
 
 /**
  * Test Item
@@ -9,6 +11,7 @@ import { Uuid, Email } from '@base-types';
  * Item used for testing business object features.
  */
 export class TestItem extends BusinessObject {
+  static mixins = [Audit];
   /** Id - Primary key */
   id!: number;
 
@@ -36,3 +39,5 @@ export class TestItem extends BusinessObject {
   @relationship({ type: 'Has One' })
   testItemDetail?: TestItemDetail;
 }
+
+applyAuditMixin(TestItem, { excludeProperties: ['description'] });

@@ -243,6 +243,15 @@ const businessObjectGenerator: DesignGenerator = {
     const mixinNames = mixins.map(m => m.name);
     debug('mixins %j', mixinNames);
 
+    // Build mixin options map from all applied mixins (for static property)
+    const allMixinOptions = new Map<string, string>();
+    for (const mixin of mixins) {
+      const optionsText = getMixinApplyOptions(metadata.sourceFile, mixin.name);
+      if (optionsText) {
+        allMixinOptions.set(mixin.name, optionsText);
+      }
+    }
+
     const allBehaviors = context.listMetadata('Behavior');
     const parentNames = new Set([className, ...mixinNames]);
 
@@ -460,6 +469,13 @@ const businessObjectGenerator: DesignGenerator = {
     lines.push(`  static readonly entityName = "${className}" as const;`);
     lines.push(`  static schema = ${schemaVarName}Schema;`);
     lines.push(`  static dataSource = dataSource;`);
+    if (allMixinOptions.size > 0) {
+      lines.push(`  static readonly mixinOptions = {`);
+      for (const [mixinName, optionsText] of allMixinOptions) {
+        lines.push(`    ${camelCase(mixinName)}: ${optionsText},`);
+      }
+      lines.push(`  } as const;`);
+    }
     lines.push('');
     lines.push(`  constructor(data: ${dataTypeName}) {`);
     lines.push('    Object.assign(this, data);');
