@@ -14,7 +14,7 @@ const debug = createDebug('BaseLibrary:Audit:recordCreateEvent');
 addBehavior(
   Audit,
   {
-    type: 'Before Create',
+    type: 'Before Create'
   },
   async function recordCreateEvent(Model: any, mixinOptions: AuditConfig, dataItems: Partial<any>[]) {
     const currentUser = await User.currentUser();
@@ -36,7 +36,7 @@ addBehavior(
         userEmail: currentUser?.email,
         operation: 'Create',
         dataJson: payload,
-        status: 'Pending',
+        status: 'Pending'
       });
       debug('newEvent.id %j', newEvent.id);
 
@@ -45,5 +45,5 @@ addBehavior(
         auditCtx.pendingCreateIds.push(newEvent.id);
       }
     }
-  },
+  }
 );

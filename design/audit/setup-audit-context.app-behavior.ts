@@ -14,10 +14,10 @@ addAppBehavior(
   {
     type: 'Lifecycle Behavior',
     stage: 'Startup',
-    sequence: 200,
+    sequence: 200
   },
   async function initAuditContext() {
     App.auditProperties.context = new AsyncLocalStorage();
     debug('audit context initialized');
-  },
+  }
 );

@@ -14,20 +14,17 @@ const debug = createDebug('BaseLibrary:Audit:completeUpdateEvents');
 addBehavior(
   Audit,
   {
-    type: 'After Update',
+    type: 'After Update'
   },
   // @ts-ignore Model and mixinOptions required by mixin behavior signature
   async function completeUpdateEvents(Model: any, mixinOptions: AuditConfig, instances: any[]) {
     const auditCtx = App.auditProperties.context?.getStore() as any;
 
     if (auditCtx?.pendingUpdateIds?.length) {
-      await AuditEvent.update(
-        { where: { id: { in: auditCtx.pendingUpdateIds } } },
-        { status: 'Complete' },
-      );
+      await AuditEvent.update({ where: { id: { in: auditCtx.pendingUpdateIds } } }, { status: 'Complete' });
       debug('completed update events');
 
       auditCtx.pendingUpdateIds = [];
     }
-  },
+  }
 );

@@ -14,7 +14,7 @@ const debug = createDebug('BaseLibrary:Audit:completeCreateEvents');
 addBehavior(
   Audit,
   {
-    type: 'After Create',
+    type: 'After Create'
   },
   // @ts-ignore Model and mixinOptions required by mixin behavior signature
   async function completeCreateEvents(Model: any, mixinOptions: AuditConfig, instances: any[]) {
@@ -22,13 +22,10 @@ addBehavior(
 
     if (auditCtx?.pendingCreateIds?.length) {
       const modelId = instances[0]?.id;
-      await AuditEvent.update(
-        { where: { id: { in: auditCtx.pendingCreateIds } } },
-        { modelId, status: 'Complete' },
-      );
+      await AuditEvent.update({ where: { id: { in: auditCtx.pendingCreateIds } } }, { modelId, status: 'Complete' });
       debug('completed create events for modelId %j', modelId);
 
       auditCtx.pendingCreateIds = [];
     }
-  },
+  }
 );

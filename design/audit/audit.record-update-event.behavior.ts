@@ -14,7 +14,7 @@ const debug = createDebug('BaseLibrary:Audit:recordUpdateEvent');
 addBehavior(
   Audit,
   {
-    type: 'Before Update',
+    type: 'Before Update'
   },
   async function recordUpdateEvent(Model: any, mixinOptions: AuditConfig, where: any, updates: Partial<any>) {
     const currentUser = await User.currentUser();
@@ -40,7 +40,7 @@ addBehavior(
         userEmail: currentUser?.email,
         operation: 'Update',
         dataJson: payload,
-        status: 'Pending',
+        status: 'Pending'
       });
       debug('newEvent.id %j', newEvent.id);
 
@@ -49,5 +49,5 @@ addBehavior(
         auditCtx.pendingUpdateIds.push(newEvent.id);
       }
     }
-  },
+  }
 );

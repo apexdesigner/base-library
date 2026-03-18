@@ -14,20 +14,17 @@ const debug = createDebug('BaseLibrary:Audit:completeDeleteEvents');
 addBehavior(
   Audit,
   {
-    type: 'After Delete',
+    type: 'After Delete'
   },
   // @ts-ignore Model and mixinOptions required by mixin behavior signature
   async function completeDeleteEvents(Model: any, mixinOptions: AuditConfig, instances: any[]) {
     const auditCtx = App.auditProperties.context?.getStore() as any;
 
     if (auditCtx?.pendingDeleteIds?.length) {
-      await AuditEvent.update(
-        { where: { id: { in: auditCtx.pendingDeleteIds } } },
-        { status: 'Complete' },
-      );
+      await AuditEvent.update({ where: { id: { in: auditCtx.pendingDeleteIds } } }, { status: 'Complete' });
       debug('completed delete events');
 
       auditCtx.pendingDeleteIds = [];
     }
-  },
+  }
 );

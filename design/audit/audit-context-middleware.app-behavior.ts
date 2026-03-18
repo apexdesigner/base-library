@@ -12,11 +12,11 @@ const debug = createDebug('BaseLibrary:Audit:auditContextMiddleware');
 addAppBehavior(
   {
     type: 'Middleware',
-    sequence: 150,
+    sequence: 150
   },
   async function auditContextMiddleware(req: any, res: any, next: () => void) {
     debug('wrapping request');
 
     App.auditProperties.context!.run({}, () => next());
-  },
+  }
 );

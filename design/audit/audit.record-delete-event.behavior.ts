@@ -14,7 +14,7 @@ const debug = createDebug('BaseLibrary:Audit:recordDeleteEvent');
 addBehavior(
   Audit,
   {
-    type: 'Before Delete',
+    type: 'Before Delete'
   },
   async function recordDeleteEvent(Model: any, mixinOptions: AuditConfig, where: any) {
     debug('where %j', where);
@@ -25,7 +25,7 @@ addBehavior(
     const omitFields: string[] = mixinOptions.excludeProperties || [];
     const instances = await Model.find({
       where,
-      ...(omitFields.length > 0 ? { omit: omitFields } : {}),
+      ...(omitFields.length > 0 ? { omit: omitFields } : {})
     });
     debug('instances.length %j', instances.length);
 
@@ -37,7 +37,7 @@ addBehavior(
         userEmail: currentUser?.email,
         operation: 'Delete',
         dataJson: JSON.stringify(instance),
-        status: 'Pending',
+        status: 'Pending'
       });
       debug('newEvent.id %j', newEvent.id);
 
@@ -46,5 +46,5 @@ addBehavior(
         auditCtx.pendingDeleteIds.push(newEvent.id);
       }
     }
-  },
+  }
 );
