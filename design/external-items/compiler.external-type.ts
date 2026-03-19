@@ -3,13 +3,20 @@ import { externalType } from '@apexdesigner/dsl';
 import { Compiler } from '@angular/core';
 
 /**
+ * Compiler
+ *
  * Low-level service for running the angular compiler during runtime
-to create {@link ComponentFactory}s, which
-can later be used to create and render a Component instance.
-
-Each `@NgModule` provides an own `Compiler` to its injector,
-that will use the directives/pipes of the ng module for compilation
-of components.
+ * to create {@link ComponentFactory}s, which
+ * can later be used to create and render a Component instance.
+ *
+ * Each `@NgModule` provides an own `Compiler` to its injector,
+ * that will use the directives/pipes of the ng module for compilation
+ * of components.
+ *
+ * @publicApi
+ *
+ * @deprecated
+ * Ivy JIT mode doesn't require accessing this symbol.
  */
 @externalType({ injectable: true })
 export class CompilerExternalType {}

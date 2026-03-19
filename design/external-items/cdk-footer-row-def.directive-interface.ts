@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkFooterRowDef } from '@angular/cdk/table';
 
 /**
+ * Cdk Footer Row Def
+ *
  * Footer row definition for the CDK table.
-Captures the footer row's template and other footer properties such as the columns to display.
+ * Captures the footer row's template and other footer properties such as the columns to display.
  */
 @directiveInterface({ selector: '[cdkFooterRowDef]' })
 export class CdkFooterRowDefDirectiveInterface {

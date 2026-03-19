@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { ContentObserver } from '@angular/cdk/observers';
 
 /**
+ * Content Observer
+ *
  * An injectable service that allows watching elements for changes to their content.
  */
 @externalType({ injectable: true })

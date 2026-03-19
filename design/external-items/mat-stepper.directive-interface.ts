@@ -2,6 +2,9 @@
 import { directiveInterface, output } from '@apexdesigner/dsl/directive-interface';
 import { MatStepper } from '@angular/material/stepper';
 
+/**
+ * Mat Stepper
+ */
 @directiveInterface({ selector: '[matStepper],mat-horizontal-stepper,mat-stepper,mat-vertical-stepper' })
 export class MatStepperDirectiveInterface {
   disableRipple!: any;

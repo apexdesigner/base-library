@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatLabel } from '@angular/material/input';
 
 /**
+ * Mat Label
+ *
  * The floating label for a `mat-form-field`.
  */
 @componentInterface({ selector: 'mat-label' })

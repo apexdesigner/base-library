@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatSnackBarAction } from '@angular/material/snack-bar';
 
 /**
+ * Mat Snack Bar Action
+ *
  * Directive that should be applied to each of the snack bar's action buttons.
  */
 @directiveInterface({ selector: '[matSnackBarAction]' })

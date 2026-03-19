@@ -2,6 +2,12 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { PortalHostDirective } from '@angular/cdk/portal';
 
+/**
+ * Portal Host Directive
+ *
+ * @deprecated Use `CdkPortalOutlet` instead.
+ * @breaking-change 9.0.0
+ */
 @directiveInterface({ selector: '[cdkPortalHost],[portalHost]' })
 export class PortalHostDirectiveDirectiveInterface {
   cdkPortalHost!: any;

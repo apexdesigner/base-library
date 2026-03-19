@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { CdkTreeNode } from '@angular/cdk/tree';
 
 /**
+ * Cdk Tree Node
+ *
  * Tree node for CdkTree. It contains the data in the tree node.
  */
 @componentInterface({ selector: 'cdk-tree-node' })

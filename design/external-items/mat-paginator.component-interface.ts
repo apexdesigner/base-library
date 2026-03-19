@@ -3,9 +3,11 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatPaginator } from '@angular/material/paginator';
 
 /**
+ * Mat Paginator
+ *
  * Component to provide navigation between paged information. Displays the size of the current
-page, user-selectable options to change that size, what items are being shown, and
-navigational button to go to the previous or next page.
+ * page, user-selectable options to change that size, what items are being shown, and
+ * navigational button to go to the previous or next page.
  */
 @componentInterface({ selector: 'mat-paginator', acceptsChildren: true })
 export class MatPaginatorComponentInterface {

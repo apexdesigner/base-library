@@ -2,5 +2,12 @@
 import { externalType } from '@apexdesigner/dsl';
 import { NoopAnimationDriver } from '@angular/animations/browser';
 
+/**
+ * Noop Animation Driver
+ *
+ * @publicApi
+ *
+ * `AnimationDriver` implentation for Noop animations
+ */
 @externalType({ injectable: true, injectLocally: true })
 export class NoopAnimationDriverExternalType {}

@@ -3,15 +3,17 @@ import { externalType } from '@apexdesigner/dsl';
 import { HighContrastModeDetector } from '@angular/cdk/a11y';
 
 /**
+ * High Contrast Mode Detector
+ *
  * Service to determine whether the browser is currently in a high-contrast-mode environment.
-
-Microsoft Windows supports an accessibility feature called "High Contrast Mode". This mode
-changes the appearance of all applications, including web applications, to dramatically increase
-contrast.
-
-IE, Edge, and Firefox currently support this mode. Chrome does not support Windows High Contrast
-Mode. This service does not detect high-contrast mode as added by the Chrome "High Contrast"
-browser extension.
+ *
+ * Microsoft Windows supports an accessibility feature called "High Contrast Mode". This mode
+ * changes the appearance of all applications, including web applications, to dramatically increase
+ * contrast.
+ *
+ * IE, Edge, and Firefox currently support this mode. Chrome does not support Windows High Contrast
+ * Mode. This service does not detect high-contrast mode as added by the Chrome "High Contrast"
+ * browser extension.
  */
 @externalType({ injectable: true })
 export class HighContrastModeDetectorExternalType {}

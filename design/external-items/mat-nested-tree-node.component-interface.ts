@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatNestedTreeNode } from '@angular/material/tree';
 
 /**
+ * Mat Nested Tree Node
+ *
  * Wrapper for the CdkTree nested node with Material design styles.
  */
 @componentInterface({ selector: 'mat-nested-tree-node' })

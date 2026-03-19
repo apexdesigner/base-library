@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatTimepickerToggle } from '@angular/material/timepicker';
 
 /**
+ * Mat Timepicker Toggle
+ *
  * Button that can be used to open a `mat-timepicker`.
  */
 @componentInterface({ selector: 'mat-timepicker-toggle', acceptsChildren: true })

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatChipAvatar } from '@angular/material/chips';
 
 /**
+ * Mat Chip Avatar
+ *
  * Avatar image within a chip.
  */
 @directiveInterface({ selector: '[matChipAvatar],mat-chip-avatar' })

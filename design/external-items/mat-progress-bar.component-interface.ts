@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatProgressBar } from '@angular/material/progress-bar';
 
+/**
+ * Mat Progress Bar
+ */
 @componentInterface({ selector: 'mat-progress-bar', acceptsChildren: true })
 export class MatProgressBarComponentInterface {
   color!: any;

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatRow } from '@angular/material/table';
 
 /**
+ * Mat Row
+ *
  * Data row template container that contains the cell outlet. Adds the right class and role.
  */
 @directiveInterface({ selector: 'mat-row,tr[mat-row]' })

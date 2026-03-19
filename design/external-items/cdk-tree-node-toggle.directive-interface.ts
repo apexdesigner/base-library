@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTreeNodeToggle } from '@angular/cdk/tree';
 
 /**
+ * Cdk Tree Node Toggle
+ *
  * Node toggle to expand and collapse the node.
  */
 @directiveInterface({ selector: '[cdkTreeNodeToggle]' })

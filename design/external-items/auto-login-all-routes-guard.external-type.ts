@@ -2,5 +2,10 @@
 import { externalType } from '@apexdesigner/dsl';
 import { AutoLoginAllRoutesGuard } from 'angular-auth-oidc-client';
 
+/**
+ * Auto Login All Routes Guard
+ *
+ * @deprecated Please do not use the `AutoLoginAllRoutesGuard` anymore as it is not recommended anymore, deprecated and will be removed in future versions of this library. More information [Why is AutoLoginAllRoutesGuard not recommended?](https://github.com/damienbod/angular-auth-oidc-client/issues/1549)
+ */
 @externalType({ injectable: true })
 export class AutoLoginAllRoutesGuardExternalType {}

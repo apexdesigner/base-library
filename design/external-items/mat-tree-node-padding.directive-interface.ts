@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTreeNodePadding } from '@angular/material/tree';
 
 /**
+ * Mat Tree Node Padding
+ *
  * Wrapper for the CdkTree padding with Material design styles.
  */
 @directiveInterface({ selector: '[matTreeNodePadding]' })

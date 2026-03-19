@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatChipListbox } from '@angular/material/chips';
 
 /**
+ * Mat Chip Listbox
+ *
  * An extension of the MatChipSet component that supports chip selection.
-Used with MatChipOption chips.
+ * Used with MatChipOption chips.
  */
 @componentInterface({ selector: 'mat-chip-listbox', acceptsChildren: true })
 export class MatChipListboxComponentInterface {

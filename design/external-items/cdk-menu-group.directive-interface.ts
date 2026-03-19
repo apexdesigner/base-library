@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkMenuGroup } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu Group
+ *
  * A grouping container for `CdkMenuItemRadio` instances, similar to a `role="radiogroup"` element.
  */
 @directiveInterface({ selector: '[cdkMenuGroup]' })

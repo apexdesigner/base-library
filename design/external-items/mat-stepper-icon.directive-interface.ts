@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatStepperIcon } from '@angular/material/stepper';
 
 /**
+ * Mat Stepper Icon
+ *
  * Template to be used to override the icons inside the step header.
  */
 @directiveInterface({ selector: 'ng-template[matStepperIcon]' })

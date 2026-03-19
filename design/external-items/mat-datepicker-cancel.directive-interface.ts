@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDatepickerCancel } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker Cancel
+ *
  * Button that will close the datepicker and discard the current selection.
  */
 @directiveInterface({ selector: '[matDateRangePickerCancel],[matDatepickerCancel]' })

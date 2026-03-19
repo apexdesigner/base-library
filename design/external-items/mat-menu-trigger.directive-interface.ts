@@ -3,6 +3,8 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { MatMenuTrigger } from '@angular/material/menu';
 
 /**
+ * Mat Menu Trigger
+ *
  * Directive applied to an element that should trigger a `mat-menu`.
  */
 @directiveInterface({ selector: '[mat-menu-trigger-for],[matMenuTriggerFor]' })

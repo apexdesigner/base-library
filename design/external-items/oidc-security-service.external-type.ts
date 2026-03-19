@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
+/**
+ * Oidc Security Service
+ */
 @externalType({ injectable: true })
 export class OidcSecurityServiceExternalType {}

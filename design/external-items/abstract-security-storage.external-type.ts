@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { AbstractSecurityStorage } from 'angular-auth-oidc-client';
 
 /**
+ * Abstract Security Storage
+ *
  * Implement this class-interface to create a custom storage.
  */
 @externalType({ injectable: true })

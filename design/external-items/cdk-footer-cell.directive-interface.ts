@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkFooterCell } from '@angular/cdk/table';
 
 /**
+ * Cdk Footer Cell
+ *
  * Footer cell template container that adds the right classes and role.
  */
 @directiveInterface({ selector: 'cdk-footer-cell,td[cdk-footer-cell]' })

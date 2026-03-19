@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatCardMdImage } from '@angular/material/card';
 
 /**
+ * Mat Card Md Image
+ *
  * Same as `MatCardImage`, but medium.
  */
 @directiveInterface({ selector: '[mat-card-md-image],[matCardImageMedium]' })

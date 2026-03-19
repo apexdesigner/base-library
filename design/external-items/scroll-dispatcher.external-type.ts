@@ -3,8 +3,10 @@ import { externalType } from '@apexdesigner/dsl';
 import { ScrollDispatcher } from '@angular/cdk/overlay';
 
 /**
+ * Scroll Dispatcher
+ *
  * Service contained all registered Scrollable references and emits an event when any one of the
-Scrollable references emit a scrolled event.
+ * Scrollable references emit a scrolled event.
  */
 @externalType({ injectable: true })
 export class ScrollDispatcherExternalType {}

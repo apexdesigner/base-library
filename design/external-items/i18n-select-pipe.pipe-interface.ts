@@ -2,5 +2,24 @@
 import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { I18nSelectPipe } from '@angular/common';
 
+/**
+ * I18n Select Pipe
+ *
+ * @ngModule CommonModule
+ * @description
+ *
+ * Generic selector that displays the string that matches the current value.
+ *
+ * If none of the keys of the `mapping` match the `value`, then the content
+ * of the `other` key is returned when present, otherwise an empty string is returned.
+ *
+ * @usageNotes
+ *
+ * ### Example
+ *
+ * {@example common/pipes/ts/i18n_pipe.ts region='I18nSelectPipeComponent'}
+ *
+ * @publicApi
+ */
 @pipeInterface({ selector: 'i18nSelect' })
 export class I18nSelectPipePipeInterface {}

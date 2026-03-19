@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTreeNodeToggle } from '@angular/material/tree';
 
 /**
+ * Mat Tree Node Toggle
+ *
  * Wrapper for the CdkTree's toggle with Material design styles.
  */
 @directiveInterface({ selector: '[matTreeNodeToggle]' })

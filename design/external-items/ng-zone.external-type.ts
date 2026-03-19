@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { NgZone } from '@angular/core';
 
+/**
+ * Ng Zone
+ */
 @externalType({ injectable: true })
 export class NgZoneExternalType {}

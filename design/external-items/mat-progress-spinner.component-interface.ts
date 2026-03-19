@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
+/**
+ * Mat Progress Spinner
+ */
 @componentInterface({ selector: 'mat-progress-spinner,mat-spinner', acceptsChildren: true })
 export class MatProgressSpinnerComponentInterface {
   color!: any;

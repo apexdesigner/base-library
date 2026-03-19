@@ -3,10 +3,12 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTooltip } from '@angular/material/tooltip';
 
 /**
+ * Mat Tooltip
+ *
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
-hiding of a tooltip provided position (defaults to below the element).
-
-https://material.io/design/components/tooltips.html
+ * hiding of a tooltip provided position (defaults to below the element).
+ *
+ * https://material.io/design/components/tooltips.html
  */
 @directiveInterface({ selector: '[matTooltip]' })
 export class MatTooltipDirectiveInterface {

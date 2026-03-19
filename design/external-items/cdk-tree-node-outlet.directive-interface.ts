@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTreeNodeOutlet } from '@angular/cdk/tree';
 
 /**
+ * Cdk Tree Node Outlet
+ *
  * Outlet for nested CdkNode. Put `[cdkTreeNodeOutlet]` on a tag to place children dataNodes
-inside the outlet.
+ * inside the outlet.
  */
 @directiveInterface({ selector: '[cdkTreeNodeOutlet]' })
 export class CdkTreeNodeOutletDirectiveInterface {}

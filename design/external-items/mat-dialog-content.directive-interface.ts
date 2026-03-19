@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDialogContent } from '@angular/material/dialog';
 
 /**
+ * Mat Dialog Content
+ *
  * Scrollable content container of a dialog.
  */
 @directiveInterface({ selector: '[mat-dialog-content],[matDialogContent],mat-dialog-content' })

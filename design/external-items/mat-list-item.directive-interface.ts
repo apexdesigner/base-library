@@ -2,6 +2,9 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatListItem } from '@angular/material/list';
 
+/**
+ * Mat List Item
+ */
 @directiveInterface({ selector: 'a[mat-list-item],button[mat-list-item],mat-list-item' })
 export class MatListItemDirectiveInterface {
   activated!: any;

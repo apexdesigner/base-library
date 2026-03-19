@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatChipEditInput } from '@angular/material/chips';
 
 /**
+ * Mat Chip Edit Input
+ *
  * A directive that makes a span editable and exposes functions to modify and retrieve the
-element's contents.
+ * element's contents.
  */
 @directiveInterface({ selector: 'span[matChipEditInput]' })
 export class MatChipEditInputDirectiveInterface {}

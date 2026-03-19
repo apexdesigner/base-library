@@ -2,5 +2,27 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { NgPluralCase } from '@angular/common';
 
+/**
+ * Ng Plural Case
+ *
+ * @ngModule CommonModule
+ *
+ * @description
+ *
+ * Creates a view that will be added/removed from the parent {@link NgPlural} when the
+ * given expression matches the plural expression according to CLDR rules.
+ *
+ * @usageNotes
+ * ```html
+ * <some-element [ngPlural]="value">
+ * <ng-template ngPluralCase="=0">...</ng-template>
+ * <ng-template ngPluralCase="other">...</ng-template>
+ * </some-element>
+ * ```
+ *
+ * See {@link NgPlural} for more details and example.
+ *
+ * @publicApi
+ */
 @directiveInterface({ selector: '[ngPluralCase]' })
 export class NgPluralCaseDirectiveInterface {}

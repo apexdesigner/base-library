@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 
 /**
+ * Cdk Copy To Clipboard
+ *
  * Provides behavior for a button that when clicked copies content into user's
-clipboard.
+ * clipboard.
  */
 @directiveInterface({ selector: '[cdkCopyToClipboard]' })
 export class CdkCopyToClipboardDirectiveInterface {

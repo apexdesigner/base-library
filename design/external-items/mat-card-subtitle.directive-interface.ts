@@ -3,11 +3,13 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatCardSubtitle } from '@angular/material/card';
 
 /**
+ * Mat Card Subtitle
+ *
  * Sub-title of a card, intended for use within `<mat-card>` beneath a `<mat-card-title>`. This
-component is an optional convenience for use with other convenience elements, such as
-`<mat-card-title>`.
-
-MatCardSubtitle provides no behaviors, instead serving as a purely visual treatment.
+ * component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-title>`.
+ *
+ * MatCardSubtitle provides no behaviors, instead serving as a purely visual treatment.
  */
 @directiveInterface({ selector: '[mat-card-subtitle],[matCardSubtitle],mat-card-subtitle' })
 export class MatCardSubtitleDirectiveInterface {}

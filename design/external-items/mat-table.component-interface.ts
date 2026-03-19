@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatTable } from '@angular/material/table';
 
+/**
+ * Mat Table
+ */
 @componentInterface({ selector: 'mat-table,table[mat-table]', acceptsChildren: true })
 export class MatTableComponentInterface {}

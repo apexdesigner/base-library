@@ -3,7 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { ChildrenOutletContexts } from '@angular/router';
 
 /**
+ * Children Outlet Contexts
+ *
  * Store contextual information about the children (= nested) `RouterOutlet`
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class ChildrenOutletContextsExternalType {}

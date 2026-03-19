@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatGridTile } from '@angular/material/grid-list';
 
+/**
+ * Mat Grid Tile
+ */
 @componentInterface({ selector: 'mat-grid-tile', acceptsChildren: true })
 export class MatGridTileComponentInterface {
   rowspan!: any;

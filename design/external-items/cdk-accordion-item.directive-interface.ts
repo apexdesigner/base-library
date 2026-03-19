@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkAccordionItem } from '@angular/cdk/accordion';
 
 /**
+ * Cdk Accordion Item
+ *
  * A basic directive expected to be extended and decorated as a component.  Sets up all
-events and attributes needed to be managed by a CdkAccordion parent.
+ * events and attributes needed to be managed by a CdkAccordion parent.
  */
 @directiveInterface({ selector: '[cdkAccordionItem],cdk-accordion-item' })
 export class CdkAccordionItemDirectiveInterface {

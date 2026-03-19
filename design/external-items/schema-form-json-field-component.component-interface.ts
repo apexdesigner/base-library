@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormJsonFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Json Field Component
+ *
  * JSON field component using mat-form-field with Monaco editor
  */
 @componentInterface({ selector: 'sf-json-field', acceptsChildren: true })

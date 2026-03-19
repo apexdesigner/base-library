@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatColumnDef } from '@angular/material/table';
 
 /**
+ * Mat Column Def
+ *
  * Column definition for the mat-table.
-Defines a set of cells available for a table column.
+ * Defines a set of cells available for a table column.
  */
 @directiveInterface({ selector: '[matColumnDef]' })
 export class MatColumnDefDirectiveInterface {

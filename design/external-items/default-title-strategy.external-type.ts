@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { DefaultTitleStrategy } from '@angular/router';
 
 /**
+ * Default Title Strategy
+ *
  * The default `TitleStrategy` used by the router that updates the title using the `Title` service.
  */
 @externalType({ injectable: true })

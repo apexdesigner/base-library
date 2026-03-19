@@ -3,7 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { IterableDiffers } from '@angular/core';
 
 /**
+ * Iterable Differs
+ *
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class IterableDiffersExternalType {}

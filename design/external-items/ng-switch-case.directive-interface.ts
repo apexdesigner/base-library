@@ -2,6 +2,40 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { NgSwitchCase } from '@angular/common';
 
+/**
+ * Ng Switch Case
+ *
+ * @ngModule CommonModule
+ *
+ * @description
+ * Provides a switch case expression to match against an enclosing `ngSwitch` expression.
+ * When the expressions match, the given `NgSwitchCase` template is rendered.
+ * If multiple match expressions match the switch expression value, all of them are displayed.
+ *
+ * @usageNotes
+ *
+ * Within a switch container, `*ngSwitchCase` statements specify the match expressions
+ * as attributes. Include `*ngSwitchDefault` as the final case.
+ *
+ * ```html
+ * <container-element [ngSwitch]="switch_expression">
+ * <some-element *ngSwitchCase="match_expression_1">...</some-element>
+ * ...
+ * <some-element *ngSwitchDefault>...</some-element>
+ * </container-element>
+ * ```
+ *
+ * Each switch-case statement contains an in-line HTML template or template reference
+ * that defines the subtree to be selected if the value of the match expression
+ * matches the value of the switch expression.
+ *
+ * As of Angular v17 the NgSwitch directive uses strict equality comparison (`===`) instead of
+ * loose equality (`==`) to match different cases.
+ *
+ * @publicApi
+ * @see {@link NgSwitch}
+ * @see {@link NgSwitchDefault}
+ */
 @directiveInterface({ selector: '[ngSwitchCase]' })
 export class NgSwitchCaseDirectiveInterface {
   ngSwitchCase!: any;

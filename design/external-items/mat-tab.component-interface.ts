@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatTab } from '@angular/material/tabs';
 
+/**
+ * Mat Tab
+ */
 @componentInterface({ selector: 'mat-tab', acceptsChildren: true })
 export class MatTabComponentInterface {
   disabled!: any;

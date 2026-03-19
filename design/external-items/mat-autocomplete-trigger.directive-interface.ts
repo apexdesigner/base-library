@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 /**
+ * Mat Autocomplete Trigger
+ *
  * Base class with all of the `MatAutocompleteTrigger` functionality.
  */
 @directiveInterface({ selector: 'input[matAutocomplete],textarea[matAutocomplete]' })

@@ -3,10 +3,12 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatDrawerContainer } from '@angular/material/sidenav';
 
 /**
+ * Mat Drawer Container
+ *
  * `<mat-drawer-container>` component.
-
-This is the parent component to one or two `<mat-drawer>`s that validates the state internally
-and coordinates the backdrop and content styling.
+ *
+ * This is the parent component to one or two `<mat-drawer>`s that validates the state internally
+ * and coordinates the backdrop and content styling.
  */
 @componentInterface({ selector: 'mat-drawer-container', acceptsChildren: true })
 export class MatDrawerContainerComponentInterface {

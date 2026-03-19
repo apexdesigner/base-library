@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { CdkStep } from '@angular/cdk/stepper';
 
+/**
+ * Cdk Step
+ */
 @componentInterface({ selector: 'cdk-step', acceptsChildren: true })
 export class CdkStepComponentInterface {
   stepControl!: any;

@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatChipTrailingIcon } from '@angular/material/chips';
 
 /**
+ * Mat Chip Trailing Icon
+ *
  * Non-interactive trailing icon in a chip.
  */
 @componentInterface({ selector: '[matChipTrailingIcon],mat-chip-trailing-icon' })

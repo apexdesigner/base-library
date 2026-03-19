@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { SimpleSnackBar } from '@angular/material/snack-bar';
 
+/**
+ * Simple Snack Bar
+ */
 @componentInterface({ selector: 'simple-snack-bar', acceptsChildren: true })
 export class SimpleSnackBarComponentInterface {}

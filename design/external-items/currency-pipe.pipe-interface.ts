@@ -2,5 +2,28 @@
 import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { CurrencyPipe } from '@angular/common';
 
+/**
+ * Currency Pipe
+ *
+ * @ngModule CommonModule
+ * @description
+ *
+ * Transforms a number to a currency string, formatted according to locale rules
+ * that determine group sizing and separator, decimal-point character,
+ * and other locale-specific configurations.
+ *
+ *
+ * @see {@link getCurrencySymbol}
+ * @see {@link formatCurrency}
+ *
+ * @usageNotes
+ * The following code shows how the pipe transforms numbers
+ * into text strings, according to various format specifications,
+ * where the caller's default locale is `en-US`.
+ *
+ * {@example common/pipes/ts/currency_pipe.ts region='CurrencyPipe'}
+ *
+ * @publicApi
+ */
 @pipeInterface({ selector: 'currency' })
 export class CurrencyPipePipeInterface {}

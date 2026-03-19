@@ -3,8 +3,10 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatSortHeaderIntl } from '@angular/material/sort';
 
 /**
+ * Mat Sort Header Intl
+ *
  * To modify the labels and text displayed, create a new instance of MatSortHeaderIntl and
-include it in a custom provider.
+ * include it in a custom provider.
  */
 @externalType({ injectable: true })
 export class MatSortHeaderIntlExternalType {}

@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { CdkHeaderCell } from '@angular/cdk/table';
 
 /**
+ * Cdk Header Cell
+ *
  * Header cell template container that adds the right classes and role.
  */
 @componentInterface({ selector: 'cdk-header-cell,th[cdk-header-cell]' })

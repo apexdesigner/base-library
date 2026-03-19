@@ -3,9 +3,11 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatCardTitleGroup } from '@angular/material/card';
 
 /**
+ * Mat Card Title Group
+ *
  * Container intended to be used within the `<mat-card>` component. Can contain exactly one
-`<mat-card-title>`, one `<mat-card-subtitle>` and one content image of any size
-(e.g. `<img matCardLgImage>`).
+ * `<mat-card-title>`, one `<mat-card-subtitle>` and one content image of any size
+ * (e.g. `<img matCardLgImage>`).
  */
 @componentInterface({ selector: 'mat-card-title-group', acceptsChildren: true })
 export class MatCardTitleGroupComponentInterface {}

@@ -3,10 +3,17 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormTypescriptTypeFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Typescript Type Field Component
+ *
  * A dropdown select field that displays TypeScript types registered in the TypescriptService.
-The options are dynamically populated from SchemaFormsTypescriptService.types().
-
-Requires SchemaFormsTypescriptService to be provided in the component tree.
+ * The options are dynamically populated from SchemaFormsTypescriptService.types().
+ *
+ * Requires SchemaFormsTypescriptService to be provided in the component tree.
+ *
+ * @example
+ * ```html
+ * <sf-typescript-type-field [control]="control"></sf-typescript-type-field>
+ * ```
  */
 @componentInterface({ selector: 'sf-typescript-type-field', acceptsChildren: true })
 export class SchemaFormTypescriptTypeFieldComponentComponentInterface {

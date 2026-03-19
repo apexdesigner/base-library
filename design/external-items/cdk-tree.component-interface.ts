@@ -3,8 +3,10 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { CdkTree } from '@angular/cdk/tree';
 
 /**
+ * Cdk Tree
+ *
  * CDK tree component that connects with a data source to retrieve data of type `T` and renders
-dataNodes with hierarchy. Updates the dataNodes when new data is provided by the data source.
+ * dataNodes with hierarchy. Updates the dataNodes when new data is provided by the data source.
  */
 @componentInterface({ selector: 'cdk-tree', acceptsChildren: true })
 export class CdkTreeComponentInterface {

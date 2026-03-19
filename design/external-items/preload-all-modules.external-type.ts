@@ -2,5 +2,18 @@
 import { externalType } from '@apexdesigner/dsl';
 import { PreloadAllModules } from '@angular/router';
 
+/**
+ * Preload All Modules
+ *
+ * @description
+ *
+ * Provides a preloading strategy that preloads all modules as quickly as possible.
+ *
+ * ```ts
+ * RouterModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
+ * ```
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class PreloadAllModulesExternalType {}

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.152] - 2026-03-19
+
+- 14125de chore: apply prettier formatting and update lockfile
+- da777cf chore: update dependencies and format external-items
+
+
 ## [1.0.151] - 2026-03-18
 
 - cebb1ca chore: format audit design files and update docs

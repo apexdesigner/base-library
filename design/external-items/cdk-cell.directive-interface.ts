@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkCell } from '@angular/cdk/table';
 
 /**
+ * Cdk Cell
+ *
  * Cell template container that adds the right classes and role.
  */
 @directiveInterface({ selector: 'cdk-cell,td[cdk-cell]' })

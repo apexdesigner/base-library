@@ -2,5 +2,14 @@
 import { externalType } from '@apexdesigner/dsl';
 import { RouteReuseStrategy } from '@angular/router';
 
+/**
+ * Route Reuse Strategy
+ *
+ * @description
+ *
+ * Provides a way to customize when activated routes get reused.
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class RouteReuseStrategyExternalType {}

@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatFooterCellDef } from '@angular/material/table';
 
 /**
+ * Mat Footer Cell Def
+ *
  * Footer cell definition for the mat-table.
-Captures the template of a column's footer cell and as well as cell-specific properties.
+ * Captures the template of a column's footer cell and as well as cell-specific properties.
  */
 @directiveInterface({ selector: '[matFooterCellDef]' })
 export class MatFooterCellDefDirectiveInterface {}

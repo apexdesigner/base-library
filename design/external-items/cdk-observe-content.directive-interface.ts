@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkObserveContent } from '@angular/cdk/observers';
 
 /**
+ * Cdk Observe Content
+ *
  * Directive that triggers a callback whenever the content of
-its associated element has changed.
+ * its associated element has changed.
  */
 @directiveInterface({ selector: '[cdkObserveContent]' })
 export class CdkObserveContentDirectiveInterface {

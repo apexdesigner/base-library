@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 /**
+ * Mat Expansion Panel
+ *
  * This component can be used as a single element to show expandable content, or as one of
-multiple children of an element with the MatAccordion directive attached.
+ * multiple children of an element with the MatAccordion directive attached.
  */
 @componentInterface({ selector: 'mat-expansion-panel', acceptsChildren: true })
 export class MatExpansionPanelComponentInterface {

@@ -3,11 +3,13 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkMenu } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu
+ *
  * Directive which configures the element as a Menu which should contain child elements marked as
-CdkMenuItem or CdkMenuGroup. Sets the appropriate role and aria-attributes for a menu and
-contains accessible keyboard and mouse handling logic.
-
-It also acts as a RadioGroup for elements marked with role `menuitemradio`.
+ * CdkMenuItem or CdkMenuGroup. Sets the appropriate role and aria-attributes for a menu and
+ * contains accessible keyboard and mouse handling logic.
+ *
+ * It also acts as a RadioGroup for elements marked with role `menuitemradio`.
  */
 @directiveInterface({ selector: '[cdkMenu]' })
 export class CdkMenuDirectiveInterface {

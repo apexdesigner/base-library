@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatStepperIntl } from '@angular/material/stepper';
 
 /**
+ * Mat Stepper Intl
+ *
  * Stepper data that is required for internationalization.
  */
 @externalType({ injectable: true })

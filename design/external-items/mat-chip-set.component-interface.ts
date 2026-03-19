@@ -3,9 +3,11 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatChipSet } from '@angular/material/chips';
 
 /**
+ * Mat Chip Set
+ *
  * Basic container component for the MatChip component.
-
-Extended by MatChipListbox and MatChipGrid for different interaction patterns.
+ *
+ * Extended by MatChipListbox and MatChipGrid for different interaction patterns.
  */
 @componentInterface({ selector: 'mat-chip-set', acceptsChildren: true })
 export class MatChipSetComponentInterface {

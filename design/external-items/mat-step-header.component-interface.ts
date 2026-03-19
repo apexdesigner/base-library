@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatStepHeader } from '@angular/material/stepper';
 
+/**
+ * Mat Step Header
+ */
 @componentInterface({ selector: 'mat-step-header', acceptsChildren: true })
 export class MatStepHeaderComponentInterface {
   state!: any;

@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatFooterRow } from '@angular/material/table';
 
 /**
+ * Mat Footer Row
+ *
  * Footer template container that contains the cell outlet. Adds the right class and role.
  */
 @componentInterface({ selector: 'mat-footer-row,tr[mat-footer-row]', acceptsChildren: true })

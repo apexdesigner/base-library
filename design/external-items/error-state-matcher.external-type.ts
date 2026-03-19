@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { ErrorStateMatcher } from '@angular/material/core';
 
 /**
+ * Error State Matcher
+ *
  * Provider that defines how form controls behave with regards to displaying error messages.
  */
 @externalType({ injectable: true })

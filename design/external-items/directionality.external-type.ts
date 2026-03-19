@@ -3,8 +3,10 @@ import { externalType } from '@apexdesigner/dsl';
 import { Directionality } from '@angular/cdk/bidi';
 
 /**
+ * Directionality
+ *
  * The directionality (LTR / RTL) context for the application (or a subtree of it).
-Exposes the current direction and a stream of direction changes.
+ * Exposes the current direction and a stream of direction changes.
  */
 @externalType({ injectable: true })
 export class DirectionalityExternalType {}

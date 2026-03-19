@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatNavList } from '@angular/material/list';
 
+/**
+ * Mat Nav List
+ */
 @componentInterface({ selector: 'mat-nav-list', acceptsChildren: true })
 export class MatNavListComponentInterface {}

@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkHeaderCellDef } from '@angular/cdk/table';
 
 /**
+ * Cdk Header Cell Def
+ *
  * Header cell definition for a CDK table.
-Captures the template of a column's header cell and as well as cell-specific properties.
+ * Captures the template of a column's header cell and as well as cell-specific properties.
  */
 @directiveInterface({ selector: '[cdkHeaderCellDef]' })
 export class CdkHeaderCellDefDirectiveInterface {}

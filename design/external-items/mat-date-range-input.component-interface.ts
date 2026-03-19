@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDateRangeInput } from '@angular/material/datepicker';
 
+/**
+ * Mat Date Range Input
+ */
 @componentInterface({ selector: 'mat-date-range-input', acceptsChildren: true })
 export class MatDateRangeInputComponentInterface {
   rangePicker!: any;

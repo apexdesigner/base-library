@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatStepperNext } from '@angular/material/stepper';
 
 /**
+ * Mat Stepper Next
+ *
  * Button that moves to the next step in a stepper workflow.
  */
 @directiveInterface({ selector: 'button[matStepperNext]' })

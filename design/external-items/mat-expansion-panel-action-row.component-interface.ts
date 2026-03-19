@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatExpansionPanelActionRow } from '@angular/material/expansion';
 
 /**
+ * Mat Expansion Panel Action Row
+ *
  * Actions of a `<mat-expansion-panel>`.
  */
 @componentInterface({ selector: 'mat-action-row' })

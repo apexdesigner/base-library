@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkFixedSizeVirtualScroll } from '@angular/cdk/scrolling';
 
 /**
+ * Cdk Fixed Size Virtual Scroll
+ *
  * A virtual scroll strategy that supports fixed-size items.
  */
 @directiveInterface({ selector: 'cdk-virtual-scroll-viewport[itemSize]' })

@@ -3,8 +3,10 @@ import { externalType } from '@apexdesigner/dsl';
 import { InteractivityChecker } from '@angular/cdk/a11y';
 
 /**
+ * Interactivity Checker
+ *
  * Utility for checking the interactivity of an element, such as whether it is focusable or
-tabbable.
+ * tabbable.
  */
 @externalType({ injectable: true })
 export class InteractivityCheckerExternalType {}

@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTreeNodeDef } from '@angular/cdk/tree';
 
 /**
+ * Cdk Tree Node Def
+ *
  * Data node definition for the CdkTree.
-Captures the node's template and a when predicate that describes when this node should be used.
+ * Captures the node's template and a when predicate that describes when this node should be used.
  */
 @directiveInterface({ selector: '[cdkTreeNodeDef]' })
 export class CdkTreeNodeDefDirectiveInterface {

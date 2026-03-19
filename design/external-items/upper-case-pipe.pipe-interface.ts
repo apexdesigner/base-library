@@ -3,7 +3,14 @@ import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { UpperCasePipe } from '@angular/common';
 
 /**
+ * Upper Case Pipe
+ *
  * Transforms text to all upper case.
+ * @see {@link LowerCasePipe}
+ * @see {@link TitleCasePipe}
+ *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @pipeInterface({ selector: 'uppercase' })
 export class UpperCasePipePipeInterface {}

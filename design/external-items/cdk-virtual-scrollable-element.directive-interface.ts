@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkVirtualScrollableElement } from '@angular/cdk/scrolling';
 
 /**
+ * Cdk Virtual Scrollable Element
+ *
  * Provides a virtual scrollable for the element it is attached to.
  */
 @directiveInterface({ selector: '[cdkVirtualScrollingElement]' })

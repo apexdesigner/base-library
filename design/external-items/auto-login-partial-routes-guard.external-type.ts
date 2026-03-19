@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 
+/**
+ * Auto Login Partial Routes Guard
+ */
 @externalType({ injectable: true })
 export class AutoLoginPartialRoutesGuardExternalType {}

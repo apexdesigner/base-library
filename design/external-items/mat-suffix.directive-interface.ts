@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatSuffix } from '@angular/material/input';
 
 /**
+ * Mat Suffix
+ *
  * Suffix to be placed at the end of the form field.
  */
 @directiveInterface({ selector: '[matIconSuffix],[matSuffix],[matTextSuffix]' })

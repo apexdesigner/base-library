@@ -3,9 +3,11 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkMenuItem } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu Item
+ *
  * Directive which provides the ability for an element to be focused and navigated to using the
-keyboard when residing in a CdkMenu, CdkMenuBar, or CdkMenuGroup. It performs user defined
-behavior when clicked.
+ * keyboard when residing in a CdkMenu, CdkMenuBar, or CdkMenuGroup. It performs user defined
+ * behavior when clicked.
  */
 @directiveInterface({ selector: '[cdkMenuItem]' })
 export class CdkMenuItemDirectiveInterface {

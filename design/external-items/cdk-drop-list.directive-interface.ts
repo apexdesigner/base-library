@@ -3,6 +3,8 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkDropList } from '@angular/cdk/drag-drop';
 
 /**
+ * Cdk Drop List
+ *
  * Container that wraps a set of draggable items.
  */
 @directiveInterface({ selector: '[cdkDropList],cdk-drop-list' })

@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkCellDef } from '@angular/cdk/table';
 
 /**
+ * Cdk Cell Def
+ *
  * Cell definition for a CDK table.
-Captures the template of a column's data row cell as well as cell-specific properties.
+ * Captures the template of a column's data row cell as well as cell-specific properties.
  */
 @directiveInterface({ selector: '[cdkCellDef]' })
 export class CdkCellDefDirectiveInterface {}

@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 /**
+ * Clipboard
+ *
  * A service for copying text to the clipboard.
  */
 @externalType({ injectable: true })

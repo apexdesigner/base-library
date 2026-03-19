@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkScrollable } from '@angular/cdk/overlay';
 
 /**
+ * Cdk Scrollable
+ *
  * Sends an event when the directive's element is scrolled. Registers itself with the
-ScrollDispatcher service to include itself as part of its collection of scrolling events that it
-can be listened to through the service.
+ * ScrollDispatcher service to include itself as part of its collection of scrolling events that it
+ * can be listened to through the service.
  */
 @directiveInterface({ selector: '[cdk-scrollable],[cdkScrollable]' })
 export class CdkScrollableDirectiveInterface {}

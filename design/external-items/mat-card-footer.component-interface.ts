@@ -3,11 +3,13 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatCardFooter } from '@angular/material/card';
 
 /**
+ * Mat Card Footer
+ *
  * Footer area a card, intended for use within `<mat-card>`.
-This component is an optional convenience for use with other convenience elements, such as
-`<mat-card-content>`; any custom footer block element may be used in its place.
-
-MatCardFooter provides no behaviors, instead serving as a purely visual treatment.
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-content>`; any custom footer block element may be used in its place.
+ *
+ * MatCardFooter provides no behaviors, instead serving as a purely visual treatment.
  */
 @componentInterface({ selector: 'mat-card-footer' })
 export class MatCardFooterComponentInterface {}

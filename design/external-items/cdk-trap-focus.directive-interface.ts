@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 
 /**
+ * Cdk Trap Focus
+ *
  * Directive for trapping focus within a region.
  */
 @directiveInterface({ selector: '[cdkTrapFocus]' })

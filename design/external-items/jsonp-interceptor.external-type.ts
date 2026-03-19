@@ -3,8 +3,14 @@ import { externalType } from '@apexdesigner/dsl';
 import { JsonpInterceptor } from '@angular/common/http';
 
 /**
+ * Jsonp Interceptor
+ *
  * Identifies requests with the method JSONP and
-shifts them to the `JsonpClientBackend`.
+ * shifts them to the `JsonpClientBackend`.
+ *
+ * @see {@link HttpInterceptor}
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class JsonpInterceptorExternalType {}

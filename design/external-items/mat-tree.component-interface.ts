@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatTree } from '@angular/material/tree';
 
 /**
+ * Mat Tree
+ *
  * Wrapper for the CdkTable with Material design styles.
  */
 @componentInterface({ selector: 'mat-tree', acceptsChildren: true })

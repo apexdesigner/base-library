@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkMenuBar } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu Bar
+ *
  * Directive applied to an element which configures it as a MenuBar by setting the appropriate
-role, aria attributes, and accessible keyboard and mouse handling logic. The component that
-this directive is applied to should contain components marked with CdkMenuItem.
+ * role, aria attributes, and accessible keyboard and mouse handling logic. The component that
+ * this directive is applied to should contain components marked with CdkMenuItem.
  */
 @directiveInterface({ selector: '[cdkMenuBar]' })
 export class CdkMenuBarDirectiveInterface {}

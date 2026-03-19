@@ -2,6 +2,9 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatRipple } from '@angular/material/core';
 
+/**
+ * Mat Ripple
+ */
 @directiveInterface({ selector: '[mat-ripple],[matRipple]' })
 export class MatRippleDirectiveInterface {
   matRippleColor!: any;

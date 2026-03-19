@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatButtonToggle } from '@angular/material/button-toggle';
 
 /**
+ * Mat Button Toggle
+ *
  * Single button inside of a toggle group.
  */
 @componentInterface({ selector: 'mat-button-toggle', acceptsChildren: true })

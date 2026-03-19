@@ -3,12 +3,17 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatSlideToggleRequiredValidator } from '@angular/material/slide-toggle';
 
 /**
+ * Mat Slide Toggle Required Validator
+ *
  * Validator for Material slide-toggle components with the required attribute in a
-template-driven form. The default validator for required form controls asserts
-that the control value is not undefined but that is not appropriate for a slide-toggle
-where the value is always defined.
-
-Required slide-toggle form controls are valid when checked.
+ * template-driven form. The default validator for required form controls asserts
+ * that the control value is not undefined but that is not appropriate for a slide-toggle
+ * where the value is always defined.
+ *
+ * Required slide-toggle form controls are valid when checked.
+ *
+ * @deprecated No longer used, `MatCheckbox` implements required validation directly.
+ * @breaking-change 19.0.0
  */
 @directiveInterface({
   selector: 'mat-slide-toggle[required][formControlName],mat-slide-toggle[required][formControl],mat-slide-toggle[required][ngModel]'

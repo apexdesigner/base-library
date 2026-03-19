@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { Dialog } from '@angular/cdk/dialog';
 
+/**
+ * Dialog
+ */
 @externalType({ injectable: true })
 export class DialogExternalType {}

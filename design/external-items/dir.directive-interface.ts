@@ -3,10 +3,12 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { Dir } from '@angular/cdk/bidi';
 
 /**
+ * Dir
+ *
  * Directive to listen for changes of direction of part of the DOM.
-
-Provides itself as Directionality such that descendant directives only need to ever inject
-Directionality to get the closest direction.
+ *
+ * Provides itself as Directionality such that descendant directives only need to ever inject
+ * Directionality to get the closest direction.
  */
 @directiveInterface({ selector: '[dir]' })
 export class DirDirectiveInterface {

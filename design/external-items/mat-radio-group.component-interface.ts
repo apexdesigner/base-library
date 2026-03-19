@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatRadioGroup } from '@angular/material/radio';
 
 /**
+ * Mat Radio Group
+ *
  * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
  */
 @componentInterface({ selector: 'mat-radio-group' })

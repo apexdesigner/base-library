@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatAutocomplete } from '@angular/material/autocomplete';
 
 /**
+ * Mat Autocomplete
+ *
  * Autocomplete component.
  */
 @componentInterface({ selector: 'mat-autocomplete', acceptsChildren: true })

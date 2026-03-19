@@ -2,5 +2,14 @@
 import { externalType } from '@apexdesigner/dsl';
 import { UrlHandlingStrategy } from '@angular/router';
 
+/**
+ * Url Handling Strategy
+ *
+ * @description
+ *
+ * Provides a way to migrate AngularJS applications to Angular.
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class UrlHandlingStrategyExternalType {}

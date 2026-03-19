@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { ElementRef } from '@angular/core';
 
+/**
+ * Element Ref
+ */
 @externalType({ injectable: true })
 export class ElementRefExternalType {}

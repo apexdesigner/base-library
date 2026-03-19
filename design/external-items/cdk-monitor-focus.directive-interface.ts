@@ -3,13 +3,15 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkMonitorFocus } from '@angular/cdk/a11y';
 
 /**
+ * Cdk Monitor Focus
+ *
  * Directive that determines how a particular element was focused (via keyboard, mouse, touch, or
-programmatically) and adds corresponding classes to the element.
-
-There are two variants of this directive:
-1) cdkMonitorElementFocus: does not consider an element to be focused if one of its children is
-   focused.
-2) cdkMonitorSubtreeFocus: considers an element focused if it or any of its children are focused.
+ * programmatically) and adds corresponding classes to the element.
+ *
+ * There are two variants of this directive:
+ * 1) cdkMonitorElementFocus: does not consider an element to be focused if one of its children is
+ * focused.
+ * 2) cdkMonitorSubtreeFocus: considers an element focused if it or any of its children are focused.
  */
 @directiveInterface({ selector: '[cdkMonitorElementFocus],[cdkMonitorSubtreeFocus]' })
 export class CdkMonitorFocusDirectiveInterface {

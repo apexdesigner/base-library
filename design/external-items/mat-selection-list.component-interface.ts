@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatSelectionList } from '@angular/material/list';
 
+/**
+ * Mat Selection List
+ */
 @componentInterface({ selector: 'mat-selection-list', acceptsChildren: true })
 export class MatSelectionListComponentInterface {
   color!: any;

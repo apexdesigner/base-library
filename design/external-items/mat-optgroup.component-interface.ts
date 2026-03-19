@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatOptgroup } from '@angular/material/core';
 
 /**
+ * Mat Optgroup
+ *
  * Component that is used to group instances of `mat-option`.
  */
 @componentInterface({ selector: 'mat-optgroup', acceptsChildren: true })

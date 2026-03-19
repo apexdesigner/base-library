@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatMenuItem } from '@angular/material/menu';
 
 /**
+ * Mat Menu Item
+ *
  * Single item inside a `mat-menu`. Provides the menu item styling and accessibility treatment.
  */
 @directiveInterface({ selector: '[mat-menu-item]' })

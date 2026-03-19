@@ -3,13 +3,15 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatTextColumn } from '@angular/material/table';
 
 /**
+ * Mat Text Column
+ *
  * Column that simply shows text content for the header and row cells. Assumes that the table
-is using the native table implementation (`<table>`).
-
-By default, the name of this column will be the header text and data property accessor.
-The header text can be overridden with the `headerText` input. Cell values can be overridden with
-the `dataAccessor` input. Change the text justification to the start or end using the `justify`
-input.
+ * is using the native table implementation (`<table>`).
+ *
+ * By default, the name of this column will be the header text and data property accessor.
+ * The header text can be overridden with the `headerText` input. Cell values can be overridden with
+ * the `dataAccessor` input. Change the text justification to the start or end using the `justify`
+ * input.
  */
 @componentInterface({ selector: 'mat-text-column', acceptsChildren: true })
 export class MatTextColumnComponentInterface {}

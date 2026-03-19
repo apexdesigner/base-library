@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatGridTileText } from '@angular/material/grid-list';
 
+/**
+ * Mat Grid Tile Text
+ */
 @componentInterface({ selector: 'mat-grid-tile-footer,mat-grid-tile-header', acceptsChildren: true })
 export class MatGridTileTextComponentInterface {}

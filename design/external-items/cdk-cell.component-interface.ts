@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { CdkCell } from '@angular/cdk/table';
 
 /**
+ * Cdk Cell
+ *
  * Cell template container that adds the right classes and role.
  */
 @componentInterface({ selector: 'cdk-cell,td[cdk-cell]' })

@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatMiniFabButton } from '@angular/material/button';
 
 /**
+ * Mat Mini Fab Button
+ *
  * Material Design mini floating action button (FAB) component. These buttons represent the primary
-or most common action for users to interact with.
-See https://material.io/components/buttons-floating-action-button/
+ * or most common action for users to interact with.
+ * See https://material.io/components/buttons-floating-action-button/
  */
 @directiveInterface({ selector: 'button[mat-mini-fab]' })
 export class MatMiniFabButtonDirectiveInterface {}

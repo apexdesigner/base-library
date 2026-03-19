@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 /**
+ * Cdk Virtual Scroll Viewport
+ *
  * A viewport that virtualizes its scrolling with the help of `CdkVirtualForOf`.
  */
 @componentInterface({ selector: 'cdk-virtual-scroll-viewport', acceptsChildren: true })

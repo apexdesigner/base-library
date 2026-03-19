@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { MatChipRow } from '@angular/material/chips';
 
 /**
+ * Mat Chip Row
+ *
  * An extension of the MatChip component used with MatChipGrid and
-the matChipInputFor directive.
+ * the matChipInputFor directive.
  */
 @directiveInterface({ selector: '[mat-basic-chip-row],[mat-chip-row],mat-basic-chip-row,mat-chip-row' })
 export class MatChipRowDirectiveInterface {

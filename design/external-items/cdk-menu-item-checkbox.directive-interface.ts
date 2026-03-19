@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkMenuItemCheckbox } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu Item Checkbox
+ *
  * A directive providing behavior for the "menuitemcheckbox" ARIA role, which behaves similarly to a
-conventional checkbox.
+ * conventional checkbox.
  */
 @directiveInterface({ selector: '[cdkMenuItemCheckbox]' })
 export class CdkMenuItemCheckboxDirectiveInterface {}

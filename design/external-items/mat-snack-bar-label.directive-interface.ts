@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatSnackBarLabel } from '@angular/material/snack-bar';
 
 /**
+ * Mat Snack Bar Label
+ *
  * Directive that should be applied to the text element to be rendered in the snack bar.
  */
 @directiveInterface({ selector: '[matSnackBarLabel]' })

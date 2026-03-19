@@ -3,10 +3,12 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatCard } from '@angular/material/card';
 
 /**
+ * Mat Card
+ *
  * Material Design card component. Cards contain content and actions about a single subject.
-See https://material.io/design/components/cards.html
-
-MatCard provides no behaviors, instead serving as a purely visual treatment.
+ * See https://material.io/design/components/cards.html
+ *
+ * MatCard provides no behaviors, instead serving as a purely visual treatment.
  */
 @componentInterface({ selector: 'mat-card', acceptsChildren: true })
 export class MatCardComponentInterface {

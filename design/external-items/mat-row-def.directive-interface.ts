@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatRowDef } from '@angular/material/table';
 
 /**
+ * Mat Row Def
+ *
  * Data row definition for the mat-table.
-Captures the data row's template and other properties such as the columns to display and
-a when predicate that describes when this row should be used.
+ * Captures the data row's template and other properties such as the columns to display and
+ * a when predicate that describes when this row should be used.
  */
 @directiveInterface({ selector: '[matRowDef]' })
 export class MatRowDefDirectiveInterface {

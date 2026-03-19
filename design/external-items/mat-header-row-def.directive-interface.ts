@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatHeaderRowDef } from '@angular/material/table';
 
 /**
+ * Mat Header Row Def
+ *
  * Header row definition for the mat-table.
-Captures the header row's template and other header properties such as the columns to display.
+ * Captures the header row's template and other header properties such as the columns to display.
  */
 @directiveInterface({ selector: '[matHeaderRowDef]' })
 export class MatHeaderRowDefDirectiveInterface {

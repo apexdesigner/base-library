@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDialogClose } from '@angular/material/dialog';
 
 /**
+ * Mat Dialog Close
+ *
  * Button that will close the current dialog.
  */
 @directiveInterface({ selector: '[mat-dialog-close],[matDialogClose]' })

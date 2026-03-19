@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatFooterCell } from '@angular/material/table';
 
 /**
+ * Mat Footer Cell
+ *
  * Footer cell template container that adds the right classes and role.
  */
 @componentInterface({ selector: 'mat-footer-cell,td[mat-footer-cell]' })

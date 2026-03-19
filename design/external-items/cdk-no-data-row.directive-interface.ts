@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkNoDataRow } from '@angular/cdk/table';
 
 /**
+ * Cdk No Data Row
+ *
  * Row that can be used to display a message when no data is shown in the table.
  */
 @directiveInterface({ selector: 'ng-template[cdkNoDataRow]' })

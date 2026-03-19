@@ -2,5 +2,8 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatStepLabel } from '@angular/material/stepper';
 
+/**
+ * Mat Step Label
+ */
 @directiveInterface({ selector: '[matStepLabel]' })
 export class MatStepLabelDirectiveInterface {}

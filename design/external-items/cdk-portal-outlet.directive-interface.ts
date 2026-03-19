@@ -3,11 +3,13 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 
 /**
+ * Cdk Portal Outlet
+ *
  * Directive version of a PortalOutlet. Because the directive *is* a PortalOutlet, portals can be
-directly attached to it, enabling declarative use.
-
-Usage:
-`<ng-template [cdkPortalOutlet]="greeting"></ng-template>`
+ * directly attached to it, enabling declarative use.
+ *
+ * Usage:
+ * `<ng-template [cdkPortalOutlet]="greeting"></ng-template>`
  */
 @directiveInterface({ selector: '[cdkPortalOutlet]' })
 export class CdkPortalOutletDirectiveInterface {

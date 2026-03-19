@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatBadge } from '@angular/material/badge';
 
 /**
+ * Mat Badge
+ *
  * Directive to display a text badge.
  */
 @directiveInterface({ selector: '[matBadge]' })

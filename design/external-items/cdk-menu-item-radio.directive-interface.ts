@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkMenuItemRadio } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu Item Radio
+ *
  * A directive providing behavior for the "menuitemradio" ARIA role, which behaves similarly to
-a conventional radio-button. Any sibling `CdkMenuItemRadio` instances within the same `CdkMenu`
-or `CdkMenuGroup` comprise a radio group with unique selection enforced.
+ * a conventional radio-button. Any sibling `CdkMenuItemRadio` instances within the same `CdkMenu`
+ * or `CdkMenuGroup` comprise a radio group with unique selection enforced.
  */
 @directiveInterface({ selector: '[cdkMenuItemRadio]' })
 export class CdkMenuItemRadioDirectiveInterface {}

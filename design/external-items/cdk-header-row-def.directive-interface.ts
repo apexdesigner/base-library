@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkHeaderRowDef } from '@angular/cdk/table';
 
 /**
+ * Cdk Header Row Def
+ *
  * Header row definition for the CDK table.
-Captures the header row's template and other header properties such as the columns to display.
+ * Captures the header row's template and other header properties such as the columns to display.
  */
 @directiveInterface({ selector: '[cdkHeaderRowDef]' })
 export class CdkHeaderRowDefDirectiveInterface {

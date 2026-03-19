@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTabContent } from '@angular/material/tabs';
 
 /**
+ * Mat Tab Content
+ *
  * Decorates the `ng-template` tags and reads out the template from it.
  */
 @directiveInterface({ selector: '[matTabContent]' })

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkHeaderRow } from '@angular/cdk/table';
 
 /**
+ * Cdk Header Row
+ *
  * Header template container that contains the cell outlet. Adds the right class and role.
  */
 @directiveInterface({ selector: 'cdk-header-row,tr[cdk-header-row]' })

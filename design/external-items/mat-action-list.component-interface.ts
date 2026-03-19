@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatActionList } from '@angular/material/list';
 
+/**
+ * Mat Action List
+ */
 @componentInterface({ selector: 'mat-action-list', acceptsChildren: true })
 export class MatActionListComponentInterface {}

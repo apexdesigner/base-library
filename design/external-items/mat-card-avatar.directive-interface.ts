@@ -3,13 +3,15 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatCardAvatar } from '@angular/material/card';
 
 /**
+ * Mat Card Avatar
+ *
  * Avatar image content for a card, intended for use within `<mat-card>`. Can be applied to
-any media element, such as `<img>` or `<picture>`.
-
-This component is an optional convenience for use with other convenience elements, such as
-`<mat-card-title>`; any custom media element may be used in its place.
-
-MatCardAvatar provides no behaviors, instead serving as a purely visual treatment.
+ * any media element, such as `<img>` or `<picture>`.
+ *
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-title>`; any custom media element may be used in its place.
+ *
+ * MatCardAvatar provides no behaviors, instead serving as a purely visual treatment.
  */
 @directiveInterface({ selector: '[mat-card-avatar],[matCardAvatar]' })
 export class MatCardAvatarDirectiveInterface {}

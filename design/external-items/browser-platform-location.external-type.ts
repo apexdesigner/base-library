@@ -3,9 +3,13 @@ import { externalType } from '@apexdesigner/dsl';
 import { BrowserPlatformLocation } from '@angular/common';
 
 /**
+ * Browser Platform Location
+ *
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
-This class should not be used directly by an application developer. Instead, use
-{@link Location}.
+ * This class should not be used directly by an application developer. Instead, use
+ * {@link Location}.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class BrowserPlatformLocationExternalType {}

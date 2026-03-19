@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { MatChipInput } from '@angular/material/chips';
 
 /**
+ * Mat Chip Input
+ *
  * Directive that adds chip-specific behaviors to an input element inside `<mat-form-field>`.
-May be placed inside or outside of a `<mat-chip-grid>`.
+ * May be placed inside or outside of a `<mat-chip-grid>`.
  */
 @directiveInterface({ selector: 'input[matChipInputFor]' })
 export class MatChipInputDirectiveInterface {

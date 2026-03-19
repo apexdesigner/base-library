@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTabLabel } from '@angular/material/tabs';
 
 /**
+ * Mat Tab Label
+ *
  * Used to flag tab labels for use with the portal directive
  */
 @directiveInterface({ selector: '[mat-tab-label],[matTabLabel]' })

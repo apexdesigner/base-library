@@ -3,7 +3,24 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { FlexColumnComponent } from '@apexdesigner/flex-layout';
 
 /**
+ * Flex Column Component
+ *
  * A flex container component that arranges its children in a vertical column.
+ *
+ * @example
+ * ```html
+ * <flex-column gap="16">
+ * <div>Item 1</div>
+ * <div>Item 2</div>
+ * </flex-column>
+ * ```
+ *
+ * @example
+ * ```html
+ * <flex-column fitContent>
+ * <p>Content that determines container height</p>
+ * </flex-column>
+ * ```
  */
 @componentInterface({ selector: 'flex-column', acceptsChildren: true })
 export class FlexColumnComponentComponentInterface {

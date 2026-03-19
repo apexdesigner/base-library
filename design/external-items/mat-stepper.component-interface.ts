@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatStepper } from '@angular/material/stepper';
 
+/**
+ * Mat Stepper
+ */
 @componentInterface({ selector: '[matStepper],mat-horizontal-stepper,mat-stepper,mat-vertical-stepper', acceptsChildren: true })
 export class MatStepperComponentInterface {
   disableRipple!: any;

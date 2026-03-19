@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkVirtualScrollableWindow } from '@angular/cdk/scrolling';
 
 /**
+ * Cdk Virtual Scrollable Window
+ *
  * Provides as virtual scrollable for the global / window scrollbar.
  */
 @directiveInterface({ selector: 'cdk-virtual-scroll-viewport[scrollWindow]' })

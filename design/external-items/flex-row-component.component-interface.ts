@@ -3,7 +3,24 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { FlexRowComponent } from '@apexdesigner/flex-layout';
 
 /**
+ * Flex Row Component
+ *
  * A flex container component that arranges its children in a horizontal row.
+ *
+ * @example
+ * ```html
+ * <flex-row gap="16">
+ * <div>Item 1</div>
+ * <div>Item 2</div>
+ * </flex-row>
+ * ```
+ *
+ * @example
+ * ```html
+ * <flex-row alignCenter>
+ * <span>Vertically centered content</span>
+ * </flex-row>
+ * ```
  */
 @componentInterface({ selector: 'flex-row', acceptsChildren: true })
 export class FlexRowComponentComponentInterface {

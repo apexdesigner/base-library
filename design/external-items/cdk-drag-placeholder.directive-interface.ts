@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 
 /**
+ * Cdk Drag Placeholder
+ *
  * Element that will be used as a template for the placeholder of a CdkDrag when
-it is being dragged. The placeholder is displayed in place of the element being dragged.
+ * it is being dragged. The placeholder is displayed in place of the element being dragged.
  */
 @directiveInterface({ selector: 'ng-template[cdkDragPlaceholder]' })
 export class CdkDragPlaceholderDirectiveInterface {

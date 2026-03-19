@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDialogContainer } from '@angular/material/dialog';
 
+/**
+ * Mat Dialog Container
+ */
 @componentInterface({ selector: 'mat-dialog-container', acceptsChildren: true })
 export class MatDialogContainerComponentInterface {}

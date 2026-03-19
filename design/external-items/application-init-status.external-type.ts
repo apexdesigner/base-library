@@ -3,7 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { ApplicationInitStatus } from '@angular/core';
 
 /**
+ * Application Init Status
+ *
  * A class that reflects the state of running {@link APP_INITIALIZER} functions.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class ApplicationInitStatusExternalType {}

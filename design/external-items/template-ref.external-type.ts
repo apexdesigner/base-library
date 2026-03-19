@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { TemplateRef } from '@angular/core';
 
+/**
+ * Template Ref
+ */
 @externalType({ injectable: true })
 export class TemplateRefExternalType {}

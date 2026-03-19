@@ -2,6 +2,9 @@
 import { directiveInterface, output } from '@apexdesigner/dsl/directive-interface';
 import { CdkStepper } from '@angular/cdk/stepper';
 
+/**
+ * Cdk Stepper
+ */
 @directiveInterface({ selector: '[cdkStepper]' })
 export class CdkStepperDirectiveInterface {
   linear!: any;

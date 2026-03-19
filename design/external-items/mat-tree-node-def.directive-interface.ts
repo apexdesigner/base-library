@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTreeNodeDef } from '@angular/material/tree';
 
 /**
+ * Mat Tree Node Def
+ *
  * Wrapper for the CdkTree node definition with Material design styles.
-Captures the node's template and a when predicate that describes when this node should be used.
+ * Captures the node's template and a when predicate that describes when this node should be used.
  */
 @directiveInterface({ selector: '[matTreeNodeDef]' })
 export class MatTreeNodeDefDirectiveInterface {

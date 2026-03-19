@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatAutocompleteOrigin } from '@angular/material/autocomplete';
 
 /**
+ * Mat Autocomplete Origin
+ *
  * Directive applied to an element to make it usable
-as a connection point for an autocomplete panel.
+ * as a connection point for an autocomplete panel.
  */
 @directiveInterface({ selector: '[matAutocompleteOrigin]' })
 export class MatAutocompleteOriginDirectiveInterface {}

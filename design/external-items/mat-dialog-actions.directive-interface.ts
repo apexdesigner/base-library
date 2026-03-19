@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDialogActions } from '@angular/material/dialog';
 
 /**
+ * Mat Dialog Actions
+ *
  * Container for the bottom action buttons in a dialog.
-Stays fixed to the bottom when scrolling.
+ * Stays fixed to the bottom when scrolling.
  */
 @directiveInterface({ selector: '[mat-dialog-actions],[matDialogActions],mat-dialog-actions' })
 export class MatDialogActionsDirectiveInterface {

@@ -2,5 +2,19 @@
 import { externalType } from '@apexdesigner/dsl';
 import { UrlSerializer } from '@angular/router';
 
+/**
+ * Url Serializer
+ *
+ * @description
+ *
+ * Serializes and deserializes a URL string into a URL tree.
+ *
+ * The url serialization strategy is customizable. You can
+ * make all URLs case insensitive by providing a custom UrlSerializer.
+ *
+ * See `DefaultUrlSerializer` for an example of a URL serializer.
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class UrlSerializerExternalType {}

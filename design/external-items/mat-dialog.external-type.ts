@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatDialog } from '@angular/material/dialog';
 
 /**
+ * Mat Dialog
+ *
  * Service to open Material Design modal dialogs.
  */
 @externalType({ injectable: true })

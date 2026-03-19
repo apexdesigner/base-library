@@ -3,7 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { NgLocaleLocalization } from '@angular/common';
 
 /**
+ * Ng Locale Localization
+ *
  * Returns the plural case based on the locale
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class NgLocaleLocalizationExternalType {}

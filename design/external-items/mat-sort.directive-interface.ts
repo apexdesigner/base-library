@@ -3,6 +3,8 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { MatSort } from '@angular/material/sort';
 
 /**
+ * Mat Sort
+ *
  * Container for MatSortables to manage the sort state and provide default sort parameters.
  */
 @directiveInterface({ selector: '[matSort]' })

@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDivider } from '@angular/material/list';
 
+/**
+ * Mat Divider
+ */
 @componentInterface({ selector: 'mat-divider', acceptsChildren: true })
 export class MatDividerComponentInterface {
   vertical!: any;

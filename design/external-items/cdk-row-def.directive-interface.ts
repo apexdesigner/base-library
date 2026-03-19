@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkRowDef } from '@angular/cdk/table';
 
 /**
+ * Cdk Row Def
+ *
  * Data row definition for the CDK table.
-Captures the header row's template and other row properties such as the columns to display and
-a when predicate that describes when this row should be used.
+ * Captures the header row's template and other row properties such as the columns to display and
+ * a when predicate that describes when this row should be used.
  */
 @directiveInterface({ selector: '[cdkRowDef]' })
 export class CdkRowDefDirectiveInterface {

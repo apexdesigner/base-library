@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { DragDrop } from '@angular/cdk/drag-drop';
 
 /**
+ * Drag Drop
+ *
  * Service that allows for drag-and-drop functionality to be attached to DOM elements.
  */
 @externalType({ injectable: true })

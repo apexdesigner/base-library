@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 
 /**
+ * Mat Button Toggle Group
+ *
  * Exclusive selection button toggle group that behaves like a radio-button group.
  */
 @componentInterface({ selector: 'mat-button-toggle-group' })

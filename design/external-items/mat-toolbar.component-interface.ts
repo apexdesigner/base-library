@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatToolbar } from '@angular/material/toolbar';
 
+/**
+ * Mat Toolbar
+ */
 @componentInterface({ selector: 'mat-toolbar', acceptsChildren: true })
 export class MatToolbarComponentInterface {
   color!: any;

@@ -3,7 +3,21 @@ import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { LowerCasePipe } from '@angular/common';
 
 /**
+ * Lower Case Pipe
+ *
  * Transforms text to all lower case.
+ *
+ * @see {@link UpperCasePipe}
+ * @see {@link TitleCasePipe}
+ * @usageNotes
+ *
+ * The following example defines a view that allows the user to enter
+ * text, and then uses the pipe to convert the input text to all lower case.
+ *
+ * {@example common/pipes/ts/lowerupper_pipe.ts region='LowerUpperPipe'}
+ *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @pipeInterface({ selector: 'lowercase' })
 export class LowerCasePipePipeInterface {}

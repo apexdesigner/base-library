@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { FocusTrapFactory } from '@angular/cdk/a11y';
 
 /**
+ * Focus Trap Factory
+ *
  * Factory that allows easy instantiation of focus traps.
  */
 @externalType({ injectable: true })

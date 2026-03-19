@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 
+/**
+ * Mat Datepicker Toggle
+ */
 @componentInterface({ selector: 'mat-datepicker-toggle', acceptsChildren: true })
 export class MatDatepickerToggleComponentInterface {
   for!: any;

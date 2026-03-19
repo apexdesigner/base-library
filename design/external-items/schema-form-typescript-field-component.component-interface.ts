@@ -3,9 +3,11 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormTypescriptFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Typescript Field Component
+ *
  * A TypeScript/JavaScript code editor field using Monaco editor.
-Provides syntax highlighting, autocomplete, and type checking for TypeScript expressions.
-Context types, variables, and functions can be provided via SchemaFormsTypescriptService.
+ * Provides syntax highlighting, autocomplete, and type checking for TypeScript expressions.
+ * Context types, variables, and functions can be provided via SchemaFormsTypescriptService.
  */
 @componentInterface({ selector: 'sf-typescript-field', acceptsChildren: true })
 export class SchemaFormTypescriptFieldComponentComponentInterface {

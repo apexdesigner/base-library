@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { OverlayContainer } from '@angular/cdk/overlay';
 
 /**
+ * Overlay Container
+ *
  * Container inside which all overlays will render.
  */
 @externalType({ injectable: true })

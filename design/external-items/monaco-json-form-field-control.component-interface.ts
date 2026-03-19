@@ -2,6 +2,12 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MonacoJsonFormFieldControl } from '@apexdesigner/schema-forms';
 
+/**
+ * Monaco Json Form Field Control
+ *
+ * @internal
+ * Monaco JSON editor as a MatFormFieldControl
+ */
 @componentInterface({ selector: 'sf-monaco-json-control', acceptsChildren: true })
 export class MonacoJsonFormFieldControlComponentInterface {
   value!: any;

@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatRadioButton } from '@angular/material/radio';
 
+/**
+ * Mat Radio Button
+ */
 @componentInterface({ selector: 'mat-radio-button', acceptsChildren: true })
 export class MatRadioButtonComponentInterface {
   id!: any;

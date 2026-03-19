@@ -3,9 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { AriaDescriber } from '@angular/cdk/a11y';
 
 /**
+ * Aria Describer
+ *
  * Utility that creates visually hidden elements with a message content. Useful for elements that
-want to use aria-describedby to further describe themselves without adding additional visual
-content.
+ * want to use aria-describedby to further describe themselves without adding additional visual
+ * content.
  */
 @externalType({ injectable: true })
 export class AriaDescriberExternalType {}

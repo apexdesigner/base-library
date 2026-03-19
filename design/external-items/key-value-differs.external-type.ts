@@ -3,7 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { KeyValueDiffers } from '@angular/core';
 
 /**
+ * Key Value Differs
+ *
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class KeyValueDiffersExternalType {}

@@ -3,8 +3,10 @@ import { externalType } from '@apexdesigner/dsl';
 import { Platform } from '@angular/cdk/platform';
 
 /**
+ * Platform
+ *
  * Service to detect the current platform by comparing the userAgent strings and
-checking browser-specific global properties.
+ * checking browser-specific global properties.
  */
 @externalType({ injectable: true })
 export class PlatformExternalType {}

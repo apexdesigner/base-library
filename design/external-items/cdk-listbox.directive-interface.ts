@@ -2,6 +2,9 @@
 import { directiveInterface, output } from '@apexdesigner/dsl/directive-interface';
 import { CdkListbox } from '@angular/cdk/listbox';
 
+/**
+ * Cdk Listbox
+ */
 @directiveInterface({ selector: '[cdkListbox]' })
 export class CdkListboxDirectiveInterface {
   id!: any;

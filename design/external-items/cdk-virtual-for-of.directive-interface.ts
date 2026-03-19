@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkVirtualForOf } from '@angular/cdk/scrolling';
 
 /**
+ * Cdk Virtual For Of
+ *
  * A directive similar to `ngForOf` to be used for rendering data inside a virtual scrolling
-container.
+ * container.
  */
 @directiveInterface({ selector: '[cdkVirtualFor][cdkVirtualForOf]' })
 export class CdkVirtualForOfDirectiveInterface {

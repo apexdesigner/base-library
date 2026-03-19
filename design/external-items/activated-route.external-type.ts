@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { ActivatedRoute } from '@angular/router';
 
+/**
+ * Activated Route
+ */
 @externalType({ injectable: true })
 export class ActivatedRouteExternalType {}

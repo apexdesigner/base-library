@@ -3,8 +3,10 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDatepickerActions } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker Actions
+ *
  * Container that can be used to project a row of action buttons
-to the bottom of a datepicker or date range picker.
+ * to the bottom of a datepicker or date range picker.
  */
 @componentInterface({ selector: 'mat-date-range-picker-actions,mat-datepicker-actions', acceptsChildren: true })
 export class MatDatepickerActionsComponentInterface {}

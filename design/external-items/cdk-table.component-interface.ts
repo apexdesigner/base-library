@@ -3,10 +3,12 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { CdkTable } from '@angular/cdk/table';
 
 /**
+ * Cdk Table
+ *
  * A data table that can render a header row, data rows, and a footer row.
-Uses the dataSource input to determine the data to be rendered. The data can be provided either
-as a data array, an Observable stream that emits the data array to render, or a DataSource with a
-connect function that will return an Observable stream that emits the data array to render.
+ * Uses the dataSource input to determine the data to be rendered. The data can be provided either
+ * as a data array, an Observable stream that emits the data array to render, or a DataSource with a
+ * connect function that will return an Observable stream that emits the data array to render.
  */
 @componentInterface({ selector: 'cdk-table,table[cdk-table]', acceptsChildren: true })
 export class CdkTableComponentInterface {

@@ -3,7 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { Sanitizer } from '@angular/core';
 
 /**
+ * Sanitizer
+ *
  * Sanitizer is used by the views to sanitize potentially dangerous values.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class SanitizerExternalType {}

@@ -3,15 +3,28 @@ import { externalType } from '@apexdesigner/dsl';
 import { PendingTasks } from '@angular/core';
 
 /**
+ * Pending Tasks
+ *
  * Service that keeps track of pending tasks contributing to the stableness of Angular
-application. While several existing Angular services (ex.: `HttpClient`) will internally manage
-tasks influencing stability, this API gives control over stability to library and application
-developers for specific cases not covered by Angular internals.
-
-The concept of stability comes into play in several important scenarios:
-- SSR process needs to wait for the application stability before serializing and sending rendered
-HTML;
-- tests might want to delay assertions until the application becomes stable;
+ * application. While several existing Angular services (ex.: `HttpClient`) will internally manage
+ * tasks influencing stability, this API gives control over stability to library and application
+ * developers for specific cases not covered by Angular internals.
+ *
+ * The concept of stability comes into play in several important scenarios:
+ * - SSR process needs to wait for the application stability before serializing and sending rendered
+ * HTML;
+ * - tests might want to delay assertions until the application becomes stable;
+ *
+ * @usageNotes
+ * ```ts
+ * const pendingTasks = inject(PendingTasks);
+ * const taskCleanup = pendingTasks.add();
+ * // do work that should block application's stability and then:
+ * taskCleanup();
+ * ```
+ *
+ * @publicApi
+ * @developerPreview
  */
 @externalType({ injectable: true })
 export class PendingTasksExternalType {}

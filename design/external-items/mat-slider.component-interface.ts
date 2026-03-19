@@ -3,8 +3,10 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatSlider } from '@angular/material/slider';
 
 /**
+ * Mat Slider
+ *
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
-behavior to the native `<input type="range">` element.
+ * behavior to the native `<input type="range">` element.
  */
 @componentInterface({ selector: 'mat-slider', acceptsChildren: true })
 export class MatSliderComponentInterface {

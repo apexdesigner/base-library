@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatMenu } from '@angular/material/menu';
 
+/**
+ * Mat Menu
+ */
 @componentInterface({ selector: 'mat-menu', acceptsChildren: true })
 export class MatMenuComponentInterface {
   backdropClass!: any;

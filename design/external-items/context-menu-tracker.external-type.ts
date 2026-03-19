@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { ContextMenuTracker } from '@angular/cdk/menu';
 
 /**
+ * Context Menu Tracker
+ *
  * Tracks the last open context menu trigger across the entire application.
  */
 @externalType({ injectable: true })

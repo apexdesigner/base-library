@@ -3,7 +3,13 @@ import { externalType } from '@apexdesigner/dsl';
 import { HttpXhrBackend } from '@angular/common/http';
 
 /**
+ * Http Xhr Backend
+ *
  * Uses `XMLHttpRequest` to send requests to a backend server.
+ * @see {@link HttpHandler}
+ * @see {@link JsonpClientBackend}
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class HttpXhrBackendExternalType {}

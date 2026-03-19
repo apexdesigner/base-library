@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkConnectedOverlay } from '@angular/cdk/overlay';
 
 /**
+ * Cdk Connected Overlay
+ *
  * Directive to facilitate declarative creation of an
-Overlay using a FlexibleConnectedPositionStrategy.
+ * Overlay using a FlexibleConnectedPositionStrategy.
  */
 @directiveInterface({ selector: '[cdk-connected-overlay],[cdkConnectedOverlay],[connected-overlay]' })
 export class CdkConnectedOverlayDirectiveInterface {

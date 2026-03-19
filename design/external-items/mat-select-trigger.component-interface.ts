@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatSelectTrigger } from '@angular/material/select';
 
 /**
+ * Mat Select Trigger
+ *
  * Allows the user to customize the trigger that is displayed when the select has a value.
  */
 @componentInterface({ selector: 'mat-select-trigger' })

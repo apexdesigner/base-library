@@ -3,10 +3,43 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { DtColumnComponent } from '@apexdesigner/declarative-tables';
 
 /**
+ * Dt Column Component
+ *
  * Defines a column configuration for the dt-table component.
-
-Each column can display a property from the data source, apply transformations,
-or render custom content using a template.
+ *
+ * Each column can display a property from the data source, apply transformations,
+ * or render custom content using a template.
+ *
+ * @example
+ * Basic property binding:
+ * ```html
+ * <dt-column property="name" header="User Name"></dt-column>
+ * ```
+ *
+ * @example
+ * With pipe transformation:
+ * ```html
+ * <dt-column property="createdAt" pipe="date:'MMM dd, yyyy'"></dt-column>
+ * <dt-column property="price" pipe="currency:'USD':'symbol':'1.2-2'"></dt-column>
+ * ```
+ *
+ * @example
+ * With default value and prefix:
+ * ```html
+ * <dt-column property="email" default="N/A" prefix="📧 "></dt-column>
+ * ```
+ *
+ * @example
+ * Custom template:
+ * ```html
+ * <dt-column header="Actions">
+ * <ng-template let-row>
+ * <button (click)="edit(row)">Edit</button>
+ * </ng-template>
+ * </dt-column>
+ * ```
+ *
+ * @see DtTableComponent
  */
 @componentInterface({ selector: 'dt-column', acceptsChildren: true })
 export class DtColumnComponentComponentInterface {

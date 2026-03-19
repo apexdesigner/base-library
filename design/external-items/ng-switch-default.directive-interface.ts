@@ -2,5 +2,20 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { NgSwitchDefault } from '@angular/common';
 
+/**
+ * Ng Switch Default
+ *
+ * @ngModule CommonModule
+ *
+ * @description
+ *
+ * Creates a view that is rendered when no `NgSwitchCase` expressions
+ * match the `NgSwitch` expression.
+ * This statement should be the final case in an `NgSwitch`.
+ *
+ * @publicApi
+ * @see {@link NgSwitch}
+ * @see {@link NgSwitchCase}
+ */
 @directiveInterface({ selector: '[ngSwitchDefault]' })
 export class NgSwitchDefaultDirectiveInterface {}

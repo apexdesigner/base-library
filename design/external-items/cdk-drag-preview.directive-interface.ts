@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkDragPreview } from '@angular/cdk/drag-drop';
 
 /**
+ * Cdk Drag Preview
+ *
  * Element that will be used as a template for the preview
-of a CdkDrag when it is being dragged.
+ * of a CdkDrag when it is being dragged.
  */
 @directiveInterface({ selector: 'ng-template[cdkDragPreview]' })
 export class CdkDragPreviewDirectiveInterface {

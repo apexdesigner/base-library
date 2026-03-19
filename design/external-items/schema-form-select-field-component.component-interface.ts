@@ -3,9 +3,11 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormSelectFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Select Field Component
+ *
  * A dropdown select field that binds to a SchemaFormControl.
-Options are derived from the control's options property (enum or x-options in schema).
-Supports clearing the selected value with a clear button.
+ * Options are derived from the control's options property (enum or x-options in schema).
+ * Supports clearing the selected value with a clear button.
  */
 @componentInterface({ selector: 'sf-select-field', acceptsChildren: true })
 export class SchemaFormSelectFieldComponentComponentInterface {

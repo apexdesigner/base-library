@@ -3,8 +3,14 @@ import { externalType } from '@apexdesigner/dsl';
 import { JsonpClientBackend } from '@angular/common/http';
 
 /**
+ * Jsonp Client Backend
+ *
  * Processes an `HttpRequest` with the JSONP method,
-by performing JSONP style requests.
+ * by performing JSONP style requests.
+ * @see {@link HttpHandler}
+ * @see {@link HttpXhrBackend}
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class JsonpClientBackendExternalType {}

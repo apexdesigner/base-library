@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDatepickerToggleIcon } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker Toggle Icon
+ *
  * Can be used to override the icon of a `matDatepickerToggle`.
  */
 @directiveInterface({ selector: '[matDatepickerToggleIcon]' })

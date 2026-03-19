@@ -3,9 +3,11 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatTabGroup } from '@angular/material/tabs';
 
 /**
+ * Mat Tab Group
+ *
  * Material design tab-group component. Supports basic tab pairs (label + content) and includes
-animated ink-bar, keyboard navigation, and screen reader.
-See: https://material.io/design/components/tabs.html
+ * animated ink-bar, keyboard navigation, and screen reader.
+ * See: https://material.io/design/components/tabs.html
  */
 @componentInterface({ selector: 'mat-tab-group', acceptsChildren: true })
 export class MatTabGroupComponentInterface {

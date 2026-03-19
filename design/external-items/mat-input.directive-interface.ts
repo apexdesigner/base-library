@@ -2,6 +2,9 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatInput } from '@angular/material/input';
 
+/**
+ * Mat Input
+ */
 @directiveInterface({ selector: 'input[matInput],input[matNativeControl],select[matNativeControl],textarea[matInput],textarea[matNativeControl]' })
 export class MatInputDirectiveInterface {
   disabled!: any;

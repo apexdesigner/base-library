@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDatepickerInput } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker Input
+ *
  * Directive used to connect an input to a MatDatepicker.
  */
 @directiveInterface({ selector: 'input[matDatepicker]' })

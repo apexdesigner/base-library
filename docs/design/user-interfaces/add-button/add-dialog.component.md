@@ -10,6 +10,8 @@ Hidden fields are automatically disabled so they don't block form validity.
 
 **Type:** Dialog
 
+**Parent Component:** `AddButtonComponent`
+
 ## Inputs
 
 | Name | Type | Required | Description |

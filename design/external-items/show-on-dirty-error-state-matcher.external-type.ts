@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 
 /**
+ * Show On Dirty Error State Matcher
+ *
  * Error state matcher that matches when a control is invalid and dirty.
  */
 @externalType({ injectable: true })

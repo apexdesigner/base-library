@@ -3,11 +3,13 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatFabButton } from '@angular/material/button';
 
 /**
+ * Mat Fab Button
+ *
  * Material Design floating action button (FAB) component. These buttons represent the primary
-or most common action for users to interact with.
-See https://material.io/components/buttons-floating-action-button/
-
-The `MatFabButton` class has two appearances: normal and extended.
+ * or most common action for users to interact with.
+ * See https://material.io/components/buttons-floating-action-button/
+ *
+ * The `MatFabButton` class has two appearances: normal and extended.
  */
 @directiveInterface({ selector: 'button[mat-fab]' })
 export class MatFabButtonDirectiveInterface {

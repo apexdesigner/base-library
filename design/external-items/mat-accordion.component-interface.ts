@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatAccordion } from '@angular/material/expansion';
 
 /**
+ * Mat Accordion
+ *
  * Directive for a Material Design Accordion.
  */
 @componentInterface({ selector: 'mat-accordion' })

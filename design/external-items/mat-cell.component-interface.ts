@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatCell } from '@angular/material/table';
 
 /**
+ * Mat Cell
+ *
  * Cell template container that adds the right classes and role.
  */
 @componentInterface({ selector: 'mat-cell,td[mat-cell]' })

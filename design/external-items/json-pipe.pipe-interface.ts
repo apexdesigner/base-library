@@ -2,5 +2,22 @@
 import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { JsonPipe } from '@angular/common';
 
+/**
+ * Json Pipe
+ *
+ * @ngModule CommonModule
+ * @description
+ *
+ * Converts a value into its JSON-format representation.  Useful for debugging.
+ *
+ * @usageNotes
+ *
+ * The following component uses a JSON pipe to convert an object
+ * to JSON format, and displays the string in both formats for comparison.
+ *
+ * {@example common/pipes/ts/json_pipe.ts region='JsonPipe'}
+ *
+ * @publicApi
+ */
 @pipeInterface({ selector: 'json' })
 export class JsonPipePipeInterface {}

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 
 /**
+ * Cdk Textarea Autosize
+ *
  * Directive to automatically resize a textarea to fit its content.
  */
 @directiveInterface({ selector: 'textarea[cdkTextareaAutosize]' })

@@ -3,10 +3,12 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatChipOption } from '@angular/material/chips';
 
 /**
+ * Mat Chip Option
+ *
  * An extension of the MatChip component that supports chip selection. Used with MatChipListbox.
-
-Unlike other chips, the user can focus on disabled chip options inside a MatChipListbox. The
-user cannot click disabled chips.
+ *
+ * Unlike other chips, the user can focus on disabled chip options inside a MatChipListbox. The
+ * user cannot click disabled chips.
  */
 @componentInterface({ selector: '[mat-basic-chip-option],[mat-chip-option],mat-basic-chip-option,mat-chip-option', acceptsChildren: true })
 export class MatChipOptionComponentInterface {

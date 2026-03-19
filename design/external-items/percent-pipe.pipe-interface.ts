@@ -2,5 +2,27 @@
 import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { PercentPipe } from '@angular/common';
 
+/**
+ * Percent Pipe
+ *
+ * @ngModule CommonModule
+ * @description
+ *
+ * Transforms a number to a percentage
+ * string, formatted according to locale rules that determine group sizing and
+ * separator, decimal-point character, and other locale-specific
+ * configurations.
+ *
+ * @see {@link formatPercent}
+ *
+ * @usageNotes
+ * The following code shows how the pipe transforms numbers
+ * into text strings, according to various format specifications,
+ * where the caller's default locale is `en-US`.
+ *
+ * {@example common/pipes/ts/percent_pipe.ts region='PercentPipe'}
+ *
+ * @publicApi
+ */
 @pipeInterface({ selector: 'percent' })
 export class PercentPipePipeInterface {}

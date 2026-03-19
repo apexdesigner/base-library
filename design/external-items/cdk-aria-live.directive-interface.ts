@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkAriaLive } from '@angular/cdk/a11y';
 
 /**
+ * Cdk Aria Live
+ *
  * A directive that works similarly to aria-live, but uses the LiveAnnouncer to ensure compatibility
-with a wider range of browsers and screen readers.
+ * with a wider range of browsers and screen readers.
  */
 @directiveInterface({ selector: '[cdkAriaLive]' })
 export class CdkAriaLiveDirectiveInterface {

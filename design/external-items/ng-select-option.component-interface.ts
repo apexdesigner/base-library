@@ -2,6 +2,18 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { NgSelectOption } from '@angular/forms';
 
+/**
+ * Ng Select Option
+ *
+ * @description
+ * Marks `<option>` as dynamic, so Angular can be notified when options change.
+ *
+ * @see {@link SelectControlValueAccessor}
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
 @componentInterface({ selector: 'option' })
 export class NgSelectOptionComponentInterface {
   ngValue!: any;

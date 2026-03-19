@@ -6,6 +6,8 @@ generated-by: design-docs.component.doc.md
 
 A single level inside a Breadcrumb. Renders as a link when path is set, plain text otherwise.
 
+**Parent Component:** `BreadcrumbComponent`
+
 ## Inputs
 
 | Name | Type | Required | Description |

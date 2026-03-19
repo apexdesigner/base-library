@@ -3,11 +3,13 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { SchemaFormSectionComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Section Component
+ *
  * A dynamic section component that renders a schema-specific section component if available,
-or falls back to sf-fields.
-
-For a schema with `.as('User')`, it will attempt to load a registered "sf-user-section" component.
-If not found, it will use the default sf-fields component.
+ * or falls back to sf-fields.
+ *
+ * For a schema with `.as('User')`, it will attempt to load a registered "sf-user-section" component.
+ * If not found, it will use the default sf-fields component.
  */
 @componentInterface({ selector: 'sf-section', acceptsChildren: true })
 export class SchemaFormSectionComponentComponentInterface {

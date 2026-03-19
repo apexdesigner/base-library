@@ -2,5 +2,11 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { TemplatePortalDirective } from '@angular/cdk/portal';
 
+/**
+ * Template Portal Directive
+ *
+ * @deprecated Use `CdkPortal` instead.
+ * @breaking-change 9.0.0
+ */
 @directiveInterface({ selector: '[cdk-portal],[portal]' })
 export class TemplatePortalDirectiveDirectiveInterface {}

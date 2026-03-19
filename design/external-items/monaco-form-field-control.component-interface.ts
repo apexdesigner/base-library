@@ -2,6 +2,12 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MonacoFormFieldControl } from '@apexdesigner/schema-forms';
 
+/**
+ * Monaco Form Field Control
+ *
+ * @internal
+ * Monaco editor as a MatFormFieldControl
+ */
 @componentInterface({ selector: 'sf-monaco-control', acceptsChildren: true })
 export class MonacoFormFieldControlComponentInterface {
   value!: any;

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkDragHandle } from '@angular/cdk/drag-drop';
 
 /**
+ * Cdk Drag Handle
+ *
  * Handle that can be used to drag a CdkDrag instance.
  */
 @directiveInterface({ selector: '[cdkDragHandle]' })

@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatTimepicker } from '@angular/material/timepicker';
 
 /**
+ * Mat Timepicker
+ *
  * Renders out a listbox that can be used to select a time of day.
-Intended to be used together with `MatTimepickerInput`.
+ * Intended to be used together with `MatTimepickerInput`.
  */
 @componentInterface({ selector: 'mat-timepicker', acceptsChildren: true })
 export class MatTimepickerComponentInterface {

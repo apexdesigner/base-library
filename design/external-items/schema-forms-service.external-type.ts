@@ -3,12 +3,14 @@ import { externalType } from '@apexdesigner/dsl';
 import { SchemaFormsService } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Forms Service
+ *
  * Service for registering and resolving schema form field components.
-
-Field components are lazy-loaded on first use to optimize bundle size.
-Built-in field types (text, number, checkbox, textarea, select, regex) are
-auto-registered with lazy loaders. App-specific field types should be
-registered at app startup using registerField().
+ *
+ * Field components are lazy-loaded on first use to optimize bundle size.
+ * Built-in field types (text, number, checkbox, textarea, select, regex) are
+ * auto-registered with lazy loaders. App-specific field types should be
+ * registered at app startup using registerField().
  */
 @externalType({ injectable: true })
 export class SchemaFormsServiceExternalType {}

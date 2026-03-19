@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 /**
+ * Mat Bottom Sheet
+ *
  * Service to trigger Material Design bottom sheets.
  */
 @externalType({ injectable: true })

@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatCheckbox } from '@angular/material/checkbox';
 
+/**
+ * Mat Checkbox
+ */
 @componentInterface({ selector: 'mat-checkbox', acceptsChildren: true })
 export class MatCheckboxComponentInterface {
   'aria-label'!: any;

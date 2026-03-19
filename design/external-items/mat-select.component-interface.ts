@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatSelect } from '@angular/material/select';
 
+/**
+ * Mat Select
+ */
 @componentInterface({ selector: 'mat-select', acceptsChildren: true })
 export class MatSelectComponentInterface {
   'aria-describedby'!: any;

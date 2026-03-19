@@ -3,14 +3,40 @@ import { externalType } from '@apexdesigner/dsl';
 import { SchemaFormsTypescriptService } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Forms Typescript Service
+ *
  * Service for managing TypeScript context for Monaco editor intellisense.
-
-This service is NOT provided in root - it should be provided at the appropriate
-scope (e.g., component, route, or module level) to allow different contexts
-for different parts of the application.
-
-The service uses Angular signals for reactivity. TypeScript field components
-can subscribe to changes using effect().
+ *
+ * This service is NOT provided in root - it should be provided at the appropriate
+ * scope (e.g., component, route, or module level) to allow different contexts
+ * for different parts of the application.
+ *
+ * The service uses Angular signals for reactivity. TypeScript field components
+ * can subscribe to changes using effect().
+ *
+ * @example
+ * // Provide at component level
+ * @Component({
+ * providers: [SchemaFormsTypescriptService],
+ * ...
+ * })
+ * export class ProcessEditorComponent {
+ * private tsService = inject(SchemaFormsTypescriptService);
+ *
+ * ngOnInit() {
+ * this.tsService.setType({
+ * name: 'Process',
+ * displayName: 'Process',
+ * declaration: 'interface Process { id: string; name: string; }'
+ * });
+ *
+ * this.tsService.setVariable({
+ * name: 'process',
+ * displayName: 'Current Process',
+ * declaration: 'const process: Process;'
+ * });
+ * }
+ * }
  */
 @externalType({ injectable: true, injectLocally: true })
 export class SchemaFormsTypescriptServiceExternalType {}

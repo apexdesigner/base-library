@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatFooterCell } from '@angular/material/table';
 
 /**
+ * Mat Footer Cell
+ *
  * Footer cell template container that adds the right classes and role.
  */
 @directiveInterface({ selector: 'mat-footer-cell,td[mat-footer-cell]' })

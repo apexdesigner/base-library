@@ -3,10 +3,12 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkDropListGroup } from '@angular/cdk/drag-drop';
 
 /**
+ * Cdk Drop List Group
+ *
  * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`
-elements that are placed inside a `cdkDropListGroup` will be connected to each other
-automatically. Can be used as an alternative to the `cdkDropListConnectedTo` input
-from `cdkDropList`.
+ * elements that are placed inside a `cdkDropListGroup` will be connected to each other
+ * automatically. Can be used as an alternative to the `cdkDropListConnectedTo` input
+ * from `cdkDropList`.
  */
 @directiveInterface({ selector: '[cdkDropListGroup]' })
 export class CdkDropListGroupDirectiveInterface {

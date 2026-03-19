@@ -3,10 +3,24 @@ import { externalType } from '@apexdesigner/dsl';
 import { LayoutConfigService } from '@apexdesigner/flex-layout';
 
 /**
+ * Layout Config Service
+ *
  * A service that provides configuration and utilities for flex layout components.
-
-Handles gap normalization and provides responsive breakpoint support for
-the flex-column, flex-row, and related layout components.
+ *
+ * Handles gap normalization and provides responsive breakpoint support for
+ * the flex-column, flex-row, and related layout components.
+ *
+ * @example
+ * ```typescript
+ * @Component({ ... })
+ * export class MyComponent {
+ * private layoutConfig = inject(LayoutConfigService);
+ *
+ * getGap(input: string | number | undefined): string {
+ * return this.layoutConfig.normalizeGap(input);
+ * }
+ * }
+ * ```
  */
 @externalType({ injectable: true })
 export class LayoutConfigServiceExternalType {}

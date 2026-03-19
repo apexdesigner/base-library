@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { ChangeDetectorRef } from '@angular/core';
 
+/**
+ * Change Detector Ref
+ */
 @externalType({ injectable: true })
 export class ChangeDetectorRefExternalType {}

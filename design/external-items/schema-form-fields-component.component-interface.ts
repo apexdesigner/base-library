@@ -3,9 +3,11 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { SchemaFormFieldsComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Fields Component
+ *
  * Renders all visible fields from a SchemaFormGroup.
-Automatically filters out hidden fields, arrays, and nested groups.
-Updates visibility in response to conditional schema changes.
+ * Automatically filters out hidden fields, arrays, and nested groups.
+ * Updates visibility in response to conditional schema changes.
  */
 @componentInterface({ selector: 'sf-fields', acceptsChildren: true })
 export class SchemaFormFieldsComponentComponentInterface {

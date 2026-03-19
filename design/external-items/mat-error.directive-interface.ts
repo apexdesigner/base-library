@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatError } from '@angular/material/input';
 
 /**
+ * Mat Error
+ *
  * Single error message to be shown underneath the form-field.
  */
 @directiveInterface({ selector: '[matError],mat-error' })

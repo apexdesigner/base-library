@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatOption } from '@angular/material/core';
 
 /**
+ * Mat Option
+ *
  * Single option inside of a `<mat-select>` element.
  */
 @componentInterface({ selector: 'mat-option', acceptsChildren: true })

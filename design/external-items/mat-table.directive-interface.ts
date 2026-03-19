@@ -2,5 +2,8 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTable } from '@angular/material/table';
 
+/**
+ * Mat Table
+ */
 @directiveInterface({ selector: 'mat-table,table[mat-table]' })
 export class MatTableDirectiveInterface {}

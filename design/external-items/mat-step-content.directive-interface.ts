@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatStepContent } from '@angular/material/stepper';
 
 /**
+ * Mat Step Content
+ *
  * Content for a `mat-step` that will be rendered lazily.
  */
 @directiveInterface({ selector: 'ng-template[matStepContent]' })

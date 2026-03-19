@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { ConfigurationService } from 'angular-auth-oidc-client';
 
+/**
+ * Configuration Service
+ */
 @externalType({ injectable: true })
 export class ConfigurationServiceExternalType {}

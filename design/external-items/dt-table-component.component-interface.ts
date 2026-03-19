@@ -3,10 +3,44 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { DtTableComponent } from '@apexdesigner/declarative-tables';
 
 /**
+ * Dt Table Component
+ *
  * A declarative data table component built on Angular Material.
-
-Displays tabular data with automatic column configuration, built-in loading and empty states,
-and support for various data transformations through Angular pipes.
+ *
+ * Displays tabular data with automatic column configuration, built-in loading and empty states,
+ * and support for various data transformations through Angular pipes.
+ *
+ * @example
+ * Basic usage with data array:
+ * ```html
+ * <dt-table [dataSource]="users">
+ * <dt-column property="name" header="Full Name"></dt-column>
+ * <dt-column property="email"></dt-column>
+ * </dt-table>
+ * ```
+ *
+ * @example
+ * With loading and empty states:
+ * ```html
+ * <dt-table [dataSource]="data">
+ * <dt-column property="title"></dt-column>
+ * <dt-loading-state>Loading...</dt-loading-state>
+ * <dt-empty-state>No data found</dt-empty-state>
+ * </dt-table>
+ * ```
+ *
+ * @example
+ * With router link navigation:
+ * ```html
+ * <dt-table [dataSource]="projects" routerLinkTemplate="/projects/{id}?tab=details">
+ * <dt-column property="name"></dt-column>
+ * <dt-column property="status"></dt-column>
+ * </dt-table>
+ * ```
+ *
+ * @see DtColumnComponent
+ * @see DtLoadingStateComponent
+ * @see DtEmptyStateComponent
  */
 @componentInterface({ selector: 'dt-table', acceptsChildren: true })
 export class DtTableComponentComponentInterface {

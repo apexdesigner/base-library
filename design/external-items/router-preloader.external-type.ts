@@ -3,14 +3,18 @@ import { externalType } from '@apexdesigner/dsl';
 import { RouterPreloader } from '@angular/router';
 
 /**
+ * Router Preloader
+ *
  * The preloader optimistically loads all router configurations to
-make navigations into lazily-loaded sections of the application faster.
-
-The preloader runs in the background. When the router bootstraps, the preloader
-starts listening to all navigation events. After every such event, the preloader
-will check if any configurations can be loaded lazily.
-
-If a route is protected by `canLoad` guards, the preloaded will not load it.
+ * make navigations into lazily-loaded sections of the application faster.
+ *
+ * The preloader runs in the background. When the router bootstraps, the preloader
+ * starts listening to all navigation events. After every such event, the preloader
+ * will check if any configurations can be loaded lazily.
+ *
+ * If a route is protected by `canLoad` guards, the preloaded will not load it.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class RouterPreloaderExternalType {}

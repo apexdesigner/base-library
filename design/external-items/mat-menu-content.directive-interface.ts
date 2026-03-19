@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatMenuContent } from '@angular/material/menu';
 
 /**
+ * Mat Menu Content
+ *
  * Menu content that will be rendered lazily once the menu is opened.
  */
 @directiveInterface({ selector: 'ng-template[matMenuContent]' })

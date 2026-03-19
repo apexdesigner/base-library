@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatListItemAvatar } from '@angular/material/list';
 
 /**
+ * Mat List Item Avatar
+ *
  * Directive matching an optional avatar within a list item.
-
-List items can reserve space at the beginning of an item to display an avatar.
+ *
+ * List items can reserve space at the beginning of an item to display an avatar.
  */
 @directiveInterface({ selector: '[matListItemAvatar]' })
 export class MatListItemAvatarDirectiveInterface {}

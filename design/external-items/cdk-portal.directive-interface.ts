@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkPortal } from '@angular/cdk/portal';
 
 /**
+ * Cdk Portal
+ *
  * Directive version of a `TemplatePortal`. Because the directive *is* a TemplatePortal,
-the directive instance itself can be attached to a host, enabling declarative use of portals.
+ * the directive instance itself can be attached to a host, enabling declarative use of portals.
  */
 @directiveInterface({ selector: '[cdkPortal]' })
 export class CdkPortalDirectiveInterface {}

@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkColumnDef } from '@angular/cdk/table';
 
 /**
+ * Cdk Column Def
+ *
  * Column definition for the CDK table.
-Defines a set of cells available for a table column.
+ * Defines a set of cells available for a table column.
  */
 @directiveInterface({ selector: '[cdkColumnDef]' })
 export class CdkColumnDefDirectiveInterface {

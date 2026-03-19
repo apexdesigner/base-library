@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatHint } from '@angular/material/input';
 
 /**
+ * Mat Hint
+ *
  * Hint text to be shown underneath the form field control.
  */
 @componentInterface({ selector: 'mat-hint' })

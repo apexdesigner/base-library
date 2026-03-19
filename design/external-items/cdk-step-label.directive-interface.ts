@@ -2,5 +2,8 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkStepLabel } from '@angular/cdk/stepper';
 
+/**
+ * Cdk Step Label
+ */
 @directiveInterface({ selector: '[cdkStepLabel]' })
 export class CdkStepLabelDirectiveInterface {}

@@ -3,8 +3,10 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkContextMenuTrigger } from '@angular/cdk/menu';
 
 /**
+ * Cdk Context Menu Trigger
+ *
  * A directive that opens a menu when a user right-clicks within its host element.
-It is aware of nested context menus and will trigger only the lowest level non-disabled context menu.
+ * It is aware of nested context menus and will trigger only the lowest level non-disabled context menu.
  */
 @directiveInterface({ selector: '[cdkContextMenuTriggerFor]' })
 export class CdkContextMenuTriggerDirectiveInterface {

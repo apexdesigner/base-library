@@ -3,10 +3,12 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatListItemMeta } from '@angular/material/list';
 
 /**
+ * Mat List Item Meta
+ *
  * Directive matching an optional meta section for list items.
-
-List items can reserve space at the end of an item to display a control,
-button or additional text content.
+ *
+ * List items can reserve space at the end of an item to display a control,
+ * button or additional text content.
  */
 @directiveInterface({ selector: '[matListItemMeta]' })
 export class MatListItemMetaDirectiveInterface {}

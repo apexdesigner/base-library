@@ -2,5 +2,8 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatSliderRangeThumb } from '@angular/material/slider';
 
+/**
+ * Mat Slider Range Thumb
+ */
 @directiveInterface({ selector: 'input[matSliderEndThumb],input[matSliderStartThumb]' })
 export class MatSliderRangeThumbDirectiveInterface {}

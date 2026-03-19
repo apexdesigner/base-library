@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { ViewContainerRef } from '@angular/core';
 
+/**
+ * View Container Ref
+ */
 @externalType({ injectable: true })
 export class ViewContainerRefExternalType {}

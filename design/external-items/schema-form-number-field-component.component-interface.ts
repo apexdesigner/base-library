@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormNumberFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Number Field Component
+ *
  * A numeric input field that binds to a SchemaFormControl.
-Handles number and integer schema types with appropriate input validation.
+ * Handles number and integer schema types with appropriate input validation.
  */
 @componentInterface({ selector: 'sf-number-field', acceptsChildren: true })
 export class SchemaFormNumberFieldComponentComponentInterface {

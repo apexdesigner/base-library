@@ -3,8 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { HammerGestureConfig } from '@angular/platform-browser';
 
 /**
+ * Hammer Gesture Config
+ *
  * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
-for gesture recognition. Configures specific event recognition.
+ * for gesture recognition. Configures specific event recognition.
+ * @publicApi
  */
 @externalType({ injectable: true, injectLocally: true })
 export class HammerGestureConfigExternalType {}

@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { AuthInterceptor } from 'angular-auth-oidc-client';
 
+/**
+ * Auth Interceptor
+ */
 @externalType({ injectable: true, injectLocally: true })
 export class AuthInterceptorExternalType {}

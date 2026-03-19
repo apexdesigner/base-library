@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatFooterRowDef } from '@angular/material/table';
 
 /**
+ * Mat Footer Row Def
+ *
  * Footer row definition for the mat-table.
-Captures the footer row's template and other footer properties such as the columns to display.
+ * Captures the footer row's template and other footer properties such as the columns to display.
  */
 @directiveInterface({ selector: '[matFooterRowDef]' })
 export class MatFooterRowDefDirectiveInterface {

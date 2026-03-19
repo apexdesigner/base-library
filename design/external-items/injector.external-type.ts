@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { Injector } from '@angular/core';
 
+/**
+ * Injector
+ */
 @externalType({ injectable: true })
 export class InjectorExternalType {}

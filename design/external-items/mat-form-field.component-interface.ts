@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatFormField } from '@angular/material/input';
 
 /**
+ * Mat Form Field
+ *
  * Container for form controls that applies Material Design styling and behavior.
  */
 @componentInterface({ selector: 'mat-form-field', acceptsChildren: true })

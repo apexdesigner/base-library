@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormRegexFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Regex Field Component
+ *
  * A regular expression input field that binds to a SchemaFormControl.
-Validates regex syntax and provides a test mode to try patterns against sample text.
+ * Validates regex syntax and provides a test mode to try patterns against sample text.
  */
 @componentInterface({ selector: 'sf-regex-field', acceptsChildren: true })
 export class SchemaFormRegexFieldComponentComponentInterface {

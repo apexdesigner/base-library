@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 /**
+ * Mat Snack Bar
+ *
  * Service to dispatch Material Design snack bar messages.
  */
 @externalType({ injectable: true })

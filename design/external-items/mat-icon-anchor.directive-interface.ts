@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatIconAnchor } from '@angular/material/button';
 
 /**
+ * Mat Icon Anchor
+ *
  * Material Design icon button component for anchor elements. This button displays a single
-interaction icon that allows users to navigate across different routes or pages.
-See https://material.io/develop/web/components/buttons/icon-buttons/
+ * interaction icon that allows users to navigate across different routes or pages.
+ * See https://material.io/develop/web/components/buttons/icon-buttons/
  */
 @directiveInterface({ selector: 'a[mat-icon-button]' })
 export class MatIconAnchorDirectiveInterface {}

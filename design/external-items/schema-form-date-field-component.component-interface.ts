@@ -3,9 +3,11 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { SchemaFormDateFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Date Field Component
+ *
  * A date picker field that binds to a SchemaFormControl.
-Uses Luxon for date handling and stores values as ISO date strings (YYYY-MM-DD).
-Supports min/max date constraints from schema properties.
+ * Uses Luxon for date handling and stores values as ISO date strings (YYYY-MM-DD).
+ * Supports min/max date constraints from schema properties.
  */
 @componentInterface({ selector: 'sf-date-field', acceptsChildren: true })
 export class SchemaFormDateFieldComponentComponentInterface {

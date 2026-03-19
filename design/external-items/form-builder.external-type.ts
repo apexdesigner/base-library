@@ -2,5 +2,19 @@
 import { externalType } from '@apexdesigner/dsl';
 import { FormBuilder } from '@angular/forms';
 
+/**
+ * Form Builder
+ *
+ * @description
+ * Creates an `AbstractControl` from a user-specified configuration.
+ *
+ * The `FormBuilder` provides syntactic sugar that shortens creating instances of a
+ * `FormControl`, `FormGroup`, or `FormArray`. It reduces the amount of boilerplate needed to
+ * build complex forms.
+ *
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class FormBuilderExternalType {}

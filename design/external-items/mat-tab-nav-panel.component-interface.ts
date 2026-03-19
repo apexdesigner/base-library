@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatTabNavPanel } from '@angular/material/tabs';
 
 /**
+ * Mat Tab Nav Panel
+ *
  * Tab panel component associated with MatTabNav.
  */
 @componentInterface({ selector: 'mat-tab-nav-panel', acceptsChildren: true })

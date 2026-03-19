@@ -3,7 +3,10 @@ import { externalType } from '@apexdesigner/dsl';
 import { TestabilityRegistry } from '@angular/core';
 
 /**
+ * Testability Registry
+ *
  * A global registry of {@link Testability} instances for specific elements.
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class TestabilityRegistryExternalType {}

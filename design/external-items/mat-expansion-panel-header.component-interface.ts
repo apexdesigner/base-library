@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatExpansionPanelHeader } from '@angular/material/expansion';
 
 /**
+ * Mat Expansion Panel Header
+ *
  * Header element of a `<mat-expansion-panel>`.
  */
 @componentInterface({ selector: 'mat-expansion-panel-header', acceptsChildren: true })

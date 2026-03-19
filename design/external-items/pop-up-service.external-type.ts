@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { PopUpService } from 'angular-auth-oidc-client';
 
+/**
+ * Pop Up Service
+ */
 @externalType({ injectable: true })
 export class PopUpServiceExternalType {}

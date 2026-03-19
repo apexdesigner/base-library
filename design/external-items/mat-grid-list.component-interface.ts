@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatGridList } from '@angular/material/grid-list';
 
+/**
+ * Mat Grid List
+ */
 @componentInterface({ selector: 'mat-grid-list', acceptsChildren: true })
 export class MatGridListComponentInterface {
   cols!: any;

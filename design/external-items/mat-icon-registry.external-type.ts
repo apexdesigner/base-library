@@ -3,11 +3,13 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatIconRegistry } from '@angular/material/icon';
 
 /**
+ * Mat Icon Registry
+ *
  * Service to register and display icons used by the `<mat-icon>` component.
-- Registers icon URLs by namespace and name.
-- Registers icon set URLs by namespace.
-- Registers aliases for CSS classes, for use with icon fonts.
-- Loads icons from URLs and extracts individual icons from icon sets.
+ * - Registers icon URLs by namespace and name.
+ * - Registers icon set URLs by namespace.
+ * - Registers aliases for CSS classes, for use with icon fonts.
+ * - Loads icons from URLs and extracts individual icons from icon sets.
  */
 @externalType({ injectable: true })
 export class MatIconRegistryExternalType {}

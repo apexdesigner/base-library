@@ -3,15 +3,59 @@ import { externalType } from '@apexdesigner/dsl';
 import { HttpClient } from '@angular/common/http';
 
 /**
+ * Http Client
+ *
  * Performs HTTP requests.
-This service is available as an injectable class, with methods to perform HTTP requests.
-Each request method has multiple signatures, and the return type varies based on
-the signature that is called (mainly the values of `observe` and `responseType`).
-
-Note that the `responseType` *options* value is a String that identifies the
-single data type of the response.
-A single overload version of the method handles each response type.
-The value of `responseType` cannot be a union, as the combined signature could imply.
+ * This service is available as an injectable class, with methods to perform HTTP requests.
+ * Each request method has multiple signatures, and the return type varies based on
+ * the signature that is called (mainly the values of `observe` and `responseType`).
+ *
+ * Note that the `responseType` *options* value is a String that identifies the
+ * single data type of the response.
+ * A single overload version of the method handles each response type.
+ * The value of `responseType` cannot be a union, as the combined signature could imply.
+ *
+ * @usageNotes
+ *
+ * ### HTTP Request Example
+ *
+ * ```ts
+ * // GET heroes whose name contains search term
+ * searchHeroes(term: string): observable<Hero[]>{
+ *
+ * const params = new HttpParams({fromString: 'name=term'});
+ * return this.httpClient.request('GET', this.heroesUrl, {responseType:'json', params});
+ * }
+ * ```
+ *
+ * Alternatively, the parameter string can be used without invoking HttpParams
+ * by directly joining to the URL.
+ * ```ts
+ * this.httpClient.request('GET', this.heroesUrl + '?' + 'name=term', {responseType:'json'});
+ * ```
+ *
+ *
+ * ### JSONP Example
+ * ```ts
+ * requestJsonp(url, callback = 'callback') {
+ * return this.httpClient.jsonp(this.heroesURL, callback);
+ * }
+ * ```
+ *
+ * ### PATCH Example
+ * ```ts
+ * // PATCH one of the heroes' name
+ * patchHero (id: number, heroName: string): Observable<{}> {
+ * const url = `${this.heroesUrl}/${id}`;   // PATCH api/heroes/42
+ * return this.httpClient.patch(url, {name: heroName}, httpOptions)
+ * .pipe(catchError(this.handleError('patchHero')));
+ * }
+ * ```
+ *
+ * @see [HTTP Guide](guide/http)
+ * @see [HTTP Request](api/common/http/HttpRequest)
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class HttpClientExternalType {}

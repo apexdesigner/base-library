@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatHeaderRow } from '@angular/material/table';
 
 /**
+ * Mat Header Row
+ *
  * Header template container that contains the cell outlet. Adds the right class and role.
  */
 @directiveInterface({ selector: 'mat-header-row,tr[mat-header-row]' })

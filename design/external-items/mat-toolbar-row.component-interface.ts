@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatToolbarRow } from '@angular/material/toolbar';
 
+/**
+ * Mat Toolbar Row
+ */
 @componentInterface({ selector: 'mat-toolbar-row' })
 export class MatToolbarRowComponentInterface {}

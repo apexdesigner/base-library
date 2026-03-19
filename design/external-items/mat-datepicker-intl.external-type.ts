@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { MatDatepickerIntl } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker Intl
+ *
  * Datepicker data that requires internationalization.
  */
 @externalType({ injectable: true })

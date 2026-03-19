@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { DefaultMatCalendarRangeStrategy } from '@angular/material/datepicker';
 
 /**
+ * Default Mat Calendar Range Strategy
+ *
  * Provides the default date range selection behavior.
  */
 @externalType({ injectable: true, injectLocally: true })

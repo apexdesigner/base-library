@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatCellDef } from '@angular/material/table';
 
 /**
+ * Mat Cell Def
+ *
  * Cell definition for the mat-table.
-Captures the template of a column's data row cell as well as cell-specific properties.
+ * Captures the template of a column's data row cell as well as cell-specific properties.
  */
 @directiveInterface({ selector: '[matCellDef]' })
 export class MatCellDefDirectiveInterface {}

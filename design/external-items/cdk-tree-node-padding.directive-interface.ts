@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTreeNodePadding } from '@angular/cdk/tree';
 
 /**
+ * Cdk Tree Node Padding
+ *
  * Indent for the children tree dataNodes.
-This directive will add left-padding to the node to show hierarchy.
+ * This directive will add left-padding to the node to show hierarchy.
  */
 @directiveInterface({ selector: '[cdkTreeNodePadding]' })
 export class CdkTreeNodePaddingDirectiveInterface {

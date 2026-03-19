@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatRecycleRows } from '@angular/material/table';
 
 /**
+ * Mat Recycle Rows
+ *
  * Enables the recycle view repeater strategy, which reduces rendering latency. Not compatible with
-tables that animate rows.
+ * tables that animate rows.
  */
 @directiveInterface({ selector: 'mat-table[recycleRows],table[mat-table][recycleRows]' })
 export class MatRecycleRowsDirectiveInterface {}

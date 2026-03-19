@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatListOption } from '@angular/material/list';
 
+/**
+ * Mat List Option
+ */
 @componentInterface({ selector: 'mat-list-option', acceptsChildren: true })
 export class MatListOptionComponentInterface {
   togglePosition!: any;

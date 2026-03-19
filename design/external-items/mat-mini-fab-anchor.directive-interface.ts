@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatMiniFabAnchor } from '@angular/material/button';
 
 /**
+ * Mat Mini Fab Anchor
+ *
  * Material Design mini floating action button (FAB) component for anchor elements. Anchor elements
-are used to provide links for the user to navigate across different routes or pages.
-See https://material.io/components/buttons-floating-action-button/
+ * are used to provide links for the user to navigate across different routes or pages.
+ * See https://material.io/components/buttons-floating-action-button/
  */
 @directiveInterface({ selector: 'a[mat-mini-fab]' })
 export class MatMiniFabAnchorDirectiveInterface {}

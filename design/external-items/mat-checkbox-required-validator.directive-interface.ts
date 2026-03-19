@@ -3,9 +3,14 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatCheckboxRequiredValidator } from '@angular/material/checkbox';
 
 /**
+ * Mat Checkbox Required Validator
+ *
  * Validator for Material checkbox's required attribute in template-driven checkbox.
-Current CheckboxRequiredValidator only work with `input type=checkbox` and does not
-work with `mat-checkbox`.
+ * Current CheckboxRequiredValidator only work with `input type=checkbox` and does not
+ * work with `mat-checkbox`.
+ *
+ * @deprecated No longer used, `MatCheckbox` implements required validation directly.
+ * @breaking-change 19.0.0
  */
 @directiveInterface({ selector: 'mat-checkbox[required][formControlName],mat-checkbox[required][formControl],mat-checkbox[required][ngModel]' })
 export class MatCheckboxRequiredValidatorDirectiveInterface {}

@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatRow } from '@angular/material/table';
 
 /**
+ * Mat Row
+ *
  * Data row template container that contains the cell outlet. Adds the right class and role.
  */
 @componentInterface({ selector: 'mat-row,tr[mat-row]', acceptsChildren: true })

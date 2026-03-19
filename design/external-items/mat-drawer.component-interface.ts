@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatDrawer } from '@angular/material/sidenav';
 
 /**
+ * Mat Drawer
+ *
  * This component corresponds to a drawer that can be opened on the drawer container.
  */
 @componentInterface({ selector: 'mat-drawer', acceptsChildren: true })

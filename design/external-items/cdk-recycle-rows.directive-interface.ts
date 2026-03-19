@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkRecycleRows } from '@angular/cdk/table';
 
 /**
+ * Cdk Recycle Rows
+ *
  * Enables the recycle view repeater strategy, which reduces rendering latency. Not compatible with
-tables that animate rows.
+ * tables that animate rows.
  */
 @directiveInterface({ selector: 'cdk-table[recycleRows],table[cdk-table][recycleRows]' })
 export class CdkRecycleRowsDirectiveInterface {}

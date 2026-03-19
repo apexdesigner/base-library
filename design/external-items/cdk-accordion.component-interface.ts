@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { CdkAccordion } from '@angular/cdk/accordion';
 
 /**
+ * Cdk Accordion
+ *
  * Directive whose purpose is to manage the expanded state of CdkAccordionItem children.
  */
 @componentInterface({ selector: '[cdkAccordion],cdk-accordion' })

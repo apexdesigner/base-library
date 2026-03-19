@@ -3,11 +3,13 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatCardContent } from '@angular/material/card';
 
 /**
+ * Mat Card Content
+ *
  * Content of a card, intended for use within `<mat-card>`. This component is an optional
-convenience for use with other convenience elements, such as `<mat-card-title>`; any custom
-content block element may be used in its place.
-
-MatCardContent provides no behaviors, instead serving as a purely visual treatment.
+ * convenience for use with other convenience elements, such as `<mat-card-title>`; any custom
+ * content block element may be used in its place.
+ *
+ * MatCardContent provides no behaviors, instead serving as a purely visual treatment.
  */
 @componentInterface({ selector: 'mat-card-content' })
 export class MatCardContentComponentInterface {}

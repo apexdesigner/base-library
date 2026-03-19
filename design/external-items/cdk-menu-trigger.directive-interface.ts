@@ -3,11 +3,13 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkMenuTrigger } from '@angular/cdk/menu';
 
 /**
+ * Cdk Menu Trigger
+ *
  * A directive that turns its host element into a trigger for a popup menu.
-It can be combined with cdkMenuItem to create sub-menus. If the element is in a top level
-MenuBar it will open the menu on click, or if a sibling is already opened it will open on hover.
-If it is inside of a Menu it will open the attached Submenu on hover regardless of its sibling
-state.
+ * It can be combined with cdkMenuItem to create sub-menus. If the element is in a top level
+ * MenuBar it will open the menu on click, or if a sibling is already opened it will open on hover.
+ * If it is inside of a Menu it will open the attached Submenu on hover regardless of its sibling
+ * state.
  */
 @directiveInterface({ selector: '[cdkMenuTriggerFor]' })
 export class CdkMenuTriggerDirectiveInterface {

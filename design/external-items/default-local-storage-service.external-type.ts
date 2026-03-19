@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { DefaultLocalStorageService } from 'angular-auth-oidc-client';
 
+/**
+ * Default Local Storage Service
+ */
 @externalType({ injectable: true })
 export class DefaultLocalStorageServiceExternalType {}

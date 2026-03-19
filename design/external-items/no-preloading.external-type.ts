@@ -2,5 +2,16 @@
 import { externalType } from '@apexdesigner/dsl';
 import { NoPreloading } from '@angular/router';
 
+/**
+ * No Preloading
+ *
+ * @description
+ *
+ * Provides a preloading strategy that does not preload any modules.
+ *
+ * This strategy is enabled by default.
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class NoPreloadingExternalType {}

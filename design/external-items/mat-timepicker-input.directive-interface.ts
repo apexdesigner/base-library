@@ -3,6 +3,8 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { MatTimepickerInput } from '@angular/material/timepicker';
 
 /**
+ * Mat Timepicker Input
+ *
  * Input that can be used to enter time and connect to a `mat-timepicker`.
  */
 @directiveInterface({ selector: 'input[matTimepicker]' })

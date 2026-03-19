@@ -2,5 +2,8 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDrawerContent } from '@angular/material/sidenav';
 
+/**
+ * Mat Drawer Content
+ */
 @componentInterface({ selector: 'mat-drawer-content', acceptsChildren: true })
 export class MatDrawerContentComponentInterface {}

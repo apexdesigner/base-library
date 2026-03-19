@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkFooterRow } from '@angular/cdk/table';
 
 /**
+ * Cdk Footer Row
+ *
  * Footer template container that contains the cell outlet. Adds the right class and role.
  */
 @directiveInterface({ selector: 'cdk-footer-row,tr[cdk-footer-row]' })

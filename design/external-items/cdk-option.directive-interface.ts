@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkOption } from '@angular/cdk/listbox';
 
 /**
+ * Cdk Option
+ *
  * A selectable option in a listbox.
  */
 @directiveInterface({ selector: '[cdkOption]' })

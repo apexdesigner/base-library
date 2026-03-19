@@ -2,5 +2,14 @@
 import { externalType } from '@apexdesigner/dsl';
 import { NonNullableFormBuilder } from '@angular/forms';
 
+/**
+ * Non Nullable Form Builder
+ *
+ * @description
+ * `NonNullableFormBuilder` is similar to {@link FormBuilder}, but automatically constructed
+ * {@link FormControl} elements have `{nonNullable: true}` and are non-nullable.
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class NonNullableFormBuilderExternalType {}

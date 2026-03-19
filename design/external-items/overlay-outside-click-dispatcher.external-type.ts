@@ -3,9 +3,11 @@ import { externalType } from '@apexdesigner/dsl';
 import { OverlayOutsideClickDispatcher } from '@angular/cdk/overlay';
 
 /**
+ * Overlay Outside Click Dispatcher
+ *
  * Service for dispatching mouse click events that land on the body to appropriate overlay ref,
-if any. It maintains a list of attached overlays to determine best suited overlay based
-on event target and order of overlay opens.
+ * if any. It maintains a list of attached overlays to determine best suited overlay based
+ * on event target and order of overlay opens.
  */
 @externalType({ injectable: true })
 export class OverlayOutsideClickDispatcherExternalType {}

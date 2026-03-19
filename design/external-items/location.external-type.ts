@@ -2,5 +2,34 @@
 import { externalType } from '@apexdesigner/dsl';
 import { Location } from '@angular/common';
 
+/**
+ * Location
+ *
+ * @description
+ *
+ * A service that applications can use to interact with a browser's URL.
+ *
+ * Depending on the `LocationStrategy` used, `Location` persists
+ * to the URL's path or the URL's hash segment.
+ *
+ * @usageNotes
+ *
+ * It's better to use the `Router.navigate()` service to trigger route changes. Use
+ * `Location` only if you need to interact with or create normalized URLs outside of
+ * routing.
+ *
+ * `Location` is responsible for normalizing the URL against the application's base href.
+ * A normalized URL is absolute from the URL host, includes the application's base href, and has no
+ * trailing slash:
+ * - `/my/app/user/123` is normalized
+ * - `my/app/user/123` **is not** normalized
+ * - `/my/app/user/123/` **is not** normalized
+ *
+ * ### Example
+ *
+ * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class LocationExternalType {}

@@ -3,11 +3,13 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatCardActions } from '@angular/material/card';
 
 /**
+ * Mat Card Actions
+ *
  * Bottom area of a card that contains action buttons, intended for use within `<mat-card>`.
-This component is an optional convenience for use with other convenience elements, such as
-`<mat-card-content>`; any custom action block element may be used in its place.
-
-MatCardActions provides no behaviors, instead serving as a purely visual treatment.
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-content>`; any custom action block element may be used in its place.
+ *
+ * MatCardActions provides no behaviors, instead serving as a purely visual treatment.
  */
 @componentInterface({ selector: 'mat-card-actions' })
 export class MatCardActionsComponentInterface {

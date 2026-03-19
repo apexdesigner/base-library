@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { NativeDateAdapter } from '@angular/material/core';
 
 /**
+ * Native Date Adapter
+ *
  * Adapts the native JS Date for use with cdk-based components that work with dates.
  */
 @externalType({ injectable: true, injectLocally: true })

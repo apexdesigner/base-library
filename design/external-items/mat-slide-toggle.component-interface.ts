@@ -2,6 +2,9 @@
 import { componentInterface, output } from '@apexdesigner/dsl/component-interface';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 
+/**
+ * Mat Slide Toggle
+ */
 @componentInterface({ selector: 'mat-slide-toggle', acceptsChildren: true })
 export class MatSlideToggleComponentInterface {
   name!: any;

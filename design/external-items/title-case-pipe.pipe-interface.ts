@@ -3,10 +3,23 @@ import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { TitleCasePipe } from '@angular/common';
 
 /**
+ * Title Case Pipe
+ *
  * Transforms text to title case.
-Capitalizes the first letter of each word and transforms the
-rest of the word to lower case.
-Words are delimited by any whitespace character, such as a space, tab, or line-feed character.
+ * Capitalizes the first letter of each word and transforms the
+ * rest of the word to lower case.
+ * Words are delimited by any whitespace character, such as a space, tab, or line-feed character.
+ *
+ * @see {@link LowerCasePipe}
+ * @see {@link UpperCasePipe}
+ *
+ * @usageNotes
+ * The following example shows the result of transforming various strings into title case.
+ *
+ * {@example common/pipes/ts/titlecase_pipe.ts region='TitleCasePipe'}
+ *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @pipeInterface({ selector: 'titlecase' })
 export class TitleCasePipePipeInterface {}

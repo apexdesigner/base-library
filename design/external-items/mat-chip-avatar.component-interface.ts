@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatChipAvatar } from '@angular/material/chips';
 
 /**
+ * Mat Chip Avatar
+ *
  * Avatar image within a chip.
  */
 @componentInterface({ selector: '[matChipAvatar],mat-chip-avatar' })

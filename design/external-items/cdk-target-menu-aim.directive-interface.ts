@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkTargetMenuAim } from '@angular/cdk/menu';
 
 /**
+ * Cdk Target Menu Aim
+ *
  * CdkTargetMenuAim is a provider for the TargetMenuAim service. It can be added to an
-element with either the `cdkMenu` or `cdkMenuBar` directive and child menu items.
+ * element with either the `cdkMenu` or `cdkMenuBar` directive and child menu items.
  */
 @directiveInterface({ selector: '[cdkTargetMenuAim]' })
 export class CdkTargetMenuAimDirectiveInterface {}

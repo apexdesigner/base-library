@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkStepperPrevious } from '@angular/cdk/stepper';
 
 /**
+ * Cdk Stepper Previous
+ *
  * Button that moves to the previous step in a stepper workflow.
  */
 @directiveInterface({ selector: 'button[cdkStepperPrevious]' })

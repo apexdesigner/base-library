@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { UntypedFormBuilder } from '@angular/forms';
 
 /**
+ * Untyped Form Builder
+ *
  * UntypedFormBuilder is the same as `FormBuilder`, but it provides untyped controls.
  */
 @externalType({ injectable: true })

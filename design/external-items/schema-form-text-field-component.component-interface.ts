@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormTextFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Text Field Component
+ *
  * A text input field that binds to a SchemaFormControl.
-Supports auto-formatting (camelCase, PascalCase, etc.) on blur via the `x-auto-format` schema property.
+ * Supports auto-formatting (camelCase, PascalCase, etc.) on blur via the `x-auto-format` schema property.
  */
 @componentInterface({ selector: 'sf-text-field', acceptsChildren: true })
 export class SchemaFormTextFieldComponentComponentInterface {

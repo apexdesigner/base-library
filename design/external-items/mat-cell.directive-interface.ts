@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatCell } from '@angular/material/table';
 
 /**
+ * Mat Cell
+ *
  * Cell template container that adds the right classes and role.
  */
 @directiveInterface({ selector: 'mat-cell,td[mat-cell]' })

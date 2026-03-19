@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { FocusMonitor } from '@angular/cdk/a11y';
 
 /**
+ * Focus Monitor
+ *
  * Monitors mouse and keyboard events to determine the cause of focus events.
  */
 @externalType({ injectable: true })

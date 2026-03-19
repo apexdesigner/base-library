@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 
 /**
+ * Cdk Overlay Origin
+ *
  * Directive applied to an element to make it usable as an origin for an Overlay using a
-ConnectedPositionStrategy.
+ * ConnectedPositionStrategy.
  */
 @directiveInterface({ selector: '[cdk-overlay-origin],[cdkOverlayOrigin],[overlay-origin]' })
 export class CdkOverlayOriginDirectiveInterface {}

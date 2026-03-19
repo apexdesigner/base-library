@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTabNav } from '@angular/material/tabs';
 
 /**
+ * Mat Tab Nav
+ *
  * Navigation component matching the styles of the tab group header.
-Provides anchored navigation with animated ink bar.
+ * Provides anchored navigation with animated ink bar.
  */
 @directiveInterface({ selector: '[mat-tab-nav-bar]' })
 export class MatTabNavDirectiveInterface {

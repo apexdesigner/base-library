@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { Renderer2 } from '@angular/core';
 
+/**
+ * Renderer2
+ */
 @externalType({ injectable: true })
 export class Renderer2ExternalType {}

@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { OverlayPositionBuilder } from '@angular/cdk/overlay';
 
 /**
+ * Overlay Position Builder
+ *
  * Builder for overlay position strategy.
  */
 @externalType({ injectable: true })

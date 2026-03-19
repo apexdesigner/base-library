@@ -2,5 +2,21 @@
 import { pipeInterface } from '@apexdesigner/dsl/pipe-interface';
 import { I18nPluralPipe } from '@angular/common';
 
+/**
+ * I18n Plural Pipe
+ *
+ * @ngModule CommonModule
+ * @description
+ *
+ * Maps a value to a string that pluralizes the value according to locale rules.
+ *
+ * @usageNotes
+ *
+ * ### Example
+ *
+ * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
+ *
+ * @publicApi
+ */
 @pipeInterface({ selector: 'i18nPlural' })
 export class I18nPluralPipePipeInterface {}

@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatExpansionPanelContent } from '@angular/material/expansion';
 
 /**
+ * Mat Expansion Panel Content
+ *
  * Expansion panel content that will be rendered lazily
-after the panel is opened for the first time.
+ * after the panel is opened for the first time.
  */
 @directiveInterface({ selector: 'ng-template[matExpansionPanelContent]' })
 export class MatExpansionPanelContentDirectiveInterface {}

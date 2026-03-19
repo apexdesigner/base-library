@@ -3,8 +3,10 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTreeNodeOutlet } from '@angular/material/tree';
 
 /**
+ * Mat Tree Node Outlet
+ *
  * Outlet for nested CdkNode. Put `[matTreeNodeOutlet]` on a tag to place children dataNodes
-inside the outlet.
+ * inside the outlet.
  */
 @directiveInterface({ selector: '[matTreeNodeOutlet]' })
 export class MatTreeNodeOutletDirectiveInterface {}

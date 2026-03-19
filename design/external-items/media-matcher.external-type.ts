@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { MediaMatcher } from '@angular/cdk/layout';
 
 /**
+ * Media Matcher
+ *
  * A utility for calling matchMedia queries.
  */
 @externalType({ injectable: true })

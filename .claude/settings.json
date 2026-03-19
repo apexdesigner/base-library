@@ -50,7 +50,9 @@
       "Skill(apex-designer)",
       "Bash(.claude/skills/apex-designer/scripts/dev.sh:*)",
       "Bash(.claude/skills/apex-designer/scripts/resolve.cjs:*)",
-      "Bash(npx es *)"
+      "Bash(npx es *)",
+      "Bash(.claude/skills/apex-designer/scripts/api.cjs:*)",
+      "Skill(envisioning-studio-cli)"
     ],
     "deny": [
       "Read(**/.env)",

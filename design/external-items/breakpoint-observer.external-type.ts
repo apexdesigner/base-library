@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 /**
+ * Breakpoint Observer
+ *
  * Utility for checking the matching state of `@media` queries.
  */
 @externalType({ injectable: true })

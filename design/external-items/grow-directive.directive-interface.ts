@@ -3,10 +3,28 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { GrowDirective } from '@apexdesigner/flex-layout';
 
 /**
+ * Grow Directive
+ *
  * A directive that makes an element grow to fill available space in a flex container.
-
-Sets the element's flex property and manages overflow behavior. When combined with
-the scroll directive, it preserves vertical scrolling while hiding horizontal overflow.
+ *
+ * Sets the element's flex property and manages overflow behavior. When combined with
+ * the scroll directive, it preserves vertical scrolling while hiding horizontal overflow.
+ *
+ * @example
+ * ```html
+ * <flex-column>
+ * <div>Fixed header</div>
+ * <div grow>This will expand to fill remaining space</div>
+ * </flex-column>
+ * ```
+ *
+ * @example
+ * ```html
+ * <flex-row>
+ * <div grow="2">Takes 2/3 of space</div>
+ * <div grow="1">Takes 1/3 of space</div>
+ * </flex-row>
+ * ```
  */
 @directiveInterface({ selector: '[grow]' })
 export class GrowDirectiveDirectiveInterface {

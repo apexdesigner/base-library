@@ -2,5 +2,10 @@
 import { externalType } from '@apexdesigner/dsl';
 import { NgLocalization } from '@angular/common';
 
+/**
+ * Ng Localization
+ *
+ * @publicApi
+ */
 @externalType({ injectable: true })
 export class NgLocalizationExternalType {}

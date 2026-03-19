@@ -3,6 +3,8 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { CdkAutofill } from '@angular/cdk/text-field';
 
 /**
+ * Cdk Autofill
+ *
  * A directive that can be used to monitor the autofill state of an input.
  */
 @directiveInterface({ selector: '[cdkAutofill]' })

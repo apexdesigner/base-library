@@ -3,9 +3,11 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { SchemaFormFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Field Component
+ *
  * A dynamic field component that renders the appropriate field type based on the schema.
-Uses SchemaFormsService to lazy-load field components based on the format metadata or inferred type.
-This is the primary component for rendering individual form fields.
+ * Uses SchemaFormsService to lazy-load field components based on the format metadata or inferred type.
+ * This is the primary component for rendering individual form fields.
  */
 @componentInterface({ selector: 'sf-field', acceptsChildren: true })
 export class SchemaFormFieldComponentComponentInterface {

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDialogTitle } from '@angular/material/dialog';
 
 /**
+ * Mat Dialog Title
+ *
  * Title of a dialog element. Stays fixed to the top of the dialog when scrolling.
  */
 @directiveInterface({ selector: '[mat-dialog-title],[matDialogTitle]' })

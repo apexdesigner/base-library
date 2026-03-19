@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatListItem } from '@angular/material/list';
 
+/**
+ * Mat List Item
+ */
 @componentInterface({ selector: 'a[mat-list-item],button[mat-list-item],mat-list-item', acceptsChildren: true })
 export class MatListItemComponentInterface {
   activated!: any;

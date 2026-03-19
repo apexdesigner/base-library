@@ -3,8 +3,10 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatChipGrid } from '@angular/material/chips';
 
 /**
+ * Mat Chip Grid
+ *
  * An extension of the MatChipSet component used with MatChipRow chips and
-the matChipInputFor directive.
+ * the matChipInputFor directive.
  */
 @componentInterface({ selector: 'mat-chip-grid', acceptsChildren: true })
 export class MatChipGridComponentInterface {

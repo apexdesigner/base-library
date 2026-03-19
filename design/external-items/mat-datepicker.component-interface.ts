@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDatepicker } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker
+ *
  * Component responsible for managing the datepicker popup/dialog.
  */
 @componentInterface({ selector: 'mat-datepicker', acceptsChildren: true })

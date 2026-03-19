@@ -2,6 +2,32 @@
 import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { NgTemplateOutlet } from '@angular/common';
 
+/**
+ * Ng Template Outlet
+ *
+ * @ngModule CommonModule
+ *
+ * @description
+ *
+ * Inserts an embedded view from a prepared `TemplateRef`.
+ *
+ * You can attach a context object to the `EmbeddedViewRef` by setting `[ngTemplateOutletContext]`.
+ * `[ngTemplateOutletContext]` should be an object, the object's keys will be available for binding
+ * by the local template `let` declarations.
+ *
+ * @usageNotes
+ * ```html
+ * <ng-container *ngTemplateOutlet="templateRefExp; context: contextExp"></ng-container>
+ * ```
+ *
+ * Using the key `$implicit` in the context object will set its value as default.
+ *
+ * ### Example
+ *
+ * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}
+ *
+ * @publicApi
+ */
 @directiveInterface({ selector: '[ngTemplateOutlet]' })
 export class NgTemplateOutletDirectiveInterface {
   ngTemplateOutletContext!: any;

@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatDialogContent } from '@angular/material/dialog';
 
 /**
+ * Mat Dialog Content
+ *
  * Scrollable content container of a dialog.
  */
 @componentInterface({ selector: '[mat-dialog-content],[matDialogContent],mat-dialog-content' })

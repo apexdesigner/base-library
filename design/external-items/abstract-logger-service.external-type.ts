@@ -3,6 +3,8 @@ import { externalType } from '@apexdesigner/dsl';
 import { AbstractLoggerService } from 'angular-auth-oidc-client';
 
 /**
+ * Abstract Logger Service
+ *
  * Implement this class-interface to create a custom logger service.
  */
 @externalType({ injectable: true })

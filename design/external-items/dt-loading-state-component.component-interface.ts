@@ -3,11 +3,25 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { DtLoadingStateComponent } from '@apexdesigner/declarative-tables';
 
 /**
+ * Dt Loading State Component
+ *
  * Container for custom loading state content displayed while data is being fetched.
-
-This component is shown when the parent dt-table's dataSource is `undefined`.
-Content projected into this component will be displayed along with the built-in
-progress bar indicator.
+ *
+ * This component is shown when the parent dt-table's dataSource is `undefined`.
+ * Content projected into this component will be displayed along with the built-in
+ * progress bar indicator.
+ *
+ * @example
+ * ```html
+ * <dt-table [dataSource]="items">
+ * <dt-column property="name"></dt-column>
+ * <dt-loading-state>
+ * <p>Loading data, please wait...</p>
+ * </dt-loading-state>
+ * </dt-table>
+ * ```
+ *
+ * @see DtTableComponent
  */
 @componentInterface({ selector: 'dt-loading-state', acceptsChildren: true })
 export class DtLoadingStateComponentComponentInterface {}

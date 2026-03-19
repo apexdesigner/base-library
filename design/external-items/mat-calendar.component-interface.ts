@@ -3,6 +3,8 @@ import { componentInterface, output } from '@apexdesigner/dsl/component-interfac
 import { MatCalendar } from '@angular/material/datepicker';
 
 /**
+ * Mat Calendar
+ *
  * A calendar that is used as part of the datepicker.
  */
 @componentInterface({ selector: 'mat-calendar', acceptsChildren: true })

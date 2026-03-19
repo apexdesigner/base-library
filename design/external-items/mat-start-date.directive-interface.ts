@@ -3,6 +3,8 @@ import { directiveInterface, output } from '@apexdesigner/dsl/directive-interfac
 import { MatStartDate } from '@angular/material/datepicker';
 
 /**
+ * Mat Start Date
+ *
  * Input for entering the start date in a `mat-date-range-input`.
  */
 @directiveInterface({ selector: 'input[matStartDate]' })

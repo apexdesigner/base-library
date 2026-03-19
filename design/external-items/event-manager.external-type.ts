@@ -3,8 +3,12 @@ import { externalType } from '@apexdesigner/dsl';
 import { EventManager } from '@angular/platform-browser';
 
 /**
+ * Event Manager
+ *
  * An injectable service that provides event management for Angular
-through a browser plug-in.
+ * through a browser plug-in.
+ *
+ * @publicApi
  */
 @externalType({ injectable: true })
 export class EventManagerExternalType {}

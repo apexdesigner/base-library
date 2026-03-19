@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatTabLink } from '@angular/material/tabs';
 
 /**
+ * Mat Tab Link
+ *
  * Link inside a `mat-tab-nav-bar`.
  */
 @directiveInterface({ selector: '[mat-tab-link],[matTabLink]' })

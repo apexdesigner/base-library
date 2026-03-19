@@ -3,9 +3,11 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatListItemIcon } from '@angular/material/list';
 
 /**
+ * Mat List Item Icon
+ *
  * Directive matching an optional icon within a list item.
-
-List items can reserve space at the beginning of an item to display an icon.
+ *
+ * List items can reserve space at the beginning of an item to display an icon.
  */
 @directiveInterface({ selector: '[matListItemIcon]' })
 export class MatListItemIconDirectiveInterface {}

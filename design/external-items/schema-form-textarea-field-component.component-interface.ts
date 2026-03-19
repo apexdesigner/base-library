@@ -3,8 +3,10 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { SchemaFormTextareaFieldComponent } from '@apexdesigner/schema-forms';
 
 /**
+ * Schema Form Textarea Field Component
+ *
  * A multi-line text input field that binds to a SchemaFormControl.
-Uses cdkTextareaAutosize to automatically resize based on content.
+ * Uses cdkTextareaAutosize to automatically resize based on content.
  */
 @componentInterface({ selector: 'sf-textarea-field', acceptsChildren: true })
 export class SchemaFormTextareaFieldComponentComponentInterface {

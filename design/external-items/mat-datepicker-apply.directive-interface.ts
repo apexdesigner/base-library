@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatDatepickerApply } from '@angular/material/datepicker';
 
 /**
+ * Mat Datepicker Apply
+ *
  * Button that will close the datepicker and assign the current selection to the data model.
  */
 @directiveInterface({ selector: '[matDateRangePickerApply],[matDatepickerApply]' })

@@ -3,6 +3,8 @@ import { directiveInterface } from '@apexdesigner/dsl/directive-interface';
 import { MatPrefix } from '@angular/material/input';
 
 /**
+ * Mat Prefix
+ *
  * Prefix to be placed in front of the form field.
  */
 @directiveInterface({ selector: '[matIconPrefix],[matPrefix],[matTextPrefix]' })

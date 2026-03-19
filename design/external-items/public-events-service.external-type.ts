@@ -2,5 +2,8 @@
 import { externalType } from '@apexdesigner/dsl';
 import { PublicEventsService } from 'angular-auth-oidc-client';
 
+/**
+ * Public Events Service
+ */
 @externalType({ injectable: true })
 export class PublicEventsServiceExternalType {}

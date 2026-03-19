@@ -2,6 +2,9 @@
 import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatSidenav } from '@angular/material/sidenav';
 
+/**
+ * Mat Sidenav
+ */
 @componentInterface({ selector: 'mat-sidenav', acceptsChildren: true })
 export class MatSidenavComponentInterface {
   fixedInViewport!: any;

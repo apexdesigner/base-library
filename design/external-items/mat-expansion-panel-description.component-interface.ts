@@ -3,6 +3,8 @@ import { componentInterface } from '@apexdesigner/dsl/component-interface';
 import { MatExpansionPanelDescription } from '@angular/material/expansion';
 
 /**
+ * Mat Expansion Panel Description
+ *
  * Description element of a `<mat-expansion-panel-header>`.
  */
 @componentInterface({ selector: 'mat-panel-description' })
