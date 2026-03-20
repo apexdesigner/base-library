@@ -3,9 +3,10 @@ import { getClassByBase, getModuleLevelCall, getTemplateString, getClassDecorato
 import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
-import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
+import { getTemplateImports } from '@apexdesigner/generator';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 import type { AutoReadProperty, FormGroupProperty, PersistedArrayProperty } from './property-processing.js';
+import { extractTemplate } from './template-extraction.js';
 
 const Debug = createDebug('BaseLibrary:generators:pageComponent');
 
@@ -42,13 +43,9 @@ const pageComponentGenerator: DesignGenerator = {
     const componentName = kebabCase(baseName);
     const className = `${baseName}Page`;
 
-    // Extract template from applyTemplate call
-    let template = '';
-    const applyTemplateCall = getModuleLevelCall(sourceFile, 'applyTemplate');
-    if (applyTemplateCall) {
-      template = getTemplateString(applyTemplateCall) || '';
-      debug('extracted template (%j chars)', template.length);
-    }
+    // Extract and convert template (supports both JS object and string formats)
+    const { angularHtml: convertedTemplate, htmlForImports, templateRefs } = extractTemplate(sourceFile);
+    debug('converted template (%j chars), refs %j', convertedTemplate.length, [...templateRefs]);
 
     // Extract styles from applyStyles call
     let styles = '';
@@ -74,16 +71,9 @@ const pageComponentGenerator: DesignGenerator = {
 
     const outputFilePath = `client/src/app/pages/${componentName}/${componentName}.page.ts`;
 
-    // Convert AD3 template syntax to Angular control flow
-    const convertedTemplate = convertAd3Template(template);
-
     // Get template imports (resolve element/directive/pipe usage against extracted interfaces)
-    const templateImports = await getTemplateImports(exportedClass, context, 'page', outputFilePath, template);
+    const templateImports = await getTemplateImports(exportedClass, context, 'page', outputFilePath, htmlForImports);
     debug('template requires %j import groups', templateImports.length);
-
-    // Extract template reference variable names (#ref) for ViewChild matching
-    const templateRefs = new Set([...template.matchAll(/#(\w+)/g)].map(m => m[1]));
-    debug('template refs %j', [...templateRefs]);
 
     // Capture @business-objects / @business-objects-client imports before removing design aliases
     const boNamedImports = captureBoImports(writableFile);
