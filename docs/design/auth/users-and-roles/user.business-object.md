@@ -15,9 +15,9 @@ Authenticated user identified by email address.
 
 ## Relationships
 
-| Name | Type | Relationship | Description |
-|------|------|--------------|-------------|
-| roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many | Role Assignments - Roles assigned to this user |
+| Name | Type | Relationship | On Delete | Description |
+|------|------|--------------|-----------|-------------|
+| roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many |  | Role Assignments - Roles assigned to this user |
 
 ## Behaviors
 

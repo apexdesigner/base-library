@@ -34,4 +34,4 @@ test-temp/
 .claude/settings.local.json
 .workspace.json
 .api.json
-.env
+server/.env

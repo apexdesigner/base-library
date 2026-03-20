@@ -556,26 +556,24 @@ const businessObjectSchemaGenerator: DesignGenerator = {
     // Add relationship properties
     for (const rel of relationships) {
       let relExpression = '';
+      // Only pass explicit FK when it differs from convention
+      const conventionalFk = `${camelCase(className)}Id`;
       if (rel.relationshipType === 'Belongs To') {
         relExpression = `belongsTo("${rel.businessObjectName}")`;
       } else if (rel.relationshipType === 'Has Many') {
-        if (rel.foreignKey) {
+        if (rel.foreignKey && rel.foreignKey !== conventionalFk) {
           relExpression = `hasMany("${rel.businessObjectName}", "${rel.foreignKey}")`;
         } else {
           relExpression = `hasMany("${rel.businessObjectName}")`;
         }
       } else if (rel.relationshipType === 'Has One') {
-        if (rel.foreignKey) {
+        if (rel.foreignKey && rel.foreignKey !== conventionalFk) {
           relExpression = `hasOne("${rel.businessObjectName}", "${rel.foreignKey}")`;
         } else {
           relExpression = `hasOne("${rel.businessObjectName}")`;
         }
       } else if (rel.relationshipType === 'References') {
-        if (rel.foreignKey) {
-          relExpression = `references("${rel.businessObjectName}", "${rel.foreignKey}")`;
-        } else {
-          relExpression = `references("${rel.businessObjectName}")`;
-        }
+        relExpression = `references("${rel.businessObjectName}")`;
       }
 
       // Append .onDelete() if the relationship has an onDelete option

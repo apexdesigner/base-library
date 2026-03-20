@@ -53,7 +53,7 @@ addAppBehavior(
       for (const [fieldName, fieldSchema] of Object.entries(shape)) {
         if (!isRelationship(fieldSchema as any)) continue;
         const relMeta = getRelationshipMetadata(fieldSchema as any);
-        if (!relMeta || !relMeta.targetEntity || !relMeta.foreignKey) continue;
+        if (!relMeta || !relMeta.targetEntity) continue;
 
         if (relMeta.relationshipType !== 'hasMany' && relMeta.relationshipType !== 'hasOne') continue;
 
@@ -231,7 +231,7 @@ addAppBehavior(
               for (const [fieldName, fieldSchema] of Object.entries(shape)) {
                 if (!isRelationship(fieldSchema as any)) continue;
                 const relMeta = getRelationshipMetadata(fieldSchema as any);
-                if (!relMeta || !relMeta.targetEntity || !relMeta.foreignKey) continue;
+                if (!relMeta || !relMeta.targetEntity) continue;
                 if (relMeta.relationshipType !== 'hasMany' && relMeta.relationshipType !== 'hasOne') continue;
 
                 // Skip excluded relationships
@@ -243,21 +243,19 @@ addAppBehavior(
                 const targetBOClass = (App.businessObjects as any)[targetType];
                 if (!targetBOClass) continue;
 
-                const fk = relMeta.foreignKey;
+                // Infer FK from field name convention when not in metadata
+                const fk = relMeta.foreignKey || `${fieldName}Id`;
 
                 // Find all DB children for this parent
                 const dbChildren = await targetBOClass.find({ where: { [fk]: parentTargetId } });
 
-                // Find imported children (those in tracking with this parent FK)
+                // Find imported children whose source FK points to this parent's source ID
                 const importedTargetIds = new Set<any>();
                 const targetTracking = tracking[targetType];
                 if (targetTracking) {
                   for (const [, entry] of Object.entries(targetTracking)) {
-                    if (entry._targetId !== null && entry.data[fk] !== undefined) {
-                      const remappedParentId = tracking[parentType]?.[parentSourceId]?._targetId;
-                      if (remappedParentId !== undefined) {
-                        importedTargetIds.add(entry._targetId);
-                      }
+                    if (entry._targetId !== null && String(entry.data[fk]) === parentSourceId) {
+                      importedTargetIds.add(entry._targetId);
                     }
                   }
                 }
@@ -311,19 +309,21 @@ addAppBehavior(
       if (!entry) return deps;
 
       const shape = schema.shape as Record<string, any>;
-      for (const [, fieldSchema] of Object.entries(shape)) {
+      for (const [fieldName, fieldSchema] of Object.entries(shape)) {
         if (!isRelationship(fieldSchema as any)) continue;
         const relMeta = getRelationshipMetadata(fieldSchema as any);
-        if (!relMeta || !relMeta.foreignKey || !relMeta.targetEntity) continue;
+        if (!relMeta || !relMeta.targetEntity) continue;
         if (relMeta.relationshipType !== 'belongsTo' && relMeta.relationshipType !== 'references') continue;
 
-        const fkValue = entry.data[relMeta.foreignKey];
+        // Infer FK from field name convention when not in metadata
+        const fkField = relMeta.foreignKey || `${fieldName}Id`;
+        const fkValue = entry.data[fkField];
         if (fkValue == null) continue;
 
         // Only track as dependency if the referenced object is in the import
         if (tracking[relMeta.targetEntity]?.[String(fkValue)]) {
           deps.push({
-            fkField: relMeta.foreignKey,
+            fkField,
             targetType: relMeta.targetEntity,
             sourceValue: fkValue,
           });
@@ -337,15 +337,18 @@ addAppBehavior(
       const schema = BOClass.schema;
       const entityName = BOClass.entityName;
 
-      // Check for configured anchor override
-      const mixinOpts = BOClass.mixinOptions?.exportImport;
-      if (mixinOpts?.referenceAnchors?.[entityName]) {
-        const anchorFields = mixinOpts.referenceAnchors[entityName];
-        const where: Record<string, any> = {};
-        for (const field of anchorFields) {
-          if (data[field] !== undefined) where[field] = data[field];
+      // Check for configured anchor override across all entities with the mixin
+      // referenceAnchors are defined on the root entity's config but keyed by
+      // the referenced entity name (e.g., TutoringSession config has { Instructor: ["email"] })
+      for (const bo of Object.values(App.businessObjects as Record<string, any>)) {
+        const anchors = bo.mixinOptions?.exportImport?.referenceAnchors?.[entityName];
+        if (anchors) {
+          const where: Record<string, any> = {};
+          for (const field of anchors) {
+            if (data[field] !== undefined) where[field] = data[field];
+          }
+          return where;
         }
-        return where;
       }
 
       // Use unique constraints if available

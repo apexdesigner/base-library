@@ -94,13 +94,16 @@ addFunction(
         // Skip excluded relationships
         if (config.excludeRelationships?.includes(fieldName)) {
           // Also remove the FK from the exported data if it's a reference
-          if (relMeta.foreignKey && objects[name]?.[id]) {
-            delete objects[name][id][relMeta.foreignKey];
+          const excludeFk = relMeta.foreignKey || `${fieldName}Id`;
+          if (objects[name]?.[id]) {
+            delete objects[name][id][excludeFk];
           }
           continue;
         }
 
-        if (!relMeta.targetEntity || !relMeta.foreignKey) continue;
+        // Infer FK as fieldName + 'Id' when not explicitly set (convention for belongsTo/references)
+        const foreignKey = relMeta.foreignKey || `${fieldName}Id`;
+        if (!relMeta.targetEntity) continue;
         const targetBOClass = (App.businessObjects as any)[relMeta.targetEntity];
         if (!targetBOClass) continue;
 
@@ -121,10 +124,9 @@ addFunction(
           if (!isBelongsToParent) continue;
 
           // Load children
-          const fk = relMeta.foreignKey;
           const children = relMeta.relationshipType === 'hasMany'
-            ? await targetBOClass.find({ where: { [fk]: instance.id } })
-            : [await targetBOClass.findOne({ where: { [fk]: instance.id } })].filter(Boolean);
+            ? await targetBOClass.find({ where: { [foreignKey]: instance.id } })
+            : [await targetBOClass.findOne({ where: { [foreignKey]: instance.id } })].filter(Boolean);
 
           debug('found %d children of type %s for %s %s', children.length, relMeta.targetEntity, name, id);
 
@@ -141,7 +143,7 @@ addFunction(
           }
         } else if (relMeta.relationshipType === 'belongsTo' || relMeta.relationshipType === 'references') {
           // Collect the referenced object
-          const fkValue = instance[relMeta.foreignKey];
+          const fkValue = instance[foreignKey];
           if (fkValue == null) continue;
 
           const refInstance = await targetBOClass.findById(fkValue);

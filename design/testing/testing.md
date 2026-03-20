@@ -12,6 +12,17 @@ The [Test Item](business-objects/test-item/test-item.business-object.ts) busines
 
 The [Test Category](business-objects/test-category/test-category.business-object.ts) business object provides a parent entity for hierarchical relationships. The [Test Item Detail](business-objects/test-item-detail/test-item-detail.business-object.ts) business object provides a child entity for one-to-many testing. The [Test Assignment](business-objects/test-assignment/test-assignment.business-object.ts) business object tests many-to-many join patterns. The [Test Setting](business-objects/test-setting/test-setting.business-object.ts) business object tests singleton-style records.
 
+### Export/Import Test Graph
+
+The following business objects exercise the [Export Import](../mixins/export-import/export-import.md) mixin with a multi-level hierarchy, shared references, unique constraints, and chained reference resolution:
+
+- [Test Lesson](business-objects/test-lesson/test-lesson.business-object.ts) — the export root with the ExportImport mixin applied. References a room and an instructor. Uses `referenceAnchors` to resolve instructors by email.
+- [Test Activity](business-objects/test-activity/test-activity.business-object.ts) — child of a lesson (belongs-to-parent). Optionally references a guest instructor, testing reference resolution on child objects.
+- [Test Material](business-objects/test-material/test-material.business-object.ts) — grandchild (belongs to activity), testing two-level deep child synchronization during import.
+- [Test Room](business-objects/test-room/test-room.business-object.ts) — shared reference with a composite unique constraint (name + schoolId), testing chained reference anchor resolution through its school.
+- [Test School](business-objects/test-school/test-school.business-object.ts) — shared reference with a simple unique constraint (name). The room's anchor depends on resolving the school first.
+- [Test Instructor](business-objects/test-instructor/test-instructor.business-object.ts) — shared reference resolved by email via a configured `referenceAnchors` override instead of the default unique constraint.
+
 ## App Behaviors
 
 The [admin report](app-behaviors/admin-report.app-behavior.ts) app behavior tests role-protected API routes. The [system health check](app-behaviors/system-health-check.app-behavior.ts) app behavior tests public health endpoints. The [slow operation](app-behaviors/slow-operation.app-behavior.ts) app behavior validates the addTest timeout option with a 7-second wait and 10-second timeout. The [lookup by category](app-behaviors/lookup-by-category.app-behavior.ts) app behavior tests GET with a path parameter and Header parameter. The [submit with token](app-behaviors/submit-with-token.app-behavior.ts) app behavior tests POST with a Header parameter and body parameter.
