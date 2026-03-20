@@ -253,6 +253,8 @@ applyExportImportMixin(TutoringSession, {
 
 2. **Circular child ownership is not supported.** If object A belongs to B and B belongs to A, the traversal would loop. The mixin only follows belongs-to-parent relationships in a tree structure (parent to children downward).
 
+3. **Root objects need a unique constraint or configured anchor for reliable import matching.** Without one, the anchor fallback uses all non-null scalar properties, which fails to match existing records if any property has changed since export. Add a unique constraint or configure `referenceAnchors` on root types to ensure stable matching.
+
 ## Prerequisites
 
 ### System Request Context (auth module)
