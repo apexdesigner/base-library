@@ -1,16 +1,17 @@
 import { Node, SyntaxKind } from 'ts-morph';
 import type { CallExpression } from 'ts-morph';
+import { templateReservedKeys } from '@apexdesigner/dsl';
 import createDebug from 'debug';
 
 const debug = createDebug('BaseLibrary:generators:templateJsToAngular');
 
-// Reserved keys that are not attributes
-const RESERVED_KEYS = new Set([
-  'element', 'name', 'text', 'contains',
-  'elseContains', 'emptyContains', 'otherwiseContains',
-  'if', 'for', 'of', 'switch', 'cases', 'case',
-  'trackBy', 'index', 'first', 'last', 'odd', 'even', 'count',
+// HTML void elements that must not have closing tags
+const VOID_ELEMENTS = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'param', 'source', 'track', 'wbr',
 ]);
+
+const RESERVED_KEYS = new Set(templateReservedKeys);
 
 /**
  * Try to extract a JS object/array template from an applyTemplate() call.
@@ -19,7 +20,6 @@ const RESERVED_KEYS = new Set([
  */
 export function getTemplateObjectArg(callExpression: CallExpression): any | undefined {
   const args = callExpression.getArguments();
-  // Second argument (first is the class reference)
   const templateArg = args[1];
   if (!templateArg) return undefined;
 
@@ -35,7 +35,6 @@ export function getTemplateObjectArg(callExpression: CallExpression): any | unde
 
 /**
  * Evaluate a ts-morph AST node to a plain JS value.
- * Handles object literals, array literals, strings, numbers, booleans.
  */
 function evalNode(node: any): any {
   if (Node.isStringLiteral(node)) {
@@ -60,7 +59,7 @@ function evalNode(node: any): any {
     const result: Record<string, any> = {};
     for (const prop of node.getProperties()) {
       if (Node.isPropertyAssignment(prop)) {
-        const name = prop.getName();
+        const name = prop.getName().replace(/^['"]|['"]$/g, '');
         const init = prop.getInitializer();
         if (init) {
           result[name] = evalNode(init);
@@ -69,7 +68,6 @@ function evalNode(node: any): any {
     }
     return result;
   }
-  // Fallback: return the raw text (for expressions we can't evaluate)
   return node.getText();
 }
 
@@ -85,28 +83,16 @@ export function convertJsTemplateToAngular(template: any): string {
 
 function convertNode(node: any, depth: number): string {
   if (typeof node === 'string') {
-    return indent(depth) + escapeHtml(node);
+    return indent(depth) + node;
   }
   if (typeof node !== 'object' || node === null) {
     return '';
   }
 
-  // Control flow: if
-  if ('if' in node) {
-    return convertIf(node, depth);
-  }
+  if ('if' in node) return convertIf(node, depth);
+  if ('for' in node && 'of' in node) return convertFor(node, depth);
+  if ('switch' in node) return convertSwitch(node, depth);
 
-  // Control flow: for
-  if ('for' in node && 'of' in node) {
-    return convertFor(node, depth);
-  }
-
-  // Control flow: switch
-  if ('switch' in node) {
-    return convertSwitch(node, depth);
-  }
-
-  // Element node
   return convertElement(node, depth);
 }
 
@@ -119,20 +105,19 @@ function convertElement(node: Record<string, any>, depth: number): string {
   // Shorthand detection: a non-reserved key with string or array value
   if (!tag) {
     for (const [key, value] of Object.entries(node)) {
-      if (!RESERVED_KEYS.has(key) && !key.startsWith('attribute.')) {
-        if (typeof value === 'string' || Array.isArray(value)) {
-          // Check if it looks like a binding prefix — if so, it's an attribute not a tag
-          if (typeof value === 'string' && (value.startsWith('= ') || value.startsWith('-> '))) {
-            continue;
-          }
-          tag = key;
-          if (typeof value === 'string') {
-            text = value;
-          } else {
-            contains = value;
-          }
-          break;
+      if (RESERVED_KEYS.has(key)) continue;
+      if (typeof value === 'string' || Array.isArray(value)) {
+        // Skip if it looks like a binding prefix
+        if (typeof value === 'string' && (value.startsWith('<- ') || value.startsWith('-> ') || value.startsWith('<-> '))) {
+          continue;
         }
+        tag = key;
+        if (typeof value === 'string') {
+          text = value;
+        } else {
+          contains = value;
+        }
+        break;
       }
     }
   }
@@ -144,43 +129,36 @@ function convertElement(node: Record<string, any>, depth: number): string {
 
   // Build attributes
   const attrs: string[] = [];
-  const templateRef = node.name as string | undefined;
 
-  if (templateRef) {
-    attrs.push(`#${templateRef}`);
+  // Template reference — only emit #name when referenceable
+  if (node.referenceable && node.name) {
+    attrs.push(`#${node.name}`);
   }
 
-  for (const [key, value] of Object.entries(node)) {
-    if (RESERVED_KEYS.has(key) || key === tag) continue;
-    if (key === 'name') continue; // handled as template ref above
-
-    // attribute. prefix for escaping reserved key collisions
-    const attrName = key.startsWith('attribute.') ? key.slice('attribute.'.length) : key;
-
-    if (typeof value === 'string') {
-      if (value.startsWith('= ')) {
-        // Expression binding: [attr]="expr"
-        attrs.push(`[${attrName}]="${escapeAttr(value.slice(2))}"`);
-      } else if (value.startsWith('-> ')) {
-        // Event binding: (event)="action"
-        attrs.push(`(${attrName})="${escapeAttr(value.slice(3))}"`);
-      } else {
-        // Static value
-        attrs.push(`${attrName}="${escapeAttr(value)}"`);
-      }
-    } else if (typeof value === 'boolean') {
-      if (value) {
-        attrs.push(attrName);
-      }
-    } else if (typeof value === 'number') {
-      attrs.push(`[${attrName}]="${value}"`);
+  // Process the attributes object
+  const attributes = node.attributes as Record<string, any> | undefined;
+  if (attributes) {
+    for (const [attrName, value] of Object.entries(attributes)) {
+      attrs.push(convertAttribute(attrName, value));
     }
+  }
+
+  // Also process top-level keys that aren't reserved (for backward compat / shorthand attributes)
+  for (const [key, value] of Object.entries(node)) {
+    if (RESERVED_KEYS.has(key) || key === tag || key === 'attributes') continue;
+    // Skip — these are handled above or aren't attributes
+    if (typeof value === 'string' && !value.startsWith('<- ') && !value.startsWith('-> ') && !value.startsWith('<-> ')) continue;
+    if (typeof value !== 'string') continue;
+    attrs.push(convertAttribute(key, value));
   }
 
   const attrStr = attrs.length > 0 ? ' ' + attrs.join(' ') : '';
 
   // Self-closing if no text and no children
   if (!text && !contains) {
+    if (VOID_ELEMENTS.has(tag)) {
+      return indent(depth) + `<${tag}${attrStr} />`;
+    }
     return indent(depth) + `<${tag}${attrStr}></${tag}>`;
   }
 
@@ -204,6 +182,38 @@ function convertElement(node: Record<string, any>, depth: number): string {
   return lines.join('\n');
 }
 
+function convertAttribute(attrName: string, value: any): string {
+  if (value === null) {
+    // Bare attribute: matInput: null → matInput
+    return attrName;
+  }
+  if (typeof value === 'string') {
+    if (value.startsWith('<-> ')) {
+      // Two-way binding: [(attr)]="expr"
+      return `[(${attrName})]="${escapeAttr(value.slice(4))}"`;
+    }
+    if (value.startsWith('<- ')) {
+      // Input binding: [attr]="expr"
+      return `[${attrName}]="${escapeAttr(value.slice(3))}"`;
+    }
+    if (value.startsWith('-> ')) {
+      // Event binding: (event)="action"
+      return `(${attrName})="${escapeAttr(value.slice(3))}"`;
+    }
+    // Static value
+    return `${attrName}="${escapeAttr(value)}"`;
+  }
+  if (typeof value === 'boolean') {
+    // Bound boolean: [attr]="true" or [attr]="false"
+    return `[${attrName}]="${value}"`;
+  }
+  if (typeof value === 'number') {
+    // Bound number: [attr]="100"
+    return `[${attrName}]="${value}"`;
+  }
+  return '';
+}
+
 function convertIf(node: Record<string, any>, depth: number): string {
   const lines: string[] = [];
   lines.push(indent(depth) + `@if (${node.if}) {`);
@@ -213,7 +223,6 @@ function convertIf(node: Record<string, any>, depth: number): string {
     }
   }
   if (node.elseContains) {
-    // Check if elseContains has a single item with 'if' — that's else-if
     const elseItems = node.elseContains as any[];
     if (elseItems.length === 1 && typeof elseItems[0] === 'object' && 'if' in elseItems[0]) {
       lines.push(indent(depth) + `} @else ${convertIf(elseItems[0], depth).trimStart()}`);
@@ -232,11 +241,7 @@ function convertIf(node: Record<string, any>, depth: number): string {
 
 function convertFor(node: Record<string, any>, depth: number): string {
   const lines: string[] = [];
-
-  // Build track expression
   const trackExpr = node.trackBy || `$index`;
-
-  // Build variable assignments
   const letParts: string[] = [];
   if (node.index) letParts.push(`${node.index} = $index`);
   if (node.first) letParts.push(`${node.first} = $first`);
@@ -275,7 +280,6 @@ function convertSwitch(node: Record<string, any>, depth: number): string {
   lines.push(indent(depth) + `@switch (${node.switch}) {`);
 
   if (Array.isArray(node.cases)) {
-    // Expression cases: [{ case: 'expr', contains: [...] }]
     for (const c of node.cases) {
       lines.push(indent(depth + 1) + `@case (${c.case}) {`);
       if (c.contains) {
@@ -286,7 +290,6 @@ function convertSwitch(node: Record<string, any>, depth: number): string {
       lines.push(indent(depth + 1) + `}`);
     }
   } else if (typeof node.cases === 'object') {
-    // Value cases: { active: [...], pending: [...] }
     for (const [value, children] of Object.entries(node.cases as Record<string, any[]>)) {
       lines.push(indent(depth + 1) + `@case ('${value}') {`);
       for (const child of children as any[]) {
@@ -310,7 +313,7 @@ function convertSwitch(node: Record<string, any>, depth: number): string {
 
 /**
  * Extract template reference names from a JS object template tree.
- * Returns the set of `name` values found.
+ * Only returns names where referenceable: true.
  */
 export function extractTemplateRefs(template: any): Set<string> {
   const refs = new Set<string>();
@@ -320,14 +323,12 @@ export function extractTemplateRefs(template: any): Set<string> {
 
 function collectRefs(node: any, refs: Set<string>): void {
   if (Array.isArray(node)) {
-    for (const child of node) {
-      collectRefs(child, refs);
-    }
+    for (const child of node) collectRefs(child, refs);
     return;
   }
   if (typeof node !== 'object' || node === null) return;
 
-  if (typeof node.name === 'string' && /^[a-z][a-zA-Z0-9]*$/.test(node.name)) {
+  if (node.referenceable && typeof node.name === 'string') {
     refs.add(node.name);
   }
 
@@ -336,7 +337,6 @@ function collectRefs(node: any, refs: Set<string>): void {
   if (Array.isArray(node.emptyContains)) collectRefs(node.emptyContains, refs);
   if (Array.isArray(node.otherwiseContains)) collectRefs(node.otherwiseContains, refs);
 
-  // Switch cases
   if (node.cases) {
     if (Array.isArray(node.cases)) {
       for (const c of node.cases) {
@@ -352,10 +352,6 @@ function collectRefs(node: any, refs: Set<string>): void {
 
 function indent(depth: number): string {
   return '  '.repeat(depth);
-}
-
-function escapeHtml(text: string): string {
-  return text; // Template text with {{}} should pass through as-is
 }
 
 function escapeAttr(value: string): string {

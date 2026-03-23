@@ -33,16 +33,19 @@ export class TestDialogComponent extends Component {
   }
 }
 
-applyTemplate(
-  TestDialogComponent,
-  `
-  <h2 mat-dialog-title>{{ title }}</h2>
-  <div mat-dialog-content>
-    <p>Test dialog content</p>
-  </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-button (click)="save()">Save</button>
-  </div>
-`
-);
+applyTemplate(TestDialogComponent, [
+  { element: 'h2', 'mat-dialog-title': true, text: '{{ title }}' },
+  {
+    element: 'mat-dialog-content',
+    contains: [
+      { p: 'Test dialog content' },
+    ],
+  },
+  {
+    element: 'mat-dialog-actions',
+    contains: [
+      { element: 'button', 'mat-button': true, text: 'Cancel', click: '-> cancel()' },
+      { element: 'button', 'mat-button': true, text: 'Save', click: '-> save()' },
+    ],
+  },
+]);

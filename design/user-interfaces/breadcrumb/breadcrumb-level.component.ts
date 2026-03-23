@@ -22,17 +22,25 @@ export class BreadcrumbLevelComponent extends Component {
   queryParams?: any;
 }
 
-applyTemplate(
-  BreadcrumbLevelComponent,
-  `
-  <if condition="path">
-    <a [routerLink]="path" [queryParams]="queryParams">{{label}}</a>
-  </if>
-  <if condition="!path">
-    <span class="current">{{label}}</span>
-  </if>
-`
-);
+applyTemplate(BreadcrumbLevelComponent, [
+  {
+    if: 'path',
+    contains: [
+      {
+        element: 'a',
+        routerLink: '= path',
+        queryParams: '= queryParams',
+        text: '{{label}}',
+      },
+    ],
+  },
+  {
+    if: '!path',
+    contains: [
+      { element: 'span', class: 'current', text: '{{label}}' },
+    ],
+  },
+]);
 
 applyStyles(
   BreadcrumbLevelComponent,

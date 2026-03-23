@@ -6,7 +6,7 @@ import createDebug from 'debug';
 import { getTemplateImports } from '@apexdesigner/generator';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
 import type { AutoReadProperty, FormGroupProperty, PersistedArrayProperty } from './property-processing.js';
-import { extractTemplate } from './template-extraction.js';
+import { extractTemplate, extractTemplateUsage, resolveJsTemplateImports } from './template-extraction.js';
 
 const Debug = createDebug('BaseLibrary:generators:pageComponent');
 
@@ -44,7 +44,8 @@ const pageComponentGenerator: DesignGenerator = {
     const className = `${baseName}Page`;
 
     // Extract and convert template (supports both JS object and string formats)
-    const { angularHtml: convertedTemplate, htmlForImports, templateRefs } = extractTemplate(sourceFile);
+    const extracted = extractTemplate(sourceFile);
+    const { angularHtml: convertedTemplate, templateRefs } = extracted;
     debug('converted template (%j chars), refs %j', convertedTemplate.length, [...templateRefs]);
 
     // Extract styles from applyStyles call
@@ -71,8 +72,10 @@ const pageComponentGenerator: DesignGenerator = {
 
     const outputFilePath = `client/src/app/pages/${componentName}/${componentName}.page.ts`;
 
-    // Get template imports (resolve element/directive/pipe usage against extracted interfaces)
-    const templateImports = await getTemplateImports(exportedClass, context, 'page', outputFilePath, htmlForImports);
+    // Get template imports (resolve element/directive/pipe usage against design metadata)
+    const templateImports = extracted.jsTemplate
+      ? await resolveJsTemplateImports(context, extractTemplateUsage(extracted.jsTemplate))
+      : await getTemplateImports(exportedClass, context, 'page', outputFilePath, extracted.ad3Html);
     debug('template requires %j import groups', templateImports.length);
 
     // Capture @business-objects / @business-objects-client imports before removing design aliases

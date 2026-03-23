@@ -36,18 +36,19 @@ export class HomePage extends Page {
   }
 }
 
-applyTemplate(
-  HomePage,
-  `
-  <flex-column [gap]="16">
-    <h1>Home</h1>
-    <a routerLink="/test-categories">Categories</a>
-    <a routerLink="/test-items">Items</a>
-    <a routerLink="/test-settings">Settings</a>
-    <a routerLink="/manage-roles">Manage Roles</a>
-    <a routerLink="/test-select-fields">Select Fields</a>
-    <a routerLink="/switch-user">Switch User</a>
-    <a routerLink="/service-test-app-behaviors">App Behavior Tests</a>
-  </flex-column>
-`
-);
+applyTemplate(HomePage, [
+  {
+    element: 'flex-column',
+    gap: '= 16',
+    contains: [
+      { h1: 'Home' },
+      { element: 'a', text: 'Categories', routerLink: '/test-categories' },
+      { element: 'a', text: 'Items', routerLink: '/test-items' },
+      { element: 'a', text: 'Settings', routerLink: '/test-settings' },
+      { element: 'a', text: 'Manage Roles', routerLink: '/manage-roles' },
+      { element: 'a', text: 'Select Fields', routerLink: '/test-select-fields' },
+      { element: 'a', text: 'Switch User', routerLink: '/switch-user' },
+      { element: 'a', text: 'App Behavior Tests', routerLink: '/service-test-app-behaviors' },
+    ],
+  },
+]);

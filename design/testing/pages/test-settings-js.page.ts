@@ -39,8 +39,8 @@ applyTemplate(TestSettingsJsPage, [
                 element: 'flex-row',
                 gap: '= 12',
                 contains: [
-                  { span: '{{setting.name}}' },
-                  { span: '{{setting.value}}' },
+                  { span: '{{setting.name}}', name: 'name' },
+                  { span: '{{setting.value}}', name: 'value' },
                 ],
               },
             ],

@@ -37,23 +37,42 @@ export class SelectUserFieldComponent extends Component {
   }
 }
 
-applyTemplate(
-  SelectUserFieldComponent,
-  `
-  <mat-form-field>
-    <mat-label>{{label || 'User'}}</mat-label>
-    <mat-select [formControl]="control" [placeholder]="placeholder || control.placeholder">
-      <for const="user" of="users">
-        <mat-option [value]="user.id">
-          {{user.email}}
-        </mat-option>
-      </for>
-    </mat-select>
-    <if condition="control.value">
-      <button matSuffix mat-icon-button [disabled]="control.disabled" (click)="control.setValue(null); $event.stopPropagation()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </if>
-  </mat-form-field>
-`
-);
+applyTemplate(SelectUserFieldComponent, [
+  {
+    element: 'mat-form-field',
+    contains: [
+      { 'mat-label': "{{label || 'User'}}" },
+      {
+        element: 'mat-select',
+        formControl: '= control',
+        placeholder: '= placeholder || control.placeholder',
+        contains: [
+          {
+            for: 'user',
+            of: 'users',
+            contains: [
+              {
+                element: 'mat-option',
+                value: '= user.id',
+                text: '{{user.email}}',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        if: 'control.value',
+        contains: [
+          {
+            element: 'button',
+            matSuffix: true,
+            'mat-icon-button': true,
+            disabled: '= control.disabled',
+            click: '-> control.setValue(null); $event.stopPropagation()',
+            contains: [{ 'mat-icon': 'close' }],
+          },
+        ],
+      },
+    ],
+  },
+]);

@@ -173,52 +173,113 @@ export class ManageRoleAssignmentsComponent extends Component {
   }
 }
 
-applyTemplate(
-  ManageRoleAssignmentsComponent,
-  `
-  <if condition="roles.reading">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  </if>
-  <if condition="!roles.reading">
-    <flex-column>
-      <mat-form-field>
-        <mat-label>Search by email</mat-label>
-        <input matInput [(ngModel)]="search" (ngModelChange)="filterUsers()" />
-      </mat-form-field>
-      <if condition="showingSuggestions">
-        <p>Select a user to assign a role</p>
-      </if>
-      <if condition="!noMatches">
-        <dt-table [dataSource]="filteredUsers" [hideEmptyState]="true">
-          <dt-column property="email" header="Email"></dt-column>
-          <for const="role" of="roles">
-            <dt-column [header]="role.displayName || role.name" align="center">
-              <ng-template let-row>
-                <button mat-icon-button (click)="toggleAssignment(row.id, role.id)" [disabled]="busy || (row.id === currentUserId && role.name === 'Administrator')">
-                  <if condition="hasAssignment(row.id, role.id)">
-                    <mat-icon>check_box</mat-icon>
-                    <else>
-                      <mat-icon>check_box_outline_blank</mat-icon>
-                    </else>
-                  </if>
-                </button>
-              </ng-template>
-            </dt-column>
-          </for>
-        </dt-table>
-      </if>
-      <if condition="noMatches">
-        <p>Enter a valid email to add a new user</p>
-        <div>
-          <button mat-raised-button color="primary" (click)="addUser()" [disabled]="busy || !validEmail()">
-            <mat-icon>person_add</mat-icon>
-            Add {{search}}
-          </button>
-        </div>
-      </if>
-    </flex-column>
-  </if>
-`
-);
+applyTemplate(ManageRoleAssignmentsComponent, [
+  {
+    if: 'roles.reading',
+    contains: [
+      { element: 'mat-progress-bar', mode: 'indeterminate' },
+    ],
+  },
+  {
+    if: '!roles.reading',
+    contains: [
+      {
+        element: 'flex-column',
+        contains: [
+          {
+            element: 'mat-form-field',
+            contains: [
+              { 'mat-label': 'Search by email' },
+              {
+                element: 'input',
+                matInput: true,
+                ngModel: '= search',
+                ngModelChange: '-> search = ngModel',
+                '(ngModelChange)_extra': '-> filterUsers()',
+              },
+            ],
+          },
+          {
+            if: 'showingSuggestions',
+            contains: [
+              { p: 'Select a user to assign a role' },
+            ],
+          },
+          {
+            if: '!noMatches',
+            contains: [
+              {
+                element: 'dt-table',
+                dataSource: '= filteredUsers',
+                hideEmptyState: '= true',
+                contains: [
+                  { element: 'dt-column', property: 'email', header: 'Email' },
+                  {
+                    for: 'role',
+                    of: 'roles',
+                    contains: [
+                      {
+                        element: 'dt-column',
+                        header: '= role.displayName || role.name',
+                        align: 'center',
+                        contains: [
+                          {
+                            element: 'ng-template',
+                            'let-row': true,
+                            contains: [
+                              {
+                                element: 'button',
+                                'mat-icon-button': true,
+                                click: '-> toggleAssignment(row.id, role.id)',
+                                disabled: "= busy || (row.id === currentUserId && role.name === 'Administrator')",
+                                contains: [
+                                  {
+                                    if: 'hasAssignment(row.id, role.id)',
+                                    contains: [
+                                      { 'mat-icon': 'check_box' },
+                                    ],
+                                    elseContains: [
+                                      { 'mat-icon': 'check_box_outline_blank' },
+                                    ],
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            if: 'noMatches',
+            contains: [
+              { p: 'Enter a valid email to add a new user' },
+              {
+                element: 'div',
+                contains: [
+                  {
+                    element: 'button',
+                    'mat-raised-button': true,
+                    color: 'primary',
+                    click: '-> addUser()',
+                    disabled: '= busy || !validEmail()',
+                    contains: [
+                      { 'mat-icon': 'person_add' },
+                    ],
+                    text: 'Add {{search}}',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 applyStyles(ManageRoleAssignmentsComponent, ``);

@@ -18,24 +18,36 @@ export class TestSettingsPage extends Page {
   testSettings!: TestSettingPersistedArray;
 }
 
-applyTemplate(
-  TestSettingsPage,
-  `
-  <flex-column>
-    <flex-row [alignCenter]="true">
-      <h1>Test Settings</h1>
-    </flex-row>
-    <if condition="!testSettings.reading">
-      <dt-table [dataSource]="testSettings" routerLinkTemplate="/test-settings/{id}">
-        <dt-column property="name" header="Name"></dt-column>
-        <dt-column property="value" header="Value"></dt-column>
-        <dt-column property="category" header="Category"></dt-column>
-        <dt-column property="isActive" header="Active"></dt-column>
-      </dt-table>
-      <else>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      </else>
-    </if>
-  </flex-column>
-`
-);
+applyTemplate(TestSettingsPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      {
+        element: 'flex-row',
+        alignCenter: '= true',
+        contains: [
+          { h1: 'Test Settings' },
+        ],
+      },
+      {
+        if: '!testSettings.reading',
+        contains: [
+          {
+            element: 'dt-table',
+            dataSource: '= testSettings',
+            routerLinkTemplate: '/test-settings/{id}',
+            contains: [
+              { element: 'dt-column', name: 'name', property: 'name', header: 'Name' },
+              { element: 'dt-column', name: 'value', property: 'value', header: 'Value' },
+              { element: 'dt-column', name: 'category', property: 'category', header: 'Category' },
+              { element: 'dt-column', name: 'isActive', property: 'isActive', header: 'Active' },
+            ],
+          },
+        ],
+        elseContains: [
+          { element: 'mat-progress-bar', mode: 'indeterminate' },
+        ],
+      },
+    ],
+  },
+]);

@@ -18,14 +18,22 @@ export class LoginPage extends Page {
   }
 }
 
-applyTemplate(
-  LoginPage,
-  `
-  <div class="login-container" grow>
-    <button mat-raised-button color="primary" (click)="login()">Login</button>
-  </div>
-`
-);
+applyTemplate(LoginPage, [
+  {
+    element: 'div',
+    class: 'login-container',
+    grow: true,
+    contains: [
+      {
+        element: 'button',
+        'mat-raised-button': true,
+        color: 'primary',
+        text: 'Login',
+        click: '-> login()',
+      },
+    ],
+  },
+]);
 
 applyStyles(
   LoginPage,

@@ -41,18 +41,40 @@ export class AvatarComponent extends Component {
   }
 }
 
-applyTemplate(
-  AvatarComponent,
-  `
-  <button mat-icon-button [matMenuTriggerFor]="userMenu">
-    <mat-icon>person</mat-icon>
-  </button>
-  <mat-menu #userMenu>
-    <div mat-menu-item disabled>{{(authService.currentUser | async)?.email}}</div>
-    <if condition="allowImpersonation">
-      <button mat-menu-item (click)="switchUser()">Switch User</button>
-    </if>
-    <button mat-menu-item (click)="logout()">Logout</button>
-  </mat-menu>
-`
-);
+applyTemplate(AvatarComponent, [
+  {
+    element: 'button',
+    'mat-icon-button': true,
+    matMenuTriggerFor: '= userMenu',
+    contains: [{ 'mat-icon': 'person' }],
+  },
+  {
+    element: 'mat-menu',
+    name: 'userMenu',
+    contains: [
+      {
+        element: 'div',
+        'mat-menu-item': true,
+        disabled: true,
+        text: '{{(authService.currentUser | async)?.email}}',
+      },
+      {
+        if: 'allowImpersonation',
+        contains: [
+          {
+            element: 'button',
+            'mat-menu-item': true,
+            text: 'Switch User',
+            click: '-> switchUser()',
+          },
+        ],
+      },
+      {
+        element: 'button',
+        'mat-menu-item': true,
+        text: 'Logout',
+        click: '-> logout()',
+      },
+    ],
+  },
+]);

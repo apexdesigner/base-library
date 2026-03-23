@@ -21,29 +21,43 @@ export class TestItemPage extends Page {
   testItem!: TestItemFormGroup;
 }
 
-applyTemplate(
-  TestItemPage,
-  `
-  <if condition="!testItem.reading">
-    <flex-column>
-      <h1>{{testItem.value.name}}</h1>
-      <sf-fields [group]="testItem"></sf-fields>
-      <if condition="testItem.controls.testItemDetail">
-        <h2>Detail</h2>
-        <sf-fields [group]="testItem.controls.testItemDetail"></sf-fields>
-      </if>
-      <if condition="testItem.value.testSetting">
-        <div>
-          <strong>Setting:</strong>
-          <a [routerLink]="'/test-settings/' + testItem.value.testSetting.id">
-            {{testItem.value.testSetting.name}}
-          </a>
-        </div>
-      </if>
-    </flex-column>
-    <else>
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </else>
-  </if>
-`
-);
+applyTemplate(TestItemPage, [
+  {
+    if: '!testItem.reading',
+    contains: [
+      {
+        element: 'flex-column',
+        contains: [
+          { h1: '{{testItem.value.name}}' },
+          { element: 'sf-fields', group: '= testItem' },
+          {
+            if: 'testItem.controls.testItemDetail',
+            contains: [
+              { h2: 'Detail' },
+              { element: 'sf-fields', group: '= testItem.controls.testItemDetail' },
+            ],
+          },
+          {
+            if: 'testItem.value.testSetting',
+            contains: [
+              {
+                element: 'div',
+                contains: [
+                  { strong: 'Setting:' },
+                  {
+                    element: 'a',
+                    routerLink: "= '/test-settings/' + testItem.value.testSetting.id",
+                    text: '{{testItem.value.testSetting.name}}',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    elseContains: [
+      { element: 'mat-progress-bar', mode: 'indeterminate' },
+    ],
+  },
+]);

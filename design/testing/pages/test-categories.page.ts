@@ -16,22 +16,36 @@ export class TestCategoriesPage extends Page {
   testCategories!: TestCategoryPersistedArray;
 }
 
-applyTemplate(
-  TestCategoriesPage,
-  `
-  <if condition="testCategories.reading">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  </if>
-  <if condition="!testCategories.reading">
-    <flex-column>
-      <h2>Test Categories</h2>
-      <for const="category" of="testCategories">
-        <a [routerLink]="'/test-categories/' + category.id">{{category.name}}</a>
-        <when-empty>
-          <div>No categories found</div>
-        </when-empty>
-      </for>
-    </flex-column>
-  </if>
-`
-);
+applyTemplate(TestCategoriesPage, [
+  {
+    if: 'testCategories.reading',
+    contains: [
+      { element: 'mat-progress-bar', mode: 'indeterminate' },
+    ],
+  },
+  {
+    if: '!testCategories.reading',
+    contains: [
+      {
+        element: 'flex-column',
+        contains: [
+          { h2: 'Test Categories' },
+          {
+            for: 'category',
+            of: 'testCategories',
+            contains: [
+              {
+                element: 'a',
+                routerLink: "= '/test-categories/' + category.id",
+                text: '{{category.name}}',
+              },
+            ],
+            emptyContains: [
+              { div: 'No categories found' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);

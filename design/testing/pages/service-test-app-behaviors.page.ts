@@ -25,16 +25,26 @@ export class ServiceTestAppBehaviorsPage extends Page {
   }
 }
 
-applyTemplate(
-  ServiceTestAppBehaviorsPage,
-  `
-  <flex-column [gap]="16">
-    <h1>App Behavior Tests</h1>
-
-    <flex-row [gap]="8" [alignCenter]="true">
-      <button mat-flat-button (click)="callHealthCheck()">Health Check</button>
-      <span>{{healthResult}}</span>
-    </flex-row>
-  </flex-column>
-`
-);
+applyTemplate(ServiceTestAppBehaviorsPage, [
+  {
+    element: 'flex-column',
+    gap: '= 16',
+    contains: [
+      { h1: 'App Behavior Tests' },
+      {
+        element: 'flex-row',
+        gap: '= 8',
+        alignCenter: '= true',
+        contains: [
+          {
+            element: 'button',
+            'mat-flat-button': true,
+            text: 'Health Check',
+            click: '-> callHealthCheck()',
+          },
+          { span: '{{healthResult}}' },
+        ],
+      },
+    ],
+  },
+]);

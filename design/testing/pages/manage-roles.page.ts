@@ -12,12 +12,12 @@ import { ManageRoleAssignmentsComponent } from '@components';
 })
 export class ManageRolesPage extends Page {}
 
-applyTemplate(
-  ManageRolesPage,
-  `
-  <flex-column>
-    <h1>Manage Roles</h1>
-    <manage-role-assignments [grow]="true"></manage-role-assignments>
-  </flex-column>
-`
-);
+applyTemplate(ManageRolesPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      { h1: 'Manage Roles' },
+      { element: 'manage-role-assignments', grow: '= true' },
+    ],
+  },
+]);

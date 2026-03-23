@@ -5,7 +5,7 @@ import { Node, Project, QuoteKind, Scope, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
 import { getTemplateImports } from '@apexdesigner/generator';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
-import { extractTemplate } from './template-extraction.js';
+import { extractTemplate, extractTemplateUsage, resolveJsTemplateImports } from './template-extraction.js';
 
 const Debug = createDebug('BaseLibrary:generators:component');
 
@@ -68,7 +68,8 @@ const componentGenerator: DesignGenerator = {
       : `client/src/app/components/${componentName}/${componentName}.component.ts`;
 
     // Extract and convert template (supports both JS object and string formats)
-    const { angularHtml: convertedTemplate, htmlForImports, templateRefs } = extractTemplate(sourceFile);
+    const extracted = extractTemplate(sourceFile);
+    const { angularHtml: convertedTemplate, templateRefs } = extracted;
     debug('converted template (%j chars), refs %j', convertedTemplate.length, [...templateRefs]);
 
     // Extract styles from applyStyles call
@@ -93,8 +94,10 @@ const componentGenerator: DesignGenerator = {
       throw new Error(`Could not find exported class in ${metadata.name}`);
     }
 
-    // Get template imports (resolve element/directive/pipe usage against extracted interfaces)
-    const templateImports = await getTemplateImports(exportedClass, context, 'component', outputFilePath, htmlForImports);
+    // Get template imports (resolve element/directive/pipe usage against design metadata)
+    const templateImports = extracted.jsTemplate
+      ? await resolveJsTemplateImports(context, extractTemplateUsage(extracted.jsTemplate))
+      : await getTemplateImports(exportedClass, context, 'component', outputFilePath, extracted.ad3Html);
     debug('template requires %j import groups', templateImports.length);
 
     // Extract options from @component decorator (before import removal, so isDialog is known)

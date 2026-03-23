@@ -64,40 +64,90 @@ export class TestSelectFieldsPage extends Page {
   }
 }
 
-applyTemplate(
-  TestSelectFieldsPage,
-  `
-  <flex-column>
-    <h2>Select Field Tests</h2>
-    <flex-row gap="24">
-      <flex-column>
-        <h3>Select User</h3>
-        <select-user-field [control]="userControl" label="User" [hideHelpText]="true"></select-user-field>
-        <p>Selected: {{selectedUserId}}</p>
-        <button mat-raised-button (click)="setFirstUser()">Set First User</button>
-      </flex-column>
-      <flex-column>
-        <h3>Select Role</h3>
-        <select-role-field [control]="roleControl" label="Role" [hideHelpText]="true"></select-role-field>
-        <p>Selected: {{selectedRoleId}}</p>
-        <button mat-raised-button (click)="setFirstRole()">Set First Role</button>
-      </flex-column>
-      <flex-column>
-        <h3>Select Role Name</h3>
-        <select-role-name-field [control]="roleNameControl" label="Role Name" [hideHelpText]="true"></select-role-name-field>
-        <p>Selected: {{selectedRoleName}}</p>
-      </flex-column>
-    </flex-row>
-    <h2>SF Fields on Test Assignment</h2>
-    <if condition="testAssignment.reading">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </if>
-    <if condition="!testAssignment.reading && testAssignment.value?.id">
-      <sf-fields [group]="testAssignment"></sf-fields>
-    </if>
-    <if condition="!testAssignment.reading && !testAssignment.value?.id">
-      <p>No test assignment found. Create one first.</p>
-    </if>
-  </flex-column>
-`
-);
+applyTemplate(TestSelectFieldsPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      { h2: 'Select Field Tests' },
+      {
+        element: 'flex-row',
+        gap: '24',
+        contains: [
+          {
+            element: 'flex-column',
+            name: 'user',
+            contains: [
+              { h3: 'Select User' },
+              {
+                element: 'select-user-field',
+                control: '= userControl',
+                label: 'User',
+                hideHelpText: '= true',
+              },
+              { p: 'Selected: {{selectedUserId}}' },
+              {
+                element: 'button',
+                'mat-raised-button': true,
+                text: 'Set First User',
+                click: '-> setFirstUser()',
+              },
+            ],
+          },
+          {
+            element: 'flex-column',
+            name: 'role',
+            contains: [
+              { h3: 'Select Role' },
+              {
+                element: 'select-role-field',
+                control: '= roleControl',
+                label: 'Role',
+                hideHelpText: '= true',
+              },
+              { p: 'Selected: {{selectedRoleId}}' },
+              {
+                element: 'button',
+                'mat-raised-button': true,
+                text: 'Set First Role',
+                click: '-> setFirstRole()',
+              },
+            ],
+          },
+          {
+            element: 'flex-column',
+            name: 'roleName',
+            contains: [
+              { h3: 'Select Role Name' },
+              {
+                element: 'select-role-name-field',
+                control: '= roleNameControl',
+                label: 'Role Name',
+                hideHelpText: '= true',
+              },
+              { p: 'Selected: {{selectedRoleName}}' },
+            ],
+          },
+        ],
+      },
+      { h2: 'SF Fields on Test Assignment' },
+      {
+        if: 'testAssignment.reading',
+        contains: [
+          { element: 'mat-progress-bar', mode: 'indeterminate' },
+        ],
+      },
+      {
+        if: '!testAssignment.reading && testAssignment.value?.id',
+        contains: [
+          { element: 'sf-fields', group: '= testAssignment' },
+        ],
+      },
+      {
+        if: "!testAssignment.reading && !testAssignment.value?.id",
+        contains: [
+          { p: 'No test assignment found. Create one first.' },
+        ],
+      },
+    ],
+  },
+]);

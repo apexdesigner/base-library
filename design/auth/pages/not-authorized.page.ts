@@ -31,22 +31,39 @@ export class NotAuthorizedPage extends Page {
   }
 }
 
-applyTemplate(
-  NotAuthorizedPage,
-  `
-  <flex-column class="not-authorized-container" grow>
-    <h2>Access Denied</h2>
-    <if condition="email">
-      <p><strong>{{ email }}</strong> is not authorized to access this system.</p>
-      <else>
-        <p>Your account is not authorized to access this system.</p>
-      </else>
-    </if>
-    <p>Please contact your administrator if you believe this is an error.</p>
-    <button mat-raised-button color="primary" (click)="logout()">Sign Out</button>
-  </flex-column>
-`
-);
+applyTemplate(NotAuthorizedPage, [
+  {
+    element: 'flex-column',
+    class: 'not-authorized-container',
+    grow: true,
+    contains: [
+      { h2: 'Access Denied' },
+      {
+        if: 'email',
+        contains: [
+          {
+            element: 'p',
+            contains: [
+              { strong: '{{ email }}' },
+            ],
+            text: ' is not authorized to access this system.',
+          },
+        ],
+        elseContains: [
+          { p: 'Your account is not authorized to access this system.' },
+        ],
+      },
+      { p: 'Please contact your administrator if you believe this is an error.' },
+      {
+        element: 'button',
+        'mat-raised-button': true,
+        color: 'primary',
+        text: 'Sign Out',
+        click: '-> logout()',
+      },
+    ],
+  },
+]);
 
 applyStyles(
   NotAuthorizedPage,

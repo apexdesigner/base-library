@@ -27,21 +27,35 @@ export class TestPage extends Page {
   }
 }
 
-applyTemplate(
-  TestPage,
-  `
-  <flex-column>
-    <mat-form-field>
-      <mat-label>Dialog Title</mat-label>
-      <input matInput [(ngModel)]="dialogTitle">
-    </mat-form-field>
-    <button mat-button (click)="openDialog()">Open Dialog</button>
-    <test-dialog
-      #testDialog
-      [title]="dialogTitle"
-      [options]="{ width: '400px' }"
-      (saved)="onSaved()">
-    </test-dialog>
-  </flex-column>
-`
-);
+applyTemplate(TestPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      {
+        element: 'mat-form-field',
+        contains: [
+          { 'mat-label': 'Dialog Title' },
+          {
+            element: 'input',
+            matInput: true,
+            ngModel: '= dialogTitle',
+            ngModelChange: '-> dialogTitle = ngModel',
+          },
+        ],
+      },
+      {
+        element: 'button',
+        'mat-button': true,
+        text: 'Open Dialog',
+        click: '-> openDialog()',
+      },
+      {
+        element: 'test-dialog',
+        name: 'testDialog',
+        title: '= dialogTitle',
+        options: "= { width: '400px' }",
+        saved: '-> onSaved()',
+      },
+    ],
+  },
+]);

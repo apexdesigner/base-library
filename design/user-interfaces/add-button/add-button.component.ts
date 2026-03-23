@@ -31,6 +31,9 @@ export class AddButtonComponent extends Component {
   @property({ isOutput: true })
   added?: EventEmitter<any>;
 
+  /** Reference to the add dialog component. */
+  addDialog!: AddDialogComponent;
+
   /** Default Label - Default text for the add button */
   defaultLabel!: string;
 
@@ -45,13 +48,25 @@ export class AddButtonComponent extends Component {
   }
 }
 
-applyTemplate(
-  AddButtonComponent,
-  `
-  <add-dialog #addDialog [array]="array" [label]="label || defaultLabel" [options]="{ autoFocus: true, width: dialogWidth || '400px' }" (added)="added.emit($event)"></add-dialog>
-  <button mat-raised-button color="primary" (click)="addDialog.open()">
-    <mat-icon>add</mat-icon>
-    {{ label || defaultLabel || 'Add' }}
-  </button>
-`
-);
+applyTemplate(AddButtonComponent, [
+  {
+    element: 'add-dialog',
+    name: 'addDialog',
+    referenceable: true,
+    array: '= array',
+    label: '= label || defaultLabel',
+    options: "= { autoFocus: true, width: dialogWidth || '400px' }",
+    added: '-> added.emit($event)',
+  },
+  {
+    element: 'button',
+    name: 'add',
+    'mat-raised-button': true,
+    color: 'primary',
+    click: '-> addDialog.open()',
+    contains: [
+      { 'mat-icon': 'add' },
+    ],
+    text: "{{ label || defaultLabel || 'Add' }}",
+  },
+]);

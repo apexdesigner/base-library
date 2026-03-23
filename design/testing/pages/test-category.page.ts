@@ -47,30 +47,57 @@ export class TestCategoryPage extends Page {
   }
 }
 
-applyTemplate(
-  TestCategoryPage,
-  `
-  <if condition="testCategory.reading">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  </if>
-  <if condition="!testCategory.reading">
-    <flex-column>
-      <flex-row [centerVertical]="true">
-        <h2>{{category.name}}</h2>
-        <button mat-icon-button (click)="setName()" matTooltip="Set Name">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button (click)="clearName()" matTooltip="Clear Name">
-          <mat-icon>clear</mat-icon>
-        </button>
-      </flex-row>
-      <div>category.name: "{{category.name}}"</div>
-      <div>testCategory.value.name: "{{testCategory.value.name}}"</div>
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput [formControl]="testCategory.controls.name">
-      </mat-form-field>
-    </flex-column>
-  </if>
-`
-);
+applyTemplate(TestCategoryPage, [
+  {
+    if: 'testCategory.reading',
+    contains: [
+      { element: 'mat-progress-bar', mode: 'indeterminate' },
+    ],
+  },
+  {
+    if: '!testCategory.reading',
+    contains: [
+      {
+        element: 'flex-column',
+        contains: [
+          {
+            element: 'flex-row',
+            centerVertical: '= true',
+            contains: [
+              { h2: '{{category.name}}' },
+              {
+                element: 'button',
+                name: 'setName',
+                'mat-icon-button': true,
+                click: '-> setName()',
+                matTooltip: 'Set Name',
+                contains: [{ 'mat-icon': 'edit' }],
+              },
+              {
+                element: 'button',
+                name: 'clearName',
+                'mat-icon-button': true,
+                click: '-> clearName()',
+                matTooltip: 'Clear Name',
+                contains: [{ 'mat-icon': 'clear' }],
+              },
+            ],
+          },
+          { div: 'category.name: "{{category.name}}"' },
+          { div: 'testCategory.value.name: "{{testCategory.value.name}}"' },
+          {
+            element: 'mat-form-field',
+            contains: [
+              { 'mat-label': 'Name' },
+              {
+                element: 'input',
+                matInput: true,
+                formControl: '= testCategory.controls.name',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
