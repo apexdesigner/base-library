@@ -116,9 +116,11 @@ function walkNode(node: any, usage: TemplateUsage): void {
   if (typeof node.text === 'string') {
     extractPipesFromExpr(node.text, usage.pipes);
   }
-  // Shorthand text
+  // Shorthand text or children
   if (tag && typeof node[tag] === 'string') {
     extractPipesFromExpr(node[tag], usage.pipes);
+  } else if (tag && Array.isArray(node[tag])) {
+    walkNode(node[tag], usage);
   }
 
   walkChildren(node, usage);

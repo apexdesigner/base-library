@@ -98,4 +98,35 @@ describe('extractTemplateUsage', () => {
     expect(usage.directives.has('mat-list-item')).toBe(true);
     expect(usage.directives.has('routerLink')).toBe(true);
   });
+
+  it('should walk children inside element shorthand with array value', () => {
+    // Shorthand: { 'mat-action-list': [ ...children ] } instead of
+    //            { element: 'mat-action-list', contains: [ ...children ] }
+    const usage = extractTemplateUsage([
+      {
+        'flex-column': [
+          { h1: 'Process Engine Library' },
+          {
+            'mat-action-list': [
+              {
+                element: 'a',
+                text: 'Process Designs',
+                attributes: { 'mat-list-item': null, routerLink: '/process-designs' },
+              },
+              {
+                element: 'a',
+                text: 'Roles',
+                attributes: { 'mat-list-item': null, routerLink: '/roles' },
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(usage.elements.has('flex-column')).toBe(true);
+    expect(usage.elements.has('mat-action-list')).toBe(true);
+    expect(usage.allElements.has('a')).toBe(true);
+    expect(usage.directives.has('mat-list-item')).toBe(true);
+    expect(usage.directives.has('routerLink')).toBe(true);
+  });
 });
