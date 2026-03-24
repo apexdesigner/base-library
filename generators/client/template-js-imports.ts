@@ -44,6 +44,8 @@ const RESERVED_KEYS = new Set(templateReservedKeys);
 
 export interface TemplateUsage {
   elements: Set<string>;
+  /** All element tags including standard HTML — needed for compound directive selector matching */
+  allElements: Set<string>;
   directives: Set<string>;
   pipes: Set<string>;
 }
@@ -55,6 +57,7 @@ export interface TemplateUsage {
 export function extractTemplateUsage(template: any): TemplateUsage {
   const usage: TemplateUsage = {
     elements: new Set(),
+    allElements: new Set(),
     directives: new Set(),
     pipes: new Set(),
   };
@@ -96,8 +99,11 @@ function walkNode(node: any, usage: TemplateUsage): void {
 
   // Element node — extract tag
   const tag = resolveTag(node);
-  if (tag && !STANDARD_HTML_ELEMENTS.has(tag)) {
-    usage.elements.add(tag);
+  if (tag) {
+    usage.allElements.add(tag);
+    if (!STANDARD_HTML_ELEMENTS.has(tag)) {
+      usage.elements.add(tag);
+    }
   }
 
   // Scan the attributes object
@@ -271,7 +277,7 @@ export async function resolveJsTemplateImports(
   for (const attr of usage.directives) {
     const matchingInterface = directiveInterfaces.find(di => {
       const selectorParts = di.selector.split(',').map(s => s.trim());
-      return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.elements, usage.directives));
+      return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
     });
     if (matchingInterface?.imports?.length) {
       for (const imp of matchingInterface.imports) {

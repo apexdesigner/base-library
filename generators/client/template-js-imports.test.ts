@@ -1,0 +1,79 @@
+import { describe, it, expect } from 'vitest';
+import { extractTemplateUsage } from './template-js-imports.js';
+
+describe('extractTemplateUsage', () => {
+  it('should extract non-standard elements', () => {
+    const usage = extractTemplateUsage([
+      { element: 'mat-toolbar', contains: [{ element: 'div' }] },
+      { 'flex-row': [{ span: 'hello' }] },
+    ]);
+    expect(usage.elements.has('mat-toolbar')).toBe(true);
+    expect(usage.elements.has('flex-row')).toBe(true);
+    expect(usage.elements.has('div')).toBe(false);
+    expect(usage.elements.has('span')).toBe(false);
+  });
+
+  it('should extract directive attributes from attributes object', () => {
+    const usage = extractTemplateUsage({
+      element: 'input',
+      attributes: { matInput: null, type: 'text' },
+    });
+    expect(usage.directives.has('matInput')).toBe(true);
+    expect(usage.directives.has('type')).toBe(false);
+  });
+
+  it('should extract pipes from text expressions', () => {
+    const usage = extractTemplateUsage({
+      element: 'div',
+      text: '{{value | async}}',
+    });
+    expect(usage.pipes.has('async')).toBe(true);
+  });
+
+  it('should extract pipes from attribute expressions', () => {
+    const usage = extractTemplateUsage({
+      element: 'div',
+      attributes: { disabled: '<- isDisabled | async' },
+    });
+    expect(usage.pipes.has('async')).toBe(true);
+  });
+
+  it('should extract pipes from if conditions', () => {
+    const usage = extractTemplateUsage({
+      if: 'authService.authenticated | async',
+      contains: [{ element: 'div', text: 'hello' }],
+    });
+    expect(usage.pipes.has('async')).toBe(true);
+  });
+
+  it('should track standard HTML elements for compound directive selector matching', () => {
+    // mat-icon-button directive has selector "button[mat-icon-button]"
+    // The element "button" is standard HTML, but must be available
+    // for matchesDirectiveSelector to match compound selectors.
+    const usage = extractTemplateUsage({
+      element: 'button',
+      attributes: { 'mat-icon-button': null, matMenuTriggerFor: '<- userMenu' },
+      contains: [{ 'mat-icon': 'person' }],
+    });
+    // "button" is standard HTML so not in elements
+    expect(usage.elements.has('button')).toBe(false);
+    // but mat-icon-button should be in directives
+    expect(usage.directives.has('mat-icon-button')).toBe(true);
+    // and the allElements set should include "button" for compound selector matching
+    expect(usage.allElements.has('button')).toBe(true);
+    expect(usage.allElements.has('mat-icon')).toBe(true);
+  });
+
+  it('should include standard elements in allElements but not elements', () => {
+    const usage = extractTemplateUsage([
+      { element: 'div', contains: [{ element: 'mat-toolbar' }] },
+      { element: 'button', attributes: { 'mat-raised-button': null } },
+    ]);
+    expect(usage.elements.has('mat-toolbar')).toBe(true);
+    expect(usage.elements.has('div')).toBe(false);
+    expect(usage.elements.has('button')).toBe(false);
+    expect(usage.allElements.has('div')).toBe(true);
+    expect(usage.allElements.has('button')).toBe(true);
+    expect(usage.allElements.has('mat-toolbar')).toBe(true);
+  });
+});
