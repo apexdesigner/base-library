@@ -39,16 +39,16 @@ export class HomePage extends Page {
 applyTemplate(HomePage, [
   {
     element: 'flex-column',
-    gap: '= 16',
+    attributes: { gap: '<- 16' },
     contains: [
       { h1: 'Home' },
-      { element: 'a', text: 'Categories', routerLink: '/test-categories' },
-      { element: 'a', text: 'Items', routerLink: '/test-items' },
-      { element: 'a', text: 'Settings', routerLink: '/test-settings' },
-      { element: 'a', text: 'Manage Roles', routerLink: '/manage-roles' },
-      { element: 'a', text: 'Select Fields', routerLink: '/test-select-fields' },
-      { element: 'a', text: 'Switch User', routerLink: '/switch-user' },
-      { element: 'a', text: 'App Behavior Tests', routerLink: '/service-test-app-behaviors' },
+      { element: 'a', name: 'categories', text: 'Categories', attributes: { routerLink: '/test-categories' } },
+      { element: 'a', name: 'items', text: 'Items', attributes: { routerLink: '/test-items' } },
+      { element: 'a', name: 'settings', text: 'Settings', attributes: { routerLink: '/test-settings' } },
+      { element: 'a', name: 'manageRoles', text: 'Manage Roles', attributes: { routerLink: '/manage-roles' } },
+      { element: 'a', name: 'selectFields', text: 'Select Fields', attributes: { routerLink: '/test-select-fields' } },
+      { element: 'a', name: 'switchUser', text: 'Switch User', attributes: { routerLink: '/switch-user' } },
+      { element: 'a', name: 'appBehaviorTests', text: 'App Behavior Tests', attributes: { routerLink: '/service-test-app-behaviors' } },
     ],
   },
 ]);

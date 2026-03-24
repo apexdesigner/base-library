@@ -76,4 +76,26 @@ describe('extractTemplateUsage', () => {
     expect(usage.allElements.has('button')).toBe(true);
     expect(usage.allElements.has('mat-toolbar')).toBe(true);
   });
+
+  it('should handle mat-action-list element and mat-list-item directive on <a>', () => {
+    // Simulates: <mat-action-list><a mat-list-item routerLink="/foo">Link</a></mat-action-list>
+    const usage = extractTemplateUsage({
+      element: 'mat-action-list',
+      contains: [
+        {
+          element: 'a',
+          text: 'Process Designs',
+          attributes: { 'mat-list-item': null, routerLink: '/process-designs' },
+        },
+      ],
+    });
+    // mat-action-list is a non-standard element
+    expect(usage.elements.has('mat-action-list')).toBe(true);
+    // "a" is standard HTML — not in elements but in allElements
+    expect(usage.elements.has('a')).toBe(false);
+    expect(usage.allElements.has('a')).toBe(true);
+    // mat-list-item and routerLink are directives
+    expect(usage.directives.has('mat-list-item')).toBe(true);
+    expect(usage.directives.has('routerLink')).toBe(true);
+  });
 });
