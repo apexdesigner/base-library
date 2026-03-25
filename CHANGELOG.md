@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.153] - 2026-03-25
+
+- a5d896d chore: add temp/ to gitignore
+- 4ea9c94 chore: format design and generator files
+- 9579acb feat: convert design templates to JS object format and update deps
+- 1c15d2c fix: walk shorthand element children and add Roboto font import
+- d0c493f fix: move home page attributes into attributes object and add import test
+- a91124b fix: include standard HTML elements in directive selector matching
+- 4f8570d feat: update JS template converter for DSL v0.8.72
+- 8ae7f99 feat: integrate JS object templates into page and component generators
+- 3932bd6 feat: add JS object to Angular template converter
+
+
 ## [1.0.152] - 2026-03-19
 
 - 14125de chore: apply prettier formatting and update lockfile
