@@ -29,6 +29,7 @@ Thumbs.db
 *.tmp
 *.temp
 test-temp/
+temp/
 *.tgz
 .apex-designer/
 .claude/settings.local.json

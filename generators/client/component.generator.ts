@@ -3,8 +3,9 @@ import { getModuleLevelCall, getTemplateString, getClassDecorator } from '@apexd
 import { kebabCase } from 'change-case';
 import { Node, Project, QuoteKind, Scope, SyntaxKind } from 'ts-morph';
 import createDebug from 'debug';
-import { getTemplateImports, convertAd3Template } from '@apexdesigner/generator';
+import { getTemplateImports } from '@apexdesigner/generator';
 import { captureBoImports, processPropertyDecorators, transformOnChangeProperties, addBoImports, buildReadArgs } from './property-processing.js';
+import { extractTemplate, extractTemplateUsage, resolveJsTemplateImports } from './template-extraction.js';
 
 const Debug = createDebug('BaseLibrary:generators:component');
 
@@ -66,13 +67,10 @@ const componentGenerator: DesignGenerator = {
       ? 'client/src/app/app.component.ts'
       : `client/src/app/components/${componentName}/${componentName}.component.ts`;
 
-    // Extract template from applyTemplate call
-    let template = '';
-    const applyTemplateCall = getModuleLevelCall(sourceFile, 'applyTemplate');
-    if (applyTemplateCall) {
-      template = getTemplateString(applyTemplateCall) || '';
-      debug('extracted template (%j chars)', template.length);
-    }
+    // Extract and convert template (supports both JS object and string formats)
+    const extracted = extractTemplate(sourceFile);
+    const { angularHtml: convertedTemplate, templateRefs } = extracted;
+    debug('converted template (%j chars), refs %j', convertedTemplate.length, [...templateRefs]);
 
     // Extract styles from applyStyles call
     let styles = '';
@@ -81,13 +79,6 @@ const componentGenerator: DesignGenerator = {
       styles = getTemplateString(applyStylesCall) || '';
       debug('extracted styles (%j chars)', styles.length);
     }
-
-    // Convert AD3 template syntax to Angular control flow
-    const convertedTemplate = convertAd3Template(template);
-
-    // Extract template reference variable names (#ref) for ViewChild matching
-    const templateRefs = new Set([...template.matchAll(/#(\w+)/g)].map(m => m[1]));
-    debug('template refs %j', [...templateRefs]);
 
     // Create a writable copy using ts-morph
     const project = new Project({
@@ -103,8 +94,10 @@ const componentGenerator: DesignGenerator = {
       throw new Error(`Could not find exported class in ${metadata.name}`);
     }
 
-    // Get template imports (resolve element/directive/pipe usage against extracted interfaces)
-    const templateImports = await getTemplateImports(exportedClass, context, 'component', outputFilePath, template);
+    // Get template imports (resolve element/directive/pipe usage against design metadata)
+    const templateImports = extracted.jsTemplate
+      ? await resolveJsTemplateImports(context, extractTemplateUsage(extracted.jsTemplate))
+      : await getTemplateImports(exportedClass, context, 'component', outputFilePath, extracted.ad3Html);
     debug('template requires %j import groups', templateImports.length);
 
     // Extract options from @component decorator (before import removal, so isDialog is known)

@@ -40,23 +40,43 @@ export class SelectRoleNameFieldComponent extends Component {
   }
 }
 
-applyTemplate(
-  SelectRoleNameFieldComponent,
-  `
-  <mat-form-field>
-    <mat-label>{{label || 'Role'}}</mat-label>
-    <mat-select [formControl]="control" [placeholder]="placeholder || control.placeholder">
-      <for const="role" of="roles">
-        <mat-option [value]="role.name">
-          {{role.displayName}}
-        </mat-option>
-      </for>
-    </mat-select>
-    <if condition="control.value">
-      <button matSuffix mat-icon-button [disabled]="control.disabled" (click)="control.setValue(null); $event.stopPropagation()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </if>
-  </mat-form-field>
-`
-);
+applyTemplate(SelectRoleNameFieldComponent, [
+  {
+    element: 'mat-form-field',
+    contains: [
+      { 'mat-label': "{{label || 'Role'}}" },
+      {
+        element: 'mat-select',
+        attributes: { formControl: '<- control', placeholder: '<- placeholder || control.placeholder' },
+        contains: [
+          {
+            for: 'role',
+            of: 'roles',
+            contains: [
+              {
+                element: 'mat-option',
+                text: '{{role.displayName}}',
+                attributes: { value: '<- role.name' }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        if: 'control.value',
+        contains: [
+          {
+            element: 'button',
+            attributes: {
+              matSuffix: null,
+              'mat-icon-button': null,
+              disabled: '<- control.disabled',
+              click: '-> control.setValue(null); $event.stopPropagation()'
+            },
+            contains: [{ 'mat-icon': 'close' }]
+          }
+        ]
+      }
+    ]
+  }
+]);

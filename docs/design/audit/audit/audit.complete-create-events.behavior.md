@@ -1,5 +1,5 @@
 ---
-generated-from: design/audit/audit.mixin.ts
+generated-from: design/audit/audit/audit.mixin.ts
 generated-by: design-docs.mixin.doc.md
 ---
 # Audit - Complete Create Events Behavior

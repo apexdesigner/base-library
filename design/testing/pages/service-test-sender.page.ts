@@ -20,14 +20,22 @@ export class ServiceTestSenderPage extends Page {
   }
 }
 
-applyTemplate(
-  ServiceTestSenderPage,
-  `
-  <flex-column>
-    <h1>Service Test - Sender</h1>
-    <p>Current message: {{testItemTrackerService.message}}</p>
-    <button mat-raised-button color="primary" (click)="send()">Send Message</button>
-    <a mat-button routerLink="/service-test-receiver">Go to Receiver</a>
-  </flex-column>
-`
-);
+applyTemplate(ServiceTestSenderPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      { h1: 'Service Test - Sender' },
+      { p: 'Current message: {{testItemTrackerService.message}}' },
+      {
+        element: 'button',
+        text: 'Send Message',
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> send()' }
+      },
+      {
+        element: 'a',
+        text: 'Go to Receiver',
+        attributes: { 'mat-button': null, routerLink: '/service-test-receiver' }
+      }
+    ]
+  }
+]);

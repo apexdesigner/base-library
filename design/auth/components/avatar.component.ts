@@ -39,20 +39,46 @@ export class AvatarComponent extends Component {
   logout(): void {
     this.authService.logout();
   }
+
+  /** User Menu - Reference to the menu component */
+  userMenu!: any;
 }
 
-applyTemplate(
-  AvatarComponent,
-  `
-  <button mat-icon-button [matMenuTriggerFor]="userMenu">
-    <mat-icon>person</mat-icon>
-  </button>
-  <mat-menu #userMenu>
-    <div mat-menu-item disabled>{{(authService.currentUser | async)?.email}}</div>
-    <if condition="allowImpersonation">
-      <button mat-menu-item (click)="switchUser()">Switch User</button>
-    </if>
-    <button mat-menu-item (click)="logout()">Logout</button>
-  </mat-menu>
-`
-);
+applyTemplate(AvatarComponent, [
+  {
+    element: 'button',
+    name: 'menuTrigger',
+    attributes: { 'mat-icon-button': null, matMenuTriggerFor: '<- userMenu' },
+    contains: [{ 'mat-icon': 'person' }]
+  },
+  {
+    element: 'mat-menu',
+    name: 'userMenu',
+    referenceable: true,
+    contains: [
+      {
+        element: 'div',
+        name: 'userEmail',
+        text: '{{(authService.currentUser | async)?.email}}',
+        attributes: { 'mat-menu-item': null, disabled: '<- true' }
+      },
+      {
+        if: 'allowImpersonation',
+        contains: [
+          {
+            element: 'button',
+            name: 'switchUserButton',
+            text: 'Switch User',
+            attributes: { 'mat-menu-item': null, click: '-> switchUser()' }
+          }
+        ]
+      },
+      {
+        element: 'button',
+        name: 'logoutButton',
+        text: 'Logout',
+        attributes: { 'mat-menu-item': null, click: '-> logout()' }
+      }
+    ]
+  }
+]);

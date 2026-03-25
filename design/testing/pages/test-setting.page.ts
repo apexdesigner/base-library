@@ -21,24 +21,31 @@ export class TestSettingPage extends Page {
   testSetting!: TestSettingFormGroup;
 }
 
-applyTemplate(
-  TestSettingPage,
-  `
-  <if condition="!testSetting.reading">
-    <flex-column>
-      <h1>{{testSetting.value.name}}</h1>
-      <sf-fields [group]="testSetting"></sf-fields>
-      <h3>Test Items</h3>
-      <for const="item" of="testSetting.value.testItems">
-        <a [routerLink]="'/test-items/' + item.id">{{item.name}}</a>
-        <when-empty>
-          <div>No test items</div>
-        </when-empty>
-      </for>
-    </flex-column>
-    <else>
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </else>
-  </if>
-`
-);
+applyTemplate(TestSettingPage, [
+  {
+    if: '!testSetting.reading',
+    contains: [
+      {
+        element: 'flex-column',
+        contains: [
+          { h1: '{{testSetting.value.name}}' },
+          { element: 'sf-fields', attributes: { group: '<- testSetting' } },
+          { h3: 'Test Items' },
+          {
+            for: 'item',
+            of: 'testSetting.value.testItems',
+            contains: [
+              {
+                element: 'a',
+                text: '{{item.name}}',
+                attributes: { routerLink: "<- '/test-items/' + item.id" }
+              }
+            ],
+            emptyContains: [{ div: 'No test items' }]
+          }
+        ]
+      }
+    ],
+    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+  }
+]);

@@ -78,18 +78,32 @@ export class AddDialogComponent extends Component {
   }
 }
 
-applyTemplate(
-  AddDialogComponent,
-  `
-  <h2 mat-dialog-title>{{ label || 'Add' }}</h2>
-  <div mat-dialog-content>
-    <if condition="formGroup">
-      <sf-fields [group]="formGroup" [disableHidden]="true"></sf-fields>
-    </if>
-  </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-raised-button color="primary" (click)="save()" [disabled]="saving || !formGroup || (formGroup.statusChanges | async) !== 'VALID'">Add</button>
-  </div>
-`
-);
+applyTemplate(AddDialogComponent, [
+  { element: 'h2', text: "{{ label || 'Add' }}", attributes: { 'mat-dialog-title': null } },
+  {
+    element: 'mat-dialog-content',
+    contains: [
+      {
+        if: 'formGroup',
+        name: 'Form Group',
+        contains: [{ element: 'sf-fields', attributes: { group: '<- formGroup', disableHidden: '<- true' } }]
+      }
+    ]
+  },
+  {
+    element: 'mat-dialog-actions',
+    contains: [
+      { element: 'button', text: 'Cancel', attributes: { 'mat-button': null, click: '-> cancel()' } },
+      {
+        element: 'button',
+        text: 'Add',
+        attributes: {
+          'mat-raised-button': null,
+          color: 'primary',
+          click: '-> save()',
+          disabled: "<- saving || !formGroup || (formGroup.statusChanges | async) !== 'VALID'"
+        }
+      }
+    ]
+  }
+]);

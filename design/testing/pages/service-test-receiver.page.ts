@@ -15,13 +15,17 @@ export class ServiceTestReceiverPage extends Page {
   testItemTrackerService!: TestItemTrackerService;
 }
 
-applyTemplate(
-  ServiceTestReceiverPage,
-  `
-  <flex-column>
-    <h1>Service Test - Receiver</h1>
-    <p>Message from sender: {{testItemTrackerService.message}}</p>
-    <a mat-button routerLink="/service-test-sender">Go to Sender</a>
-  </flex-column>
-`
-);
+applyTemplate(ServiceTestReceiverPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      { h1: 'Service Test - Receiver' },
+      { p: 'Message from sender: {{testItemTrackerService.message}}' },
+      {
+        element: 'a',
+        text: 'Go to Sender',
+        attributes: { 'mat-button': null, routerLink: '/service-test-sender' }
+      }
+    ]
+  }
+]);

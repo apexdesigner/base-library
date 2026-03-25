@@ -29,25 +29,45 @@ export class AppComponent extends Component {
   }
 }
 
-applyTemplate(
-  AppComponent,
-  `
-  <flex-column [gap]="0">
-    <mat-toolbar color="primary" style="margin-bottom: 1rem">
-      <flex-row [gap]="16" [alignCenter]="true" grow>
-        <a routerLink="/" style="color: inherit; text-decoration: none">PROJECT_METADATA.displayName</a>
-        <span grow></span>
-        <if condition="authService.authenticated | async">
-          <avatar></avatar>
-        </if>
-      </flex-row>
-    </mat-toolbar>
-    <div grow style="padding: 0 16px">
-      <router-outlet></router-outlet>
-    </div>
-    <mat-toolbar color="primary" style="font-size: 12px; min-height: 32px; height: 32px">
-      Version {{packageService.version}}
-    </mat-toolbar>
-  </flex-column>
-`
-);
+applyTemplate(AppComponent, [
+  {
+    element: 'flex-column',
+    attributes: { gap: '<- 0' },
+    contains: [
+      {
+        element: 'mat-toolbar',
+        name: 'header',
+        attributes: { color: 'primary', style: 'margin-bottom: 1rem' },
+        contains: [
+          {
+            element: 'flex-row',
+            attributes: { gap: '<- 16', alignCenter: true, grow: null },
+            contains: [
+              {
+                element: 'a',
+                text: 'PROJECT_METADATA.displayName',
+                attributes: { routerLink: '/', style: 'color: inherit; text-decoration: none' }
+              },
+              { element: 'span', attributes: { grow: null } },
+              {
+                if: 'authService.authenticated | async',
+                contains: [{ element: 'avatar' }]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        element: 'div',
+        attributes: { grow: null, style: 'padding: 0 16px' },
+        contains: [{ element: 'router-outlet' }]
+      },
+      {
+        element: 'mat-toolbar',
+        name: 'footer',
+        text: 'Version {{packageService.version}}',
+        attributes: { color: 'primary', style: 'font-size: 12px; min-height: 32px; height: 32px' }
+      }
+    ]
+  }
+]);

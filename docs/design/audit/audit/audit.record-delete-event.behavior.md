@@ -1,12 +1,12 @@
 ---
-generated-from: design/audit/audit.mixin.ts
+generated-from: design/audit/audit/audit.mixin.ts
 generated-by: design-docs.mixin.doc.md
 ---
-# Audit - Record Update Event Behavior
+# Audit - Record Delete Event Behavior
 
-Records pending audit events before records are updated.
+Records pending audit events before records are deleted, capturing the full record data.
 
-**Type:** Before Update
+**Type:** Before Delete
 
 ## Parameters
 
@@ -15,7 +15,6 @@ Records pending audit events before records are updated.
 | Model | `any` | Yes |  |
 | mixinOptions | `AuditConfig` | Yes |  |
 | where | `any` | Yes |  |
-| updates | `Partial<any>` | Yes |  |
 
 ## Returns
 

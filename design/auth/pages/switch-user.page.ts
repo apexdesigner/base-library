@@ -61,34 +61,74 @@ export class SwitchUserPage extends Page {
   }
 }
 
-applyTemplate(
-  SwitchUserPage,
-  `
-  <flex-column>
-    <if condition="isImpersonating">
-      <div>
-        <button mat-raised-button color="warn" (click)="stopImpersonating()">Stop being {{currentUser?.email}}</button>
-      </div>
-    </if>
-    <if condition="!isImpersonating">
-      <h1>Switch User</h1>
-      <mat-form-field>
-        <mat-label>Search</mat-label>
-        <input matInput [(ngModel)]="searchText" placeholder="Filter by email">
-      </mat-form-field>
-      <if condition="!users.reading">
-        <mat-action-list>
-          <for const="user" of="filteredUsers">
-            <if condition="user.id !== currentUser.id">
-              <button mat-list-item (click)="switchTo(user)">{{user.email}}</button>
-            </if>
-          </for>
-        </mat-action-list>
-        <else>
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        </else>
-      </if>
-    </if>
-  </flex-column>
-`
-);
+applyTemplate(SwitchUserPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      {
+        if: 'isImpersonating',
+        name: 'impersonating',
+        contains: [
+          {
+            element: 'div',
+            contains: [
+              {
+                element: 'button',
+                text: 'Stop being {{currentUser?.email}}',
+                attributes: { 'mat-raised-button': null, color: 'warn', click: '-> stopImpersonating()' }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        if: '!isImpersonating',
+        name: 'notImpersonating',
+        contains: [
+          { h1: 'Switch User' },
+          {
+            element: 'mat-form-field',
+            contains: [
+              { 'mat-label': 'Search' },
+              {
+                element: 'input',
+                attributes: {
+                  matInput: null,
+                  ngModel: '<-> searchText',
+                  placeholder: 'Filter by email'
+                }
+              }
+            ]
+          },
+          {
+            if: '!users.reading',
+            contains: [
+              {
+                element: 'mat-action-list',
+                contains: [
+                  {
+                    for: 'user',
+                    of: 'filteredUsers',
+                    contains: [
+                      {
+                        if: 'user.id !== currentUser.id',
+                        contains: [
+                          {
+                            element: 'button',
+                            text: '{{user.email}}',
+                            attributes: { 'mat-list-item': null, click: '-> switchTo(user)' }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+          }
+        ]
+      }
+    ]
+  }
+]);

@@ -20,25 +20,37 @@ export class TestItemsPage extends Page {
   testItems!: TestItemPersistedArray;
 }
 
-applyTemplate(
-  TestItemsPage,
-  `
-  <flex-column>
-    <flex-row [alignCenter]="true">
-      <h1>Test Items</h1>
-      <div grow></div>
-      <add-button [array]="testItems" (added)="testItems.read()"></add-button>
-    </flex-row>
-    <if condition="!testItems.reading">
-      <dt-table [dataSource]="testItems" routerLinkTemplate="/test-items/{id}">
-        <dt-column property="name" header="Name"></dt-column>
-        <dt-column property="email" header="Email"></dt-column>
-        <dt-column property="testSetting.name" header="Setting"></dt-column>
-      </dt-table>
-      <else>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      </else>
-    </if>
-  </flex-column>
-`
-);
+applyTemplate(TestItemsPage, [
+  {
+    element: 'flex-column',
+    contains: [
+      {
+        element: 'flex-row',
+        attributes: { alignCenter: true },
+        contains: [
+          { h1: 'Test Items' },
+          { element: 'div', attributes: { grow: null } },
+          {
+            element: 'add-button',
+            attributes: { array: '<- testItems', added: '-> testItems.read()' }
+          }
+        ]
+      },
+      {
+        if: '!testItems.reading',
+        contains: [
+          {
+            element: 'dt-table',
+            attributes: { dataSource: '<- testItems', routerLinkTemplate: '/test-items/{id}' },
+            contains: [
+              { element: 'dt-column', name: 'name', attributes: { property: 'name', header: 'Name' } },
+              { element: 'dt-column', name: 'email', attributes: { property: 'email', header: 'Email' } },
+              { element: 'dt-column', name: 'setting', attributes: { property: 'testSetting.name', header: 'Setting' } }
+            ]
+          }
+        ],
+        elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+      }
+    ]
+  }
+]);

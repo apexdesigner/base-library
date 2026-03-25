@@ -17,7 +17,7 @@ references Role (prevents deletion while assignments exist).
 
 ## Relationships
 
-| Name | Type | Relationship | Description |
-|------|------|--------------|-------------|
-| user | [`User`](user.business-object.md) | Belongs To | User - Assigned user |
-| role | [`Role`](role.business-object.md) | References | Role - Assigned role |
+| Name | Type | Relationship | On Delete | Description |
+|------|------|--------------|-----------|-------------|
+| user | [`User`](user.business-object.md) | Belongs To |  | User - Assigned user |
+| role | [`Role`](role.business-object.md) | References |  | Role - Assigned role |
