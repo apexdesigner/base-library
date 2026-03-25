@@ -67,16 +67,15 @@ applyTemplate(SwitchUserPage, [
     contains: [
       {
         if: 'isImpersonating',
+        name: 'impersonating',
         contains: [
           {
             element: 'div',
             contains: [
               {
                 element: 'button',
-                'mat-raised-button': true,
-                color: 'warn',
                 text: 'Stop being {{currentUser?.email}}',
-                click: '-> stopImpersonating()',
+                attributes: { 'mat-raised-button': null, color: 'warn', click: '-> stopImpersonating()' },
               },
             ],
           },
@@ -84,6 +83,7 @@ applyTemplate(SwitchUserPage, [
       },
       {
         if: '!isImpersonating',
+        name: 'notImpersonating',
         contains: [
           { h1: 'Switch User' },
           {
@@ -92,10 +92,11 @@ applyTemplate(SwitchUserPage, [
               { 'mat-label': 'Search' },
               {
                 element: 'input',
-                matInput: true,
-                ngModel: '= searchText',
-                ngModelChange: '-> searchText = ngModel',
-                placeholder: 'Filter by email',
+                attributes: {
+                  matInput: null,
+                  ngModel: '<-> searchText',
+                  placeholder: 'Filter by email',
+                },
               },
             ],
           },
@@ -114,9 +115,8 @@ applyTemplate(SwitchUserPage, [
                         contains: [
                           {
                             element: 'button',
-                            'mat-list-item': true,
                             text: '{{user.email}}',
-                            click: '-> switchTo(user)',
+                            attributes: { 'mat-list-item': null, click: '-> switchTo(user)' },
                           },
                         ],
                       },
@@ -126,7 +126,7 @@ applyTemplate(SwitchUserPage, [
               },
             ],
             elseContains: [
-              { element: 'mat-progress-bar', mode: 'indeterminate' },
+              { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
             ],
           },
         ],

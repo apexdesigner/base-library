@@ -50,49 +50,46 @@ export class TestCategoryPage extends Page {
 applyTemplate(TestCategoryPage, [
   {
     if: 'testCategory.reading',
+    name: 'loading',
     contains: [
-      { element: 'mat-progress-bar', mode: 'indeterminate' },
+      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
     ],
   },
   {
     if: '!testCategory.reading',
+    name: 'loaded',
     contains: [
       {
         element: 'flex-column',
         contains: [
           {
             element: 'flex-row',
-            centerVertical: '= true',
+            attributes: { centerVertical: true },
             contains: [
               { h2: '{{category.name}}' },
               {
                 element: 'button',
                 name: 'setName',
-                'mat-icon-button': true,
-                click: '-> setName()',
-                matTooltip: 'Set Name',
+                attributes: { 'mat-icon-button': null, click: '-> setName()', matTooltip: 'Set Name' },
                 contains: [{ 'mat-icon': 'edit' }],
               },
               {
                 element: 'button',
                 name: 'clearName',
-                'mat-icon-button': true,
-                click: '-> clearName()',
-                matTooltip: 'Clear Name',
+                attributes: { 'mat-icon-button': null, click: '-> clearName()', matTooltip: 'Clear Name' },
                 contains: [{ 'mat-icon': 'clear' }],
               },
             ],
           },
-          { div: 'category.name: "{{category.name}}"' },
-          { div: 'testCategory.value.name: "{{testCategory.value.name}}"' },
+          { div: 'category.name: "{{category.name}}"', name: 'categoryName' },
+          { div: 'testCategory.value.name: "{{testCategory.value.name}}"', name: 'testCategoryName' },
           {
             element: 'mat-form-field',
             contains: [
               { 'mat-label': 'Name' },
               {
                 element: 'input',
-                matInput: true,
-                formControl: '= testCategory.controls.name',
+                attributes: { matInput: null, formControl: '<- testCategory.controls.name' },
               },
             ],
           },

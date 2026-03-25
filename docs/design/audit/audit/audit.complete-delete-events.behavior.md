@@ -1,12 +1,12 @@
 ---
-generated-from: design/audit/audit.mixin.ts
+generated-from: design/audit/audit/audit.mixin.ts
 generated-by: design-docs.mixin.doc.md
 ---
-# Audit - Record Create Event Behavior
+# Audit - Complete Delete Events Behavior
 
-Records a pending audit event before a record is created.
+Marks pending delete audit events as complete after records are deleted.
 
-**Type:** Before Create
+**Type:** After Delete
 
 ## Parameters
 
@@ -14,7 +14,7 @@ Records a pending audit event before a record is created.
 |------|------|----------|-------------|
 | Model | `any` | Yes |  |
 | mixinOptions | `AuditConfig` | Yes |  |
-| dataItems | `Partial<any>[]` | Yes |  |
+| instances | `any[]` | Yes |  |
 
 ## Returns
 

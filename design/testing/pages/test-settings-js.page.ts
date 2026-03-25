@@ -18,16 +18,18 @@ export class TestSettingsJsPage extends Page {
 applyTemplate(TestSettingsJsPage, [
   {
     if: 'testSettings.reading',
+    name: 'loading',
     contains: [
-      { element: 'mat-progress-bar', mode: 'indeterminate' },
+      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
     ],
   },
   {
     if: '!testSettings.reading',
+    name: 'loaded',
     contains: [
       {
         element: 'flex-column',
-        gap: '= 20',
+        attributes: { gap: '<- 20' },
         contains: [
           { h2: 'Test Settings (JS Template)' },
           {
@@ -37,7 +39,7 @@ applyTemplate(TestSettingsJsPage, [
             contains: [
               {
                 element: 'flex-row',
-                gap: '= 12',
+                attributes: { gap: '<- 12' },
                 contains: [
                   { span: '{{setting.name}}', name: 'name' },
                   { span: '{{setting.value}}', name: 'value' },

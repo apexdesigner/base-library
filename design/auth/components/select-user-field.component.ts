@@ -44,8 +44,7 @@ applyTemplate(SelectUserFieldComponent, [
       { 'mat-label': "{{label || 'User'}}" },
       {
         element: 'mat-select',
-        formControl: '= control',
-        placeholder: '= placeholder || control.placeholder',
+        attributes: { formControl: '<- control', placeholder: '<- placeholder || control.placeholder' },
         contains: [
           {
             for: 'user',
@@ -53,8 +52,8 @@ applyTemplate(SelectUserFieldComponent, [
             contains: [
               {
                 element: 'mat-option',
-                value: '= user.id',
                 text: '{{user.email}}',
+                attributes: { value: '<- user.id' },
               },
             ],
           },
@@ -65,10 +64,12 @@ applyTemplate(SelectUserFieldComponent, [
         contains: [
           {
             element: 'button',
-            matSuffix: true,
-            'mat-icon-button': true,
-            disabled: '= control.disabled',
-            click: '-> control.setValue(null); $event.stopPropagation()',
+            attributes: {
+              matSuffix: null,
+              'mat-icon-button': null,
+              disabled: '<- control.disabled',
+              click: '-> control.setValue(null); $event.stopPropagation()',
+            },
             contains: [{ 'mat-icon': 'close' }],
           },
         ],

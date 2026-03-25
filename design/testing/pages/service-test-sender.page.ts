@@ -28,16 +28,13 @@ applyTemplate(ServiceTestSenderPage, [
       { p: 'Current message: {{testItemTrackerService.message}}' },
       {
         element: 'button',
-        'mat-raised-button': true,
-        color: 'primary',
         text: 'Send Message',
-        click: '-> send()',
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> send()' },
       },
       {
         element: 'a',
-        'mat-button': true,
         text: 'Go to Receiver',
-        routerLink: '/service-test-receiver',
+        attributes: { 'mat-button': null, routerLink: '/service-test-receiver' },
       },
     ],
   },

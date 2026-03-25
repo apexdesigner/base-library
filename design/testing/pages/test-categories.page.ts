@@ -19,12 +19,14 @@ export class TestCategoriesPage extends Page {
 applyTemplate(TestCategoriesPage, [
   {
     if: 'testCategories.reading',
+    name: 'loading',
     contains: [
-      { element: 'mat-progress-bar', mode: 'indeterminate' },
+      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
     ],
   },
   {
     if: '!testCategories.reading',
+    name: 'loaded',
     contains: [
       {
         element: 'flex-column',
@@ -36,8 +38,8 @@ applyTemplate(TestCategoriesPage, [
             contains: [
               {
                 element: 'a',
-                routerLink: "= '/test-categories/' + category.id",
                 text: '{{category.name}}',
+                attributes: { routerLink: "<- '/test-categories/' + category.id" },
               },
             ],
             emptyContains: [

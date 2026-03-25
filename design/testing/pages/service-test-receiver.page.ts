@@ -23,9 +23,8 @@ applyTemplate(ServiceTestReceiverPage, [
       { p: 'Message from sender: {{testItemTrackerService.message}}' },
       {
         element: 'a',
-        'mat-button': true,
         text: 'Go to Sender',
-        routerLink: '/service-test-sender',
+        attributes: { 'mat-button': null, routerLink: '/service-test-sender' },
       },
     ],
   },

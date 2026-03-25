@@ -26,14 +26,13 @@ applyTemplate(TestItemsPage, [
     contains: [
       {
         element: 'flex-row',
-        alignCenter: '= true',
+        attributes: { alignCenter: true },
         contains: [
           { h1: 'Test Items' },
-          { element: 'div', grow: true },
+          { element: 'div', attributes: { grow: null } },
           {
             element: 'add-button',
-            array: '= testItems',
-            added: '-> testItems.read()',
+            attributes: { array: '<- testItems', added: '-> testItems.read()' },
           },
         ],
       },
@@ -42,17 +41,16 @@ applyTemplate(TestItemsPage, [
         contains: [
           {
             element: 'dt-table',
-            dataSource: '= testItems',
-            routerLinkTemplate: '/test-items/{id}',
+            attributes: { dataSource: '<- testItems', routerLinkTemplate: '/test-items/{id}' },
             contains: [
-              { element: 'dt-column', name: 'name', property: 'name', header: 'Name' },
-              { element: 'dt-column', name: 'email', property: 'email', header: 'Email' },
-              { element: 'dt-column', name: 'setting', property: 'testSetting.name', header: 'Setting' },
+              { element: 'dt-column', name: 'name', attributes: { property: 'name', header: 'Name' } },
+              { element: 'dt-column', name: 'email', attributes: { property: 'email', header: 'Email' } },
+              { element: 'dt-column', name: 'setting', attributes: { property: 'testSetting.name', header: 'Setting' } },
             ],
           },
         ],
         elseContains: [
-          { element: 'mat-progress-bar', mode: 'indeterminate' },
+          { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
         ],
       },
     ],

@@ -1,6 +1,6 @@
-import { Component, method, applyTemplate } from '@apexdesigner/dsl/component';
-import { AuthService } from '@services';
-import { Router } from '@angular/router';
+import { Component, method, applyTemplate } from "@apexdesigner/dsl/component";
+import { AuthService } from "@services";
+import { Router } from "@angular/router";
 
 /**
  * Avatar
@@ -22,7 +22,7 @@ export class AvatarComponent extends Component {
   @method({ callOnLoad: true })
   async initialize(): Promise<void> {
     try {
-      const response = await fetch('/api/auth/config');
+      const response = await fetch("/api/auth/config");
       if (response.ok) {
         const config = await response.json();
         this.allowImpersonation = !!config?.allowImpersonation;
@@ -32,48 +32,52 @@ export class AvatarComponent extends Component {
 
   /** Switch User - Navigate to the switch user page */
   switchUser(): void {
-    this.router.navigate(['/switch-user']);
+    this.router.navigate(["/switch-user"]);
   }
 
   /** Logout */
   logout(): void {
     this.authService.logout();
   }
+
+  /** User Menu - Reference to the menu component */
+  userMenu!: any;
 }
 
 applyTemplate(AvatarComponent, [
   {
-    element: 'button',
-    'mat-icon-button': true,
-    matMenuTriggerFor: '= userMenu',
-    contains: [{ 'mat-icon': 'person' }],
+    element: "button",
+    name: "menuTrigger",
+    attributes: { "mat-icon-button": null, matMenuTriggerFor: "<- userMenu" },
+    contains: [{ "mat-icon": "person" }],
   },
   {
-    element: 'mat-menu',
-    name: 'userMenu',
+    element: "mat-menu",
+    name: "userMenu",
+    referenceable: true,
     contains: [
       {
-        element: 'div',
-        'mat-menu-item': true,
-        disabled: true,
-        text: '{{(authService.currentUser | async)?.email}}',
+        element: "div",
+        name: "userEmail",
+        text: "{{(authService.currentUser | async)?.email}}",
+        attributes: { "mat-menu-item": null, disabled: "<- true" },
       },
       {
-        if: 'allowImpersonation',
+        if: "allowImpersonation",
         contains: [
           {
-            element: 'button',
-            'mat-menu-item': true,
-            text: 'Switch User',
-            click: '-> switchUser()',
+            element: "button",
+            name: "switchUserButton",
+            text: "Switch User",
+            attributes: { "mat-menu-item": null, click: "-> switchUser()" },
           },
         ],
       },
       {
-        element: 'button',
-        'mat-menu-item': true,
-        text: 'Logout',
-        click: '-> logout()',
+        element: "button",
+        name: "logoutButton",
+        text: "Logout",
+        attributes: { "mat-menu-item": null, click: "-> logout()" },
       },
     ],
   },

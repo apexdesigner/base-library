@@ -1,12 +1,12 @@
 ---
-generated-from: design/audit/audit.mixin.ts
+generated-from: design/audit/audit/audit.mixin.ts
 generated-by: design-docs.mixin.doc.md
 ---
-# Audit - Complete Update Events Behavior
+# Audit - Record Create Event Behavior
 
-Marks pending update audit events as complete after records are updated.
+Records a pending audit event before a record is created.
 
-**Type:** After Update
+**Type:** Before Create
 
 ## Parameters
 
@@ -14,7 +14,7 @@ Marks pending update audit events as complete after records are updated.
 |------|------|----------|-------------|
 | Model | `any` | Yes |  |
 | mixinOptions | `AuditConfig` | Yes |  |
-| instances | `any[]` | Yes |  |
+| dataItems | `Partial<any>[]` | Yes |  |
 
 ## Returns
 

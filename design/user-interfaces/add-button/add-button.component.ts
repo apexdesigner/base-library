@@ -53,20 +53,24 @@ applyTemplate(AddButtonComponent, [
     element: 'add-dialog',
     name: 'addDialog',
     referenceable: true,
-    array: '= array',
-    label: '= label || defaultLabel',
-    options: "= { autoFocus: true, width: dialogWidth || '400px' }",
-    added: '-> added.emit($event)',
+    attributes: {
+      array: '<- array',
+      label: '<- label || defaultLabel',
+      options: "<- { autoFocus: true, width: dialogWidth || '400px' }",
+      added: '-> added.emit($event)',
+    },
   },
   {
     element: 'button',
     name: 'add',
-    'mat-raised-button': true,
-    color: 'primary',
-    click: '-> addDialog.open()',
+    text: "{{ label || defaultLabel || 'Add' }}",
+    attributes: {
+      'mat-raised-button': null,
+      color: 'primary',
+      click: '-> addDialog.open()',
+    },
     contains: [
       { 'mat-icon': 'add' },
     ],
-    text: "{{ label || defaultLabel || 'Add' }}",
   },
 ]);

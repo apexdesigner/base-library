@@ -21,15 +21,12 @@ export class LoginPage extends Page {
 applyTemplate(LoginPage, [
   {
     element: 'div',
-    class: 'login-container',
-    grow: true,
+    attributes: { class: 'login-container', grow: null },
     contains: [
       {
         element: 'button',
-        'mat-raised-button': true,
-        color: 'primary',
         text: 'Login',
-        click: '-> login()',
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> login()' },
       },
     ],
   },

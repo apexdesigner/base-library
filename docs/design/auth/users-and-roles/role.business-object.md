@@ -17,6 +17,6 @@ Named authorization role that can be assigned to users.
 
 ## Relationships
 
-| Name | Type | Relationship | Description |
-|------|------|--------------|-------------|
-| roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many | Role Assignments - Users assigned to this role |
+| Name | Type | Relationship | On Delete | Description |
+|------|------|--------------|-----------|-------------|
+| roleAssignments | [`RoleAssignment[]`](role-assignment.business-object.md) | Has Many |  | Role Assignments - Users assigned to this role |

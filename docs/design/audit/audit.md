@@ -8,7 +8,7 @@ The audit feature records create, update, and delete events for business objects
 
 ## Mixin
 
-- [audit.mixin.ts](audit.mixin.md) — Audit mixin with `AuditConfig` interface supporting `excludeProperties` to exclude large fields from the payload
+- [audit.mixin.ts](audit/audit.mixin.md) — Audit mixin with `AuditConfig` interface supporting `excludeProperties` to exclude large fields from the payload
 
 ## Business Object
 
@@ -28,12 +28,12 @@ The audit feature records create, update, and delete events for business objects
 
 ## Behaviors
 
-- [audit.record-create-event.behavior.ts](audit.record-create-event.behavior.md) — Before Create: records pending audit event
-- [audit.complete-create-events.behavior.ts](audit.complete-create-events.behavior.md) — After Create: completes pending events with model ID
-- [audit.record-update-event.behavior.ts](audit.record-update-event.behavior.md) — Before Update: records pending audit event
-- [audit.complete-update-events.behavior.ts](audit.complete-update-events.behavior.md) — After Update: completes pending events
-- [audit.record-delete-event.behavior.ts](audit.record-delete-event.behavior.md) — Before Delete: records pending audit event
-- [audit.complete-delete-events.behavior.ts](audit.complete-delete-events.behavior.md) — After Delete: completes pending events
+- [audit.record-create-event.behavior.ts](audit/audit.record-create-event.behavior.md) — Before Create: records pending audit event
+- [audit.complete-create-events.behavior.ts](audit/audit.complete-create-events.behavior.md) — After Create: completes pending events with model ID
+- [audit.record-update-event.behavior.ts](audit/audit.record-update-event.behavior.md) — Before Update: records pending audit event
+- [audit.complete-update-events.behavior.ts](audit/audit.complete-update-events.behavior.md) — After Update: completes pending events
+- [audit.record-delete-event.behavior.ts](audit/audit.record-delete-event.behavior.md) — Before Delete: records pending audit event
+- [audit.complete-delete-events.behavior.ts](audit/audit.complete-delete-events.behavior.md) — After Delete: completes pending events
 
 ## Usage
 

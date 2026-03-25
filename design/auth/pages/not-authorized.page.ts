@@ -34,8 +34,7 @@ export class NotAuthorizedPage extends Page {
 applyTemplate(NotAuthorizedPage, [
   {
     element: 'flex-column',
-    class: 'not-authorized-container',
-    grow: true,
+    attributes: { class: 'not-authorized-container', grow: null },
     contains: [
       { h2: 'Access Denied' },
       {
@@ -56,10 +55,8 @@ applyTemplate(NotAuthorizedPage, [
       { p: 'Please contact your administrator if you believe this is an error.' },
       {
         element: 'button',
-        'mat-raised-button': true,
-        color: 'primary',
         text: 'Sign Out',
-        click: '-> logout()',
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> logout()' },
       },
     ],
   },

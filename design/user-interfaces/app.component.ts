@@ -32,27 +32,23 @@ export class AppComponent extends Component {
 applyTemplate(AppComponent, [
   {
     element: 'flex-column',
-    gap: '= 0',
+    attributes: { gap: '<- 0' },
     contains: [
       {
         element: 'mat-toolbar',
         name: 'header',
-        color: 'primary',
-        style: 'margin-bottom: 1rem',
+        attributes: { color: 'primary', style: 'margin-bottom: 1rem' },
         contains: [
           {
             element: 'flex-row',
-            gap: '= 16',
-            alignCenter: '= true',
-            grow: true,
+            attributes: { gap: '<- 16', alignCenter: true, grow: null },
             contains: [
               {
                 element: 'a',
-                routerLink: '/',
-                style: 'color: inherit; text-decoration: none',
                 text: 'PROJECT_METADATA.displayName',
+                attributes: { routerLink: '/', style: 'color: inherit; text-decoration: none' },
               },
-              { element: 'span', grow: true },
+              { element: 'span', attributes: { grow: null } },
               {
                 if: 'authService.authenticated | async',
                 contains: [
@@ -65,8 +61,7 @@ applyTemplate(AppComponent, [
       },
       {
         element: 'div',
-        grow: true,
-        style: 'padding: 0 16px',
+        attributes: { grow: null, style: 'padding: 0 16px' },
         contains: [
           { element: 'router-outlet' },
         ],
@@ -74,9 +69,8 @@ applyTemplate(AppComponent, [
       {
         element: 'mat-toolbar',
         name: 'footer',
-        color: 'primary',
-        style: 'font-size: 12px; min-height: 32px; height: 32px',
         text: 'Version {{packageService.version}}',
+        attributes: { color: 'primary', style: 'font-size: 12px; min-height: 32px; height: 32px' },
       },
     ],
   },

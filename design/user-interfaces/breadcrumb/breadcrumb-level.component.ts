@@ -25,19 +25,20 @@ export class BreadcrumbLevelComponent extends Component {
 applyTemplate(BreadcrumbLevelComponent, [
   {
     if: 'path',
+    name: 'hasPath',
     contains: [
       {
         element: 'a',
-        routerLink: '= path',
-        queryParams: '= queryParams',
         text: '{{label}}',
+        attributes: { routerLink: '<- path', queryParams: '<- queryParams' },
       },
     ],
   },
   {
     if: '!path',
+    name: 'noPath',
     contains: [
-      { element: 'span', class: 'current', text: '{{label}}' },
+      { element: 'span', text: '{{label}}', attributes: { class: 'current' } },
     ],
   },
 ]);

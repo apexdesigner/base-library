@@ -176,62 +176,60 @@ export class ManageRoleAssignmentsComponent extends Component {
 applyTemplate(ManageRoleAssignmentsComponent, [
   {
     if: 'roles.reading',
+    name: 'loading',
     contains: [
-      { element: 'mat-progress-bar', mode: 'indeterminate' },
+      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
     ],
-  },
-  {
-    if: '!roles.reading',
-    contains: [
+    elseContains: [
       {
         element: 'flex-column',
         contains: [
           {
             element: 'mat-form-field',
+            name: 'search',
             contains: [
               { 'mat-label': 'Search by email' },
               {
                 element: 'input',
-                matInput: true,
-                ngModel: '= search',
-                ngModelChange: '-> search = ngModel',
-                '(ngModelChange)_extra': '-> filterUsers()',
+                attributes: {
+                  matInput: null,
+                  ngModel: '<-> search',
+                  ngModelChange: '-> filterUsers()',
+                },
               },
             ],
           },
           {
-            if: 'showingSuggestions',
-            contains: [
-              { p: 'Select a user to assign a role' },
-            ],
-          },
-          {
             if: '!noMatches',
+            name: 'tableSection',
+            description: 'users with roles match the search',
             contains: [
               {
                 element: 'dt-table',
-                dataSource: '= filteredUsers',
-                hideEmptyState: '= true',
+                attributes: { dataSource: '<- filteredUsers', hideEmptyState: '<- true' },
                 contains: [
-                  { element: 'dt-column', property: 'email', header: 'Email' },
+                  { element: 'dt-column', name: 'emailColumn', attributes: { property: 'email', header: 'Email' } },
                   {
                     for: 'role',
                     of: 'roles',
+                    name: 'roleColumns',
+                    description: 'role columns',
                     contains: [
                       {
                         element: 'dt-column',
-                        header: '= role.displayName || role.name',
-                        align: 'center',
+                        attributes: { header: '<- role.displayName || role.name', align: 'center' },
                         contains: [
                           {
                             element: 'ng-template',
-                            'let-row': true,
+                            attributes: { 'let-row': null },
                             contains: [
                               {
                                 element: 'button',
-                                'mat-icon-button': true,
-                                click: '-> toggleAssignment(row.id, role.id)',
-                                disabled: "= busy || (row.id === currentUserId && role.name === 'Administrator')",
+                                attributes: {
+                                  'mat-icon-button': null,
+                                  click: '-> toggleAssignment(row.id, role.id)',
+                                  disabled: "<- busy || (row.id === currentUserId && role.name === 'Administrator')",
+                                },
                                 contains: [
                                   {
                                     if: 'hasAssignment(row.id, role.id)',
@@ -255,7 +253,17 @@ applyTemplate(ManageRoleAssignmentsComponent, [
             ],
           },
           {
+            if: 'showingSuggestions',
+            name: 'suggestionsMessage',
+            description: 'users without roles match the search',
+            contains: [
+              { p: 'Select a user to assign a role' },
+            ],
+          },
+          {
             if: 'noMatches',
+            name: 'noMatchesSection',
+            description: 'no user matches the search',
             contains: [
               { p: 'Enter a valid email to add a new user' },
               {
@@ -263,14 +271,17 @@ applyTemplate(ManageRoleAssignmentsComponent, [
                 contains: [
                   {
                     element: 'button',
-                    'mat-raised-button': true,
-                    color: 'primary',
-                    click: '-> addUser()',
-                    disabled: '= busy || !validEmail()',
+                    description: 'add <email>',
+                    text: 'Add {{search}}',
+                    attributes: {
+                      'mat-raised-button': null,
+                      color: 'primary',
+                      click: '-> addUser()',
+                      disabled: '<- busy || !validEmail()',
+                    },
                     contains: [
                       { 'mat-icon': 'person_add' },
                     ],
-                    text: 'Add {{search}}',
                   },
                 ],
               },

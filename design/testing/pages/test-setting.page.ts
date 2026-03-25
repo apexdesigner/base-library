@@ -29,7 +29,7 @@ applyTemplate(TestSettingPage, [
         element: 'flex-column',
         contains: [
           { h1: '{{testSetting.value.name}}' },
-          { element: 'sf-fields', group: '= testSetting' },
+          { element: 'sf-fields', attributes: { group: '<- testSetting' } },
           { h3: 'Test Items' },
           {
             for: 'item',
@@ -37,8 +37,8 @@ applyTemplate(TestSettingPage, [
             contains: [
               {
                 element: 'a',
-                routerLink: "= '/test-items/' + item.id",
                 text: '{{item.name}}',
+                attributes: { routerLink: "<- '/test-items/' + item.id" },
               },
             ],
             emptyContains: [
@@ -49,7 +49,7 @@ applyTemplate(TestSettingPage, [
       },
     ],
     elseContains: [
-      { element: 'mat-progress-bar', mode: 'indeterminate' },
+      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
     ],
   },
 ]);

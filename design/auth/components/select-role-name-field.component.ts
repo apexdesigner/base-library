@@ -47,8 +47,7 @@ applyTemplate(SelectRoleNameFieldComponent, [
       { 'mat-label': "{{label || 'Role'}}" },
       {
         element: 'mat-select',
-        formControl: '= control',
-        placeholder: '= placeholder || control.placeholder',
+        attributes: { formControl: '<- control', placeholder: '<- placeholder || control.placeholder' },
         contains: [
           {
             for: 'role',
@@ -56,8 +55,8 @@ applyTemplate(SelectRoleNameFieldComponent, [
             contains: [
               {
                 element: 'mat-option',
-                value: '= role.name',
                 text: '{{role.displayName}}',
+                attributes: { value: '<- role.name' },
               },
             ],
           },
@@ -68,10 +67,12 @@ applyTemplate(SelectRoleNameFieldComponent, [
         contains: [
           {
             element: 'button',
-            matSuffix: true,
-            'mat-icon-button': true,
-            disabled: '= control.disabled',
-            click: '-> control.setValue(null); $event.stopPropagation()',
+            attributes: {
+              matSuffix: null,
+              'mat-icon-button': null,
+              disabled: '<- control.disabled',
+              click: '-> control.setValue(null); $event.stopPropagation()',
+            },
             contains: [{ 'mat-icon': 'close' }],
           },
         ],
