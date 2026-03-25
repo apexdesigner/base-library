@@ -20,9 +20,7 @@ applyTemplate(TestCategoriesPage, [
   {
     if: 'testCategories.reading',
     name: 'loading',
-    contains: [
-      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-    ],
+    contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
   },
   {
     if: '!testCategories.reading',
@@ -39,15 +37,13 @@ applyTemplate(TestCategoriesPage, [
               {
                 element: 'a',
                 text: '{{category.name}}',
-                attributes: { routerLink: "<- '/test-categories/' + category.id" },
-              },
+                attributes: { routerLink: "<- '/test-categories/' + category.id" }
+              }
             ],
-            emptyContains: [
-              { div: 'No categories found' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+            emptyContains: [{ div: 'No categories found' }]
+          }
+        ]
+      }
+    ]
+  }
 ]);

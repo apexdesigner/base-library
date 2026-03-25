@@ -3,10 +3,7 @@ import { extractTemplateUsage } from './template-js-imports.js';
 
 describe('extractTemplateUsage', () => {
   it('should extract non-standard elements', () => {
-    const usage = extractTemplateUsage([
-      { element: 'mat-toolbar', contains: [{ element: 'div' }] },
-      { 'flex-row': [{ span: 'hello' }] },
-    ]);
+    const usage = extractTemplateUsage([{ element: 'mat-toolbar', contains: [{ element: 'div' }] }, { 'flex-row': [{ span: 'hello' }] }]);
     expect(usage.elements.has('mat-toolbar')).toBe(true);
     expect(usage.elements.has('flex-row')).toBe(true);
     expect(usage.elements.has('div')).toBe(false);
@@ -16,7 +13,7 @@ describe('extractTemplateUsage', () => {
   it('should extract directive attributes from attributes object', () => {
     const usage = extractTemplateUsage({
       element: 'input',
-      attributes: { matInput: null, type: 'text' },
+      attributes: { matInput: null, type: 'text' }
     });
     expect(usage.directives.has('matInput')).toBe(true);
     expect(usage.directives.has('type')).toBe(false);
@@ -25,7 +22,7 @@ describe('extractTemplateUsage', () => {
   it('should extract pipes from text expressions', () => {
     const usage = extractTemplateUsage({
       element: 'div',
-      text: '{{value | async}}',
+      text: '{{value | async}}'
     });
     expect(usage.pipes.has('async')).toBe(true);
   });
@@ -33,7 +30,7 @@ describe('extractTemplateUsage', () => {
   it('should extract pipes from attribute expressions', () => {
     const usage = extractTemplateUsage({
       element: 'div',
-      attributes: { disabled: '<- isDisabled | async' },
+      attributes: { disabled: '<- isDisabled | async' }
     });
     expect(usage.pipes.has('async')).toBe(true);
   });
@@ -41,7 +38,7 @@ describe('extractTemplateUsage', () => {
   it('should extract pipes from if conditions', () => {
     const usage = extractTemplateUsage({
       if: 'authService.authenticated | async',
-      contains: [{ element: 'div', text: 'hello' }],
+      contains: [{ element: 'div', text: 'hello' }]
     });
     expect(usage.pipes.has('async')).toBe(true);
   });
@@ -53,7 +50,7 @@ describe('extractTemplateUsage', () => {
     const usage = extractTemplateUsage({
       element: 'button',
       attributes: { 'mat-icon-button': null, matMenuTriggerFor: '<- userMenu' },
-      contains: [{ 'mat-icon': 'person' }],
+      contains: [{ 'mat-icon': 'person' }]
     });
     // "button" is standard HTML so not in elements
     expect(usage.elements.has('button')).toBe(false);
@@ -67,7 +64,7 @@ describe('extractTemplateUsage', () => {
   it('should include standard elements in allElements but not elements', () => {
     const usage = extractTemplateUsage([
       { element: 'div', contains: [{ element: 'mat-toolbar' }] },
-      { element: 'button', attributes: { 'mat-raised-button': null } },
+      { element: 'button', attributes: { 'mat-raised-button': null } }
     ]);
     expect(usage.elements.has('mat-toolbar')).toBe(true);
     expect(usage.elements.has('div')).toBe(false);
@@ -85,9 +82,9 @@ describe('extractTemplateUsage', () => {
         {
           element: 'a',
           text: 'Process Designs',
-          attributes: { 'mat-list-item': null, routerLink: '/process-designs' },
-        },
-      ],
+          attributes: { 'mat-list-item': null, routerLink: '/process-designs' }
+        }
+      ]
     });
     // mat-action-list is a non-standard element
     expect(usage.elements.has('mat-action-list')).toBe(true);
@@ -111,17 +108,17 @@ describe('extractTemplateUsage', () => {
               {
                 element: 'a',
                 text: 'Process Designs',
-                attributes: { 'mat-list-item': null, routerLink: '/process-designs' },
+                attributes: { 'mat-list-item': null, routerLink: '/process-designs' }
               },
               {
                 element: 'a',
                 text: 'Roles',
-                attributes: { 'mat-list-item': null, routerLink: '/roles' },
-              },
-            ],
-          },
-        ],
-      },
+                attributes: { 'mat-list-item': null, routerLink: '/roles' }
+              }
+            ]
+          }
+        ]
+      }
     ]);
     expect(usage.elements.has('flex-column')).toBe(true);
     expect(usage.elements.has('mat-action-list')).toBe(true);

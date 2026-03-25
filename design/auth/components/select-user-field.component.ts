@@ -53,11 +53,11 @@ applyTemplate(SelectUserFieldComponent, [
               {
                 element: 'mat-option',
                 text: '{{user.email}}',
-                attributes: { value: '<- user.id' },
-              },
-            ],
-          },
-        ],
+                attributes: { value: '<- user.id' }
+              }
+            ]
+          }
+        ]
       },
       {
         if: 'control.value',
@@ -68,12 +68,12 @@ applyTemplate(SelectUserFieldComponent, [
               matSuffix: null,
               'mat-icon-button': null,
               disabled: '<- control.disabled',
-              click: '-> control.setValue(null); $event.stopPropagation()',
+              click: '-> control.setValue(null); $event.stopPropagation()'
             },
-            contains: [{ 'mat-icon': 'close' }],
-          },
-        ],
-      },
-    ],
-  },
+            contains: [{ 'mat-icon': 'close' }]
+          }
+        ]
+      }
+    ]
+  }
 ]);

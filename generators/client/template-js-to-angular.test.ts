@@ -14,10 +14,7 @@ describe('convertJsTemplateToAngular', () => {
 
   it('should convert element shorthand with children', () => {
     const result = convertJsTemplateToAngular({
-      'flex-row': [
-        { span: '{{member.name}}' },
-        { 'mat-icon': 'delete' },
-      ],
+      'flex-row': [{ span: '{{member.name}}' }, { 'mat-icon': 'delete' }]
     });
     expect(result).toContain('<flex-row>');
     expect(result).toContain('  <span>{{member.name}}</span>');
@@ -28,7 +25,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert input bindings (<- prefix)', () => {
     const result = convertJsTemplateToAngular({
       element: 'flex-row',
-      attributes: { gap: '<- 20' },
+      attributes: { gap: '<- 20' }
     });
     expect(result).toContain('[gap]="20"');
   });
@@ -37,7 +34,7 @@ describe('convertJsTemplateToAngular', () => {
     const result = convertJsTemplateToAngular({
       element: 'button',
       text: 'Save',
-      attributes: { click: '-> save()' },
+      attributes: { click: '-> save()' }
     });
     expect(result).toContain('(click)="save()"');
     expect(result).toContain('Save');
@@ -46,7 +43,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert two-way bindings (<-> prefix)', () => {
     const result = convertJsTemplateToAngular({
       element: 'student-card',
-      attributes: { student: '<-> selectedStudent' },
+      attributes: { student: '<-> selectedStudent' }
     });
     expect(result).toContain('[(student)]="selectedStudent"');
   });
@@ -56,8 +53,8 @@ describe('convertJsTemplateToAngular', () => {
       element: 'input',
       attributes: {
         ngModel: '<-> search',
-        ngModelChange: '-> filterUsers()',
-      },
+        ngModelChange: '-> filterUsers()'
+      }
     });
     expect(result).toContain('[(ngModel)]="search"');
     expect(result).toContain('(ngModelChange)="filterUsers()"');
@@ -66,7 +63,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert static attributes', () => {
     const result = convertJsTemplateToAngular({
       element: 'mat-progress-bar',
-      attributes: { mode: 'indeterminate' },
+      attributes: { mode: 'indeterminate' }
     });
     expect(result).toContain('mode="indeterminate"');
   });
@@ -74,7 +71,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert null to bare attribute', () => {
     const result = convertJsTemplateToAngular({
       element: 'input',
-      attributes: { matInput: null },
+      attributes: { matInput: null }
     });
     expect(result).toContain('matInput');
     expect(result).not.toContain('matInput=');
@@ -83,7 +80,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert boolean to bound boolean', () => {
     const result = convertJsTemplateToAngular({
       element: 'input',
-      attributes: { required: true, disabled: false },
+      attributes: { required: true, disabled: false }
     });
     expect(result).toContain('[required]="true"');
     expect(result).toContain('[disabled]="false"');
@@ -92,7 +89,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert number to bound number', () => {
     const result = convertJsTemplateToAngular({
       element: 'input',
-      attributes: { maxLength: 100 },
+      attributes: { maxLength: 100 }
     });
     expect(result).toContain('[maxLength]="100"');
   });
@@ -102,8 +99,8 @@ describe('convertJsTemplateToAngular', () => {
       element: 'div',
       attributes: {
         'class.active': '<- isActive',
-        'style.width.px': '<- columnWidth',
-      },
+        'style.width.px': '<- columnWidth'
+      }
     });
     expect(result).toContain('[class.active]="isActive"');
     expect(result).toContain('[style.width.px]="columnWidth"');
@@ -114,14 +111,14 @@ describe('convertJsTemplateToAngular', () => {
       element: 'input',
       name: 'searchInput',
       referenceable: true,
-      attributes: { type: 'text' },
+      attributes: { type: 'text' }
     });
     expect(withRef).toContain('#searchInput');
 
     const withoutRef = convertJsTemplateToAngular({
       element: 'dt-column',
       name: 'email',
-      attributes: { property: 'email' },
+      attributes: { property: 'email' }
     });
     expect(withoutRef).not.toContain('#email');
   });
@@ -130,7 +127,7 @@ describe('convertJsTemplateToAngular', () => {
     const result = convertJsTemplateToAngular({
       element: 'div',
       description: 'This is a layout container',
-      text: 'Hello',
+      text: 'Hello'
     });
     expect(result).not.toContain('description');
     expect(result).not.toContain('layout container');
@@ -140,7 +137,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should convert @if', () => {
     const result = convertJsTemplateToAngular({
       if: 'user.isActive',
-      contains: [{ element: 'div', text: 'User is active' }],
+      contains: [{ element: 'div', text: 'User is active' }]
     });
     expect(result).toContain('@if (user.isActive) {');
     expect(result).toContain('  <div>User is active</div>');
@@ -151,7 +148,7 @@ describe('convertJsTemplateToAngular', () => {
     const result = convertJsTemplateToAngular({
       if: 'user.isActive',
       contains: [{ element: 'div', text: 'Active' }],
-      elseContains: [{ element: 'div', text: 'Inactive' }],
+      elseContains: [{ element: 'div', text: 'Inactive' }]
     });
     expect(result).toContain('@if (user.isActive) {');
     expect(result).toContain('} @else {');
@@ -166,9 +163,9 @@ describe('convertJsTemplateToAngular', () => {
         {
           if: "status === 'pending'",
           contains: [{ element: 'div', text: 'Pending' }],
-          elseContains: [{ element: 'div', text: 'Unknown' }],
-        },
-      ],
+          elseContains: [{ element: 'div', text: 'Unknown' }]
+        }
+      ]
     });
     expect(result).toContain("@if (status === 'active') {");
     expect(result).toContain("} @else @if (status === 'pending') {");
@@ -180,7 +177,7 @@ describe('convertJsTemplateToAngular', () => {
       for: 'item',
       of: 'items',
       trackBy: 'item.id',
-      contains: [{ element: 'div', text: '{{item.name}}' }],
+      contains: [{ element: 'div', text: '{{item.name}}' }]
     });
     expect(result).toContain('@for (item of items; track item.id) {');
     expect(result).toContain('  <div>{{item.name}}</div>');
@@ -190,7 +187,7 @@ describe('convertJsTemplateToAngular', () => {
     const result = convertJsTemplateToAngular({
       for: 'item',
       of: 'items',
-      contains: [{ element: 'div', text: '{{item.name}}' }],
+      contains: [{ element: 'div', text: '{{item.name}}' }]
     });
     expect(result).toContain('@for (item of items; track $index) {');
   });
@@ -203,7 +200,7 @@ describe('convertJsTemplateToAngular', () => {
       index: 'i',
       first: 'isFirst',
       last: 'isLast',
-      contains: [{ element: 'div', text: '{{item.name}}' }],
+      contains: [{ element: 'div', text: '{{item.name}}' }]
     });
     expect(result).toContain('let i = $index, isFirst = $first, isLast = $last');
   });
@@ -213,7 +210,7 @@ describe('convertJsTemplateToAngular', () => {
       for: 'item',
       of: 'items',
       contains: [{ element: 'div', text: '{{item.name}}' }],
-      emptyContains: [{ element: 'div', text: 'No items' }],
+      emptyContains: [{ element: 'div', text: 'No items' }]
     });
     expect(result).toContain('@empty {');
     expect(result).toContain('  <div>No items</div>');
@@ -224,11 +221,11 @@ describe('convertJsTemplateToAngular', () => {
       switch: 'status',
       cases: {
         active: [{ element: 'div', text: 'Active' }],
-        pending: [{ element: 'div', text: 'Pending' }],
+        pending: [{ element: 'div', text: 'Pending' }]
       },
-      otherwiseContains: [{ element: 'div', text: 'Unknown' }],
+      otherwiseContains: [{ element: 'div', text: 'Unknown' }]
     });
-    expect(result).toContain("@switch (status) {");
+    expect(result).toContain('@switch (status) {');
     expect(result).toContain("  @case ('active') {");
     expect(result).toContain("  @case ('pending') {");
     expect(result).toContain('  @default {');
@@ -239,8 +236,8 @@ describe('convertJsTemplateToAngular', () => {
       switch: 'score',
       cases: [
         { case: 'score > 90', contains: [{ element: 'div', text: 'Excellent' }] },
-        { case: 'score > 70', contains: [{ element: 'div', text: 'Good' }] },
-      ],
+        { case: 'score > 70', contains: [{ element: 'div', text: 'Good' }] }
+      ]
     });
     expect(result).toContain('@case (score > 90) {');
     expect(result).toContain('@case (score > 70) {');
@@ -249,7 +246,7 @@ describe('convertJsTemplateToAngular', () => {
   it('should handle void elements', () => {
     const result = convertJsTemplateToAngular({
       element: 'input',
-      attributes: { matInput: null, type: 'text' },
+      attributes: { matInput: null, type: 'text' }
     });
     expect(result).toContain('<input');
     expect(result).toContain('/>');
@@ -265,9 +262,7 @@ describe('convertJsTemplateToAngular', () => {
           { h2: '{{organization.name}}' },
           {
             if: 'loading',
-            contains: [
-              { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-            ],
+            contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
           },
           {
             for: 'member',
@@ -284,24 +279,24 @@ describe('convertJsTemplateToAngular', () => {
                     element: 'button',
                     attributes: {
                       click: '-> removeMember(member)',
-                      matTooltip: 'Remove',
+                      matTooltip: 'Remove'
                     },
-                    contains: [{ 'mat-icon': 'delete' }],
-                  },
-                ],
-              },
+                    contains: [{ 'mat-icon': 'delete' }]
+                  }
+                ]
+              }
             ],
-            emptyContains: [{ span: 'No members yet' }],
+            emptyContains: [{ span: 'No members yet' }]
           },
           {
             element: 'apex-delete-button',
             attributes: {
               object: '<- organization',
-              afterDeleteRoute: '/organizations',
-            },
-          },
-        ],
-      },
+              afterDeleteRoute: '/organizations'
+            }
+          }
+        ]
+      }
     ]);
 
     expect(result).toContain('<flex-column [gap]="20">');
@@ -323,7 +318,7 @@ describe('extractTemplateRefs', () => {
   it('should only extract refs where referenceable is true', () => {
     const refs = extractTemplateRefs([
       { element: 'input', name: 'searchInput', referenceable: true },
-      { element: 'dt-column', name: 'email' },
+      { element: 'dt-column', name: 'email' }
     ]);
     expect(refs).toEqual(new Set(['searchInput']));
   });
@@ -335,9 +330,9 @@ describe('extractTemplateRefs', () => {
         { element: 'input', name: 'nameField', referenceable: true },
         {
           if: 'showEmail',
-          contains: [{ element: 'input', name: 'emailField', referenceable: true }],
-        },
-      ],
+          contains: [{ element: 'input', name: 'emailField', referenceable: true }]
+        }
+      ]
     });
     expect(refs).toEqual(new Set(['nameField', 'emailField']));
   });
@@ -346,7 +341,7 @@ describe('extractTemplateRefs', () => {
     const refs = extractTemplateRefs({
       for: 'item',
       of: 'items',
-      contains: [{ element: 'input', name: 'itemInputs', referenceable: true }],
+      contains: [{ element: 'input', name: 'itemInputs', referenceable: true }]
     });
     expect(refs).toEqual(new Set(['itemInputs']));
   });
@@ -356,8 +351,8 @@ describe('extractTemplateRefs', () => {
       element: 'div',
       contains: [
         { element: 'button', name: 'save', text: 'Save' },
-        { element: 'button', name: 'cancel', text: 'Cancel' },
-      ],
+        { element: 'button', name: 'cancel', text: 'Cancel' }
+      ]
     });
     expect(refs.size).toBe(0);
   });

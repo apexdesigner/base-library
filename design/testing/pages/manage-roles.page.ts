@@ -15,9 +15,6 @@ export class ManageRolesPage extends Page {}
 applyTemplate(ManageRolesPage, [
   {
     element: 'flex-column',
-    contains: [
-      { h1: 'Manage Roles' },
-      { element: 'manage-role-assignments', attributes: { grow: '<- true' } },
-    ],
-  },
+    contains: [{ h1: 'Manage Roles' }, { element: 'manage-role-assignments', attributes: { grow: '<- true' } }]
+  }
 ]);

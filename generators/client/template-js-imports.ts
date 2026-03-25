@@ -8,36 +8,206 @@ const debug = createDebug('BaseLibrary:generators:templateJsImports');
 
 // Standard HTML elements and Angular built-ins that don't need imports
 const STANDARD_HTML_ELEMENTS = new Set([
-  'ng-content', 'ng-container', 'ng-template',
-  'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base',
-  'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption',
-  'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del',
-  'details', 'dfn', 'dialog', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset',
-  'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5',
-  'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img',
-  'input', 'ins', 'kbd', 'label', 'legend', 'li', 'link', 'main', 'map',
-  'mark', 'menu', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol',
-  'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q',
-  'rp', 'rt', 'ruby', 's', 'samp', 'script', 'search', 'section', 'select',
-  'slot', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary',
-  'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th',
-  'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr',
+  'ng-content',
+  'ng-container',
+  'ng-template',
+  'a',
+  'abbr',
+  'address',
+  'area',
+  'article',
+  'aside',
+  'audio',
+  'b',
+  'base',
+  'bdi',
+  'bdo',
+  'blockquote',
+  'body',
+  'br',
+  'button',
+  'canvas',
+  'caption',
+  'cite',
+  'code',
+  'col',
+  'colgroup',
+  'data',
+  'datalist',
+  'dd',
+  'del',
+  'details',
+  'dfn',
+  'dialog',
+  'div',
+  'dl',
+  'dt',
+  'em',
+  'embed',
+  'fieldset',
+  'figcaption',
+  'figure',
+  'footer',
+  'form',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'head',
+  'header',
+  'hgroup',
+  'hr',
+  'html',
+  'i',
+  'iframe',
+  'img',
+  'input',
+  'ins',
+  'kbd',
+  'label',
+  'legend',
+  'li',
+  'link',
+  'main',
+  'map',
+  'mark',
+  'menu',
+  'meta',
+  'meter',
+  'nav',
+  'noscript',
+  'object',
+  'ol',
+  'optgroup',
+  'option',
+  'output',
+  'p',
+  'picture',
+  'pre',
+  'progress',
+  'q',
+  'rp',
+  'rt',
+  'ruby',
+  's',
+  'samp',
+  'script',
+  'search',
+  'section',
+  'select',
+  'slot',
+  'small',
+  'source',
+  'span',
+  'strong',
+  'style',
+  'sub',
+  'summary',
+  'sup',
+  'table',
+  'tbody',
+  'td',
+  'template',
+  'textarea',
+  'tfoot',
+  'th',
+  'thead',
+  'time',
+  'title',
+  'tr',
+  'track',
+  'u',
+  'ul',
+  'var',
+  'video',
+  'wbr'
 ]);
 
 // Standard HTML attributes that aren't directives
 const STANDARD_HTML_ATTRIBUTES = new Set([
-  'class', 'id', 'style', 'title', 'lang', 'dir', 'hidden', 'tabindex',
-  'accesskey', 'draggable', 'spellcheck', 'contenteditable', 'translate',
-  'role', 'slot', 'is', 'part', 'exportparts', 'inputmode', 'enterkeyhint',
-  'autocomplete', 'autofocus', 'disabled', 'name', 'type', 'value',
-  'placeholder', 'readonly', 'required', 'multiple', 'checked', 'selected',
-  'href', 'src', 'alt', 'width', 'height', 'target', 'rel', 'download',
-  'action', 'method', 'enctype', 'novalidate', 'for', 'form', 'max', 'min',
-  'step', 'pattern', 'size', 'maxlength', 'minlength', 'accept', 'list',
-  'rows', 'cols', 'wrap', 'open', 'label', 'loading', 'decoding',
-  'crossorigin', 'referrerpolicy', 'integrity', 'async', 'defer', 'charset',
-  'content', 'http-equiv', 'media', 'sizes', 'srcset', 'scope', 'colspan',
-  'rowspan', 'headers', 'start', 'reversed', 'cite', 'datetime',
+  'class',
+  'id',
+  'style',
+  'title',
+  'lang',
+  'dir',
+  'hidden',
+  'tabindex',
+  'accesskey',
+  'draggable',
+  'spellcheck',
+  'contenteditable',
+  'translate',
+  'role',
+  'slot',
+  'is',
+  'part',
+  'exportparts',
+  'inputmode',
+  'enterkeyhint',
+  'autocomplete',
+  'autofocus',
+  'disabled',
+  'name',
+  'type',
+  'value',
+  'placeholder',
+  'readonly',
+  'required',
+  'multiple',
+  'checked',
+  'selected',
+  'href',
+  'src',
+  'alt',
+  'width',
+  'height',
+  'target',
+  'rel',
+  'download',
+  'action',
+  'method',
+  'enctype',
+  'novalidate',
+  'for',
+  'form',
+  'max',
+  'min',
+  'step',
+  'pattern',
+  'size',
+  'maxlength',
+  'minlength',
+  'accept',
+  'list',
+  'rows',
+  'cols',
+  'wrap',
+  'open',
+  'label',
+  'loading',
+  'decoding',
+  'crossorigin',
+  'referrerpolicy',
+  'integrity',
+  'async',
+  'defer',
+  'charset',
+  'content',
+  'http-equiv',
+  'media',
+  'sizes',
+  'srcset',
+  'scope',
+  'colspan',
+  'rowspan',
+  'headers',
+  'start',
+  'reversed',
+  'cite',
+  'datetime'
 ]);
 
 const RESERVED_KEYS = new Set(templateReservedKeys);
@@ -59,7 +229,7 @@ export function extractTemplateUsage(template: any): TemplateUsage {
     elements: new Set(),
     allElements: new Set(),
     directives: new Set(),
-    pipes: new Set(),
+    pipes: new Set()
   };
   walkNode(template, usage);
   return usage;
@@ -181,7 +351,7 @@ function extractPipesFromExpr(expr: string, pipes: Set<string>): void {
  */
 export async function resolveJsTemplateImports(
   context: GenerationContext,
-  usage: TemplateUsage,
+  usage: TemplateUsage
 ): Promise<Array<{ moduleSpecifier: string; namedImports: string[] }>> {
   const componentMetadata = context.listMetadata('Component') || [];
   const pageMetadata = context.listMetadata('Page') || [];
@@ -191,12 +361,14 @@ export async function resolveJsTemplateImports(
 
   const components = componentMetadata.map(m => ({
     name: m.name,
-    selector: (getClassDecorator(getClassByBase(m.sourceFile, 'Component'), 'component') || {} as any).selector || kebabCase(m.name.replace(/Component$/, '')),
+    selector:
+      (getClassDecorator(getClassByBase(m.sourceFile, 'Component'), 'component') || ({} as any)).selector ||
+      kebabCase(m.name.replace(/Component$/, ''))
   }));
 
   const pages = pageMetadata.map(m => ({
     name: m.name,
-    selector: (getClassDecorator(getClassByBase(m.sourceFile, 'Page'), 'page') || {} as any).selector || kebabCase(m.name),
+    selector: (getClassDecorator(getClassByBase(m.sourceFile, 'Page'), 'page') || ({} as any)).selector || kebabCase(m.name)
   }));
 
   const extractInterfaceImports = (sourceFile: any) => {
@@ -213,17 +385,17 @@ export async function resolveJsTemplateImports(
   };
 
   const elementInterfaces = elementInterfaceMetadata.map(m => {
-    const options = getClassDecorator(getClassByBase(m.sourceFile, 'ComponentInterface'), 'componentInterface') || {} as any;
+    const options = getClassDecorator(getClassByBase(m.sourceFile, 'ComponentInterface'), 'componentInterface') || ({} as any);
     return { name: m.name, selector: options.selector || '', imports: extractInterfaceImports(m.sourceFile) };
   });
 
   const directiveInterfaces = directiveInterfaceMetadata.map(m => {
-    const options = getClassDecorator(getClassByBase(m.sourceFile, 'DirectiveInterface'), 'directiveInterface') || {} as any;
+    const options = getClassDecorator(getClassByBase(m.sourceFile, 'DirectiveInterface'), 'directiveInterface') || ({} as any);
     return { name: m.name, selector: options.selector || '', imports: extractInterfaceImports(m.sourceFile) };
   });
 
   const pipeInterfaces = pipeInterfaceMetadata.map(m => {
-    const options = getClassDecorator(getClassByBase(m.sourceFile, 'PipeInterface'), 'pipeInterface') || {} as any;
+    const options = getClassDecorator(getClassByBase(m.sourceFile, 'PipeInterface'), 'pipeInterface') || ({} as any);
     return { name: m.name, selector: options.selector || '', imports: extractInterfaceImports(m.sourceFile) };
   });
 
@@ -271,7 +443,7 @@ export async function resolveJsTemplateImports(
   if (unknownSelectors.length > 0) {
     throw new Error(
       `Unknown element selector(s) in template: ${unknownSelectors.map(s => `<${s}>`).join(', ')}. ` +
-      `Each must be a standard HTML element, a component or page in this project, or have a ComponentInterface registered in a library.`
+        `Each must be a standard HTML element, a component or page in this project, or have a ComponentInterface registered in a library.`
     );
   }
 
@@ -308,6 +480,6 @@ export async function resolveJsTemplateImports(
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([moduleSpecifier, namedImports]) => ({
       moduleSpecifier,
-      namedImports: Array.from(namedImports).sort(),
+      namedImports: Array.from(namedImports).sort()
     }));
 }

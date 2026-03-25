@@ -51,9 +51,7 @@ applyTemplate(TestCategoryPage, [
   {
     if: 'testCategory.reading',
     name: 'loading',
-    contains: [
-      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-    ],
+    contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
   },
   {
     if: '!testCategory.reading',
@@ -71,15 +69,15 @@ applyTemplate(TestCategoryPage, [
                 element: 'button',
                 name: 'setName',
                 attributes: { 'mat-icon-button': null, click: '-> setName()', matTooltip: 'Set Name' },
-                contains: [{ 'mat-icon': 'edit' }],
+                contains: [{ 'mat-icon': 'edit' }]
               },
               {
                 element: 'button',
                 name: 'clearName',
                 attributes: { 'mat-icon-button': null, click: '-> clearName()', matTooltip: 'Clear Name' },
-                contains: [{ 'mat-icon': 'clear' }],
-              },
-            ],
+                contains: [{ 'mat-icon': 'clear' }]
+              }
+            ]
           },
           { div: 'category.name: "{{category.name}}"', name: 'categoryName' },
           { div: 'testCategory.value.name: "{{testCategory.value.name}}"', name: 'testCategoryName' },
@@ -89,12 +87,12 @@ applyTemplate(TestCategoryPage, [
               { 'mat-label': 'Name' },
               {
                 element: 'input',
-                attributes: { matInput: null, formControl: '<- testCategory.controls.name' },
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+                attributes: { matInput: null, formControl: '<- testCategory.controls.name' }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]);

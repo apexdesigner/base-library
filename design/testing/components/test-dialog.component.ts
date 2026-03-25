@@ -37,15 +37,13 @@ applyTemplate(TestDialogComponent, [
   { element: 'h2', text: '{{ title }}', attributes: { 'mat-dialog-title': null } },
   {
     element: 'mat-dialog-content',
-    contains: [
-      { p: 'Test dialog content' },
-    ],
+    contains: [{ p: 'Test dialog content' }]
   },
   {
     element: 'mat-dialog-actions',
     contains: [
       { element: 'button', name: 'cancelButton', text: 'Cancel', attributes: { 'mat-button': null, click: '-> cancel()' } },
-      { element: 'button', name: 'saveButton', text: 'Save', attributes: { 'mat-button': null, click: '-> save()' } },
-    ],
-  },
+      { element: 'button', name: 'saveButton', text: 'Save', attributes: { 'mat-button': null, click: '-> save()' } }
+    ]
+  }
 ]);

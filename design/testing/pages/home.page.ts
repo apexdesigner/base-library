@@ -48,7 +48,7 @@ applyTemplate(HomePage, [
       { element: 'a', name: 'manageRoles', text: 'Manage Roles', attributes: { routerLink: '/manage-roles' } },
       { element: 'a', name: 'selectFields', text: 'Select Fields', attributes: { routerLink: '/test-select-fields' } },
       { element: 'a', name: 'switchUser', text: 'Switch User', attributes: { routerLink: '/switch-user' } },
-      { element: 'a', name: 'appBehaviorTests', text: 'App Behavior Tests', attributes: { routerLink: '/service-test-app-behaviors' } },
-    ],
-  },
+      { element: 'a', name: 'appBehaviorTests', text: 'App Behavior Tests', attributes: { routerLink: '/service-test-app-behaviors' } }
+    ]
+  }
 ]);

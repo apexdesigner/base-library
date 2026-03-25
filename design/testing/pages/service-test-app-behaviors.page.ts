@@ -38,11 +38,11 @@ applyTemplate(ServiceTestAppBehaviorsPage, [
           {
             element: 'button',
             text: 'Health Check',
-            attributes: { 'mat-flat-button': null, click: '-> callHealthCheck()' },
+            attributes: { 'mat-flat-button': null, click: '-> callHealthCheck()' }
           },
-          { span: '{{healthResult}}' },
-        ],
-      },
-    ],
-  },
+          { span: '{{healthResult}}' }
+        ]
+      }
+    ]
+  }
 ]);

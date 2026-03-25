@@ -26,10 +26,10 @@ applyTemplate(LoginPage, [
       {
         element: 'button',
         text: 'Login',
-        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> login()' },
-      },
-    ],
-  },
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> login()' }
+      }
+    ]
+  }
 ]);
 
 applyStyles(

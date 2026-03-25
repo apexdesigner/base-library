@@ -32,9 +32,9 @@ applyTemplate(TestItemsPage, [
           { element: 'div', attributes: { grow: null } },
           {
             element: 'add-button',
-            attributes: { array: '<- testItems', added: '-> testItems.read()' },
-          },
-        ],
+            attributes: { array: '<- testItems', added: '-> testItems.read()' }
+          }
+        ]
       },
       {
         if: '!testItems.reading',
@@ -45,14 +45,12 @@ applyTemplate(TestItemsPage, [
             contains: [
               { element: 'dt-column', name: 'name', attributes: { property: 'name', header: 'Name' } },
               { element: 'dt-column', name: 'email', attributes: { property: 'email', header: 'Email' } },
-              { element: 'dt-column', name: 'setting', attributes: { property: 'testSetting.name', header: 'Setting' } },
-            ],
-          },
+              { element: 'dt-column', name: 'setting', attributes: { property: 'testSetting.name', header: 'Setting' } }
+            ]
+          }
         ],
-        elseContains: [
-          { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-        ],
-      },
-    ],
-  },
+        elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+      }
+    ]
+  }
 ]);

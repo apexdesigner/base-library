@@ -46,32 +46,28 @@ applyTemplate(AppComponent, [
               {
                 element: 'a',
                 text: 'PROJECT_METADATA.displayName',
-                attributes: { routerLink: '/', style: 'color: inherit; text-decoration: none' },
+                attributes: { routerLink: '/', style: 'color: inherit; text-decoration: none' }
               },
               { element: 'span', attributes: { grow: null } },
               {
                 if: 'authService.authenticated | async',
-                contains: [
-                  { element: 'avatar' },
-                ],
-              },
-            ],
-          },
-        ],
+                contains: [{ element: 'avatar' }]
+              }
+            ]
+          }
+        ]
       },
       {
         element: 'div',
         attributes: { grow: null, style: 'padding: 0 16px' },
-        contains: [
-          { element: 'router-outlet' },
-        ],
+        contains: [{ element: 'router-outlet' }]
       },
       {
         element: 'mat-toolbar',
         name: 'footer',
         text: 'Version {{packageService.version}}',
-        attributes: { color: 'primary', style: 'font-size: 12px; min-height: 32px; height: 32px' },
-      },
-    ],
-  },
+        attributes: { color: 'primary', style: 'font-size: 12px; min-height: 32px; height: 32px' }
+      }
+    ]
+  }
 ]);

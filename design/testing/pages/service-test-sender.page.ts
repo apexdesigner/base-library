@@ -29,13 +29,13 @@ applyTemplate(ServiceTestSenderPage, [
       {
         element: 'button',
         text: 'Send Message',
-        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> send()' },
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> send()' }
       },
       {
         element: 'a',
         text: 'Go to Receiver',
-        attributes: { 'mat-button': null, routerLink: '/service-test-receiver' },
-      },
-    ],
-  },
+        attributes: { 'mat-button': null, routerLink: '/service-test-receiver' }
+      }
+    ]
+  }
 ]);

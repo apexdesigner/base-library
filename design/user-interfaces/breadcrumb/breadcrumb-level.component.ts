@@ -30,17 +30,15 @@ applyTemplate(BreadcrumbLevelComponent, [
       {
         element: 'a',
         text: '{{label}}',
-        attributes: { routerLink: '<- path', queryParams: '<- queryParams' },
-      },
-    ],
+        attributes: { routerLink: '<- path', queryParams: '<- queryParams' }
+      }
+    ]
   },
   {
     if: '!path',
     name: 'noPath',
-    contains: [
-      { element: 'span', text: '{{label}}', attributes: { class: 'current' } },
-    ],
-  },
+    contains: [{ element: 'span', text: '{{label}}', attributes: { class: 'current' } }]
+  }
 ]);
 
 applyStyles(

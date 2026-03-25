@@ -12,9 +12,7 @@ export class BreadcrumbComponent extends Component {
   levels!: BreadcrumbLevelComponent[];
 }
 
-applyTemplate(BreadcrumbComponent, [
-  { element: 'ng-content' },
-]);
+applyTemplate(BreadcrumbComponent, [{ element: 'ng-content' }]);
 
 applyStyles(
   BreadcrumbComponent,

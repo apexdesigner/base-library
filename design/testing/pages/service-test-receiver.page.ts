@@ -24,8 +24,8 @@ applyTemplate(ServiceTestReceiverPage, [
       {
         element: 'a',
         text: 'Go to Sender',
-        attributes: { 'mat-button': null, routerLink: '/service-test-sender' },
-      },
-    ],
-  },
+        attributes: { 'mat-button': null, routerLink: '/service-test-sender' }
+      }
+    ]
+  }
 ]);

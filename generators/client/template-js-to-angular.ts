@@ -6,10 +6,7 @@ import createDebug from 'debug';
 const debug = createDebug('BaseLibrary:generators:templateJsToAngular');
 
 // HTML void elements that must not have closing tags
-const VOID_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'param', 'source', 'track', 'wbr',
-]);
+const VOID_ELEMENTS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
 
 const RESERVED_KEYS = new Set(templateReservedKeys);
 

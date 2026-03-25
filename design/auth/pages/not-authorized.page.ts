@@ -42,24 +42,20 @@ applyTemplate(NotAuthorizedPage, [
         contains: [
           {
             element: 'p',
-            contains: [
-              { strong: '{{ email }}' },
-            ],
-            text: ' is not authorized to access this system.',
-          },
+            contains: [{ strong: '{{ email }}' }],
+            text: ' is not authorized to access this system.'
+          }
         ],
-        elseContains: [
-          { p: 'Your account is not authorized to access this system.' },
-        ],
+        elseContains: [{ p: 'Your account is not authorized to access this system.' }]
       },
       { p: 'Please contact your administrator if you believe this is an error.' },
       {
         element: 'button',
         text: 'Sign Out',
-        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> logout()' },
-      },
-    ],
-  },
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> logout()' }
+      }
+    ]
+  }
 ]);
 
 applyStyles(

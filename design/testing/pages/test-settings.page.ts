@@ -25,9 +25,7 @@ applyTemplate(TestSettingsPage, [
       {
         element: 'flex-row',
         attributes: { alignCenter: true },
-        contains: [
-          { h1: 'Test Settings' },
-        ],
+        contains: [{ h1: 'Test Settings' }]
       },
       {
         if: '!testSettings.reading',
@@ -39,14 +37,12 @@ applyTemplate(TestSettingsPage, [
               { element: 'dt-column', name: 'name', attributes: { property: 'name', header: 'Name' } },
               { element: 'dt-column', name: 'value', attributes: { property: 'value', header: 'Value' } },
               { element: 'dt-column', name: 'category', attributes: { property: 'category', header: 'Category' } },
-              { element: 'dt-column', name: 'isActive', attributes: { property: 'isActive', header: 'Active' } },
-            ],
-          },
+              { element: 'dt-column', name: 'isActive', attributes: { property: 'isActive', header: 'Active' } }
+            ]
+          }
         ],
-        elseContains: [
-          { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-        ],
-      },
-    ],
-  },
+        elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+      }
+    ]
+  }
 ]);

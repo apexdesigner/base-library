@@ -57,11 +57,11 @@ applyTemplate(SelectRoleFieldComponent, [
               {
                 element: 'mat-option',
                 text: '{{role.displayName}}',
-                attributes: { value: '<- role.id' },
-              },
-            ],
-          },
-        ],
+                attributes: { value: '<- role.id' }
+              }
+            ]
+          }
+        ]
       },
       {
         if: 'control.value',
@@ -72,12 +72,12 @@ applyTemplate(SelectRoleFieldComponent, [
               matSuffix: null,
               'mat-icon-button': null,
               disabled: '<- control.disabled',
-              click: '-> control.setValue(null); $event.stopPropagation()',
+              click: '-> control.setValue(null); $event.stopPropagation()'
             },
-            contains: [{ 'mat-icon': 'close' }],
-          },
-        ],
-      },
-    ],
-  },
+            contains: [{ 'mat-icon': 'close' }]
+          }
+        ]
+      }
+    ]
+  }
 ]);

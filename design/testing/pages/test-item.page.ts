@@ -33,10 +33,7 @@ applyTemplate(TestItemPage, [
           {
             if: 'testItem.controls.testItemDetail',
             name: 'detailSection',
-            contains: [
-              { h2: 'Detail' },
-              { element: 'sf-fields', name: 'detailFields', attributes: { group: '<- testItem.controls.testItemDetail' } },
-            ],
+            contains: [{ h2: 'Detail' }, { element: 'sf-fields', name: 'detailFields', attributes: { group: '<- testItem.controls.testItemDetail' } }]
           },
           {
             if: 'testItem.value.testSetting',
@@ -49,17 +46,15 @@ applyTemplate(TestItemPage, [
                   {
                     element: 'a',
                     text: '{{testItem.value.testSetting.name}}',
-                    attributes: { routerLink: "<- '/test-settings/' + testItem.value.testSetting.id" },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
+                    attributes: { routerLink: "<- '/test-settings/' + testItem.value.testSetting.id" }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ],
-    elseContains: [
-      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-    ],
-  },
+    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+  }
 ]);

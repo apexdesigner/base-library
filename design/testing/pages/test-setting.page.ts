@@ -38,18 +38,14 @@ applyTemplate(TestSettingPage, [
               {
                 element: 'a',
                 text: '{{item.name}}',
-                attributes: { routerLink: "<- '/test-items/' + item.id" },
-              },
+                attributes: { routerLink: "<- '/test-items/' + item.id" }
+              }
             ],
-            emptyContains: [
-              { div: 'No test items' },
-            ],
-          },
-        ],
-      },
+            emptyContains: [{ div: 'No test items' }]
+          }
+        ]
+      }
     ],
-    elseContains: [
-      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-    ],
-  },
+    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+  }
 ]);

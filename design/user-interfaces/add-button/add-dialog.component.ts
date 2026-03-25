@@ -84,12 +84,11 @@ applyTemplate(AddDialogComponent, [
     element: 'mat-dialog-content',
     contains: [
       {
-        if: 'formGroup', name: 'Form Group',
-        contains: [
-          { element: 'sf-fields', attributes: { group: '<- formGroup', disableHidden: '<- true' } },
-        ],
-      },
-    ],
+        if: 'formGroup',
+        name: 'Form Group',
+        contains: [{ element: 'sf-fields', attributes: { group: '<- formGroup', disableHidden: '<- true' } }]
+      }
+    ]
   },
   {
     element: 'mat-dialog-actions',
@@ -102,9 +101,9 @@ applyTemplate(AddDialogComponent, [
           'mat-raised-button': null,
           color: 'primary',
           click: '-> save()',
-          disabled: "<- saving || !formGroup || (formGroup.statusChanges | async) !== 'VALID'",
-        },
-      },
-    ],
-  },
+          disabled: "<- saving || !formGroup || (formGroup.statusChanges | async) !== 'VALID'"
+        }
+      }
+    ]
+  }
 ]);

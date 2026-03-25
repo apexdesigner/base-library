@@ -7,7 +7,7 @@ import { TestSettingPersistedArray } from '@business-objects-client';
  * Test page using JS object template format.
  */
 @page({
-  path: '/test-settings-js',
+  path: '/test-settings-js'
 })
 export class TestSettingsJsPage extends Page {
   /** Test Settings - Array of test setting records */
@@ -19,9 +19,7 @@ applyTemplate(TestSettingsJsPage, [
   {
     if: 'testSettings.reading',
     name: 'loading',
-    contains: [
-      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-    ],
+    contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
   },
   {
     if: '!testSettings.reading',
@@ -42,16 +40,14 @@ applyTemplate(TestSettingsJsPage, [
                 attributes: { gap: '<- 12' },
                 contains: [
                   { span: '{{setting.name}}', name: 'name' },
-                  { span: '{{setting.value}}', name: 'value' },
-                ],
-              },
+                  { span: '{{setting.value}}', name: 'value' }
+                ]
+              }
             ],
-            emptyContains: [
-              { element: 'div', text: 'No settings found' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+            emptyContains: [{ element: 'div', text: 'No settings found' }]
+          }
+        ]
+      }
+    ]
+  }
 ]);

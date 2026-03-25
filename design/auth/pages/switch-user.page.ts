@@ -75,11 +75,11 @@ applyTemplate(SwitchUserPage, [
               {
                 element: 'button',
                 text: 'Stop being {{currentUser?.email}}',
-                attributes: { 'mat-raised-button': null, color: 'warn', click: '-> stopImpersonating()' },
-              },
-            ],
-          },
-        ],
+                attributes: { 'mat-raised-button': null, color: 'warn', click: '-> stopImpersonating()' }
+              }
+            ]
+          }
+        ]
       },
       {
         if: '!isImpersonating',
@@ -95,10 +95,10 @@ applyTemplate(SwitchUserPage, [
                 attributes: {
                   matInput: null,
                   ngModel: '<-> searchText',
-                  placeholder: 'Filter by email',
-                },
-              },
-            ],
+                  placeholder: 'Filter by email'
+                }
+              }
+            ]
           },
           {
             if: '!users.reading',
@@ -116,21 +116,19 @@ applyTemplate(SwitchUserPage, [
                           {
                             element: 'button',
                             text: '{{user.email}}',
-                            attributes: { 'mat-list-item': null, click: '-> switchTo(user)' },
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
+                            attributes: { 'mat-list-item': null, click: '-> switchTo(user)' }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ],
-            elseContains: [
-              { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+            elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+          }
+        ]
+      }
+    ]
+  }
 ]);

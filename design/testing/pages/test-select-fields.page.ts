@@ -80,15 +80,15 @@ applyTemplate(TestSelectFieldsPage, [
               { h3: 'Select User' },
               {
                 element: 'select-user-field',
-                attributes: { control: '<- userControl', label: 'User', hideHelpText: '<- true' },
+                attributes: { control: '<- userControl', label: 'User', hideHelpText: '<- true' }
               },
               { p: 'Selected: {{selectedUserId}}' },
               {
                 element: 'button',
                 text: 'Set First User',
-                attributes: { 'mat-raised-button': null, click: '-> setFirstUser()' },
-              },
-            ],
+                attributes: { 'mat-raised-button': null, click: '-> setFirstUser()' }
+              }
+            ]
           },
           {
             element: 'flex-column',
@@ -97,15 +97,15 @@ applyTemplate(TestSelectFieldsPage, [
               { h3: 'Select Role' },
               {
                 element: 'select-role-field',
-                attributes: { control: '<- roleControl', label: 'Role', hideHelpText: '<- true' },
+                attributes: { control: '<- roleControl', label: 'Role', hideHelpText: '<- true' }
               },
               { p: 'Selected: {{selectedRoleId}}' },
               {
                 element: 'button',
                 text: 'Set First Role',
-                attributes: { 'mat-raised-button': null, click: '-> setFirstRole()' },
-              },
-            ],
+                attributes: { 'mat-raised-button': null, click: '-> setFirstRole()' }
+              }
+            ]
           },
           {
             element: 'flex-column',
@@ -114,35 +114,29 @@ applyTemplate(TestSelectFieldsPage, [
               { h3: 'Select Role Name' },
               {
                 element: 'select-role-name-field',
-                attributes: { control: '<- roleNameControl', label: 'Role Name', hideHelpText: '<- true' },
+                attributes: { control: '<- roleNameControl', label: 'Role Name', hideHelpText: '<- true' }
               },
-              { p: 'Selected: {{selectedRoleName}}' },
-            ],
-          },
-        ],
+              { p: 'Selected: {{selectedRoleName}}' }
+            ]
+          }
+        ]
       },
       { h2: 'SF Fields on Test Assignment' },
       {
         if: 'testAssignment.reading',
         name: 'assignmentLoading',
-        contains: [
-          { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-        ],
+        contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
       },
       {
         if: '!testAssignment.reading && testAssignment.value?.id',
         name: 'assignmentLoaded',
-        contains: [
-          { element: 'sf-fields', attributes: { group: '<- testAssignment' } },
-        ],
+        contains: [{ element: 'sf-fields', attributes: { group: '<- testAssignment' } }]
       },
       {
-        if: "!testAssignment.reading && !testAssignment.value?.id",
+        if: '!testAssignment.reading && !testAssignment.value?.id',
         name: 'assignmentEmpty',
-        contains: [
-          { p: 'No test assignment found. Create one first.' },
-        ],
-      },
-    ],
-  },
+        contains: [{ p: 'No test assignment found. Create one first.' }]
+      }
+    ]
+  }
 ]);

@@ -177,9 +177,7 @@ applyTemplate(ManageRoleAssignmentsComponent, [
   {
     if: 'roles.reading',
     name: 'loading',
-    contains: [
-      { element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } },
-    ],
+    contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }],
     elseContains: [
       {
         element: 'flex-column',
@@ -194,10 +192,10 @@ applyTemplate(ManageRoleAssignmentsComponent, [
                 attributes: {
                   matInput: null,
                   ngModel: '<-> search',
-                  ngModelChange: '-> filterUsers()',
-                },
-              },
-            ],
+                  ngModelChange: '-> filterUsers()'
+                }
+              }
+            ]
           },
           {
             if: '!noMatches',
@@ -228,37 +226,31 @@ applyTemplate(ManageRoleAssignmentsComponent, [
                                 attributes: {
                                   'mat-icon-button': null,
                                   click: '-> toggleAssignment(row.id, role.id)',
-                                  disabled: "<- busy || (row.id === currentUserId && role.name === 'Administrator')",
+                                  disabled: "<- busy || (row.id === currentUserId && role.name === 'Administrator')"
                                 },
                                 contains: [
                                   {
                                     if: 'hasAssignment(row.id, role.id)',
-                                    contains: [
-                                      { 'mat-icon': 'check_box' },
-                                    ],
-                                    elseContains: [
-                                      { 'mat-icon': 'check_box_outline_blank' },
-                                    ],
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
+                                    contains: [{ 'mat-icon': 'check_box' }],
+                                    elseContains: [{ 'mat-icon': 'check_box_outline_blank' }]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           },
           {
             if: 'showingSuggestions',
             name: 'suggestionsMessage',
             description: 'users without roles match the search',
-            contains: [
-              { p: 'Select a user to assign a role' },
-            ],
+            contains: [{ p: 'Select a user to assign a role' }]
           },
           {
             if: 'noMatches',
@@ -277,20 +269,18 @@ applyTemplate(ManageRoleAssignmentsComponent, [
                       'mat-raised-button': null,
                       color: 'primary',
                       click: '-> addUser()',
-                      disabled: '<- busy || !validEmail()',
+                      disabled: '<- busy || !validEmail()'
                     },
-                    contains: [
-                      { 'mat-icon': 'person_add' },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+                    contains: [{ 'mat-icon': 'person_add' }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]);
 
 applyStyles(ManageRoleAssignmentsComponent, ``);

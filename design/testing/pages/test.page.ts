@@ -39,15 +39,15 @@ applyTemplate(TestPage, [
             element: 'input',
             attributes: {
               matInput: null,
-              ngModel: '<-> dialogTitle',
-            },
-          },
-        ],
+              ngModel: '<-> dialogTitle'
+            }
+          }
+        ]
       },
       {
         element: 'button',
         text: 'Open Dialog',
-        attributes: { 'mat-button': null, click: '-> openDialog()' },
+        attributes: { 'mat-button': null, click: '-> openDialog()' }
       },
       {
         element: 'test-dialog',
@@ -55,9 +55,9 @@ applyTemplate(TestPage, [
         attributes: {
           title: '<- dialogTitle',
           options: "<- { width: '400px' }",
-          saved: '-> onSaved()',
-        },
-      },
-    ],
-  },
+          saved: '-> onSaved()'
+        }
+      }
+    ]
+  }
 ]);
