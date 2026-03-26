@@ -1,5 +1,6 @@
 import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestItemFormGroup } from '@business-objects-client';
+import { ErrorDialogComponent } from '@components';
 import { TestItemsPage } from '@pages';
 
 /**
@@ -19,6 +20,12 @@ export class TestItemPage extends Page {
     include: { testSetting: {}, testItemDetail: {} }
   })
   testItem!: TestItemFormGroup;
+
+  /** Test Error Messages */
+  testErrors: string[] = ['First error message', 'Second error message'];
+
+  /** Error Dialog Reference */
+  errorDialog!: ErrorDialogComponent;
 }
 
 applyTemplate(TestItemPage, [
@@ -30,6 +37,18 @@ applyTemplate(TestItemPage, [
         contains: [
           { h1: '{{testItem.value.name}}' },
           { element: 'sf-fields', name: 'topFields', attributes: { group: '<- testItem' } },
+          {
+            element: 'error-dialog',
+            name: 'errorDialog',
+            referenceable: true,
+            attributes: { messages: '<- testErrors' },
+          },
+          {
+            element: 'button',
+            name: 'openErrorDialog',
+            text: 'Test Error Dialog',
+            attributes: { 'mat-raised-button': null, color: 'warn', click: '-> errorDialog.open()' },
+          },
           {
             if: 'testItem.controls.testItemDetail',
             name: 'detailSection',
