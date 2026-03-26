@@ -25,6 +25,12 @@ export class SearchBarComponent extends Component {
   /** Debounce Timer */
   private searchTimer: any;
 
+  /** Clear - Clear the search text and reset the filter */
+  clear(): void {
+    this.searchText = '';
+    this.search();
+  }
+
   /** Search - Apply filter and re-read the array */
   search(): void {
     clearTimeout(this.searchTimer);
@@ -35,7 +41,7 @@ export class SearchBarComponent extends Component {
   async applySearch(): Promise<void> {
     const text = this.searchText.trim();
     if (!text) {
-      this.array.readFilter = {};
+      delete this.array.readFilter.where;
       await this.array.read();
       return;
     }
@@ -50,7 +56,7 @@ export class SearchBarComponent extends Component {
     const conditions = stringProps.map((p) => ({ [p.name]: { ilike: '%' + text + '%' } }));
 
     if (conditions.length > 0) {
-      this.array.readFilter = { or: conditions };
+      this.array.readFilter = { ...this.array.readFilter, where: { or: conditions } };
     }
 
     await this.array.read();
@@ -72,6 +78,18 @@ applyTemplate(SearchBarComponent, [
           ngModel: '<-> searchText',
           ngModelChange: '-> search()',
         },
+      },
+      {
+        if: 'searchText',
+        name: 'clearSection',
+        contains: [
+          {
+            element: 'button',
+            name: 'clearButton',
+            attributes: { 'mat-icon-button': null, matSuffix: null, click: '-> clear()' },
+            contains: [{ 'mat-icon': 'close' }],
+          },
+        ],
       },
     ],
   },

@@ -19,7 +19,8 @@ export class TestItemsPage extends Page {
   /** Test Items - Array of test item records */
   @property({
     read: 'Automatically',
-    include: { testSetting: {} }
+    include: { testSetting: {} },
+    order: [{ field: 'email', direction: 'desc' }]
   })
   testItems!: TestItemPersistedArray;
 }
