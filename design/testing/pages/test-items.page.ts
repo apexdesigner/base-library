@@ -3,6 +3,7 @@ import { TestItemPersistedArray } from '@business-objects-client';
 import { AddButtonComponent } from '@components';
 import { ExportTsvButtonComponent } from '@components';
 import { RefreshButtonComponent } from '@components';
+import { SearchBarComponent } from '@components';
 
 /**
  * Test Items
@@ -45,6 +46,10 @@ applyTemplate(TestItemsPage, [
             attributes: { array: '<- testItems', added: '-> testItems.read()' },
           }
         ]
+      },
+      {
+        element: 'search-bar',
+        attributes: { array: '<- testItems' },
       },
       {
         if: '!testItems.reading',
