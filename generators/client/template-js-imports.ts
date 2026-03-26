@@ -357,6 +357,7 @@ export async function resolveJsTemplateImports(
   const pageMetadata = context.listMetadata('Page') || [];
   const elementInterfaceMetadata = context.listMetadata('ComponentInterface') || [];
   const directiveInterfaceMetadata = context.listMetadata('DirectiveInterface') || [];
+  const directiveMetadata = context.listMetadata('Directive') || [];
   const pipeInterfaceMetadata = context.listMetadata('PipeInterface') || [];
 
   const components = componentMetadata.map(m => ({
@@ -447,19 +448,43 @@ export async function resolveJsTemplateImports(
     );
   }
 
+  // Build DSL directive metadata (selectors and import paths)
+  const dslDirectives = directiveMetadata.map(m => {
+    const options = getClassDecorator(getClassByBase(m.sourceFile, 'Directive'), 'directive') || ({} as any);
+    const dirBaseName = m.name.replace(/Directive$/, '');
+    const dirFile = kebabCase(dirBaseName);
+    return {
+      name: m.name,
+      selector: options.selector || '',
+      importPath: `@app/directives/${dirFile}/${dirFile}.directive`
+    };
+  });
+
   // Process directive selectors
   for (const attr of usage.directives) {
-    const matchingInterface = directiveInterfaces.find(di => {
+    // Check directive interfaces (external directives from libraries)
+    const matchingInterfaces = directiveInterfaces.filter(di => {
       const selectorParts = di.selector.split(',').map(s => s.trim());
       return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
     });
-    if (matchingInterface?.imports?.length) {
+    for (const matchingInterface of matchingInterfaces) {
       for (const imp of matchingInterface.imports) {
         if (imp.name && imp.from) {
           if (!importsMap.has(imp.from)) importsMap.set(imp.from, new Set());
           importsMap.get(imp.from)!.add(imp.name);
         }
       }
+    }
+
+    // Check DSL-defined directives
+    const matchingDirectives = dslDirectives.filter(d => {
+      const selectorParts = d.selector.split(',').map(s => s.trim());
+      return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
+    });
+    for (const matchingDirective of matchingDirectives) {
+      const importPath = matchingDirective.importPath;
+      if (!importsMap.has(importPath)) importsMap.set(importPath, new Set());
+      importsMap.get(importPath)!.add(matchingDirective.name);
     }
   }
 

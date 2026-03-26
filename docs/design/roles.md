@@ -1,5 +1,5 @@
 ---
-generated-from: design/node_modules/@apexdesigner/doc-generators/design/project.ts
+generated-from: design/auth/users-and-roles/administrator.role.ts
 generated-by: design-docs.roles.doc.md
 ---
 # Roles

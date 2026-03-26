@@ -36,3 +36,4 @@ temp/
 .workspace.json
 .api.json
 .env
+generator-test-output/

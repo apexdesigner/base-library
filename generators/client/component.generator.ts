@@ -789,6 +789,10 @@ const componentGenerator: DesignGenerator = {
       wrapperLines.push(`})`);
       wrapperLines.push(`export class ${className} {`);
 
+      // Static reference to the content component for programmatic dialog opening
+      wrapperLines.push(`  static contentComponent = ${contentClassName};`);
+      wrapperLines.push('');
+
       // Options property
       wrapperLines.push(`  @Input() options: MatDialogConfig = { autoFocus: true };`);
       wrapperLines.push('');

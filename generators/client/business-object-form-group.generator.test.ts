@@ -70,7 +70,7 @@ describe('businessObjectFormGroupGenerator', () => {
       expect(content).toContain('instance.enable()');
     });
 
-    it('should not generate delegating methods for class behaviors', async () => {
+    it('should generate static delegating methods for class behaviors', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -96,7 +96,8 @@ describe('businessObjectFormGroupGenerator', () => {
       const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
       const content = result instanceof Map ? result.get('client/src/app/business-objects/process-design-form-group.ts')! : (result as string);
 
-      expect(content).not.toContain('upload');
+      expect(content).toContain('static async upload');
+      expect(content).toContain('ProcessDesign.upload');
     });
 
     it('should not generate delegating methods for lifecycle behaviors', async () => {

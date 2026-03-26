@@ -1,6 +1,10 @@
 import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestItemPersistedArray } from '@business-objects-client';
 import { AddButtonComponent } from '@components';
+import { ExportTsvButtonComponent } from '@components';
+import { ImportTsvButtonComponent } from '@components';
+import { RefreshButtonComponent } from '@components';
+import { SearchBarComponent } from '@components';
 
 /**
  * Test Items
@@ -15,7 +19,8 @@ export class TestItemsPage extends Page {
   /** Test Items - Array of test item records */
   @property({
     read: 'Automatically',
-    include: { testSetting: {} }
+    include: { testSetting: {} },
+    order: [{ field: 'email', direction: 'desc' }]
   })
   testItems!: TestItemPersistedArray;
 }
@@ -31,10 +36,26 @@ applyTemplate(TestItemsPage, [
           { h1: 'Test Items' },
           { element: 'div', attributes: { grow: null } },
           {
+            element: 'import-tsv-button',
+            attributes: { array: '<- testItems' }
+          },
+          {
+            element: 'export-tsv-button',
+            attributes: { array: '<- testItems' }
+          },
+          {
+            element: 'refresh-button',
+            attributes: { array: '<- testItems' }
+          },
+          {
             element: 'add-button',
             attributes: { array: '<- testItems', added: '-> testItems.read()' }
           }
         ]
+      },
+      {
+        element: 'search-bar',
+        attributes: { array: '<- testItems' }
       },
       {
         if: '!testItems.reading',

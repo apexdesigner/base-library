@@ -46,6 +46,7 @@ const componentTypeGenerator: DesignGenerator = {
 
     if (isDialog) {
       lines.push(`export declare class ${metadata.name} {`);
+      lines.push('  static contentComponent: any;');
       lines.push('  open(): void;');
       lines.push('  close(): void;');
       lines.push('}');

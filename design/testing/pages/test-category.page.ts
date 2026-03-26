@@ -1,6 +1,7 @@
 import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestCategoryFormGroup } from '@business-objects-client';
 import { TestCategory } from '@business-objects-client';
+import { AccordionComponent } from '@components';
 import { TestCategoriesPage } from '@pages';
 
 /**
@@ -81,6 +82,15 @@ applyTemplate(TestCategoryPage, [
           },
           { div: 'category.name: "{{category.name}}"', name: 'categoryName' },
           { div: 'testCategory.value.name: "{{testCategory.value.name}}"', name: 'testCategoryName' },
+          { h3: 'Child Categories' },
+          {
+            element: 'accordion',
+            attributes: {
+              array: '<- testCategory.controls.childCategories',
+              includeLaunch: '<- true',
+              routePrefix: '/test-categories'
+            }
+          },
           {
             element: 'mat-form-field',
             contains: [
