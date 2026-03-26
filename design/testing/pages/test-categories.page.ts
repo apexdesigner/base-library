@@ -1,5 +1,6 @@
 import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestCategoryPersistedArray } from '@business-objects-client';
+import { AddFieldComponent } from '@components';
 
 /**
  * Test Categories
@@ -30,6 +31,10 @@ applyTemplate(TestCategoriesPage, [
         element: 'flex-column',
         contains: [
           { h2: 'Test Categories' },
+          {
+            element: 'add-field',
+            attributes: { array: '<- testCategories', added: '-> testCategories.read()' },
+          },
           {
             for: 'category',
             of: 'testCategories',
