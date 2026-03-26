@@ -1,5 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { isLibrary, getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { isLibrary, getIdProperty, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { buildBaseTypeMap } from '../shared/base-type-map.js';
 import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
@@ -193,7 +194,42 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
       lines.push('  }');
     }
 
-    // --- Instance behavior delegation ---
+    // --- Static CRUD methods (delegate to entity class) ---
+    const baseTypeMap = buildBaseTypeMap(context);
+    const resolvedId = resolveIdType(metadata.sourceFile, context);
+    let idType = resolvedId.type;
+    if (idType !== 'string' && idType !== 'number') {
+      const match = idType.match(/\.(\w+)$/);
+      const typeName = match ? match[1] : idType;
+      idType = baseTypeMap.get(typeName) || (idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType);
+    }
+
+    lines.push('');
+    lines.push(`  static async find(filter?: any): Promise<${className}[]> {`);
+    lines.push(`    return ${className}.find(filter);`);
+    lines.push('  }');
+    lines.push('');
+    lines.push(`  static async findOne(filter?: any): Promise<${className} | null> {`);
+    lines.push(`    return ${className}.findOne(filter);`);
+    lines.push('  }');
+    lines.push('');
+    lines.push(`  static async findById(id: ${idType}, filter?: any): Promise<${className}> {`);
+    lines.push(`    return ${className}.findById(id, filter);`);
+    lines.push('  }');
+    lines.push('');
+    lines.push(`  static async create(data: Partial<${className}>): Promise<${className}> {`);
+    lines.push(`    return ${className}.create(data as any);`);
+    lines.push('  }');
+    lines.push('');
+    lines.push(`  static async updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}> {`);
+    lines.push(`    return ${className}.updateById(id, data as any);`);
+    lines.push('  }');
+    lines.push('');
+    lines.push(`  static async deleteById(id: ${idType}): Promise<boolean> {`);
+    lines.push(`    return ${className}.deleteById(id);`);
+    lines.push('  }');
+
+    // --- Behavior delegation ---
     const allBehaviors = context.listMetadata('Behavior');
     const behaviorMethods: string[] = [];
 
@@ -205,18 +241,15 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
         const parent = getBehaviorParent(behavior.sourceFile);
         if (parent !== className) continue;
 
-        // Only delegate instance behaviors
-        if (options.type !== 'Instance') continue;
-
         // Skip lifecycle behaviors
         if (LIFECYCLE_TYPES.has(options.type as string)) continue;
 
         const func = getBehaviorFunction(behavior.sourceFile);
         if (!func) continue;
 
-        // Get parameters: skip first for instance behaviors (it's the instance itself)
+        const isInstance = options.type === 'Instance';
         const params = func.parameters || [];
-        const methodParams = params.slice(1);
+        const methodParams = isInstance ? params.slice(1) : params;
 
         // Build parameter signature
         const paramStr = methodParams
@@ -235,10 +268,16 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
 
         const returnType = func.returnType || 'any';
 
-        behaviorMethods.push('');
-        behaviorMethods.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
-        behaviorMethods.push(`    const instance = new ${className}(this.value);`);
-        behaviorMethods.push(`    return instance.${func.name}(${argStr});`);
+        if (isInstance) {
+          behaviorMethods.push('');
+          behaviorMethods.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
+          behaviorMethods.push(`    const instance = new ${className}(this.value);`);
+          behaviorMethods.push(`    return instance.${func.name}(${argStr});`);
+        } else {
+          behaviorMethods.push('');
+          behaviorMethods.push(`  static async ${func.name}(${paramStr}): Promise<${returnType}> {`);
+          behaviorMethods.push(`    return ${className}.${func.name}(${argStr});`);
+        }
         behaviorMethods.push('  }');
 
         debug('added delegating behavior method %j', func.name);

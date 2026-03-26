@@ -1,5 +1,6 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
-import { getIdProperty, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { getIdProperty, resolveIdType, resolveRelationships, resolveMixins } from '@apexdesigner/generator';
+import { buildBaseTypeMap } from '../shared/base-type-map.js';
 import { getClassByBase, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
 import { kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
@@ -167,8 +168,25 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     fgLines.push('');
     fgLines.push(`  constructor(data?: Record<string, any> | null, options?: PersistedFormGroupOptions);`);
     fgLines.push(`  get object(): ${className};`);
+    fgLines.push('');
 
-    // Instance behavior method declarations
+    // Static CRUD method declarations
+    const baseTypeMap = buildBaseTypeMap(context);
+    const resolvedId = resolveIdType(metadata.sourceFile, context);
+    let idType = resolvedId.type;
+    if (idType !== 'string' && idType !== 'number') {
+      const match = idType.match(/\.(\w+)$/);
+      const typeName = match ? match[1] : idType;
+      idType = baseTypeMap.get(typeName) || (idType.includes('import(') || /^[A-Z]/.test(idType) ? 'string' : idType);
+    }
+    fgLines.push(`  static find(filter?: any): Promise<${className}[]>;`);
+    fgLines.push(`  static findOne(filter?: any): Promise<${className} | null>;`);
+    fgLines.push(`  static findById(id: ${idType}, filter?: any): Promise<${className}>;`);
+    fgLines.push(`  static create(data: Partial<${className}>): Promise<${className}>;`);
+    fgLines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
+    fgLines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);
+
+    // Behavior method declarations
     const allBehaviors = context.listMetadata('Behavior');
 
     for (const behavior of allBehaviors) {
@@ -179,14 +197,14 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
         const parent = getBehaviorParent(behavior.sourceFile);
         if (parent !== className) continue;
 
-        if (options.type !== 'Instance') continue;
         if (LIFECYCLE_TYPES.has(options.type as string)) continue;
 
         const func = getBehaviorFunction(behavior.sourceFile);
         if (!func) continue;
 
+        const isInstance = options.type === 'Instance';
         const params = func.parameters || [];
-        const methodParams = params.slice(1);
+        const methodParams = isInstance ? params.slice(1) : params;
 
         const paramStr = methodParams
           .map(p => {
@@ -196,9 +214,10 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
           .join(', ');
 
         const returnType = func.returnType || 'any';
+        const staticPrefix = isInstance ? '' : 'static ';
 
-        fgLines.push(`  ${func.name}(${paramStr}): Promise<${returnType}>;`);
-        debug('added behavior type declaration %j', func.name);
+        fgLines.push(`  ${staticPrefix}${func.name}(${paramStr}): Promise<${returnType}>;`);
+        debug('added behavior type declaration %j (static: %j)', func.name, !isInstance);
       } catch (err) {
         debug('error processing behavior %j: %j', behavior.name, err);
       }
