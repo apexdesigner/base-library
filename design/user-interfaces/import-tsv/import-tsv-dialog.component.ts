@@ -58,12 +58,15 @@ export class ImportTsvDialogComponent extends Component {
       } else {
         const headers = rows[0];
         const dataRows = rows.slice(1);
-        let count = 0;
+        const idIndex = headers.findIndex((h) => h.trim() === 'id');
+        const entityClass = await this.businessObjectService.loadEntity(this.array.entityName);
+        let added = 0;
+        let updated = 0;
 
         for (const row of dataRows) {
           const data: Record<string, any> = {};
           headers.forEach((header, i) => {
-            if (i < row.length && row[i] !== '') {
+            if (i < row.length && row[i] !== '' && header.trim() !== 'id') {
               data[header.trim()] = row[i];
             }
           });
@@ -75,11 +78,20 @@ export class ImportTsvDialogComponent extends Component {
             }
           }
 
-          await this.array.add(data);
-          count++;
+          const id = idIndex >= 0 ? row[idIndex]?.trim() : undefined;
+          if (id) {
+            await entityClass.updateById(id, data);
+            updated++;
+          } else {
+            await this.array.add(data);
+            added++;
+          }
         }
 
-        this.resultMessage = 'Imported ' + count + ' record(s).';
+        const parts: string[] = [];
+        if (added > 0) parts.push(added + ' added');
+        if (updated > 0) parts.push(updated + ' updated');
+        this.resultMessage = 'Imported: ' + parts.join(', ') + '.';
       }
     } catch (err: any) {
       this.resultMessage = 'Error: ' + (err.message || err);
