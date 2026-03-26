@@ -1,6 +1,7 @@
 import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestItemPersistedArray } from '@business-objects-client';
 import { AddButtonComponent } from '@components';
+import { RefreshButtonComponent } from '@components';
 
 /**
  * Test Items
@@ -31,8 +32,12 @@ applyTemplate(TestItemsPage, [
           { h1: 'Test Items' },
           { element: 'div', attributes: { grow: null } },
           {
+            element: 'refresh-button',
+            attributes: { array: '<- testItems' },
+          },
+          {
             element: 'add-button',
-            attributes: { array: '<- testItems', added: '-> testItems.read()' }
+            attributes: { array: '<- testItems', added: '-> testItems.read()' },
           }
         ]
       },
