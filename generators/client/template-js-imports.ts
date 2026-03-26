@@ -462,27 +462,26 @@ export async function resolveJsTemplateImports(
 
   // Process directive selectors
   for (const attr of usage.directives) {
-    // Check directive interfaces first (external directives from libraries)
-    const matchingInterface = directiveInterfaces.find(di => {
+    // Check directive interfaces (external directives from libraries)
+    const matchingInterfaces = directiveInterfaces.filter(di => {
       const selectorParts = di.selector.split(',').map(s => s.trim());
       return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
     });
-    if (matchingInterface?.imports?.length) {
+    for (const matchingInterface of matchingInterfaces) {
       for (const imp of matchingInterface.imports) {
         if (imp.name && imp.from) {
           if (!importsMap.has(imp.from)) importsMap.set(imp.from, new Set());
           importsMap.get(imp.from)!.add(imp.name);
         }
       }
-      continue;
     }
 
     // Check DSL-defined directives
-    const matchingDirective = dslDirectives.find(d => {
+    const matchingDirectives = dslDirectives.filter(d => {
       const selectorParts = d.selector.split(',').map(s => s.trim());
       return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
     });
-    if (matchingDirective) {
+    for (const matchingDirective of matchingDirectives) {
       const importPath = matchingDirective.importPath;
       if (!importsMap.has(importPath)) importsMap.set(importPath, new Set());
       importsMap.get(importPath)!.add(matchingDirective.name);

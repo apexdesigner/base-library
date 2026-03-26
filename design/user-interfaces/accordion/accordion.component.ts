@@ -2,7 +2,6 @@ import { Component, property, method, applyTemplate } from '@apexdesigner/dsl/co
 import { PersistedArray, PersistedFormArray } from '@business-objects-client';
 import { AddFieldComponent } from '@components';
 import { EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
 import createDebug from 'debug';
 
 const debug = createDebug('AccordionComponent');
@@ -13,7 +12,7 @@ const debug = createDebug('AccordionComponent');
  * A data-driven expansion panel list. Takes a business object array and
  * renders a mat-accordion with one mat-expansion-panel per item. Each panel
  * shows the item's display name in the header and sf-fields in the body.
- * Built-in support for adding, deleting, and navigating to an item's detail page.
+ * Built-in support for adding, deleting, and navigating to an item's detail page via routerLink.
  */
 export class AccordionComponent extends Component {
   /** The list of business objects to display. */
@@ -44,9 +43,6 @@ export class AccordionComponent extends Component {
   @property({ isOutput: true })
   deleted!: EventEmitter<any>;
 
-  /** Router */
-  router!: Router;
-
   /** Items - Resolve the iterable list from the array */
   get items(): any[] {
     if ('controls' in this.array) {
@@ -57,16 +53,17 @@ export class AccordionComponent extends Component {
 
   /** Get Display Name - Get the display value for an item */
   getDisplayName(item: any): string {
-    return item.name || item.displayName || item.title || item.label || 'Item';
+    const obj = item.value || item;
+    return obj.name || obj.displayName || obj.title || obj.label || 'Item';
   }
 
-  /** Launch - Navigate to an item's detail page */
-  launch(item: any): void {
+  /** Get Route - Build the route for an item */
+  getRoute(item: any): string {
+    const obj = item.value || item;
     if (this.routeFunction) {
-      this.router.navigateByUrl(this.routeFunction(item));
-    } else if (this.routePrefix) {
-      this.router.navigateByUrl(this.routePrefix + '/' + item.id);
+      return this.routeFunction(obj);
     }
+    return (this.routePrefix || '') + '/' + obj.id;
   }
 
   /** Delete Item - Remove an item from the array */
@@ -104,9 +101,9 @@ applyTemplate(AccordionComponent, [
                     name: 'launchSection',
                     contains: [
                       {
-                        element: 'button',
+                        element: 'a',
                         name: 'launchButton',
-                        attributes: { 'mat-icon-button': null, matTooltip: 'Open', click: '-> launch(item)' },
+                        attributes: { 'mat-icon-button': null, matTooltip: 'Open', routerLink: '<- getRoute(item)' },
                         contains: [{ 'mat-icon': 'launch' }],
                       },
                     ],
