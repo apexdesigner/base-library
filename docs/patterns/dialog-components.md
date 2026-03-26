@@ -112,6 +112,48 @@ The wrapper accepts an `options` input of type `MatDialogConfig` for controlling
 
 Default options: `{ autoFocus: true }`.
 
+## Opening a Dialog Programmatically (without the wrapper element)
+
+The wrapper element approach works when a component has a template where `<my-dialog>` can be placed. But directives and services don't have templates. For these cases, use the wrapper's static `contentComponent` property with `MatDialog`:
+
+```typescript
+import { Directive, directive, property, method } from "@apexdesigner/dsl/directive";
+import { MatDialog } from "@angular/material/dialog";
+import { ConfirmationDialogComponent } from "@components";
+
+@directive({ selector: "[confirm][confirmMessage]" })
+export class ConfirmDirective extends Directive {
+
+  @property({ isInput: true })
+  confirmMessage!: string;
+
+  matDialog!: MatDialog;
+
+  @method({ callOnEvent: "click" })
+  async onClick(event: Event): Promise<void> {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dialogRef = this.matDialog.open(ConfirmationDialogComponent.contentComponent);
+    const instance: any = dialogRef.componentInstance;
+    instance.message = this.confirmMessage;
+
+    instance.confirmed.subscribe(() => {
+      dialogRef.close();
+    });
+  }
+}
+```
+
+Key points:
+- Import the dialog **wrapper** class from `@components` (not the content component)
+- Access `WrapperClass.contentComponent` — a static property on the wrapper that references the content component class
+- Pass the content component to `MatDialog.open()`
+- Set inputs and subscribe to outputs on `dialogRef.componentInstance`
+- The generator adds `static contentComponent` to all dialog wrappers automatically
+
+This pattern is used by the `ConfirmDirective` to open a confirmation dialog on click.
+
 ## What Gets Generated
 
 For a design file named `AddPropertyDialogComponent`:
