@@ -69,7 +69,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
       expect(content).toContain('enable(): Promise<any>');
     });
 
-    it('should not include class behavior method declarations', async () => {
+    it('should include static class behavior method declarations', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('BusinessObject', 'ProcessDesign', {
         sourceCode: `
@@ -96,7 +96,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
       const content =
         result instanceof Map ? result.get('design/@types/business-objects-client/process-design-form-group.d.ts')! : (result as string);
 
-      expect(content).not.toContain('upload');
+      expect(content).toContain('static upload');
     });
 
     it('should include parameters in behavior method declarations', async () => {
