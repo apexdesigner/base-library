@@ -27,7 +27,7 @@ export class ExportTsvButtonComponent extends Component {
       return;
     }
 
-    const properties = metadata.properties.filter((p) => p.name !== 'id');
+    const properties = metadata.properties;
     const headers = properties.map((p) => p.name);
     const items = Array.isArray(this.array) ? this.array : (this.array as any).getRawValue();
 
