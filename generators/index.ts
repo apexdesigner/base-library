@@ -33,6 +33,7 @@ export { clientInterceptorGenerator } from './client/client-interceptor.generato
 export { clientGuardGenerator } from './client/client-guard.generator.js';
 export { clientInterfaceDefinitionsGenerator } from './client/client-interface-definitions.generator.js';
 export { packageServiceGenerator } from './client/package-service.generator.js';
+export { directiveGenerator } from './client/directive.generator.js';
 // Server generators
 export { serverGenerator } from './server/server.generator.js';
 export { serverPackageGenerator } from './server/server-package.generator.js';

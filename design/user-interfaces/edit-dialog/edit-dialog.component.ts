@@ -31,7 +31,7 @@ export class EditDialogComponent extends Component {
 }
 
 applyTemplate(EditDialogComponent, [
-  { 'mat-dialog-content': [{ element: 'sf-fields', attributes: { group: '<- object', widths: '<- 100' } }] },
+  { 'mat-dialog-content': [{ element: 'sf-fields', attributes: { group: '<- object' } }] },
   {
     'mat-dialog-actions': [
       {
@@ -50,7 +50,7 @@ applyTemplate(EditDialogComponent, [
         element: 'button',
         name: 'doneButton',
         text: 'Done',
-        attributes: { 'mat-raised-button': null, click: '-> close()' },
+        attributes: { 'mat-raised-button': null, click: '-> dialog.close()' },
       },
     ],
   },

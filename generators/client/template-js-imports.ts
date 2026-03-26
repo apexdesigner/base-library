@@ -357,6 +357,7 @@ export async function resolveJsTemplateImports(
   const pageMetadata = context.listMetadata('Page') || [];
   const elementInterfaceMetadata = context.listMetadata('ComponentInterface') || [];
   const directiveInterfaceMetadata = context.listMetadata('DirectiveInterface') || [];
+  const directiveMetadata = context.listMetadata('Directive') || [];
   const pipeInterfaceMetadata = context.listMetadata('PipeInterface') || [];
 
   const components = componentMetadata.map(m => ({
@@ -447,8 +448,21 @@ export async function resolveJsTemplateImports(
     );
   }
 
+  // Build DSL directive metadata (selectors and import paths)
+  const dslDirectives = directiveMetadata.map(m => {
+    const options = getClassDecorator(getClassByBase(m.sourceFile, 'Directive'), 'directive') || ({} as any);
+    const dirBaseName = m.name.replace(/Directive$/, '');
+    const dirFile = kebabCase(dirBaseName);
+    return {
+      name: m.name,
+      selector: options.selector || '',
+      importPath: `@app/directives/${dirFile}/${dirFile}.directive`,
+    };
+  });
+
   // Process directive selectors
   for (const attr of usage.directives) {
+    // Check directive interfaces first (external directives from libraries)
     const matchingInterface = directiveInterfaces.find(di => {
       const selectorParts = di.selector.split(',').map(s => s.trim());
       return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
@@ -460,6 +474,18 @@ export async function resolveJsTemplateImports(
           importsMap.get(imp.from)!.add(imp.name);
         }
       }
+      continue;
+    }
+
+    // Check DSL-defined directives
+    const matchingDirective = dslDirectives.find(d => {
+      const selectorParts = d.selector.split(',').map(s => s.trim());
+      return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
+    });
+    if (matchingDirective) {
+      const importPath = matchingDirective.importPath;
+      if (!importsMap.has(importPath)) importsMap.set(importPath, new Set());
+      importsMap.get(importPath)!.add(matchingDirective.name);
     }
   }
 

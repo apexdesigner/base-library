@@ -1,8 +1,11 @@
-import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { Page, page, property, method, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestItemFormGroup } from '@business-objects-client';
 import { EditDialogComponent } from '@components';
 import { ErrorDialogComponent } from '@components';
 import { TestItemsPage } from '@pages';
+import createDebug from 'debug';
+
+const debug = createDebug('TestItemPage');
 
 /**
  * Test Item
@@ -30,6 +33,11 @@ export class TestItemPage extends Page {
 
   /** Error Dialog Reference */
   errorDialog!: ErrorDialogComponent;
+
+  /** On Confirm Test - Log that the confirm directive fired */
+  onConfirmTest(): void {
+    debug('confirm directive fired');
+  }
 }
 
 applyTemplate(TestItemPage, [
@@ -64,6 +72,17 @@ applyTemplate(TestItemPage, [
             name: 'openErrorDialog',
             text: 'Test Error Dialog',
             attributes: { 'mat-raised-button': null, color: 'warn', click: '-> errorDialog.open()' },
+          },
+          {
+            element: 'button',
+            name: 'confirmTest',
+            text: 'Test Confirm',
+            attributes: {
+              'mat-raised-button': null,
+              color: 'accent',
+              confirm: '-> onConfirmTest()',
+              confirmMessage: 'Are you sure you want to do this?',
+            },
           },
           {
             if: 'testItem.controls.testItemDetail',

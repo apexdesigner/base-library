@@ -128,7 +128,7 @@ applyTemplate(ImportTsvDialogComponent, [
         element: 'button',
         name: 'cancelButton',
         text: 'Close',
-        attributes: { 'mat-button': null, click: '-> close()' },
+        attributes: { 'mat-button': null, click: '-> dialog.close()' },
       },
       { element: 'span', attributes: { grow: null } },
       {

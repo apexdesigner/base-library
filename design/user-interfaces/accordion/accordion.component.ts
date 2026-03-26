@@ -47,6 +47,14 @@ export class AccordionComponent extends Component {
   /** Router */
   router!: Router;
 
+  /** Items - Resolve the iterable list from the array */
+  get items(): any[] {
+    if ('controls' in this.array) {
+      return (this.array as PersistedFormArray).controls;
+    }
+    return this.array as any[];
+  }
+
   /** Get Display Name - Get the display value for an item */
   getDisplayName(item: any): string {
     return item.name || item.displayName || item.title || item.label || 'Item';
@@ -75,7 +83,7 @@ applyTemplate(AccordionComponent, [
     contains: [
       {
         for: 'item',
-        of: 'array',
+        of: 'items',
         trackBy: 'item.id || $index',
         contains: [
           {
