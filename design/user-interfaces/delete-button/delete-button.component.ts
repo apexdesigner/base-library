@@ -55,15 +55,15 @@ applyTemplate(DeleteButtonComponent, [
           color: 'warn',
           confirm: '-> delete()',
           confirmMessage: '<- "Are you sure you want to delete this?"',
-          disabled: '<- object?.disabled',
+          disabled: '<- object?.disabled'
         },
-        contains: [{ 'mat-icon': 'delete_outline' }],
-      },
-    ],
+        contains: [{ 'mat-icon': 'delete_outline' }]
+      }
+    ]
   },
   {
     if: 'deleting',
     name: 'spinner',
-    contains: [{ element: 'mat-spinner', attributes: { diameter: '<- 24' } }],
-  },
+    contains: [{ element: 'mat-spinner', attributes: { diameter: '<- 24' } }]
+  }
 ]);

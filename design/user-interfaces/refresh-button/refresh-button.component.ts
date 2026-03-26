@@ -25,8 +25,8 @@ applyTemplate(RefreshButtonComponent, [
     attributes: {
       'mat-icon-button': null,
       matTooltip: 'Refresh',
-      click: '-> refresh()',
+      click: '-> refresh()'
     },
-    contains: [{ 'mat-icon': 'autorenew' }],
-  },
+    contains: [{ 'mat-icon': 'autorenew' }]
+  }
 ]);

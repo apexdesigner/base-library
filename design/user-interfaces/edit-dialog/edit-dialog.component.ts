@@ -41,17 +41,17 @@ applyTemplate(EditDialogComponent, [
             element: 'button',
             name: 'deleteButton',
             text: 'Delete',
-            attributes: { 'mat-button': null, color: 'warn', click: '-> delete()' },
-          },
-        ],
+            attributes: { 'mat-button': null, color: 'warn', click: '-> delete()' }
+          }
+        ]
       },
       { element: 'span', attributes: { grow: null } },
       {
         element: 'button',
         name: 'doneButton',
         text: 'Done',
-        attributes: { 'mat-raised-button': null, click: '-> dialog.close()' },
-      },
-    ],
-  },
+        attributes: { 'mat-raised-button': null, click: '-> dialog.close()' }
+      }
+    ]
+  }
 ]);

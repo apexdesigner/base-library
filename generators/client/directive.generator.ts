@@ -16,8 +16,8 @@ const directiveGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Directive',
-    },
+      metadataType: 'Directive'
+    }
   ],
 
   outputs: (metadata: DesignMetadata) => {
@@ -39,12 +39,12 @@ const directiveGenerator: DesignGenerator = {
     const project = new Project({
       useInMemoryFileSystem: true,
       compilerOptions: { target: 99, module: 99 },
-      manipulationSettings: { quoteKind: QuoteKind.Single },
+      manipulationSettings: { quoteKind: QuoteKind.Single }
     });
     const writableFile = project.createSourceFile('temp.ts', sourceFile.getText());
 
     // Get the exported class
-    const exportedClass = writableFile.getClasses().find((cls) => cls.isExported());
+    const exportedClass = writableFile.getClasses().find(cls => cls.isExported());
     if (!exportedClass) {
       throw new Error(`Could not find exported class in ${metadata.name}`);
     }
@@ -67,7 +67,7 @@ const directiveGenerator: DesignGenerator = {
 
     // Capture service imports before removing design aliases
     const serviceImports: { name: string; typeName: string }[] = [];
-    const servicesImportDecls = writableFile.getImportDeclarations().filter((imp) => imp.getModuleSpecifierValue() === '@services');
+    const servicesImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@services');
     for (const decl of servicesImportDecls) {
       for (const named of decl.getNamedImports()) {
         serviceImports.push({ name: named.getName(), typeName: named.getName() });
@@ -76,7 +76,7 @@ const directiveGenerator: DesignGenerator = {
     debug('captured service imports %j', serviceImports);
 
     // Build set of all known service type names
-    const serviceTypeNames = new Set(serviceImports.map((s) => s.typeName));
+    const serviceTypeNames = new Set(serviceImports.map(s => s.typeName));
     for (const m of context.listMetadata('Service') || []) {
       serviceTypeNames.add(m.name);
     }
@@ -87,7 +87,7 @@ const directiveGenerator: DesignGenerator = {
 
     // Capture @components imports before removing design aliases
     const componentImportNames: string[] = [];
-    const componentsImportDecls = writableFile.getImportDeclarations().filter((imp) => imp.getModuleSpecifierValue() === '@components');
+    const componentsImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@components');
     for (const decl of componentsImportDecls) {
       for (const named of decl.getNamedImports()) {
         componentImportNames.push(named.getName());
@@ -96,7 +96,7 @@ const directiveGenerator: DesignGenerator = {
     debug('captured component imports %j', componentImportNames);
 
     // Remove DSL and design-time alias imports
-    const designImports = writableFile.getImportDeclarations().filter((imp) => {
+    const designImports = writableFile.getImportDeclarations().filter(imp => {
       const moduleSpec = imp.getModuleSpecifierValue();
       if (moduleSpec.startsWith('@apexdesigner/dsl')) return true;
       if (moduleSpec.startsWith('@') && !moduleSpec.includes('/')) return true;
@@ -204,7 +204,7 @@ const directiveGenerator: DesignGenerator = {
           name: serviceName,
           isReadonly: false,
           scope: undefined,
-          initializer: `inject(${serviceType})`,
+          initializer: `inject(${serviceType})`
         });
         if (!angularCoreExtras.includes('inject')) angularCoreExtras.push('inject');
       }
@@ -254,23 +254,26 @@ const directiveGenerator: DesignGenerator = {
 
     if (callOnLoadMethods.length > 0) {
       interfaces.push('OnInit');
-      ngOnInitBody = callOnLoadMethods.map((m) => `    this.${m}();`).join('\n');
+      ngOnInitBody = callOnLoadMethods.map(m => `    this.${m}();`).join('\n');
     }
     if (callOnUnloadMethods.length > 0) {
       interfaces.push('OnDestroy');
-      ngOnDestroyBody = callOnUnloadMethods.map((m) => `    this.${m}();`).join('\n');
+      ngOnDestroyBody = callOnUnloadMethods.map(m => `    this.${m}();`).join('\n');
     }
 
     // Remove the class and rebuild as Angular directive
     const className = exportedClass.getName()!;
-    const classBody = exportedClass.getMembers().map((m) => m.getText()).join('\n\n  ');
+    const classBody = exportedClass
+      .getMembers()
+      .map(m => m.getText())
+      .join('\n\n  ');
     const extendsClause = '';
     const implementsClause = interfaces.length > 0 ? ` implements ${interfaces.join(', ')}` : '';
 
     // Collect all imports
     const existingImports = writableFile
       .getImportDeclarations()
-      .map((imp) => imp.getText())
+      .map(imp => imp.getText())
       .join('\n');
 
     // Build @Directive decorator
@@ -280,7 +283,7 @@ const directiveGenerator: DesignGenerator = {
     // Build service imports
     const serviceImportLines: string[] = [];
     for (const svc of serviceImports) {
-      const svcMetadata = (context.listMetadata('Service') || []).find((m) => m.name === svc.typeName);
+      const svcMetadata = (context.listMetadata('Service') || []).find(m => m.name === svc.typeName);
       if (svcMetadata) {
         const svcBaseName = svc.typeName.replace(/Service$/, '');
         const svcFile = kebabCase(svcBaseName);
@@ -292,7 +295,7 @@ const directiveGenerator: DesignGenerator = {
     const componentImportLines: string[] = [];
     const componentMetadata = context.listMetadata('Component') || [];
     for (const compName of componentImportNames) {
-      const compMeta = componentMetadata.find((m) => m.name === compName);
+      const compMeta = componentMetadata.find(m => m.name === compName);
       if (compMeta) {
         const compBaseName = compName.replace(/Component$/, '');
         const compFile = kebabCase(compBaseName);
@@ -330,7 +333,7 @@ const directiveGenerator: DesignGenerator = {
     let output = `import { ${uniqueExtras.join(', ')} } from '@angular/core';\n`;
 
     // Build set of module specifiers already handled by injectable external types
-    const handledModuleSpecs = new Set(injectedExternalTypes.map((t) => t.moduleSpecifier));
+    const handledModuleSpecs = new Set(injectedExternalTypes.map(t => t.moduleSpecifier));
 
     // Add remaining non-design imports from the source
     for (const imp of writableFile.getImportDeclarations()) {
@@ -347,7 +350,10 @@ const directiveGenerator: DesignGenerator = {
     for (const line of externalImportLines) output += line + '\n';
 
     // Build class with decorator
-    const jsDoc = exportedClass.getJsDocs().map((d) => d.getText()).join('\n');
+    const jsDoc = exportedClass
+      .getJsDocs()
+      .map(d => d.getText())
+      .join('\n');
     if (jsDoc) output += '\n' + jsDoc;
 
     output += `\n@Directive({${decoratorConfig}\n})`;
@@ -361,7 +367,7 @@ const directiveGenerator: DesignGenerator = {
 
     debug('generated %j (%d chars)', outputFilePath, output.length);
     return results;
-  },
+  }
 };
 
 export { directiveGenerator };

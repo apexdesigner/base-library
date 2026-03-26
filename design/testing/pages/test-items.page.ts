@@ -37,25 +37,25 @@ applyTemplate(TestItemsPage, [
           { element: 'div', attributes: { grow: null } },
           {
             element: 'import-tsv-button',
-            attributes: { array: '<- testItems' },
+            attributes: { array: '<- testItems' }
           },
           {
             element: 'export-tsv-button',
-            attributes: { array: '<- testItems' },
+            attributes: { array: '<- testItems' }
           },
           {
             element: 'refresh-button',
-            attributes: { array: '<- testItems' },
+            attributes: { array: '<- testItems' }
           },
           {
             element: 'add-button',
-            attributes: { array: '<- testItems', added: '-> testItems.read()' },
+            attributes: { array: '<- testItems', added: '-> testItems.read()' }
           }
         ]
       },
       {
         element: 'search-bar',
-        attributes: { array: '<- testItems' },
+        attributes: { array: '<- testItems' }
       },
       {
         if: '!testItems.reading',

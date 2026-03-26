@@ -60,18 +60,19 @@ npx es opp get <id> --json
 
 ### Create an opportunity
 
-The `--content` option accepts markdown.
+The `--content` option accepts inline markdown. Use `--content-file <path>` to read content from a file instead.
 
 ```bash
 npx es opp create --title "New feature request"
 npx es opp create --title "Bug fix" --content "## Details\nSome **markdown** here" --assigned user@example.com
-npx es opp create --title "Task" --field status=New --field priority=High
+npx es opp create --title "Task" --content-file ./proposal.md --field status=New --field priority=High
 ```
 
 ### Update an opportunity
 
 ```bash
 npx es opp update <id> --title "Updated title"
+npx es opp update <id> --content-file ./updated-proposal.md
 npx es opp update <id> --assigned user@example.com --field status=Done
 ```
 

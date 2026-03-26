@@ -52,8 +52,8 @@ export class SearchBarComponent extends Component {
       return;
     }
 
-    const stringProps = metadata.properties.filter((p) => p.type === 'string' || p.type === 'text');
-    const conditions = stringProps.map((p) => ({ [p.name]: { ilike: '%' + text + '%' } }));
+    const stringProps = metadata.properties.filter(p => p.type === 'string' || p.type === 'text');
+    const conditions = stringProps.map(p => ({ [p.name]: { ilike: '%' + text + '%' } }));
 
     if (conditions.length > 0) {
       this.array.readFilter = { ...this.array.readFilter, where: { or: conditions } };
@@ -76,8 +76,8 @@ applyTemplate(SearchBarComponent, [
           matInput: null,
           placeholder: 'Search',
           ngModel: '<-> searchText',
-          ngModelChange: '-> search()',
-        },
+          ngModelChange: '-> search()'
+        }
       },
       {
         if: 'searchText',
@@ -87,10 +87,10 @@ applyTemplate(SearchBarComponent, [
             element: 'button',
             name: 'clearButton',
             attributes: { 'mat-icon-button': null, matSuffix: null, click: '-> clear()' },
-            contains: [{ 'mat-icon': 'close' }],
-          },
-        ],
-      },
-    ],
-  },
+            contains: [{ 'mat-icon': 'close' }]
+          }
+        ]
+      }
+    ]
+  }
 ]);

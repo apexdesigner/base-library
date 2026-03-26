@@ -88,8 +88,8 @@ applyTemplate(TestCategoryPage, [
             attributes: {
               array: '<- testCategory.controls.childCategories',
               includeLaunch: '<- true',
-              routePrefix: '/test-categories',
-            },
+              routePrefix: '/test-categories'
+            }
           },
           {
             element: 'mat-form-field',

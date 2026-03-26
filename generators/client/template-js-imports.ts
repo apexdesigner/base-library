@@ -456,7 +456,7 @@ export async function resolveJsTemplateImports(
     return {
       name: m.name,
       selector: options.selector || '',
-      importPath: `@app/directives/${dirFile}/${dirFile}.directive`,
+      importPath: `@app/directives/${dirFile}/${dirFile}.directive`
     };
   });
 

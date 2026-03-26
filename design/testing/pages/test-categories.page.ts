@@ -33,7 +33,7 @@ applyTemplate(TestCategoriesPage, [
           { h2: 'Test Categories' },
           {
             element: 'add-field',
-            attributes: { array: '<- testCategories', added: '-> testCategories.read()' },
+            attributes: { array: '<- testCategories', added: '-> testCategories.read()' }
           },
           {
             for: 'category',

@@ -24,6 +24,9 @@
     "generators/",
     "docs/"
   ],
+  "optionalDependencies": {
+    "@apexbpm/envisioning-studio-cli": "^1.0.5"
+  },
   "publishConfig": {
     "access": "restricted"
   },
@@ -37,11 +40,10 @@
   },
   "type": "module",
   "devDependencies": {
-    "@apexbpm/envisioning-studio-cli": "^1.0.5",
     "@apexdesigner/claude-skills": "^1.0.48",
-    "@apexdesigner/dsl": "^0.8.73",
-    "@apexdesigner/generator": "^0.8.53",
-    "@apexdesigner/server": "^0.8.46",
+    "@apexdesigner/dsl": "^0.8.77",
+    "@apexdesigner/generator": "^0.8.54",
+    "@apexdesigner/server": "^0.8.49",
     "@apexdesigner/utilities": "^0.1.27",
     "@types/debug": "^4.1.12",
     "@types/node": "^25.2.3",

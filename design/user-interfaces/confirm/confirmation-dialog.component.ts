@@ -40,14 +40,14 @@ applyTemplate(ConfirmationDialogComponent, [
         element: 'button',
         name: 'cancelButton',
         text: 'Cancel',
-        attributes: { 'mat-button': null, click: '-> cancelAction()' },
+        attributes: { 'mat-button': null, click: '-> cancelAction()' }
       },
       {
         element: 'button',
         name: 'confirmButton',
         text: 'Confirm',
-        attributes: { 'mat-raised-button': null, color: 'warn', click: '-> confirmAction()' },
-      },
-    ],
-  },
+        attributes: { 'mat-raised-button': null, color: 'warn', click: '-> confirmAction()' }
+      }
+    ]
+  }
 ]);

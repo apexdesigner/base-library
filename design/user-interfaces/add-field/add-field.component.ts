@@ -54,7 +54,7 @@ export class AddFieldComponent extends Component {
       if (!this.label) {
         this.defaultLabel = 'Add ' + metadata.displayName;
       }
-      const firstProp = metadata.properties.find((p) => p.name !== 'id');
+      const firstProp = metadata.properties.find(p => p.name !== 'id');
       if (firstProp) {
         this.firstPropertyName = firstProp.name;
       }
@@ -86,9 +86,9 @@ applyTemplate(AddFieldComponent, [
           matInput: null,
           placeholder: '<- label || defaultLabel',
           ngModel: '<-> inputValue',
-          'keyup.enter': '-> add()',
-        },
-      },
-    ],
-  },
+          'keyup.enter': '-> add()'
+        }
+      }
+    ]
+  }
 ]);

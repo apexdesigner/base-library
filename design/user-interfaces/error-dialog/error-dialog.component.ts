@@ -29,9 +29,9 @@ applyTemplate(ErrorDialogComponent, [
       {
         for: 'message',
         of: 'messages',
-        contains: [{ element: 'div', text: '{{message}}' }],
-      },
-    ],
+        contains: [{ element: 'div', text: '{{message}}' }]
+      }
+    ]
   },
   {
     'mat-dialog-actions': [
@@ -39,8 +39,8 @@ applyTemplate(ErrorDialogComponent, [
         element: 'button',
         name: 'closeButton',
         text: 'Close',
-        attributes: { 'mat-button': null, click: '-> closeDialog()' },
-      },
-    ],
-  },
+        attributes: { 'mat-button': null, click: '-> closeDialog()' }
+      }
+    ]
+  }
 ]);

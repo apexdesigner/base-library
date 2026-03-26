@@ -50,7 +50,7 @@ export class ImportTsvDialogComponent extends Component {
 
     try {
       const lines = this.tsvText.trim().split('\n');
-      const rows = lines.map((line) => line.split('\t'));
+      const rows = lines.map(line => line.split('\t'));
 
       if (this.tsvHandler) {
         await this.tsvHandler(rows);
@@ -58,7 +58,7 @@ export class ImportTsvDialogComponent extends Component {
       } else {
         const headers = rows[0];
         const dataRows = rows.slice(1);
-        const idIndex = headers.findIndex((h) => h.trim() === 'id');
+        const idIndex = headers.findIndex(h => h.trim() === 'id');
         const entityClass = await this.businessObjectService.loadEntity(this.array.entityName);
         let added = 0;
         let updated = 0;
@@ -108,7 +108,7 @@ applyTemplate(ImportTsvDialogComponent, [
       {
         if: 'customTemplate',
         name: 'templateHint',
-        contains: [{ element: 'p', text: '{{customTemplate}}' }],
+        contains: [{ element: 'p', text: '{{customTemplate}}' }]
       },
       {
         element: 'mat-form-field',
@@ -118,21 +118,21 @@ applyTemplate(ImportTsvDialogComponent, [
           {
             element: 'textarea',
             name: 'tsvInput',
-            attributes: { matInput: null, rows: '<- 10', ngModel: '<-> tsvText' },
-          },
-        ],
+            attributes: { matInput: null, rows: '<- 10', ngModel: '<-> tsvText' }
+          }
+        ]
       },
       {
         if: 'resultMessage',
         name: 'result',
-        contains: [{ element: 'p', text: '{{resultMessage}}' }],
+        contains: [{ element: 'p', text: '{{resultMessage}}' }]
       },
       {
         if: 'importing',
         name: 'progress',
-        contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }],
-      },
-    ],
+        contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+      }
+    ]
   },
   {
     'mat-dialog-actions': [
@@ -140,15 +140,15 @@ applyTemplate(ImportTsvDialogComponent, [
         element: 'button',
         name: 'cancelButton',
         text: 'Close',
-        attributes: { 'mat-button': null, click: '-> dialog.close()' },
+        attributes: { 'mat-button': null, click: '-> dialog.close()' }
       },
       { element: 'span', attributes: { grow: null } },
       {
         element: 'button',
         name: 'importButton',
         text: 'Import',
-        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> import()', disabled: '<- importing || !tsvText.trim()' },
-      },
-    ],
-  },
+        attributes: { 'mat-raised-button': null, color: 'primary', click: '-> import()', disabled: '<- importing || !tsvText.trim()' }
+      }
+    ]
+  }
 ]);

@@ -38,8 +38,8 @@ applyTemplate(ImportTsvButtonComponent, [
       array: '<- array',
       parentObject: '<- parentObject',
       customTemplate: '<- customTemplate',
-      tsvHandler: '<- tsvHandler',
-    },
+      tsvHandler: '<- tsvHandler'
+    }
   },
   {
     element: 'button',
@@ -47,8 +47,8 @@ applyTemplate(ImportTsvButtonComponent, [
     attributes: {
       'mat-icon-button': null,
       matTooltip: 'Import',
-      click: '-> importDialog.open()',
+      click: '-> importDialog.open()'
     },
-    contains: [{ 'mat-icon': 'upload' }],
-  },
+    contains: [{ 'mat-icon': 'upload' }]
+  }
 ]);

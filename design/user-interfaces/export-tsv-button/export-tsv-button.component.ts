@@ -28,11 +28,11 @@ export class ExportTsvButtonComponent extends Component {
     }
 
     const properties = metadata.properties;
-    const headers = properties.map((p) => p.name);
+    const headers = properties.map(p => p.name);
     const items = Array.isArray(this.array) ? this.array : (this.array as any).getRawValue();
 
     const rows = items.map((item: any) =>
-      properties.map((p) => {
+      properties.map(p => {
         const value = item[p.name];
         if (value == null) return '';
         const str = String(value);
@@ -40,7 +40,7 @@ export class ExportTsvButtonComponent extends Component {
           return '"' + str.replace(/"/g, '""') + '"';
         }
         return str;
-      }),
+      })
     );
 
     const tsv = [headers.join('\t'), ...rows.map((r: string[]) => r.join('\t'))].join('\n');
@@ -61,8 +61,8 @@ applyTemplate(ExportTsvButtonComponent, [
     attributes: {
       'mat-icon-button': null,
       matTooltip: 'Export',
-      click: '-> export()',
+      click: '-> export()'
     },
-    contains: [{ 'mat-icon': 'download' }],
-  },
+    contains: [{ 'mat-icon': 'download' }]
+  }
 ]);

@@ -1,5 +1,6 @@
 import { Page, page, property, method, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestItemFormGroup } from '@business-objects-client';
+import { DeleteButtonComponent } from '@components';
 import { EditDialogComponent } from '@components';
 import { ErrorDialogComponent } from '@components';
 import { TestItemsPage } from '@pages';
@@ -47,31 +48,42 @@ applyTemplate(TestItemPage, [
       {
         element: 'flex-column',
         contains: [
-          { h1: '{{testItem.value.name}}' },
+          {
+            element: 'flex-row',
+            attributes: { alignCenter: true },
+            contains: [
+              { h1: '{{testItem.value.name}}' },
+              { element: 'div', attributes: { grow: null } },
+              {
+                element: 'delete-button',
+                attributes: { object: '<- testItem', afterDeleteRoute: '/test-items' }
+              }
+            ]
+          },
           { element: 'sf-fields', name: 'topFields', attributes: { group: '<- testItem' } },
           {
             element: 'edit-dialog',
             name: 'editDialog',
             referenceable: true,
-            attributes: { object: '<- testItem', allowDelete: '<- true' },
+            attributes: { object: '<- testItem', allowDelete: '<- true' }
           },
           {
             element: 'button',
             name: 'openEditDialog',
             text: 'Test Edit Dialog',
-            attributes: { 'mat-raised-button': null, click: '-> editDialog.open()' },
+            attributes: { 'mat-raised-button': null, click: '-> editDialog.open()' }
           },
           {
             element: 'error-dialog',
             name: 'errorDialog',
             referenceable: true,
-            attributes: { messages: '<- testErrors' },
+            attributes: { messages: '<- testErrors' }
           },
           {
             element: 'button',
             name: 'openErrorDialog',
             text: 'Test Error Dialog',
-            attributes: { 'mat-raised-button': null, color: 'warn', click: '-> errorDialog.open()' },
+            attributes: { 'mat-raised-button': null, color: 'warn', click: '-> errorDialog.open()' }
           },
           {
             element: 'button',
@@ -81,8 +93,8 @@ applyTemplate(TestItemPage, [
               'mat-raised-button': null,
               color: 'accent',
               confirm: '-> onConfirmTest()',
-              confirmMessage: 'Are you sure you want to do this?',
-            },
+              confirmMessage: 'Are you sure you want to do this?'
+            }
           },
           {
             if: 'testItem.controls.testItemDetail',
