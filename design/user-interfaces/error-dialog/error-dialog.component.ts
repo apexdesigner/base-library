@@ -1,4 +1,5 @@
 import { Component, component, property, applyTemplate } from '@apexdesigner/dsl/component';
+import { MatDialogRef } from '@angular/material/dialog';
 
 /**
  * Error Dialog
@@ -12,9 +13,13 @@ export class ErrorDialogComponent extends Component {
   @property({ isInput: true })
   messages!: string[];
 
+  /** Dialog Ref */
+  dialog!: MatDialogRef<any>;
+
   /** Close - Clear messages and close the dialog */
-  close(): void {
+  closeDialog(): void {
     this.messages = [];
+    this.dialog.close();
   }
 }
 
@@ -34,7 +39,7 @@ applyTemplate(ErrorDialogComponent, [
         element: 'button',
         name: 'closeButton',
         text: 'Close',
-        attributes: { 'mat-button': null, click: '-> close()' },
+        attributes: { 'mat-button': null, click: '-> closeDialog()' },
       },
     ],
   },
