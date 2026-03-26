@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.0.154] - 2026-03-26
+
+- ef52d5e chore: add generator-test-output to gitignore
+- f096491 chore: format design files and update deps
+- 7f07807 test: update form group tests to expect static behavior delegation
+- 9327fa9 feat: add delete-button component and static methods on form groups (#4432)
+- fb1dda6 fix: error-dialog close button now closes the dialog via MatDialogRef
+- 6ffc567 fix: import-tsv supports update when id column is present
+- 038ef6f fix: include id column in TSV export for round-trip support
+- 42059da fix: search-bar filter, clear button, and preserve existing readFilter
+- fddeaba fix: accordion form group handling, dialog close, and directive import resolution
+- 6dc19ff docs: add programmatic dialog opening pattern
+- 8d455df feat: add confirm directive, confirmation dialog, and directive generator (#5686)
+- 7ff3dbc feat: add accordion component (#1492)
+- 450a3d3 feat: add import-tsv-button and import-tsv-dialog components (#8161)
+- db2977a feat: add add-field component (#4572)
+- d34e80f feat: add search-bar component (#3713)
+- 5043e46 feat: add export-tsv-button component (#3337)
+- 2a8d3da feat: add edit-dialog component (#4531)
+- daedaa3 feat: add error-dialog component (#6336)
+- 902ecc2 feat: add refresh-button component (#3466)
+
+
 ## [1.0.153] - 2026-03-25
 
 - a5d896d chore: add temp/ to gitignore
