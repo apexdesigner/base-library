@@ -4,7 +4,7 @@ import { createSimpleMockWorkspace } from '@apexdesigner/generator';
 
 describe('dataSourceGenerator', () => {
   describe('validation', () => {
-    it('should throw if File data source is missing rootDir', async () => {
+    it('should skip File data source missing rootDir (validated by library validator)', async () => {
       const workspace = createSimpleMockWorkspace();
       workspace.addMetadata('DataSource', 'TestFile', {
         sourceCode: `
@@ -18,7 +18,8 @@ describe('dataSourceGenerator', () => {
       });
 
       const metadata = workspace.context.listMetadata('DataSource')[0];
-      await expect(dataSourceGenerator.generate(metadata, workspace.context)).rejects.toThrow('requires a rootDir configuration option');
+      const result = await dataSourceGenerator.generate(metadata, workspace.context);
+      expect(result).toBe('');
     });
 
     it('should not throw if File data source has rootDir', async () => {

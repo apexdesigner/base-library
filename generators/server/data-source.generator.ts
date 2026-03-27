@@ -51,6 +51,10 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     return undefined;
   }
 
+  if (persistenceType === 'File' && !configOptions.some(opt => opt.startsWith('rootDir:'))) {
+    return undefined;
+  }
+
   // Collect function imports from @functions for Custom data sources
   const functionImports: { name: string; kebab: string }[] = [];
   if (persistenceType === 'Custom') {
@@ -112,6 +116,8 @@ const dataSourceGenerator: DesignGenerator = {
       .map(ds => readDataSourceConfig(ds, context))
       .filter((ds): ds is DataSourceInfo => ds !== undefined)
       .sort((a, b) => a.name.localeCompare(b.name));
+
+    if (dataSources.length === 0) return '';
     debug(
       'data sources: %O',
       dataSources.map(ds => ({ name: ds.name, type: ds.persistenceType, entities: ds.entityNames }))
