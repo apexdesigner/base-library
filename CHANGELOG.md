@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.155] - 2026-03-27
+
+- 45fcac0 chore: format design and generator files
+- 434db66 feat: favorite authors with cross-data-source include, test pages
+- 89c8b6b feat: add Open Library test page with search and accordion
+- 02ee074 docs: add missing handler signatures to custom data sources pattern
+- 3dd014d feat: custom data source support with Open Library example
+- 4fbe7b5 feat: add Open Library custom data source design files
+
+
 ## [1.0.154] - 2026-03-26
 
 - ef52d5e chore: add generator-test-output to gitignore

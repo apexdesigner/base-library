@@ -52,7 +52,7 @@ export class SearchBarComponent extends Component {
       return;
     }
 
-    const stringProps = metadata.properties.filter(p => p.type === 'string' || p.type === 'text');
+    const stringProps = metadata.properties.filter(p => (p.type === 'string' || p.type === 'text') && p.name !== 'id' && !p.name.endsWith('Id'));
     const conditions = stringProps.map(p => ({ [p.name]: { ilike: '%' + text + '%' } }));
 
     if (conditions.length > 0) {
