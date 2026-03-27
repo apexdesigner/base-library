@@ -63,15 +63,15 @@ applyTemplate(OpenLibraryAuthorsPage, [
               matInput: null,
               placeholder: 'Search authors by name',
               ngModel: '<-> searchText',
-              'keyup.enter': '-> search()',
-            },
-          },
-        ],
+              'keyup.enter': '-> search()'
+            }
+          }
+        ]
       },
       {
         if: 'authors.reading',
         name: 'loading',
-        contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }],
+        contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
       },
       {
         if: '!authors.reading && authors.length > 0',
@@ -93,20 +93,23 @@ applyTemplate(OpenLibraryAuthorsPage, [
                         name: 'favoriteButton',
                         attributes: {
                           'mat-icon-button': null,
-                          click: '-> toggleFavorite(author)',
+                          click: '-> toggleFavorite(author)'
                         },
                         contains: [
                           {
                             'mat-icon': "{{author.favoriteAuthor ? 'star' : 'star_border'}}",
                             attributes: {
-                              'style.color': "<- author.favoriteAuthor ? 'gold' : 'gray'",
-                            },
-                          },
-                        ],
+                              'style.color': "<- author.favoriteAuthor ? 'gold' : 'gray'"
+                            }
+                          }
+                        ]
                       },
                       {
                         element: 'a',
-                        attributes: { routerLink: "<- '/open-library-authors/' + author.id", style: 'flex: 1; text-decoration: none; color: inherit' },
+                        attributes: {
+                          routerLink: "<- '/open-library-authors/' + author.id",
+                          style: 'flex: 1; text-decoration: none; color: inherit'
+                        },
                         contains: [
                           {
                             element: 'flex-row',
@@ -114,19 +117,19 @@ applyTemplate(OpenLibraryAuthorsPage, [
                             contains: [
                               { element: 'span', text: '{{author.name}}', attributes: { style: 'font-weight: 500; min-width: 200px' } },
                               { element: 'span', text: '{{author.topWork}}', attributes: { style: 'color: gray; flex: 1' } },
-                              { element: 'span', text: '{{author.workCount}} works', attributes: { style: 'color: gray' } },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+                              { element: 'span', text: '{{author.workCount}} works', attributes: { style: 'color: gray' } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]);

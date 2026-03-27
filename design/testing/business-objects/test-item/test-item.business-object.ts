@@ -1,7 +1,7 @@
-import { BusinessObject, property, relationship } from "@apexdesigner/dsl";
+import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
 
-import { TestSetting, TestItemDetail } from "@business-objects";
-import { Uuid, Email } from "@base-types";
+import { TestSetting, TestItemDetail } from '@business-objects';
+import { Uuid, Email } from '@base-types';
 
 /**
  * Test Item
@@ -26,13 +26,13 @@ export class TestItem extends BusinessObject {
   dueDate?: Date;
 
   /** Test Setting - Referenced test setting */
-  @relationship({ type: "References" })
+  @relationship({ type: 'References' })
   testSetting?: TestSetting;
 
   /** Test Setting Id - Foreign key to test setting */
   testSettingId?: Uuid;
 
   /** Test Item Detail - Associated detail record */
-  @relationship({ type: "Has One" })
+  @relationship({ type: 'Has One' })
   testItemDetail?: TestItemDetail;
 }

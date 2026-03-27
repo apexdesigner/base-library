@@ -9,13 +9,13 @@ import { OpenLibraryAuthorsPage } from '@pages';
  */
 @page({
   path: '/open-library-authors/:author.id',
-  parentPage: OpenLibraryAuthorsPage,
+  parentPage: OpenLibraryAuthorsPage
 })
 export class OpenLibraryAuthorPage extends Page {
   /** Author - The current author */
   @property({
     read: 'Automatically',
-    include: { openLibraryWorks: {} },
+    include: { openLibraryWorks: {} }
   })
   author!: OpenLibraryAuthorFormGroup;
 }
@@ -24,7 +24,7 @@ applyTemplate(OpenLibraryAuthorPage, [
   {
     if: 'author.reading',
     name: 'loading',
-    contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }],
+    contains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
   },
   {
     if: '!author.reading',
@@ -37,12 +37,12 @@ applyTemplate(OpenLibraryAuthorPage, [
           {
             if: 'author.value.birthDate',
             name: 'birthDate',
-            contains: [{ element: 'p', text: 'Born: {{author.value.birthDate}}' }],
+            contains: [{ element: 'p', text: 'Born: {{author.value.birthDate}}' }]
           },
           {
             if: 'author.value.topWork',
             name: 'topWork',
-            contains: [{ element: 'p', text: 'Top Work: {{author.value.topWork}}' }],
+            contains: [{ element: 'p', text: 'Top Work: {{author.value.topWork}}' }]
           },
           { h2: 'Works' },
           {
@@ -50,11 +50,11 @@ applyTemplate(OpenLibraryAuthorPage, [
             attributes: { dataSource: '<- author.value.openLibraryWorks' },
             contains: [
               { element: 'dt-column', name: 'title', attributes: { property: 'title', header: 'Title' } },
-              { element: 'dt-column', name: 'firstPublishYear', attributes: { property: 'firstPublishYear', header: 'Published' } },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+              { element: 'dt-column', name: 'firstPublishYear', attributes: { property: 'firstPublishYear', header: 'Published' } }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]);

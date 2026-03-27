@@ -1,6 +1,6 @@
-import { BusinessObject, property } from "@apexdesigner/dsl";
-import { applyOpenLibraryDataSource } from "@data-sources";
-import { OpenLibraryAuthor } from "@business-objects";
+import { BusinessObject, property } from '@apexdesigner/dsl';
+import { applyOpenLibraryDataSource } from '@data-sources';
+import { OpenLibraryAuthor } from '@business-objects';
 
 /**
  * Open Library Work

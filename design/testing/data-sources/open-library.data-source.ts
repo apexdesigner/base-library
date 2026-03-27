@@ -14,6 +14,6 @@ export class OpenLibrary extends DataSource {
   configuration = {
     persistenceType: 'Custom',
     find: openLibraryFind,
-    findById: openLibraryFindById,
+    findById: openLibraryFindById
   };
 }

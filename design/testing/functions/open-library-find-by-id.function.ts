@@ -15,64 +15,61 @@ const Debug = createDebug('OpenLibrary');
  * @param filter - Optional filter for includes
  * @returns The matching record or null
  */
-addFunction(
-  { layer: 'Server' },
-  async function openLibraryFindById(persistence: any, entity: string, id: string, filter?: any): Promise<any | null> {
-    const debug = Debug.extend('findById');
-    debug('entity %j', entity);
-    debug('id %j', id);
-    debug('filter %j', filter);
+addFunction({ layer: 'Server' }, async function openLibraryFindById(persistence: any, entity: string, id: string, filter?: any): Promise<any | null> {
+  const debug = Debug.extend('findById');
+  debug('entity %j', entity);
+  debug('id %j', id);
+  debug('filter %j', filter);
 
-    const baseUrl = 'https://openlibrary.org';
+  const baseUrl = 'https://openlibrary.org';
 
-    if (entity === 'OpenLibraryAuthor') {
-      const url = `${baseUrl}/authors/${id}.json`;
-      debug('url %j', url);
+  if (entity === 'OpenLibraryAuthor') {
+    const url = `${baseUrl}/authors/${id}.json`;
+    debug('url %j', url);
 
-      const response = await fetch(url);
-      debug('response.ok %j', response.ok);
+    const response = await fetch(url);
+    debug('response.ok %j', response.ok);
 
-      if (!response.ok) return null;
+    if (!response.ok) return null;
 
-      const doc = await response.json();
-      debug('doc.name %j', doc.name);
+    const doc = await response.json();
+    debug('doc.name %j', doc.name);
 
-      const result = {
-        id: doc.key?.replace('/authors/', '') || id,
-        name: doc.name || doc.personal_name,
-        birthDate: doc.birth_date || null,
-        topWork: doc.top_work || null,
-        workCount: null,
-      };
-      debug('result %j', result);
+    const result = {
+      id: doc.key?.replace('/authors/', '') || id,
+      name: doc.name || doc.personal_name,
+      birthDate: doc.birth_date || null,
+      topWork: doc.top_work || null,
+      workCount: null
+    };
+    debug('result %j', result);
 
-      return persistence.resolveIncludes(entity, result, filter?.include);
-    }
+    return persistence.resolveIncludes(entity, result, filter?.include);
+  }
 
-    if (entity === 'OpenLibraryWork') {
-      const url = `${baseUrl}/works/${id}.json`;
-      debug('url %j', url);
+  if (entity === 'OpenLibraryWork') {
+    const url = `${baseUrl}/works/${id}.json`;
+    debug('url %j', url);
 
-      const response = await fetch(url);
-      debug('response.ok %j', response.ok);
+    const response = await fetch(url);
+    debug('response.ok %j', response.ok);
 
-      if (!response.ok) return null;
+    if (!response.ok) return null;
 
-      const doc = await response.json();
-      debug('doc.title %j', doc.title);
+    const doc = await response.json();
+    debug('doc.title %j', doc.title);
 
-      const result = {
-        id: doc.key?.replace('/works/', '') || id,
-        title: doc.title,
-        firstPublishYear: null,
-        authorId: doc.authors?.[0]?.author?.key?.replace('/authors/', '') || null,
-      };
-      debug('result %j', result);
+    const result = {
+      id: doc.key?.replace('/works/', '') || id,
+      title: doc.title,
+      firstPublishYear: null,
+      authorId: doc.authors?.[0]?.author?.key?.replace('/authors/', '') || null
+    };
+    debug('result %j', result);
 
-      return persistence.resolveIncludes(entity, result, filter?.include);
-    }
+    return persistence.resolveIncludes(entity, result, filter?.include);
+  }
 
-    debug('unknown entity %j', entity);
-    return null;
-  },
-);
+  debug('unknown entity %j', entity);
+  return null;
+});

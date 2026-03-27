@@ -1,5 +1,5 @@
-import { BusinessObject, relationship } from "@apexdesigner/dsl";
-import { OpenLibraryAuthor, User } from "@business-objects";
+import { BusinessObject, relationship } from '@apexdesigner/dsl';
+import { OpenLibraryAuthor, User } from '@business-objects';
 
 /**
  * Favorite Author
@@ -12,7 +12,7 @@ export class FavoriteAuthor extends BusinessObject {
   id!: number;
 
   /** Author - The favorited Open Library author */
-  @relationship({ type: "References" })
+  @relationship({ type: 'References' })
   author?: OpenLibraryAuthor;
 
   /** Author Id - Open Library author key */
