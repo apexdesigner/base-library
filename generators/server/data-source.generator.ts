@@ -108,7 +108,10 @@ const dataSourceGenerator: DesignGenerator = {
     const allDataSources = context.listMetadata('DataSource');
     if (allDataSources.length === 0) return '';
 
-    const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context)).filter((ds): ds is DataSourceInfo => ds !== undefined).sort((a, b) => a.name.localeCompare(b.name));
+    const dataSources = allDataSources
+      .map(ds => readDataSourceConfig(ds, context))
+      .filter((ds): ds is DataSourceInfo => ds !== undefined)
+      .sort((a, b) => a.name.localeCompare(b.name));
     debug(
       'data sources: %O',
       dataSources.map(ds => ({ name: ds.name, type: ds.persistenceType, entities: ds.entityNames }))
