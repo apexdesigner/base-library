@@ -1,6 +1,6 @@
 import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
 
-import { TestSetting, TestItemDetail } from '@business-objects';
+import { TestSetting, TestItemDetail, OpenLibraryAuthor } from '@business-objects';
 import { Uuid, Email } from '@base-types';
 
 /**
@@ -35,4 +35,11 @@ export class TestItem extends BusinessObject {
   /** Test Item Detail - Associated detail record */
   @relationship({ type: 'Has One' })
   testItemDetail?: TestItemDetail;
+
+  /** Favorite Author - An Open Library author referenced by this item */
+  @relationship({ type: 'References' })
+  favoriteAuthor?: OpenLibraryAuthor;
+
+  /** Favorite Author Id - Open Library author key */
+  favoriteAuthorId?: string;
 }

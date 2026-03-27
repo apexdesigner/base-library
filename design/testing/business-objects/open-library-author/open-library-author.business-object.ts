@@ -1,6 +1,6 @@
 import { BusinessObject, property } from "@apexdesigner/dsl";
 import { applyOpenLibraryDataSource } from "@data-sources";
-import { OpenLibraryWork } from "@business-objects";
+import { OpenLibraryWork, TestItem } from "@business-objects";
 
 /**
  * Open Library Author
@@ -26,6 +26,9 @@ export class OpenLibraryAuthor extends BusinessObject {
 
   /** Open Library Works - Works by this author */
   openLibraryWorks?: OpenLibraryWork[];
+
+  /** Test Items - Test items that reference this author */
+  testItems?: TestItem[];
 }
 
 applyOpenLibraryDataSource(OpenLibraryAuthor);

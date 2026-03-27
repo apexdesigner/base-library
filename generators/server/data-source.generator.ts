@@ -13,6 +13,7 @@ interface DataSourceInfo {
   persistenceType: string;
   factoryName: string;
   configOptions: string[];
+  functionImports: { name: string; kebab: string }[];
   entityNames: string[];
   boKebabNames: string[];
   isDefault: boolean;
@@ -27,7 +28,7 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
 
   const configProp = dsClass.getProperty('configuration');
   const initializer = configProp?.getInitializer();
-  const possibleValues = 'Postgres, Memory, File';
+  const possibleValues = 'Postgres, Memory, File, Custom';
   if (!initializer || initializer.getKind() !== SyntaxKind.ObjectLiteralExpression) {
     throw new Error(`DataSource "${dsName}" is missing a configuration object with persistenceType (possible values: ${possibleValues})`);
   }
@@ -55,6 +56,17 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     throw new Error(`DataSource "${dsName}" with persistenceType "File" requires a rootDir configuration option`);
   }
 
+  // Collect function imports from @functions for Custom data sources
+  const functionImports: { name: string; kebab: string }[] = [];
+  if (persistenceType === 'Custom') {
+    const functionImportDecls = metadata.sourceFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@functions');
+    for (const decl of functionImportDecls) {
+      for (const named of decl.getNamedImports()) {
+        functionImports.push({ name: named.getName(), kebab: kebabCase(named.getName()) });
+      }
+    }
+  }
+
   // Find BOs that use this data source
   const businessObjects = context.listMetadata('BusinessObject');
   const myBOs = businessObjects.filter(bo => {
@@ -72,6 +84,7 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
     persistenceType,
     factoryName: `create${pascalCase(persistenceType)}Persistence`,
     configOptions,
+    functionImports,
     entityNames: myBOs.map(bo => pascalCase(bo.name)).sort(),
     boKebabNames: myBOs.map(bo => kebabCase(bo.name)).sort(),
     isDefault
@@ -130,6 +143,11 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
     lines.push(`import "../schemas/business-objects/${boKebab}.js";`);
   }
 
+  // Function imports for Custom data sources
+  for (const fn of ds.functionImports) {
+    lines.push(`import { ${fn.name} } from "../functions/${fn.kebab}.js";`);
+  }
+
   lines.push('');
   lines.push(`const debug = createDebug("${debugNamespace}:DataSource:${ds.className}");`);
   lines.push('');
@@ -142,6 +160,8 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
   const factoryArg = ds.configOptions.length > 0 ? `{ ${ds.configOptions.join(', ')} }` : '';
   lines.push(`export const dataSource = await ${ds.factoryName}(${factoryArg});`);
   lines.push(`debug("${ds.className} persistence created");`);
+
+  if (ds.persistenceType !== 'Custom') {
   lines.push('');
   lines.push('const schemaForceSync = process.env.SCHEMA_FORCE_SYNC === "true";');
   lines.push('const result = await dataSource.validateSchema();');
@@ -177,6 +197,7 @@ function generateSingle(ds: DataSourceInfo, debugNamespace: string): string {
   lines.push('    }');
   lines.push('  }');
   lines.push('}');
+  } // end if not Custom
 
   return lines.join('\n');
 }
@@ -202,6 +223,13 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
     }
   }
 
+  // Function imports for Custom data sources
+  for (const ds of dataSources) {
+    for (const fn of ds.functionImports) {
+      lines.push(`import { ${fn.name} } from "../functions/${fn.kebab}.js";`);
+    }
+  }
+
   lines.push('');
   lines.push(`const debug = createDebug("${debugNamespace}:DataSource:Federated");`);
   lines.push('');
@@ -211,20 +239,29 @@ function generateFederated(dataSources: DataSourceInfo[], debugNamespace: string
     const varName = camelCase(ds.name);
     const entitiesArg = `entities: [${ds.entityNames.map(n => `"${n}"`).join(', ')}]`;
     const allArgs = [...ds.configOptions, entitiesArg];
+
     lines.push(`debug("Creating ${ds.persistenceType} persistence for ${ds.className}");`);
     if (ds.persistenceType === 'Postgres') {
       lines.push(
         'debug("PG env: PGHOST=%s PGPORT=%s PGDATABASE=%s PGUSER=%s DATABASE_URL=%s", process.env.PGHOST, process.env.PGPORT, process.env.PGDATABASE, process.env.PGUSER, process.env.DATABASE_URL ? "[set]" : undefined);'
       );
     }
-    lines.push(`const ${varName} = await ${ds.factoryName}({ ${allArgs.join(', ')} });`);
+
+    if (ds.persistenceType === 'Custom') {
+      lines.push(`const ${varName} = ${ds.factoryName}({ ${allArgs.join(', ')} });`);
+    } else {
+      lines.push(`const ${varName} = await ${ds.factoryName}({ ${allArgs.join(', ')} });`);
+    }
   }
 
   lines.push('');
 
-  // Validate each child's schema
-  lines.push('const schemaForceSync = process.env.SCHEMA_FORCE_SYNC === "true";');
-  for (const ds of dataSources) {
+  // Validate each child's schema (skip Custom — no tables to validate)
+  const validatableDataSources = dataSources.filter(ds => ds.persistenceType !== 'Custom');
+  if (validatableDataSources.length > 0) {
+    lines.push('const schemaForceSync = process.env.SCHEMA_FORCE_SYNC === "true";');
+  }
+  for (const ds of validatableDataSources) {
     const varName = camelCase(ds.name);
     lines.push(`const ${varName}Result = await ${varName}.validateSchema();`);
     lines.push(`if (!${varName}Result.valid) {`);
