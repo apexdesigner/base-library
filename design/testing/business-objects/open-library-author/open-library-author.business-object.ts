@@ -1,6 +1,6 @@
-import { BusinessObject, property } from "@apexdesigner/dsl";
+import { BusinessObject, property, relationship } from "@apexdesigner/dsl";
 import { applyOpenLibraryDataSource } from "@data-sources";
-import { OpenLibraryWork, TestItem } from "@business-objects";
+import { OpenLibraryWork, FavoriteAuthor } from "@business-objects";
 
 /**
  * Open Library Author
@@ -27,8 +27,9 @@ export class OpenLibraryAuthor extends BusinessObject {
   /** Open Library Works - Works by this author */
   openLibraryWorks?: OpenLibraryWork[];
 
-  /** Test Items - Test items that reference this author */
-  testItems?: TestItem[];
+  /** Favorite Author - The favorite record for this author */
+  @relationship({ type: 'Has One' })
+  favoriteAuthor?: FavoriteAuthor;
 }
 
 applyOpenLibraryDataSource(OpenLibraryAuthor);
