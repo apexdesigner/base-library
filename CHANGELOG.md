@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.156] - 2026-03-27
+
+- a486374 chore: update deps and format docs
+- 53e9411 fix: generator skips invalid data sources instead of throwing
+- ad053f1 chore: format data-source generator
+- d366962 chore: update validator package and generated docs
+- 2b744f0 feat: add data-source-configuration library validator
+
+
 ## [1.0.155] - 2026-03-27
 
 - 45fcac0 chore: format design and generator files
