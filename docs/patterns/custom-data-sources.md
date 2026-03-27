@@ -33,9 +33,15 @@ Every handler receives `persistence` as the first parameter, followed by `entity
 | `find` | `(persistence, entity, filter?) => Promise<T[]>` |
 | `findOne` | `(persistence, entity, filter) => Promise<T \| null>` |
 | `findById` | `(persistence, entity, id, filter?) => Promise<T \| null>` |
+| `findOrCreate` | `(persistence, entity, options) => Promise<{ entity: T; created: boolean }>` |
+| `count` | `(persistence, entity, filter?) => Promise<number>` |
 | `create` | `(persistence, entity, data) => Promise<T>` |
+| `createMany` | `(persistence, entity, data[]) => Promise<T[]>` |
+| `update` | `(persistence, entity, filter, data) => Promise<T[]>` |
 | `updateById` | `(persistence, entity, id, data) => Promise<T \| null>` |
+| `delete` | `(persistence, entity, filter) => Promise<number>` |
 | `deleteById` | `(persistence, entity, id) => Promise<boolean>` |
+| `upsert` | `(persistence, entity, options) => Promise<T>` |
 
 The `persistence` parameter provides access to `resolveIncludes` and other persistence operations.
 
