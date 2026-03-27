@@ -19,18 +19,17 @@ interface DataSourceInfo {
   isDefault: boolean;
 }
 
-function readDataSourceConfig(metadata: DesignMetadata, context: GenerationContext): DataSourceInfo {
+function readDataSourceConfig(metadata: DesignMetadata, context: GenerationContext): DataSourceInfo | undefined {
   const dsName = metadata.name;
   const dsClass = getClassByBase(metadata.sourceFile, 'DataSource');
   if (!dsClass) {
-    throw new Error(`DataSource "${dsName}" has no class extending DataSource`);
+    return undefined;
   }
 
   const configProp = dsClass.getProperty('configuration');
   const initializer = configProp?.getInitializer();
-  const possibleValues = 'Postgres, Memory, File, Custom';
   if (!initializer || initializer.getKind() !== SyntaxKind.ObjectLiteralExpression) {
-    throw new Error(`DataSource "${dsName}" is missing a configuration object with persistenceType (possible values: ${possibleValues})`);
+    return undefined;
   }
 
   const objLiteral = initializer.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
@@ -49,11 +48,11 @@ function readDataSourceConfig(metadata: DesignMetadata, context: GenerationConte
   }
 
   if (!persistenceType) {
-    throw new Error(`DataSource "${dsName}" configuration is missing persistenceType (possible values: ${possibleValues})`);
+    return undefined;
   }
 
   if (persistenceType === 'File' && !configOptions.some(opt => opt.startsWith('rootDir:'))) {
-    throw new Error(`DataSource "${dsName}" with persistenceType "File" requires a rootDir configuration option`);
+    return undefined;
   }
 
   // Collect function imports from @functions for Custom data sources
@@ -113,7 +112,12 @@ const dataSourceGenerator: DesignGenerator = {
     const allDataSources = context.listMetadata('DataSource');
     if (allDataSources.length === 0) return '';
 
-    const dataSources = allDataSources.map(ds => readDataSourceConfig(ds, context)).sort((a, b) => a.name.localeCompare(b.name));
+    const dataSources = allDataSources
+      .map(ds => readDataSourceConfig(ds, context))
+      .filter((ds): ds is DataSourceInfo => ds !== undefined)
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    if (dataSources.length === 0) return '';
     debug(
       'data sources: %O',
       dataSources.map(ds => ({ name: ds.name, type: ds.persistenceType, entities: ds.entityNames }))
