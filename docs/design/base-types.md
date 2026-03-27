@@ -1,5 +1,5 @@
 ---
-generated-from: design/audit/audit-event-status.base-type.ts
+generated-from: design/project.ts
 generated-by: design-docs.base-types.doc.md
 ---
 # Base Types

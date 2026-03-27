@@ -54,5 +54,8 @@
   },
   "bin": {
     "api": ".claude/skills/apex-designer/scripts/api.cjs"
+  },
+  "dependencies": {
+    "@apexdesigner/validator": "file:../validator/apexdesigner-validator-0.8.58.tgz"
   }
 }
