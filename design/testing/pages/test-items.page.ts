@@ -1,5 +1,10 @@
-import { Page, page, property, applyTemplate } from '@apexdesigner/dsl/page';
+import { Page, page, property, method, applyTemplate } from '@apexdesigner/dsl/page';
 import { TestItemPersistedArray } from '@business-objects-client';
+import { TestItem } from '@business-objects-client';
+import { TestSummary } from '@interface-definitions';
+import createDebug from 'debug';
+
+const debug = createDebug('TestItemsPage');
 import { AddButtonComponent } from '@components';
 import { ExportTsvButtonComponent } from '@components';
 import { ImportTsvButtonComponent } from '@components';
@@ -23,12 +28,23 @@ export class TestItemsPage extends Page {
     order: [{ field: 'email', direction: 'desc' }]
   })
   testItems!: TestItemPersistedArray;
+
+  /** Summaries */
+  summaries: TestSummary[] = [];
+
+  /** Load Summaries */
+  @method({ callOnLoad: true })
+  async loadSummaries(): Promise<void> {
+    this.summaries = await TestItem.getSummaries();
+    debug('summaries %j', this.summaries);
+  }
 }
 
 applyTemplate(TestItemsPage, [
   {
     element: 'flex-column',
     contains: [
+      { element: 'pre', name: 'summariesOutput', text: '{{summaries | json}}' },
       {
         element: 'flex-row',
         attributes: { alignCenter: true },
