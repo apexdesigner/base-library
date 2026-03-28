@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.157] - 2026-03-28
+
+- fbeda51 chore: format files and update deps
+- 00412d4 fix: carry over behavior DSL imports to generated client code (#8144)
+
+
 ## [1.0.156] - 2026-03-27
 
 - a486374 chore: update deps and format docs
