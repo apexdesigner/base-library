@@ -346,6 +346,54 @@ const businessObjectClientGenerator: DesignGenerator = {
       }
     }
 
+    // Carry over imports from behavior design files
+    const behaviorInterfaceDefinitionImports = new Set<string>();
+    const behaviorBusinessObjectImports = new Set<string>();
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (parent !== className) continue;
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
+
+        for (const importDeclaration of behavior.sourceFile.getImportDeclarations()) {
+          const moduleSpecifier = importDeclaration.getModuleSpecifierValue();
+          for (const namedImport of importDeclaration.getNamedImports()) {
+            const importName = namedImport.getName();
+            if (moduleSpecifier === '@interface-definitions') {
+              behaviorInterfaceDefinitionImports.add(importName);
+            } else if (moduleSpecifier === '@business-objects' && importName !== className) {
+              behaviorBusinessObjectImports.add(importName);
+            }
+          }
+        }
+      } catch {
+        // Skip errors — behaviors already processed above
+      }
+    }
+
+    // Add interface definition imports
+    if (behaviorInterfaceDefinitionImports.size > 0) {
+      const importLine = `import type { ${Array.from(behaviorInterfaceDefinitionImports).sort().join(', ')} } from '../interface-definitions/index';`;
+      const lastImportIndex = lines.findIndex(line => line === '');
+      if (lastImportIndex >= 0) {
+        lines.splice(lastImportIndex, 0, importLine);
+      }
+    }
+
+    // Add business object imports not already covered by relationships
+    for (const businessObjectName of Array.from(behaviorBusinessObjectImports).sort()) {
+      if (!referencedTypes.has(businessObjectName)) {
+        const importLine = `import type { ${businessObjectName} } from './${kebabCase(businessObjectName)}';`;
+        const lastImportIndex = lines.findIndex(line => line === '');
+        if (lastImportIndex >= 0) {
+          lines.splice(lastImportIndex, 0, importLine);
+        }
+      }
+    }
+
     if (behaviorMethods.length > 0) {
       lines.push('');
       lines.push('  // --- Behaviors ---');
