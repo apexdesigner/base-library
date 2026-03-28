@@ -287,7 +287,9 @@ const businessObjectClientGenerator: DesignGenerator = {
         const headersArg = hasHeaders ? `{ ${classified.header.map(p => p.name).join(', ')} }` : undefined;
 
         const behaviorKebab = kebabCase(func.name);
-        const returnType = func.returnType || 'any';
+        const rawReturnType = func.returnType || 'any';
+        const isAsyncReturn = rawReturnType.startsWith('Promise<');
+        const returnType = isAsyncReturn ? rawReturnType : `Promise<${rawReturnType}>`;
 
         const methodLines: string[] = [];
         methodLines.push('');
@@ -310,30 +312,33 @@ const businessObjectClientGenerator: DesignGenerator = {
           urlExpr = `\`\${this.baseUrl}/\${this.plural}/${behaviorKebab}\``;
         }
 
+        // Inner type for HTTP generic (strip Promise<> wrapper since HTTP methods return Promise)
+        const innerReturnType = isAsyncReturn ? rawReturnType.slice(8, -1) : rawReturnType;
+
         // Map httpMethod to base class method call
         const callForMethod = (base: string) => {
           const hArg = headersArg ? `, ${headersArg}` : '';
           switch (httpMethod) {
             case 'get':
-              return hasHeaders ? `${base}.get<${returnType}>(url, undefined, ${headersArg})` : `${base}.get<${returnType}>(url)`;
+              return hasHeaders ? `${base}.get<${innerReturnType}>(url, undefined, ${headersArg})` : `${base}.get<${innerReturnType}>(url)`;
             case 'delete':
-              return hasHeaders ? `${base}.del<${returnType}>(url, ${headersArg})` : `${base}.del<${returnType}>(url)`;
+              return hasHeaders ? `${base}.del<${innerReturnType}>(url, ${headersArg})` : `${base}.del<${innerReturnType}>(url)`;
             case 'patch':
-              return `${base}.patch<${returnType}>(url, ${bodyArg}${hArg})`;
+              return `${base}.patch<${innerReturnType}>(url, ${bodyArg}${hArg})`;
             default:
-              return `${base}.post<${returnType}>(url, ${bodyArg}${hArg})`;
+              return `${base}.post<${innerReturnType}>(url, ${bodyArg}${hArg})`;
           }
         };
 
         if (isInstance) {
           // Instance behavior: /api/{plural}/:id/{behavior-kebab}
-          methodLines.push(`  async ${func.name}(${paramStr}): Promise<${returnType}> {`);
+          methodLines.push(`  async ${func.name}(${paramStr}): ${returnType} {`);
           methodLines.push(`    const url = ${urlExpr};`);
           methodLines.push(`    return ${callForMethod('BusinessObjectBase')};`);
           methodLines.push('  }');
         } else {
           // Class behavior: /api/{plural}/{behavior-kebab}
-          methodLines.push(`  static async ${func.name}(${paramStr}): Promise<${returnType}> {`);
+          methodLines.push(`  static async ${func.name}(${paramStr}): ${returnType} {`);
           methodLines.push(`    const url = ${urlExpr};`);
           methodLines.push(`    return ${callForMethod('this')};`);
           methodLines.push('  }');
