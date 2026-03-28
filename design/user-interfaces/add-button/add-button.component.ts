@@ -27,6 +27,10 @@ export class AddButtonComponent extends Component {
   @property({ isInput: true })
   dialogWidth?: string;
 
+  /** Render as an icon button instead of a raised button. */
+  @property({ isInput: true })
+  iconButton = false;
+
   /** Emits the newly added entity or form group after a successful add. */
   @property({ isOutput: true })
   added?: EventEmitter<any>;
@@ -50,6 +54,35 @@ export class AddButtonComponent extends Component {
 
 applyTemplate(AddButtonComponent, [
   {
+    if: 'iconButton',
+    contains: [
+      {
+        element: 'button',
+        name: 'addIcon',
+        attributes: {
+          'mat-icon-button': null,
+          color: 'primary',
+          matTooltip: "<- label || defaultLabel || 'Add'",
+          click: '-> addDialog.open()'
+        },
+        contains: [{ 'mat-icon': 'add' }]
+      }
+    ],
+    elseContains: [
+      {
+        element: 'button',
+        name: 'add',
+        text: "{{ label || defaultLabel || 'Add' }}",
+        attributes: {
+          'mat-raised-button': null,
+          color: 'primary',
+          click: '-> addDialog.open()'
+        },
+        contains: [{ 'mat-icon': 'add' }]
+      }
+    ]
+  },
+  {
     element: 'add-dialog',
     name: 'addDialog',
     referenceable: true,
@@ -59,16 +92,5 @@ applyTemplate(AddButtonComponent, [
       options: "<- { autoFocus: true, width: dialogWidth || '400px' }",
       added: '-> added.emit($event)'
     }
-  },
-  {
-    element: 'button',
-    name: 'add',
-    text: "{{ label || defaultLabel || 'Add' }}",
-    attributes: {
-      'mat-raised-button': null,
-      color: 'primary',
-      click: '-> addDialog.open()'
-    },
-    contains: [{ 'mat-icon': 'add' }]
   }
 ]);
