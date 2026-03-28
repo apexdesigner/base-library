@@ -186,8 +186,52 @@ const businessObjectFormGroupTypeGenerator: DesignGenerator = {
     fgLines.push(`  static updateById(id: ${idType}, data: Partial<${className}>): Promise<${className}>;`);
     fgLines.push(`  static deleteById(id: ${idType}): Promise<boolean>;`);
 
-    // Behavior method declarations
+    // Carry over imports from behavior DSL files
     const allBehaviors = context.listMetadata('Behavior');
+    const behaviorInterfaceDefinitionImports = new Set<string>();
+    const behaviorBusinessObjectImports = new Set<string>();
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (parent !== className) continue;
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
+
+        for (const importDeclaration of behavior.sourceFile.getImportDeclarations()) {
+          const moduleSpecifier = importDeclaration.getModuleSpecifierValue();
+          for (const namedImport of importDeclaration.getNamedImports()) {
+            const importName = namedImport.getName();
+            if (moduleSpecifier === '@interface-definitions') {
+              behaviorInterfaceDefinitionImports.add(importName);
+            } else if (moduleSpecifier === '@business-objects' && importName !== className) {
+              behaviorBusinessObjectImports.add(importName);
+            }
+          }
+        }
+      } catch {
+        // Skip errors — behaviors processed below
+      }
+    }
+
+    if (behaviorInterfaceDefinitionImports.size > 0) {
+      // Insert before the class declaration
+      const classLineIndex = fgLines.findIndex(line => line.startsWith('export declare class'));
+      const importLine = `import type { ${Array.from(behaviorInterfaceDefinitionImports).sort().join(', ')} } from '../interface-definitions/index';`;
+      fgLines.splice(classLineIndex, 0, importLine);
+    }
+
+    for (const businessObjectName of Array.from(behaviorBusinessObjectImports).sort()) {
+      const alreadyImported = formArrayImports.has(businessObjectName) || formGroupImports.has(businessObjectName);
+      if (!alreadyImported) {
+        const classLineIndex = fgLines.findIndex(line => line.startsWith('export declare class'));
+        const importLine = `import type { ${businessObjectName} } from './${kebabCase(businessObjectName)}';`;
+        fgLines.splice(classLineIndex, 0, importLine);
+      }
+    }
+
+    // Behavior method declarations
 
     for (const behavior of allBehaviors) {
       try {

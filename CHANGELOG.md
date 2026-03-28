@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.158] - 2026-03-28
+
+- cf1191e chore: format generators and docs
+- 38c7d5d fix: carry over DSL imports in form group and page generators (#8144)
+- a16afe9 fix: prevent double Promise wrapping in client entity class behavior return types
+- 666ac20 fix: carry over behavior DSL imports in form group generators (#8144)
+
+
 ## [1.0.157] - 2026-03-28
 
 - fbeda51 chore: format files and update deps

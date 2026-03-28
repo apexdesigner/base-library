@@ -120,6 +120,18 @@ const pageComponentGenerator: DesignGenerator = {
     debug('injectable external types %j', Object.fromEntries(injectableExternalTypes));
     debug('injectLocally external types %j', [...injectLocallyTypes]);
 
+    // Capture @interface-definitions imports before removal
+    const interfaceDefinitionImportNames: string[] = [];
+    const interfaceDefinitionImportDecls = writableFile
+      .getImportDeclarations()
+      .filter(imp => imp.getModuleSpecifierValue() === '@interface-definitions');
+    for (const decl of interfaceDefinitionImportDecls) {
+      for (const named of decl.getNamedImports()) {
+        interfaceDefinitionImportNames.push(named.getName());
+      }
+    }
+    debug('captured interface definition imports %j', interfaceDefinitionImportNames);
+
     // Remove DSL and design-time alias imports
     // Design aliases are single-segment (@pages, @base-types, etc.)
     // npm scoped packages have a slash (@angular/core, @apexdesigner/dsl)
@@ -621,6 +633,15 @@ const pageComponentGenerator: DesignGenerator = {
       writableFile.addImportDeclaration({
         moduleSpecifier: `../../services/${svc.serviceFile}/${svc.serviceFile}.service`,
         namedImports: [svc.typeName]
+      });
+    }
+
+    // Add interface definition imports (re-map @interface-definitions -> relative path)
+    if (interfaceDefinitionImportNames.length > 0) {
+      writableFile.addImportDeclaration({
+        moduleSpecifier: '../../interface-definitions/index',
+        namedImports: interfaceDefinitionImportNames.sort(),
+        isTypeOnly: true
       });
     }
 

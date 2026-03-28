@@ -287,4 +287,88 @@ describe('businessObjectFormGroupGenerator', () => {
     const faSection = content.split('class ProcessDesignFormArray')[1];
     expect(faSection).toContain("readonly entityName = 'ProcessDesign' as const");
   });
+
+  describe('behavior type imports', () => {
+    it('should import interface definitions referenced in behavior return types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'TestItem', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class TestItem extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('InterfaceDefinition', 'TestSummary', {
+        sourceCode: `
+          import { InterfaceDefinition } from '@apexdesigner/dsl';
+          export class TestSummary extends InterfaceDefinition {
+            name?: string;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'TestItemGetSummaries', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { TestItem } from '@business-objects';
+          import { TestSummary } from '@interface-definitions';
+          addBehavior(
+            TestItem,
+            { type: 'Class', httpMethod: 'Get' },
+            async function getSummaries(): Promise<TestSummary[]> {
+              return [];
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
+      const content = result instanceof Map ? result.get('client/src/app/business-objects/test-item-form-group.ts')! : (result as string);
+
+      expect(content).toContain('getSummaries');
+      expect(content).toContain("import type { TestSummary } from '../interface-definitions/index'");
+    });
+
+    it('should import unrelated business objects referenced in behavior return types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'AuditEntry', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class AuditEntry extends BusinessObject {
+            id!: number;
+          }
+        `
+      });
+      workspace.addMetadata('Behavior', 'OrderGetAuditLog', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          import { AuditEntry } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Instance', httpMethod: 'Get' },
+            async function getAuditLog(order: Order): Promise<AuditEntry[]> {
+              return [];
+            }
+          );
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = await businessObjectFormGroupGenerator.generate(metadata, workspace.context);
+      const content = result instanceof Map ? result.get('client/src/app/business-objects/order-form-group.ts')! : (result as string);
+
+      expect(content).toContain('getAuditLog');
+      expect(content).toContain("import type { AuditEntry } from './audit-entry'");
+    });
+  });
 });

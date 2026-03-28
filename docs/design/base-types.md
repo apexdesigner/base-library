@@ -1,5 +1,5 @@
 ---
-generated-from: design/audit/audit-event-status.base-type.ts
+generated-from: design/base-types/zip-code.base-type.ts
 generated-by: design-docs.base-types.doc.md
 ---
 # Base Types
