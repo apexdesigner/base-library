@@ -223,4 +223,48 @@ describe('businessObjectFormGroupTypeGenerator', () => {
 
     expect(content).toContain("readonly entityName: 'ProcessDesign'");
   });
+
+  describe('behavior type imports', () => {
+    it('should import interface definitions referenced in behavior return types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'TestItem', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class TestItem extends BusinessObject {
+            id!: number;
+          }
+        `,
+      });
+      workspace.addMetadata('InterfaceDefinition', 'TestSummary', {
+        sourceCode: `
+          import { InterfaceDefinition } from '@apexdesigner/dsl';
+          export class TestSummary extends InterfaceDefinition {
+            name?: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'TestItemGetSummaries', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { TestItem } from '@business-objects';
+          import { TestSummary } from '@interface-definitions';
+          addBehavior(
+            TestItem,
+            { type: 'Class', httpMethod: 'Get' },
+            async function getSummaries(): Promise<TestSummary[]> {
+              return [];
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
+      const content =
+        result instanceof Map ? result.get('design/@types/business-objects-client/test-item-form-group.d.ts')! : (result as string);
+
+      expect(content).toContain('getSummaries');
+      expect(content).toContain("import type { TestSummary } from '../interface-definitions/index'");
+    });
+  });
 });

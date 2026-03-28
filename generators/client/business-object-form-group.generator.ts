@@ -229,8 +229,56 @@ const businessObjectFormGroupGenerator: DesignGenerator = {
     lines.push(`    return ${className}.deleteById(id);`);
     lines.push('  }');
 
-    // --- Behavior delegation ---
+    // --- Carry over imports from behavior DSL files ---
     const allBehaviors = context.listMetadata('Behavior');
+    const behaviorInterfaceDefinitionImports = new Set<string>();
+    const behaviorBusinessObjectImports = new Set<string>();
+
+    for (const behavior of allBehaviors) {
+      try {
+        const options = getBehaviorOptions(behavior.sourceFile);
+        if (!options) continue;
+        const parent = getBehaviorParent(behavior.sourceFile);
+        if (parent !== className) continue;
+        if (LIFECYCLE_TYPES.has(options.type as string)) continue;
+
+        for (const importDeclaration of behavior.sourceFile.getImportDeclarations()) {
+          const moduleSpecifier = importDeclaration.getModuleSpecifierValue();
+          for (const namedImport of importDeclaration.getNamedImports()) {
+            const importName = namedImport.getName();
+            if (moduleSpecifier === '@interface-definitions') {
+              behaviorInterfaceDefinitionImports.add(importName);
+            } else if (moduleSpecifier === '@business-objects' && importName !== className) {
+              behaviorBusinessObjectImports.add(importName);
+            }
+          }
+        }
+      } catch {
+        // Skip errors — behaviors processed below
+      }
+    }
+
+    if (behaviorInterfaceDefinitionImports.size > 0) {
+      const importLine = `import type { ${Array.from(behaviorInterfaceDefinitionImports).sort().join(', ')} } from '../interface-definitions/index';`;
+      const lastImportIndex = lines.findIndex(line => line === '');
+      if (lastImportIndex >= 0) {
+        lines.splice(lastImportIndex, 0, importLine);
+      }
+    }
+
+    // Add BO imports not already covered by relationship imports
+    const existingImportNames = new Set(Array.from(refTypeImports.keys()));
+    for (const businessObjectName of Array.from(behaviorBusinessObjectImports).sort()) {
+      if (!existingImportNames.has(businessObjectName)) {
+        const importLine = `import type { ${businessObjectName} } from './${kebabCase(businessObjectName)}';`;
+        const lastImportIndex = lines.findIndex(line => line === '');
+        if (lastImportIndex >= 0) {
+          lines.splice(lastImportIndex, 0, importLine);
+        }
+      }
+    }
+
+    // --- Behavior delegation ---
     const behaviorMethods: string[] = [];
 
     for (const behavior of allBehaviors) {
