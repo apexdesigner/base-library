@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.160] - 2026-03-28
+
+- 5a6a0d0 chore: format and update deps
+- 85bf886 feat: add iconButton input to add-button component
+- 3ca379e docs: update pattern docs to use JS object template syntax
+
+
 ## [1.0.159] - 2026-03-28
 
 - 8cc57e9 chore: format test file
