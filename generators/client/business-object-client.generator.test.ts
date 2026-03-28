@@ -332,7 +332,7 @@ describe('businessObjectClientGenerator', () => {
           export class TestItem extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('InterfaceDefinition', 'TestSummary', {
         sourceCode: `
@@ -341,7 +341,7 @@ describe('businessObjectClientGenerator', () => {
             name?: string;
             count?: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'TestItemGetSummaries', {
         sourceCode: `
@@ -355,7 +355,7 @@ describe('businessObjectClientGenerator', () => {
               return [];
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -374,7 +374,7 @@ describe('businessObjectClientGenerator', () => {
             id!: number;
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'AuditEntry', {
         sourceCode: `
@@ -383,7 +383,7 @@ describe('businessObjectClientGenerator', () => {
             id!: number;
             action?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'OrderGetAuditLog', {
         sourceCode: `
@@ -397,7 +397,7 @@ describe('businessObjectClientGenerator', () => {
               return [];
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
@@ -415,7 +415,7 @@ describe('businessObjectClientGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'ShippingInfo', {
         sourceCode: `
@@ -424,7 +424,7 @@ describe('businessObjectClientGenerator', () => {
             id!: number;
             address?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'OrderSetShipping', {
         sourceCode: `
@@ -436,7 +436,7 @@ describe('businessObjectClientGenerator', () => {
             { type: 'Instance', httpMethod: 'Post' },
             async function setShipping(order: Order, info: ShippingInfo): Promise<void> {}
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
@@ -454,7 +454,7 @@ describe('businessObjectClientGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('InterfaceDefinition', 'FilterOptions', {
         sourceCode: `
@@ -462,7 +462,7 @@ describe('businessObjectClientGenerator', () => {
           export class FilterOptions extends InterfaceDefinition {
             status?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'OrderSearch', {
         sourceCode: `
@@ -476,7 +476,7 @@ describe('businessObjectClientGenerator', () => {
               return [];
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;

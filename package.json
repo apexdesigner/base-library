@@ -45,12 +45,12 @@
     "@apexdesigner/generator": "^0.8.54",
     "@apexdesigner/server": "^0.8.51",
     "@apexdesigner/utilities": "^0.1.27",
+    "@apexdesigner/validator": "^0.8.59",
     "@types/debug": "^4.1.12",
     "@types/node": "^25.2.3",
     "change-case": "^5.4.4",
     "prettier": "^3.8.1",
     "ts-morph": "^27.0.2",
-    "@apexdesigner/validator": "^0.8.58",
     "vitest": "^4.0.18"
   },
   "bin": {
