@@ -126,4 +126,32 @@ describe('extractTemplateUsage', () => {
     expect(usage.directives.has('mat-list-item')).toBe(true);
     expect(usage.directives.has('routerLink')).toBe(true);
   });
+
+  it('should track directives per element for accurate compound selector matching', () => {
+    // Template has:
+    //   <button mat-button>Refresh</button>
+    //   <a mat-list-item routerLink="/foo">Link</a>
+    // mat-button is on button, NOT on a.
+    // The resolver should NOT match a[mat-button] just because both 'a' and 'mat-button' exist.
+    const usage = extractTemplateUsage([
+      {
+        element: 'button',
+        text: 'Refresh',
+        attributes: { 'mat-button': null },
+      },
+      {
+        element: 'a',
+        text: 'Link',
+        attributes: { 'mat-list-item': null, routerLink: '/foo' },
+      },
+    ]);
+
+    // directivesByElement should track which attributes belong to which element
+    expect(usage.directivesByElement.get('button')?.has('mat-button')).toBe(true);
+    expect(usage.directivesByElement.get('a')?.has('mat-list-item')).toBe(true);
+    expect(usage.directivesByElement.get('a')?.has('routerLink')).toBe(true);
+
+    // mat-button should NOT be associated with 'a'
+    expect(usage.directivesByElement.get('a')?.has('mat-button')).toBeFalsy();
+  });
 });

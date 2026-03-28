@@ -217,6 +217,8 @@ export interface TemplateUsage {
   /** All element tags including standard HTML — needed for compound directive selector matching */
   allElements: Set<string>;
   directives: Set<string>;
+  /** Directives keyed by the element they appear on — for accurate compound selector matching */
+  directivesByElement: Map<string, Set<string>>;
   pipes: Set<string>;
 }
 
@@ -229,6 +231,7 @@ export function extractTemplateUsage(template: any): TemplateUsage {
     elements: new Set(),
     allElements: new Set(),
     directives: new Set(),
+    directivesByElement: new Map(),
     pipes: new Set()
   };
   walkNode(template, usage);
@@ -279,7 +282,7 @@ function walkNode(node: any, usage: TemplateUsage): void {
   // Scan the attributes object
   const attributes = node.attributes as Record<string, any> | undefined;
   if (attributes) {
-    scanAttributes(attributes, usage);
+    scanAttributes(attributes, usage, tag);
   }
 
   // Scan text for pipes
@@ -296,12 +299,20 @@ function walkNode(node: any, usage: TemplateUsage): void {
   walkChildren(node, usage);
 }
 
-function scanAttributes(attributes: Record<string, any>, usage: TemplateUsage): void {
+function scanAttributes(attributes: Record<string, any>, usage: TemplateUsage, elementTag?: string): void {
   for (const [attrName, value] of Object.entries(attributes)) {
     // Collect non-standard attributes as potential directives
     const baseAttr = attrName.replace(/\..+$/, '');
     if (!STANDARD_HTML_ATTRIBUTES.has(baseAttr) && !baseAttr.startsWith('data-') && !baseAttr.startsWith('aria-')) {
       usage.directives.add(attrName);
+
+      // Track which element this directive belongs to
+      if (elementTag) {
+        if (!usage.directivesByElement.has(elementTag)) {
+          usage.directivesByElement.set(elementTag, new Set());
+        }
+        usage.directivesByElement.get(elementTag)!.add(attrName);
+      }
     }
 
     // Scan string values for pipes
@@ -462,10 +473,18 @@ export async function resolveJsTemplateImports(
 
   // Process directive selectors
   for (const attr of usage.directives) {
+    // Build the set of elements this attribute actually appears on
+    const elementsForAttribute = new Set<string>();
+    for (const [elementTag, attributeSet] of usage.directivesByElement) {
+      if (attributeSet.has(attr)) {
+        elementsForAttribute.add(elementTag);
+      }
+    }
+
     // Check directive interfaces (external directives from libraries)
     const matchingInterfaces = directiveInterfaces.filter(di => {
       const selectorParts = di.selector.split(',').map(s => s.trim());
-      return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
+      return selectorParts.some(part => matchesDirectiveSelector(part, attr, elementsForAttribute, usage.directives));
     });
     for (const matchingInterface of matchingInterfaces) {
       for (const imp of matchingInterface.imports) {
@@ -479,7 +498,7 @@ export async function resolveJsTemplateImports(
     // Check DSL-defined directives
     const matchingDirectives = dslDirectives.filter(d => {
       const selectorParts = d.selector.split(',').map(s => s.trim());
-      return selectorParts.some(part => matchesDirectiveSelector(part, attr, usage.allElements, usage.directives));
+      return selectorParts.some(part => matchesDirectiveSelector(part, attr, elementsForAttribute, usage.directives));
     });
     for (const matchingDirective of matchingDirectives) {
       const importPath = matchingDirective.importPath;
