@@ -35,16 +35,25 @@ export class AddPropertyDialogComponent extends Component {
   }
 }
 
-applyTemplate(AddPropertyDialogComponent, `
-  <h2 mat-dialog-title>Add Property</h2>
-  <div mat-dialog-content>
-    <p>Dialog content here</p>
-  </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-button (click)="save()">Save</button>
-  </div>
-`);
+applyTemplate(AddPropertyDialogComponent, [
+  { "mat-dialog-content": [{ element: "p", text: "Dialog content here" }] },
+  {
+    "mat-dialog-actions": [
+      {
+        element: "button",
+        name: "cancelButton",
+        text: "Cancel",
+        attributes: { "mat-button": null, click: "-> cancel()" },
+      },
+      {
+        element: "button",
+        name: "saveButton",
+        text: "Save",
+        attributes: { "mat-button": null, click: "-> save()" },
+      },
+    ],
+  },
+]);
 ```
 
 Key points:
@@ -52,69 +61,74 @@ Key points:
 - `@property({ isInput: true })` — data passed into the dialog
 - `@property({ isOutput: true })` — events emitted back to the parent; type as `EventEmitter<void>` (or `EventEmitter<T>` for a payload)
 - `dialog!: MatDialogRef<any>` — declare this property to get access to the dialog reference for programmatic close
-- Use `mat-dialog-title`, `mat-dialog-content`, and `mat-dialog-actions` in the template
+- Use `mat-dialog-content` and `mat-dialog-actions` as element shorthand keys in the template
 
 ## Using a Dialog from a Page or Component
 
-Place the dialog component in the template using its selector and a template reference. Call `open()` to show it:
+Place the dialog component in the template using its selector. Use `referenceable: true` and a `name` to get a handle. Call `open()` to show it:
 
 ```typescript
 import { Page, page, applyTemplate } from "@apexdesigner/dsl/page";
 import { AddPropertyDialogComponent } from "@components";
 
-@page({
-  path: "/properties",
-})
+@page({ path: "/properties" })
 export class PropertiesPage extends Page {
 
   addPropertyDialog!: AddPropertyDialogComponent;
 
-  openAddProperty() {
-    this.addPropertyDialog.open();
-  }
-
   onSaved() {
-    console.log('saved');
+    console.log("saved");
   }
 }
 
-applyTemplate(PropertiesPage, `
-  <flex-column>
-    <button mat-button (click)="openAddProperty()">Add Property</button>
-    <add-property-dialog
-      #addPropertyDialog
-      [title]="'Add Property'"
-      (saved)="onSaved()">
-    </add-property-dialog>
-  </flex-column>
-`);
+applyTemplate(PropertiesPage, [
+  {
+    "flex-column": [
+      {
+        element: "add-property-dialog",
+        name: "addPropertyDialog",
+        referenceable: true,
+        attributes: { title: "<- 'Add Property'", saved: "-> onSaved()" },
+      },
+      {
+        element: "button",
+        text: "Add Property",
+        attributes: { "mat-button": null, click: "-> addPropertyDialog.open()" },
+      },
+    ],
+  },
+]);
 ```
 
 Key points:
-- Add the dialog to the template using its selector (`<add-property-dialog>`)
-- Use `#addPropertyDialog` template reference to get a handle — must match the property name
-- Bind inputs with `[title]="'Add Property'"` — these are forwarded to the dialog content
-- Bind outputs with `(saved)="..."` — these fire when the dialog emits events
-- Call `this.addPropertyDialog.open()` from a method to show the dialog
+- Add the dialog to the template using its selector (`add-property-dialog`)
+- Use `name` and `referenceable: true` to get a handle — the name must match the class property
+- Bind inputs with `<-` prefix: `title: "<- 'Add Property'"`
+- Bind outputs with `->` prefix: `saved: "-> onSaved()"`
+- Call `addPropertyDialog.open()` via a button click to show the dialog
 
 ## Dialog Options
 
 The wrapper accepts an `options` input of type `MatDialogConfig` for controlling dialog behavior:
 
-```html
-<add-property-dialog
-  #addPropertyDialog
-  [title]="'Add Property'"
-  [options]="{ width: '600px', disableClose: true }"
-  (saved)="onSaved()">
-</add-property-dialog>
+```typescript
+{
+  element: "add-property-dialog",
+  name: "addPropertyDialog",
+  referenceable: true,
+  attributes: {
+    title: "<- 'Add Property'",
+    options: "<- { width: '600px', disableClose: true }",
+    saved: "-> onSaved()",
+  },
+}
 ```
 
 Default options: `{ autoFocus: true }`.
 
 ## Opening a Dialog Programmatically (without the wrapper element)
 
-The wrapper element approach works when a component has a template where `<my-dialog>` can be placed. But directives and services don't have templates. For these cases, use the wrapper's static `contentComponent` property with `MatDialog`:
+The wrapper element approach works when a component has a template where the dialog can be placed. But directives and services don't have templates. For these cases, use the wrapper's static `contentComponent` property with `MatDialog`:
 
 ```typescript
 import { Directive, directive, property, method } from "@apexdesigner/dsl/directive";
