@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.159] - 2026-03-28
+
+- 8cc57e9 chore: format test file
+- df540ff fix: track directives per element for accurate compound selector matching (#6354)
+
+
 ## [1.0.158] - 2026-03-28
 
 - cf1191e chore: format generators and docs
