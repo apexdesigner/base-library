@@ -50,12 +50,10 @@
     "change-case": "^5.4.4",
     "prettier": "^3.8.1",
     "ts-morph": "^27.0.2",
+    "@apexdesigner/validator": "^0.8.58",
     "vitest": "^4.0.18"
   },
   "bin": {
     "api": ".claude/skills/apex-designer/scripts/api.cjs"
-  },
-  "dependencies": {
-    "@apexdesigner/validator": "file:../validator/apexdesigner-validator-0.8.58.tgz"
   }
 }

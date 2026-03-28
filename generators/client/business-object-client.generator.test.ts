@@ -322,4 +322,168 @@ describe('businessObjectClientGenerator', () => {
       expect(result).not.toContain('readonly email?: Email;');
     });
   });
+
+  describe('behavior type imports', () => {
+    it('should import interface definitions referenced in behavior return types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'TestItem', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class TestItem extends BusinessObject {
+            id!: number;
+          }
+        `,
+      });
+      workspace.addMetadata('InterfaceDefinition', 'TestSummary', {
+        sourceCode: `
+          import { InterfaceDefinition } from '@apexdesigner/dsl';
+          export class TestSummary extends InterfaceDefinition {
+            name?: string;
+            count?: number;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'TestItemGetSummaries', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { TestItem } from '@business-objects';
+          import { TestSummary } from '@interface-definitions';
+          addBehavior(
+            TestItem,
+            { type: 'Class', httpMethod: 'Get' },
+            async function getSummaries(): Promise<TestSummary[]> {
+              return [];
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('getSummaries');
+      expect(result).toContain("import type { TestSummary } from '../interface-definitions");
+    });
+
+    it('should import unrelated business objects referenced in behavior return types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+            name?: string;
+          }
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'AuditEntry', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class AuditEntry extends BusinessObject {
+            id!: number;
+            action?: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'OrderGetAuditLog', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          import { AuditEntry } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Instance', httpMethod: 'Get' },
+            async function getAuditLog(order: Order): Promise<AuditEntry[]> {
+              return [];
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('getAuditLog');
+      expect(result).toContain("import type { AuditEntry } from './audit-entry'");
+    });
+
+    it('should import business objects referenced in behavior parameter types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'ShippingInfo', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class ShippingInfo extends BusinessObject {
+            id!: number;
+            address?: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'OrderSetShipping', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          import { ShippingInfo } from '@business-objects';
+          addBehavior(
+            Order,
+            { type: 'Instance', httpMethod: 'Post' },
+            async function setShipping(order: Order, info: ShippingInfo): Promise<void> {}
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('setShipping');
+      expect(result).toContain("import type { ShippingInfo } from './shipping-info'");
+    });
+
+    it('should import interface definitions referenced in behavior parameter types', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Order', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Order extends BusinessObject {
+            id!: number;
+          }
+        `,
+      });
+      workspace.addMetadata('InterfaceDefinition', 'FilterOptions', {
+        sourceCode: `
+          import { InterfaceDefinition } from '@apexdesigner/dsl';
+          export class FilterOptions extends InterfaceDefinition {
+            status?: string;
+          }
+        `,
+      });
+      workspace.addMetadata('Behavior', 'OrderSearch', {
+        sourceCode: `
+          import { addBehavior } from '@apexdesigner/dsl';
+          import { Order } from '@business-objects';
+          import { FilterOptions } from '@interface-definitions';
+          addBehavior(
+            Order,
+            { type: 'Class', httpMethod: 'Post' },
+            async function search(filters: FilterOptions): Promise<any> {
+              return [];
+            }
+          );
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;
+      const result = (await businessObjectClientGenerator.generate(metadata, workspace.context)) as string;
+
+      expect(result).toContain('search');
+      expect(result).toContain("import type { FilterOptions } from '../interface-definitions");
+    });
+  });
 });
