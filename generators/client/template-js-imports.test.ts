@@ -137,13 +137,13 @@ describe('extractTemplateUsage', () => {
       {
         element: 'button',
         text: 'Refresh',
-        attributes: { 'mat-button': null },
+        attributes: { 'mat-button': null }
       },
       {
         element: 'a',
         text: 'Link',
-        attributes: { 'mat-list-item': null, routerLink: '/foo' },
-      },
+        attributes: { 'mat-list-item': null, routerLink: '/foo' }
+      }
     ]);
 
     // directivesByElement should track which attributes belong to which element
