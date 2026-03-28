@@ -297,7 +297,7 @@ describe('businessObjectFormGroupGenerator', () => {
           export class TestItem extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('InterfaceDefinition', 'TestSummary', {
         sourceCode: `
@@ -305,7 +305,7 @@ describe('businessObjectFormGroupGenerator', () => {
           export class TestSummary extends InterfaceDefinition {
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'TestItemGetSummaries', {
         sourceCode: `
@@ -319,7 +319,7 @@ describe('businessObjectFormGroupGenerator', () => {
               return [];
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -338,7 +338,7 @@ describe('businessObjectFormGroupGenerator', () => {
           export class Order extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'AuditEntry', {
         sourceCode: `
@@ -346,7 +346,7 @@ describe('businessObjectFormGroupGenerator', () => {
           export class AuditEntry extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'OrderGetAuditLog', {
         sourceCode: `
@@ -360,7 +360,7 @@ describe('businessObjectFormGroupGenerator', () => {
               return [];
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Order')!;

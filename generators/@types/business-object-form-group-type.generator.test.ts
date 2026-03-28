@@ -233,7 +233,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
           export class TestItem extends BusinessObject {
             id!: number;
           }
-        `,
+        `
       });
       workspace.addMetadata('InterfaceDefinition', 'TestSummary', {
         sourceCode: `
@@ -241,7 +241,7 @@ describe('businessObjectFormGroupTypeGenerator', () => {
           export class TestSummary extends InterfaceDefinition {
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('Behavior', 'TestItemGetSummaries', {
         sourceCode: `
@@ -255,13 +255,12 @@ describe('businessObjectFormGroupTypeGenerator', () => {
               return [];
             }
           );
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = await businessObjectFormGroupTypeGenerator.generate(metadata, workspace.context);
-      const content =
-        result instanceof Map ? result.get('design/@types/business-objects-client/test-item-form-group.d.ts')! : (result as string);
+      const content = result instanceof Map ? result.get('design/@types/business-objects-client/test-item-form-group.d.ts')! : (result as string);
 
       expect(content).toContain('getSummaries');
       expect(content).toContain("import type { TestSummary } from '../interface-definitions/index'");

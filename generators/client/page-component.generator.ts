@@ -122,7 +122,9 @@ const pageComponentGenerator: DesignGenerator = {
 
     // Capture @interface-definitions imports before removal
     const interfaceDefinitionImportNames: string[] = [];
-    const interfaceDefinitionImportDecls = writableFile.getImportDeclarations().filter(imp => imp.getModuleSpecifierValue() === '@interface-definitions');
+    const interfaceDefinitionImportDecls = writableFile
+      .getImportDeclarations()
+      .filter(imp => imp.getModuleSpecifierValue() === '@interface-definitions');
     for (const decl of interfaceDefinitionImportDecls) {
       for (const named of decl.getNamedImports()) {
         interfaceDefinitionImportNames.push(named.getName());
@@ -639,7 +641,7 @@ const pageComponentGenerator: DesignGenerator = {
       writableFile.addImportDeclaration({
         moduleSpecifier: '../../interface-definitions/index',
         namedImports: interfaceDefinitionImportNames.sort(),
-        isTypeOnly: true,
+        isTypeOnly: true
       });
     }
 
