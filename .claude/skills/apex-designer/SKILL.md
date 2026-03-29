@@ -134,6 +134,7 @@ The server must be running before login. The script reads the server port from `
 - **Don't edit generated code** — Never edit files in `/server`, `/client`, or `/docs/design`. These are generated and will be overwritten. Only edit files in `/design`.
 - **No `git -C`** — Don't use `git -C <path>`. Run git commands from the current working directory. The `-C` flag triggers approval prompts.
 - **No `cd` with commands** — Don't combine `cd <path> && command` or `cd <path>; command`. If you need to verify the working directory, run `pwd` as a separate step, then run the command on its own.
+- **Never run `ad3 stop`** — The design server hosts the UI and terminal you are running in. Stopping it will kill your session. Only run `ad3 stop` if the user explicitly asks you to.
 
 ## Dev Server
 

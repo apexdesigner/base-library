@@ -10,7 +10,7 @@ The [audit](audit/audit.md) feature records create, update, and delete events fo
 
 The [slack-alerts](slack-alerts/slack-alerts.md) feature sends lifecycle notifications (startup, shutdown, errors) to a Slack channel via webhook.
 
-The [user-interfaces](user-interfaces/user-interfaces.md) directory contains the root app component and shared UI components including add-button dialogs and breadcrumb navigation.
+The [components](components/components.md) directory contains the root app component and shared UI components including accordions, add-button dialogs, breadcrumb navigation, confirmation directives, delete buttons, edit/error dialogs, import/export TSV, refresh, and search.
 
 ## Foundation
 
