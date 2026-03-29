@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.164] - 2026-03-29
+
+- 4ac34ac chore: regenerate refresh-button doc
+- 8679ebb feat: refresh-button supports object input for single form groups
+
+
 ## [1.0.163] - 2026-03-29
 
 - b9fda83 chore: add logs/ to gitignore
