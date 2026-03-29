@@ -401,7 +401,7 @@ describe('businessObjectSchemaGenerator', () => {
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
       const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
-      expect(result).toContain('.presentAs("foreignKey")');
+      expect(result).toContain('.presentAs("reference")');
     });
 
     it('should respect explicit presentAs on references FK', async () => {
@@ -432,7 +432,7 @@ describe('businessObjectSchemaGenerator', () => {
       const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
       expect(result).toContain('.presentAs("select")');
-      expect(result).not.toContain('.presentAs("foreignKey")');
+      expect(result).not.toContain('.presentAs("reference")');
     });
   });
 

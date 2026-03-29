@@ -1,5 +1,5 @@
 ---
-generated-from: design/project.ts
+generated-from: design/base-types/zip-code.base-type.ts
 generated-by: design-docs.base-types.doc.md
 ---
 # Base Types

@@ -555,7 +555,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           }
           // Default presentAs to foreignKey for References relationships
           if (isReferences && !fkOpts.presentAs) {
-            fkExtras += `\n      .presentAs("foreignKey")`;
+            fkExtras += `\n      .presentAs("reference")`;
           }
           if (fkOpts.autoFormat) fkExtras += `\n      .meta({ format: "${fkOpts.autoFormat}" })`;
 
