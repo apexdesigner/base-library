@@ -18,6 +18,9 @@ export class TestTask extends BusinessObject {
   /** Status */
   status?: Status;
 
+  /** Sequence - Sort order for drag-and-drop reordering */
+  sequence?: number;
+
   /** Project */
   @relationship({ type: 'Belongs To' })
   testProject?: TestProject;
