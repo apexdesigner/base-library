@@ -52,7 +52,7 @@ export class AddFieldComponent extends Component {
     const metadata = this.businessObjectService.getMetadata(this.array.entityName);
     if (metadata) {
       if (!this.label) {
-        this.defaultLabel = 'Add ' + metadata.displayName;
+        this.defaultLabel = 'Add ' + metadata.indefiniteArticle + ' ' + metadata.displayName + '...';
       }
       const firstProp = metadata.properties.find(p => p.name !== 'id');
       if (firstProp) {

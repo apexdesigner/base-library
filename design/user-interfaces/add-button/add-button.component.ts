@@ -2,7 +2,7 @@ import { Component, component, property, method, applyTemplate } from '@apexdesi
 import { EventEmitter } from '@angular/core';
 import { PersistedArray, PersistedFormArray, PersistedFormGroup } from '@business-objects-client';
 import { AddDialogComponent } from '@components';
-import { capitalCase } from 'change-case';
+import { BusinessObjectService } from '@services';
 import createDebug from 'debug';
 
 const debug = createDebug('AddButtonComponent');
@@ -35,6 +35,9 @@ export class AddButtonComponent extends Component {
   @property({ isOutput: true })
   added?: EventEmitter<any>;
 
+  /** Business Object Service */
+  businessObjectService!: BusinessObjectService;
+
   /** Reference to the add dialog component. */
   addDialog!: AddDialogComponent;
 
@@ -45,7 +48,10 @@ export class AddButtonComponent extends Component {
   @method({ callOnLoad: true })
   initialize() {
     if (!this.label && this.array?.entityName) {
-      this.defaultLabel = 'Add ' + capitalCase(this.array.entityName);
+      const metadata = this.businessObjectService.getMetadata(this.array.entityName);
+      if (metadata) {
+        this.defaultLabel = 'Add ' + metadata.indefiniteArticle + ' ' + metadata.displayName;
+      }
     }
 
     debug('defaultLabel', this.defaultLabel);

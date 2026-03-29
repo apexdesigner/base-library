@@ -152,7 +152,7 @@ applyStyles(AccordionComponent, `
   }
 
   mat-accordion {
-    padding: var(--accordion-shadow-padding);
+    padding: 0 var(--accordion-shadow-padding) var(--accordion-shadow-padding);
   }
 
   sf-fields {

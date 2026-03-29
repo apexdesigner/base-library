@@ -1,7 +1,9 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, resolveRelationships, resolveMixins, resolveIdType } from '@apexdesigner/generator';
-import { getClassByBase, getDisplayName, getDescription, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
-import { kebabCase, pascalCase } from 'change-case';
+import { getClassByBase, getDisplayName, getDescription, getSetNamesOptions, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
+import indefinite from 'indefinite';
+import pluralize from 'pluralize';
+import { capitalCase, kebabCase, pascalCase } from 'change-case';
 import createDebug from 'debug';
 import { buildBaseTypeMap } from '../shared/base-type-map.js';
 
@@ -29,6 +31,9 @@ interface BusinessObjectEntry {
   name: string;
   kebab: string;
   displayName: string;
+  pluralName: string;
+  pluralDisplayName: string;
+  indefiniteArticle: string;
   description: string;
   properties: PropertyEntry[];
   relationships: RelationshipEntry[];
@@ -184,10 +189,19 @@ const businessObjectServiceGenerator: DesignGenerator = {
 
       behaviorEntries.sort((a, b) => a.name.localeCompare(b.name));
 
+      const displayName = (boClass && getDisplayName(boClass)) || className;
+      const namesOptions = getSetNamesOptions(bo.sourceFile);
+      const article = namesOptions.indefiniteArticle || indefinite(displayName, { articleOnly: true });
+      const pluralName = namesOptions.pluralName || pluralize(className);
+      const pluralDisplayName = namesOptions.pluralDisplayName || pluralize(capitalCase(displayName));
+
       return {
         name: className,
         kebab: kebabCase(bo.name),
-        displayName: (boClass && getDisplayName(boClass)) || className,
+        displayName,
+        pluralName,
+        pluralDisplayName,
+        indefiniteArticle: article,
         description: (boClass && getDescription(boClass)) || '',
         properties,
         relationships: relationshipEntries,
@@ -229,6 +243,9 @@ const businessObjectServiceGenerator: DesignGenerator = {
     lines.push('export interface BusinessObjectMetadata {');
     lines.push('  name: string;');
     lines.push('  displayName: string;');
+    lines.push('  pluralName: string;');
+    lines.push('  pluralDisplayName: string;');
+    lines.push('  indefiniteArticle: string;');
     lines.push('  description: string;');
     lines.push('  properties: readonly BusinessObjectProperty[];');
     lines.push('  relationships: readonly BusinessObjectRelationship[];');
@@ -277,6 +294,9 @@ const businessObjectServiceGenerator: DesignGenerator = {
       lines.push('    {');
       lines.push(`      name: '${entry.name}',`);
       lines.push(`      displayName: '${entry.displayName}',`);
+      lines.push(`      pluralName: '${entry.pluralName}',`);
+      lines.push(`      pluralDisplayName: '${entry.pluralDisplayName}',`);
+      lines.push(`      indefiniteArticle: '${entry.indefiniteArticle}',`);
       lines.push(`      description: '${entry.description.replace(/'/g, "\\'").replace(/\n/g, ' ')}',`);
       lines.push(`      properties: [${propsStr}],`);
       lines.push(`      relationships: [${relsStr}],`);
@@ -380,6 +400,9 @@ const businessObjectServiceGenerator: DesignGenerator = {
     typeLines.push('export interface BusinessObjectMetadata {');
     typeLines.push('  name: string;');
     typeLines.push('  displayName: string;');
+    typeLines.push('  pluralName: string;');
+    typeLines.push('  pluralDisplayName: string;');
+    typeLines.push('  indefiniteArticle: string;');
     typeLines.push('  description: string;');
     typeLines.push('  properties: readonly BusinessObjectProperty[];');
     typeLines.push('  relationships: readonly BusinessObjectRelationship[];');
