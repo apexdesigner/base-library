@@ -87,11 +87,11 @@ export class SfReferenceFieldComponent extends Component {
     // Resolve display property
     const metadata = this.businessObjectService.getMetadata(this.targetEntity);
     if (metadata) {
-      const displayNameProp = metadata.properties.find((p) => p.name === 'displayName');
+      const displayNameProp = metadata.properties.find(p => p.name === 'displayName');
       if (displayNameProp) {
         this.displayProp = 'displayName';
       } else {
-        const firstString = metadata.properties.find((p) => p.name !== 'id' && p.type === 'string');
+        const firstString = metadata.properties.find(p => p.name !== 'id' && p.type === 'string');
         if (firstString) {
           this.displayProp = firstString.name;
         }
@@ -154,7 +154,7 @@ export class SfReferenceFieldComponent extends Component {
 
     const filter: any = {
       order: [{ field: this.displayProp, direction: 'asc' }],
-      limit: 20,
+      limit: 20
     };
 
     const text = (this.inputControl.value || '').trim();
@@ -230,7 +230,7 @@ applyTemplate(SfReferenceFieldComponent, [
     contains: [
       {
         element: 'mat-label',
-        text: '{{label}}',
+        text: '{{label}}'
       },
       {
         element: 'input',
@@ -241,8 +241,8 @@ applyTemplate(SfReferenceFieldComponent, [
           formControl: '<- inputControl',
           matAutocomplete: '<- auto',
           input: '-> onInput()',
-          focus: '-> onFocus()',
-        },
+          focus: '-> onFocus()'
+        }
       },
       {
         if: 'inputControl.value',
@@ -252,15 +252,15 @@ applyTemplate(SfReferenceFieldComponent, [
             element: 'button',
             name: 'clearButton',
             attributes: { 'mat-icon-button': null, matSuffix: null, click: '-> clear()' },
-            contains: [{ 'mat-icon': 'close' }],
-          },
-        ],
+            contains: [{ 'mat-icon': 'close' }]
+          }
+        ]
       },
       {
         element: 'button',
         name: 'dropdownButton',
         attributes: { 'mat-icon-button': null, matSuffix: null, click: '-> openDropdown()' },
-        contains: [{ 'mat-icon': 'arrow_drop_down' }],
+        contains: [{ 'mat-icon': 'arrow_drop_down' }]
       },
       {
         element: 'mat-autocomplete',
@@ -268,7 +268,7 @@ applyTemplate(SfReferenceFieldComponent, [
         referenceable: true,
         attributes: {
           autoActiveFirstOption: '<- true',
-          optionSelected: '-> selectOption($event.option.value)',
+          optionSelected: '-> selectOption($event.option.value)'
         },
         contains: [
           {
@@ -278,13 +278,13 @@ applyTemplate(SfReferenceFieldComponent, [
               {
                 element: 'mat-option',
                 text: '{{option[displayProp]}}',
-                attributes: { value: '<- option' },
-              },
-            ],
-          },
-        ],
+                attributes: { value: '<- option' }
+              }
+            ]
+          }
+        ]
       },
-      { element: 'mat-error', text: 'No matches found' },
-    ],
-  },
+      { element: 'mat-error', text: 'No matches found' }
+    ]
+  }
 ]);

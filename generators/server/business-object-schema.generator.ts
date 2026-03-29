@@ -544,10 +544,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           const fkOpts = fkProp ? getPropertyDecorator(fkProp, 'property') || {} : {};
           const isReferences = rel.relationshipType === 'References';
           // Belongs To FKs are hidden by default; References FKs are visible
-          const fkHidden = fkOpts.hidden === true ? '\n      .hidden()'
-            : fkOpts.hidden === false ? ''
-            : isReferences ? ''
-            : '\n      .hidden()';
+          const fkHidden = fkOpts.hidden === true ? '\n      .hidden()' : fkOpts.hidden === false ? '' : isReferences ? '' : '\n      .hidden()';
           let fkExtras = '';
           for (const key of ['displayName', 'placeholder', 'helpText', 'presentAs'] as const) {
             const val = fkOpts[key];

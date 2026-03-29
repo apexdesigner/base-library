@@ -322,7 +322,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Department extends BusinessObject {
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Employee', {
         sourceCode: `
@@ -334,7 +334,7 @@ describe('businessObjectSchemaGenerator', () => {
             department?: Department;
             departmentId!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
@@ -352,7 +352,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Department extends BusinessObject {
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Employee', {
         sourceCode: `
@@ -364,7 +364,7 @@ describe('businessObjectSchemaGenerator', () => {
             department?: Department;
             departmentId!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
@@ -383,7 +383,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Department extends BusinessObject {
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Employee', {
         sourceCode: `
@@ -395,7 +395,7 @@ describe('businessObjectSchemaGenerator', () => {
             department?: Department;
             departmentId!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
@@ -412,7 +412,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Department extends BusinessObject {
             name?: string;
           }
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Employee', {
         sourceCode: `
@@ -425,7 +425,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ presentAs: 'select' })
             departmentId!: number;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
