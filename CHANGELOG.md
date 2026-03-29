@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.162] - 2026-03-29
+
+- c6b0671 chore: format accordion and update skill
+- 8e10826 chore: regenerate docs and format generator
+- 127ccc8 refactor: rename user-interfaces to components and flatten single-file dirs
+- 44c2511 feat: add pluralName, pluralDisplayName, indefiniteArticle to BO metadata
+- 820d760 fix: accordion styling with CSS variables and lazy panel loading
+
+
 ## [1.0.161] - 2026-03-29
 
 - 9931698 chore: update skills and deps
