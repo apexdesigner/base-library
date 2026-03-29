@@ -88,7 +88,7 @@ applyTemplate(AccordionComponent, [
             contains: [
               {
                 element: 'mat-expansion-panel-header',
-                contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }],
+                contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }]
               },
               {
                 element: 'ng-template',
@@ -106,25 +106,25 @@ applyTemplate(AccordionComponent, [
                             element: 'a',
                             name: 'launchButton',
                             attributes: { 'mat-icon-button': null, matTooltip: 'Open', routerLink: '<- getRoute(item)' },
-                            contains: [{ 'mat-icon': 'launch' }],
-                          },
-                        ],
+                            contains: [{ 'mat-icon': 'launch' }]
+                          }
+                        ]
                       },
                       {
                         element: 'button',
                         name: 'deleteButton',
                         attributes: { 'mat-icon-button': null, color: 'warn', matTooltip: 'Delete', click: '-> deleteItem(item)' },
-                        contains: [{ 'mat-icon': 'delete_outline' }],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
+                        contains: [{ 'mat-icon': 'delete_outline' }]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     if: '!hideAdd',
@@ -136,11 +136,11 @@ applyTemplate(AccordionComponent, [
           array: '<- array',
           defaults: '<- defaults',
           added: '-> array.read()',
-          'style.margin-top': "<- items.length > 0 ? 'var(--accordion-add-gap)' : '0'",
-        },
-      },
-    ],
-  },
+          'style.margin-top': "<- items.length > 0 ? 'var(--accordion-add-gap)' : '0'"
+        }
+      }
+    ]
+  }
 ]);
 
 applyStyles(
