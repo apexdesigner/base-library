@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.168] - 2026-03-29
+
+- 5bfdca9 chore: format and update deps
+- 6b49c43 feat: add sf-reference-field component for FK autocomplete
+- 3e5dd2e feat: References FK visible with presentAs foreignKey by default
+
+
 ## [1.0.167] - 2026-03-29
 
 - ccb33c2 chore: regenerate docs
