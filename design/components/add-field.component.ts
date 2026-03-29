@@ -46,6 +46,9 @@ export class AddFieldComponent extends Component {
   /** First Property Name */
   firstPropertyName = 'name';
 
+  /** Has Sequence */
+  hasSequence = false;
+
   /** Initialize - Derive label and first property from metadata */
   @method({ callOnLoad: true })
   initialize(): void {
@@ -58,8 +61,9 @@ export class AddFieldComponent extends Component {
       if (firstProp) {
         this.firstPropertyName = firstProp.name;
       }
+      this.hasSequence = metadata.properties.some(p => p.name === 'sequence');
     }
-    debug('label %s, firstProperty %s', this.label || this.defaultLabel, this.firstPropertyName);
+    debug('label %s, firstProperty %s, hasSequence %o', this.label || this.defaultLabel, this.firstPropertyName, this.hasSequence);
   }
 
   /** Add - Create a new item with the input value */
@@ -68,6 +72,9 @@ export class AddFieldComponent extends Component {
     if (!value) return;
 
     const data: Record<string, any> = { ...this.defaults, [this.firstPropertyName]: value };
+    if (this.hasSequence && data.sequence === undefined) {
+      data.sequence = this.array.length || 0;
+    }
     const item = await this.array.add(data);
     this.inputValue = '';
     this.added.emit(item);

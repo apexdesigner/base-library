@@ -173,6 +173,12 @@ export class PersistedFormGroup extends SchemaFormGroup {
             debug('set parent FK %s=%o on array %s', relMeta.foreignKey, data[this._idProperty], name);
           }
         }
+        // Propagate the include sub-filter to the child array's readFilter
+        const includeFilter = this._filter?.include?.[name];
+        if (includeFilter && typeof includeFilter === 'object') {
+          control.readFilter = { ...control.readFilter, ...includeFilter };
+          debug('set readFilter on array %s: %j', name, control.readFilter);
+        }
         // Propagate autoSave to the array before adding items
         if (this._autoSaveDestroyRef) {
           control.autoSave(this._autoSaveDestroyRef, this._autoSaveDebounceMs);

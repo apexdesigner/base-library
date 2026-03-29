@@ -25,6 +25,10 @@ export class AddDialogComponent extends Component {
   @property({ isInput: true })
   label?: string;
 
+  /** Default values for new records. */
+  @property({ isInput: true })
+  defaults?: Record<string, any>;
+
   /** Emits the newly added entity or form group after a successful add. */
   @property({ isOutput: true })
   added?: EventEmitter<any>;
@@ -38,6 +42,9 @@ export class AddDialogComponent extends Component {
   /** Business Object Service - Service for CRUD operations */
   businessObjectService!: BusinessObjectService;
 
+  /** Has Sequence */
+  hasSequence = false;
+
   /** Loads the form group for the array's entity type. */
   @method({ callOnLoad: true })
   async initialize() {
@@ -45,16 +52,25 @@ export class AddDialogComponent extends Component {
 
     this.formGroup = await this.businessObjectService.loadFormGroup(this.array.entityName);
 
-    debug('formGroup', this.formGroup);
+    const metadata = this.businessObjectService.getMetadata(this.array.entityName);
+    if (metadata) {
+      this.hasSequence = metadata.properties.some(p => p.name === 'sequence');
+    }
+
+    debug('formGroup', this.formGroup, 'hasSequence', this.hasSequence);
   }
 
   /** Adds the form payload to the array, emits the new record, and closes the dialog. */
   async save() {
-    debug('payload', this.formGroup.getPayload());
+    const payload = { ...this.defaults, ...this.formGroup.getPayload() };
+    if (this.hasSequence && payload.sequence === undefined) {
+      payload.sequence = this.array.length || 0;
+    }
+    debug('payload', payload);
 
     this.saving = true;
     try {
-      await this.array.add(this.formGroup.getPayload());
+      await this.array.add(payload);
       if (this.array instanceof PersistedFormArray) {
         const added = this.array.at(this.array.length - 1);
         debug('added form group', added);
