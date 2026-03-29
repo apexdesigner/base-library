@@ -12,14 +12,14 @@ import { TestProjectsPage } from '@pages';
  */
 @page({
   path: '/test-projects/:testProject.id',
-  parentPage: TestProjectsPage,
+  parentPage: TestProjectsPage
 })
 export class TestProjectPage extends Page {
   /** Test Project */
   @property({
     read: 'Automatically',
     save: 'Automatically',
-    include: { testTasks: {} },
+    include: { testTasks: {} }
   })
   testProject!: TestProjectFormGroup;
 }
@@ -40,13 +40,13 @@ applyTemplate(TestProjectPage, [
               { element: 'div', attributes: { grow: null } },
               {
                 element: 'refresh-button',
-                attributes: { object: '<- testProject' },
+                attributes: { object: '<- testProject' }
               },
               {
                 element: 'delete-button',
-                attributes: { object: '<- testProject', afterDeleteRoute: '/test-projects' },
-              },
-            ],
+                attributes: { object: '<- testProject', afterDeleteRoute: '/test-projects' }
+              }
+            ]
           },
           {
             element: 'flex-row',
@@ -56,9 +56,7 @@ applyTemplate(TestProjectPage, [
                 element: 'flex-column',
                 name: 'fieldsColumn',
                 attributes: { grow: null, style: 'flex: 1' },
-                contains: [
-                  { element: 'sf-fields', attributes: { group: '<- testProject' } },
-                ],
+                contains: [{ element: 'sf-fields', attributes: { group: '<- testProject' } }]
               },
               {
                 element: 'flex-column',
@@ -71,16 +69,16 @@ applyTemplate(TestProjectPage, [
                     attributes: {
                       array: '<- testProject.controls.testTasks',
                       includeLaunch: '<- true',
-                      routePrefix: '/test-tasks',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
+                      routePrefix: '/test-tasks'
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ],
-    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }],
-  },
+    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+  }
 ]);

@@ -1,4 +1,4 @@
-import { BusinessObject, relationship } from "@apexdesigner/dsl";
+import { BusinessObject, relationship } from '@apexdesigner/dsl';
 
 /**
  * Test Project
@@ -16,8 +16,8 @@ export class TestProject extends BusinessObject {
   description?: string;
 
   /** Tasks */
-  @relationship({ type: "Has Many" })
+  @relationship({ type: 'Has Many' })
   testTasks?: TestTask[];
 }
 
-import { TestTask } from "../test-task/test-task.business-object";
+import { TestTask } from '../test-task/test-task.business-object';

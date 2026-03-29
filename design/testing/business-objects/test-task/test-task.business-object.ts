@@ -1,5 +1,5 @@
-import { BusinessObject, relationship } from "@apexdesigner/dsl";
-import { TestProject } from "../test-project/test-project.business-object";
+import { BusinessObject, relationship } from '@apexdesigner/dsl';
+import { TestProject } from '../test-project/test-project.business-object';
 
 /**
  * Test Task
@@ -17,7 +17,7 @@ export class TestTask extends BusinessObject {
   status?: string;
 
   /** Project */
-  @relationship({ type: "Belongs To" })
+  @relationship({ type: 'Belongs To' })
   testProject?: TestProject;
   /** Test Project Id */
   testProjectId!: number;

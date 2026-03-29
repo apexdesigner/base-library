@@ -11,14 +11,14 @@ import { TestProjectPage } from '@pages';
  */
 @page({
   path: '/test-tasks/:testTask.id',
-  parentPage: TestProjectPage,
+  parentPage: TestProjectPage
 })
 export class TestTaskPage extends Page {
   /** Test Task */
   @property({
     read: 'Automatically',
     save: 'Automatically',
-    include: { testProject: {} },
+    include: { testProject: {} }
   })
   testTask!: TestTaskFormGroup;
 }
@@ -39,26 +39,23 @@ applyTemplate(TestTaskPage, [
               { element: 'div', attributes: { grow: null } },
               {
                 element: 'refresh-button',
-                attributes: { object: '<- testTask' },
+                attributes: { object: '<- testTask' }
               },
               {
                 element: 'delete-button',
-                attributes: { object: '<- testTask', afterDeleteRoute: "<- '/test-projects/' + testTask.value.testProjectId" },
-              },
-            ],
+                attributes: { object: '<- testTask', afterDeleteRoute: "<- '/test-projects/' + testTask.value.testProjectId" }
+              }
+            ]
           },
           { element: 'sf-fields', name: 'taskFields', attributes: { group: '<- testTask' } },
           {
             if: 'testTask.controls.testProject',
             name: 'projectSection',
-            contains: [
-              { h2: 'Project' },
-              { element: 'sf-fields', name: 'projectFields', attributes: { group: '<- testTask.controls.testProject' } },
-            ],
-          },
-        ],
-      },
+            contains: [{ h2: 'Project' }, { element: 'sf-fields', name: 'projectFields', attributes: { group: '<- testTask.controls.testProject' } }]
+          }
+        ]
+      }
     ],
-    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }],
-  },
+    elseContains: [{ element: 'mat-progress-bar', attributes: { mode: 'indeterminate' } }]
+  }
 ]);
