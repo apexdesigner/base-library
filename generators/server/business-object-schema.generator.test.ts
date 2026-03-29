@@ -447,7 +447,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ excludeWhen: (project) => project.name?.startsWith('A') })
             description?: string;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -467,7 +467,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ requiredWhen: { condition: (invoice) => invoice.total > 1000, message: 'Required for large orders' } })
             approval?: string;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -488,13 +488,13 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ disabledWhen: (task) => task.status === 'complete' })
             name?: string;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
       const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
 
-      expect(result).toContain(".disabledWhen(\"status === 'complete'\")");
+      expect(result).toContain('.disabledWhen("status === \'complete\'")');
       expect(result).not.toContain('(task) =>');
     });
   });

@@ -59,7 +59,7 @@ export class AccordionComponent extends Component {
   initialize(): void {
     const metadata = this.businessObjectService.getMetadata(this.array.entityName);
     if (metadata) {
-      this.sortable = metadata.properties.some((p) => p.name === 'sequence');
+      this.sortable = metadata.properties.some(p => p.name === 'sequence');
       debug('sortable %o for %s', this.sortable, this.array.entityName);
     }
   }
@@ -125,7 +125,7 @@ applyTemplate(AccordionComponent, [
     attributes: {
       cdkDropList: null,
       cdkDropListDisabled: '<- !sortable',
-      cdkDropListDropped: '-> onDrop($event)',
+      cdkDropListDropped: '-> onDrop($event)'
     },
     contains: [
       {
@@ -140,7 +140,7 @@ applyTemplate(AccordionComponent, [
               cdkDrag: null,
               cdkDragDisabled: '<- expandedIndex === i',
               opened: '-> expandedIndex = i',
-              closed: '-> expandedIndex = -1',
+              closed: '-> expandedIndex = -1'
             },
             contains: [
               {
@@ -149,10 +149,15 @@ applyTemplate(AccordionComponent, [
                   {
                     if: 'sortable && expandedIndex === -1',
                     name: 'dragHandle',
-                    contains: [{ 'mat-icon': 'drag_indicator', attributes: { cdkDragHandle: null, style: 'cursor: grab; margin-right: 8px; color: rgba(0,0,0,0.38)' } }],
+                    contains: [
+                      {
+                        'mat-icon': 'drag_indicator',
+                        attributes: { cdkDragHandle: null, style: 'cursor: grab; margin-right: 8px; color: rgba(0,0,0,0.38)' }
+                      }
+                    ]
                   },
-                  { element: 'mat-panel-title', text: '{{getDisplayName(item)}}' },
-                ],
+                  { element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }
+                ]
               },
               {
                 element: 'ng-template',

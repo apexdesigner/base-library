@@ -15,7 +15,7 @@ export class TestProject extends BusinessObject {
 
   /** Description */
   @property({
-    excludeWhen: (project) => project.name?.startsWith('A'),
+    excludeWhen: project => project.name?.startsWith('A')
   })
   description?: string;
 
