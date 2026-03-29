@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/export-tsv-button/export-tsv-button.component.ts
+generated-from: design/components/export-tsv-button.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Export Tsv Button Component

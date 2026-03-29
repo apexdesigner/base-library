@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/accordion/accordion.component.ts
+generated-from: design/components/accordion.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Accordion Component

@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/error-dialog/error-dialog.component.ts
+generated-from: design/components/error-dialog.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Error Dialog Component

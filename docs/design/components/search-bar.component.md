@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/search-bar/search-bar.component.ts
+generated-from: design/components/search-bar.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Search Bar Component

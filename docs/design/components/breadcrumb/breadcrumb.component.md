@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/breadcrumb/breadcrumb.component.ts
+generated-from: design/components/breadcrumb/breadcrumb.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Breadcrumb Component

@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/confirm/confirmation-dialog.component.ts
+generated-from: design/components/confirm/confirmation-dialog.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Confirmation Dialog Component

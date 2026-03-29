@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/delete-button/delete-button.component.ts
+generated-from: design/components/delete-button.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Delete Button Component

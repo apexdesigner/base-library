@@ -1,6 +1,14 @@
 import type { DesignGenerator, DesignMetadata, GenerationContext } from '@apexdesigner/generator';
 import { isLibrary, resolveRelationships, resolveMixins, resolveIdType } from '@apexdesigner/generator';
-import { getClassByBase, getDisplayName, getDescription, getSetNamesOptions, getBehaviorFunction, getBehaviorOptions, getBehaviorParent } from '@apexdesigner/utilities';
+import {
+  getClassByBase,
+  getDisplayName,
+  getDescription,
+  getSetNamesOptions,
+  getBehaviorFunction,
+  getBehaviorOptions,
+  getBehaviorParent
+} from '@apexdesigner/utilities';
 import indefinite from 'indefinite';
 import pluralize from 'pluralize';
 import { capitalCase, kebabCase, pascalCase } from 'change-case';

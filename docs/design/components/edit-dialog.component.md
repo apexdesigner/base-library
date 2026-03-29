@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/edit-dialog/edit-dialog.component.ts
+generated-from: design/components/edit-dialog.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Edit Dialog Component

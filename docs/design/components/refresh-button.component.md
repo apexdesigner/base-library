@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/refresh-button/refresh-button.component.ts
+generated-from: design/components/refresh-button.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Refresh Button Component

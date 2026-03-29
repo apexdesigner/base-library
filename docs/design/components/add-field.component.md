@@ -1,5 +1,5 @@
 ---
-generated-from: design/user-interfaces/add-field/add-field.component.ts
+generated-from: design/components/add-field.component.ts
 generated-by: design-docs.component.doc.md
 ---
 # Add Field Component
