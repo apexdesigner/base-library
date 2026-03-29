@@ -49,6 +49,7 @@ applyTemplate(HomePage, [
       { element: 'a', name: 'selectFields', text: 'Select Fields', attributes: { routerLink: '/test-select-fields' } },
       { element: 'a', name: 'switchUser', text: 'Switch User', attributes: { routerLink: '/switch-user' } },
       { element: 'a', name: 'appBehaviorTests', text: 'App Behavior Tests', attributes: { routerLink: '/service-test-app-behaviors' } },
+      { element: 'a', name: 'projects', text: 'Projects', attributes: { routerLink: '/test-projects' } },
       { element: 'a', name: 'openLibraryAuthors', text: 'Open Library Authors', attributes: { routerLink: '/open-library-authors' } }
     ]
   }
