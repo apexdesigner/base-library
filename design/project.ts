@@ -29,6 +29,7 @@ export class BaseLibrary extends Project {
     '@angular/platform-browser-dynamic': '~19.2.0',
     '@angular/cdk': '~19.2.0',
     '@angular/material': '~19.2.0',
+    '@angular/material-luxon-adapter': '~19.2.0',
     '@angular/router': '~19.2.0',
     '@apexdesigner/declarative-tables': '^0.1.10',
     '@apexdesigner/schema-forms': '^0.2.1',
