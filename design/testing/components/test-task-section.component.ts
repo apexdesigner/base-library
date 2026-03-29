@@ -28,7 +28,7 @@ applyTemplate(TestTaskSectionComponent, [
     attributes: { gap: '<- 16' },
     contains: [
       { element: 'sf-field', name: 'statusField', attributes: { control: '<- group.controls.status', style: 'flex: 1' } },
-      { element: 'sf-field', name: 'nameField', attributes: { control: '<- group.controls.name', style: 'flex: 2' } },
-    ],
-  },
+      { element: 'sf-field', name: 'nameField', attributes: { control: '<- group.controls.name', style: 'flex: 2' } }
+    ]
+  }
 ]);

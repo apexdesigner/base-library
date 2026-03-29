@@ -27,8 +27,8 @@ const schemaFormsRegistrationGenerator: DesignGenerator = {
 
   triggers: [
     {
-      metadataType: 'Component',
-    },
+      metadataType: 'Component'
+    }
   ],
 
   outputs: () => ['client/src/app/schema-forms-registration.ts'],
@@ -42,7 +42,10 @@ const schemaFormsRegistrationGenerator: DesignGenerator = {
 
     // Determine library order: libraries first (sorted by name), then main project last
     const projects = context.listMetadata('Project') || [];
-    const libraryNames = projects.filter(p => isLibrary(p)).map(p => p.name).sort();
+    const libraryNames = projects
+      .filter(p => isLibrary(p))
+      .map(p => p.name)
+      .sort();
     const mainProject = projects.find(p => !isLibrary(p));
 
     function getLibraryOrder(sourceFile: any): number {
@@ -72,21 +75,22 @@ const schemaFormsRegistrationGenerator: DesignGenerator = {
           format: opts.fieldFormat as string,
           componentName: comp.name,
           importPath: `@components/${compFile}/${compFile}.component`,
-          libraryOrder,
+          libraryOrder
         });
         debug('field %s → %s (order %d)', opts.fieldFormat, comp.name, libraryOrder);
       }
 
       if (opts.sectionEntity) {
         // sectionEntity is a class reference — extract the name
-        const entityName = typeof opts.sectionEntity === 'string' ? opts.sectionEntity : (opts.sectionEntity as any).name || String(opts.sectionEntity);
+        const entityName =
+          typeof opts.sectionEntity === 'string' ? opts.sectionEntity : (opts.sectionEntity as any).name || String(opts.sectionEntity);
         const sectionKey = `sf-${kebabCase(entityName)}-section`;
         sections.push({
           entityName,
           sectionKey,
           componentName: comp.name,
           importPath: `@components/${compFile}/${compFile}.component`,
-          libraryOrder,
+          libraryOrder
         });
         debug('section %s → %s (order %d)', sectionKey, comp.name, libraryOrder);
       }
@@ -125,7 +129,9 @@ const schemaFormsRegistrationGenerator: DesignGenerator = {
       lines.push('');
       lines.push('  // Section registrations (library order — later overrides earlier)');
       for (const section of sections) {
-        lines.push(`  schemaForms.registerSection('${section.sectionKey}', () => import('${section.importPath}').then(m => m.${section.componentName} as any));`);
+        lines.push(
+          `  schemaForms.registerSection('${section.sectionKey}', () => import('${section.importPath}').then(m => m.${section.componentName} as any));`
+        );
       }
     }
 
@@ -137,7 +143,7 @@ const schemaFormsRegistrationGenerator: DesignGenerator = {
 
     debug('generated registration file');
     return results;
-  },
+  }
 };
 
 export { schemaFormsRegistrationGenerator };

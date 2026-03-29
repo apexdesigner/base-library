@@ -75,7 +75,13 @@ export class AddFieldComponent extends Component {
       this.autoFormat = control.metadata.format;
     }
 
-    debug('label %s, firstProperty %s, hasSequence %o, autoFormat %s', this.label || this.defaultLabel, this.firstPropertyName, this.hasSequence, this.autoFormat);
+    debug(
+      'label %s, firstProperty %s, hasSequence %o, autoFormat %s',
+      this.label || this.defaultLabel,
+      this.firstPropertyName,
+      this.hasSequence,
+      this.autoFormat
+    );
   }
 
   /** Add - Create a new item with the input value */
