@@ -8,7 +8,7 @@ import { SchemaFormControl } from '@apexdesigner/schema-forms';
  * Schema form field that displays a dropdown of users.
  * The control value is the user id.
  */
-@component({ metadata: { schemaFormsField: true } })
+@component({ fieldFormat: 'select-user' })
 export class SelectUserFieldComponent extends Component {
   /** Control - The schema form control bound to this field */
   @property({ isInput: true })

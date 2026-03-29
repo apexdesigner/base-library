@@ -163,7 +163,7 @@ applyTemplate(AccordionComponent, [
                 element: 'ng-template',
                 attributes: { matExpansionPanelContent: null },
                 contains: [
-                  { element: 'sf-fields', attributes: { group: '<- item' } },
+                  { element: 'sf-section', attributes: { group: '<- item' } },
                   {
                     element: 'mat-action-row',
                     contains: [
@@ -230,7 +230,7 @@ applyStyles(
     display: block;
   }
 
-  sf-fields {
+  sf-section {
     margin-bottom: var(--accordion-content-gap);
   }
 `

@@ -2,6 +2,7 @@ import { Component, property, method, applyTemplate } from '@apexdesigner/dsl/co
 import { PersistedArray, PersistedFormArray } from '@business-objects-client';
 import { BusinessObjectService } from '@services';
 import { EventEmitter } from '@angular/core';
+import * as changeCase from 'change-case';
 import createDebug from 'debug';
 
 const debug = createDebug('AddFieldComponent');
@@ -49,9 +50,12 @@ export class AddFieldComponent extends Component {
   /** Has Sequence */
   hasSequence = false;
 
+  /** Auto Format - Case format for the first property */
+  autoFormat?: string;
+
   /** Initialize - Derive label and first property from metadata */
   @method({ callOnLoad: true })
-  initialize(): void {
+  async initialize(): Promise<void> {
     const metadata = this.businessObjectService.getMetadata(this.array.entityName);
     if (metadata) {
       if (!this.label) {
@@ -63,7 +67,21 @@ export class AddFieldComponent extends Component {
       }
       this.hasSequence = metadata.properties.some(p => p.name === 'sequence');
     }
-    debug('label %s, firstProperty %s, hasSequence %o', this.label || this.defaultLabel, this.firstPropertyName, this.hasSequence);
+
+    // Detect auto-format from the schema form control metadata
+    const formGroup = await this.businessObjectService.loadFormGroup(this.array.entityName);
+    const control = formGroup.controls?.[this.firstPropertyName] as any;
+    if (control?.metadata?.format) {
+      this.autoFormat = control.metadata.format;
+    }
+
+    debug(
+      'label %s, firstProperty %s, hasSequence %o, autoFormat %s',
+      this.label || this.defaultLabel,
+      this.firstPropertyName,
+      this.hasSequence,
+      this.autoFormat
+    );
   }
 
   /** Add - Create a new item with the input value */
@@ -71,7 +89,8 @@ export class AddFieldComponent extends Component {
     const value = this.inputValue.trim();
     if (!value) return;
 
-    const data: Record<string, any> = { ...this.defaults, [this.firstPropertyName]: value };
+    const formatted = this.autoFormat && (changeCase as any)[this.autoFormat] ? (changeCase as any)[this.autoFormat](value) : value;
+    const data: Record<string, any> = { ...this.defaults, [this.firstPropertyName]: formatted };
     if (this.hasSequence && data.sequence === undefined) {
       data.sequence = this.array.length || 0;
     }

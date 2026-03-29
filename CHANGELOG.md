@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.171] - 2026-03-29
+
+- bf6aaee chore: format and update deps
+- 8987b79 feat: add validator for fieldFormat and sectionEntity components
+- b5365b6 feat: auto-register schema-forms fields and sections via decorator
+- b674ffe feat: accordion uses sf-section for custom section support
+- 7f481a0 feat: add-field applies autoFormat from schema metadata
+
+
 ## [1.0.170] - 2026-03-29
 
 - bcd2829 chore: regenerate add-button docs

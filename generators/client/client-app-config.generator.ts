@@ -115,6 +115,7 @@ ${options.join('\n')}
       ...imports,
       ``,
       `import { BusinessObjectBase } from './business-objects/base';`,
+      `import { registerSchemaFormFields } from './schema-forms-registration';`,
       `import { routes } from './app.routes';`,
       ``,
       `export const appConfig: ApplicationConfig = {`,
@@ -124,6 +125,7 @@ ${options.join('\n')}
       ...extraProviders,
       `    provideAppInitializer(() => {`,
       `      BusinessObjectBase.configure(inject(HttpClient));`,
+      `      registerSchemaFormFields();`,
       `    }),`,
       `  ],`,
       `};`
