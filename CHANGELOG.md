@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.166] - 2026-03-29
+
+- ca5bd02 chore: format tests and update deps
+- e3bf0fe feat: support autoFormat via .meta({ format }) in schema generator
+
+
 ## [1.0.165] - 2026-03-29
 
 - 066c43b chore: format design files

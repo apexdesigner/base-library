@@ -207,7 +207,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
               baseTypeColumnDefaults.set(bt.name, init.getLiteralValue());
             }
           }
-          for (const key of ['presentAs', 'displayName', 'placeholder', 'helpText'] as const) {
+          for (const key of ['presentAs', 'displayName', 'placeholder', 'helpText', 'autoFormat'] as const) {
             const prop = optsArg.getProperty(key);
             if (prop && Node.isPropertyAssignment(prop)) {
               const init = prop.getInitializer();
@@ -399,6 +399,8 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         const val = opts[key] || btDefaults?.[key];
         if (val) chain.push(`.${key}("${String(val).replace(/"/g, '\\"')}")`);
       }
+      const autoFormat = opts.autoFormat || btDefaults?.autoFormat;
+      if (autoFormat) chain.push(`.meta({ format: "${autoFormat}" })`);
 
       // Conditional rules — direct arrow fn or { condition, message } object
       for (const rule of ['requiredWhen', 'excludeWhen', 'disabledWhen'] as const) {
@@ -491,6 +493,8 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           const val = opts[key] || mixinBtDefaults?.[key];
           if (val) chain.push(`.${key}("${String(val).replace(/"/g, '\\"')}")`);
         }
+        const mixinAutoFormat = opts.autoFormat || mixinBtDefaults?.autoFormat;
+        if (mixinAutoFormat) chain.push(`.meta({ format: "${mixinAutoFormat}" })`);
 
         for (const rule of ['requiredWhen', 'excludeWhen', 'disabledWhen'] as const) {
           const val = opts[rule];
@@ -544,6 +548,7 @@ const businessObjectSchemaGenerator: DesignGenerator = {
             const val = fkOpts[key];
             if (val) fkExtras += `\n      .${key}("${String(val).replace(/"/g, '\\"')}")`;
           }
+          if (fkOpts.autoFormat) fkExtras += `\n      .meta({ format: "${fkOpts.autoFormat}" })`;
 
           const fkDescription = `Foreign key to ${rel.businessObjectName}`;
           schemaProps.push(

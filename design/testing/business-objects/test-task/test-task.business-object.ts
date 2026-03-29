@@ -1,5 +1,6 @@
-import { BusinessObject, relationship } from '@apexdesigner/dsl';
-import { TestProject } from '../test-project/test-project.business-object';
+import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
+import { Status } from '@base-types';
+import { TestProject } from '@business-objects';
 
 /**
  * Test Task
@@ -11,10 +12,11 @@ export class TestTask extends BusinessObject {
   id!: number;
 
   /** Name */
+  @property({ autoFormat: 'capitalCase' })
   name?: string;
 
   /** Status */
-  status?: string;
+  status?: Status;
 
   /** Project */
   @relationship({ type: 'Belongs To' })
