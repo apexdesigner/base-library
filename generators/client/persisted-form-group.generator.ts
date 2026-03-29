@@ -355,8 +355,8 @@ export class PersistedFormArray extends SchemaFormArray {
   }
 
   async read(filter?: Record<string, any>): Promise<void> {
-    const mergedFilter = { ...this._filter, ...filter };
-    if (filter) this._filter = mergedFilter;
+    const mergedFilter = this._buildFilterWithParentFK({ ...this._filter, ...filter });
+    if (filter) this._filter = { ...this._filter, ...filter };
     this.reading = true;
     try {
       const items = await this._entityClass.find(mergedFilter);
@@ -368,6 +368,13 @@ export class PersistedFormArray extends SchemaFormArray {
       this.reading = false;
     }
     if (this.afterRead) this.afterRead();
+  }
+
+  private _buildFilterWithParentFK(filter: Record<string, any>): Record<string, any> {
+    if (this._parentForeignKey && this._parentId != null) {
+      return { ...filter, where: { ...filter.where, [this._parentForeignKey]: this._parentId } };
+    }
+    return filter;
   }
 
   async add(data?: Record<string, any>): Promise<any> {
