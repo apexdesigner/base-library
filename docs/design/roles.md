@@ -1,5 +1,5 @@
 ---
-generated-from: design/auth/users-and-roles/administrator.role.ts
+generated-from: design/project.ts
 generated-by: design-docs.roles.doc.md
 ---
 # Roles
