@@ -19,6 +19,7 @@ export class TestTask extends BusinessObject {
   status?: Status;
 
   /** Sequence - Sort order for drag-and-drop reordering */
+  @property({ hidden: true })
   sequence?: number;
 
   /** Project */

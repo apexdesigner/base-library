@@ -19,7 +19,7 @@ export class TestProjectPage extends Page {
   @property({
     read: 'Automatically',
     save: 'Automatically',
-    include: { testTasks: {} }
+    include: { testTasks: { order: [{ field: 'sequence', direction: 'asc' }] } }
   })
   testProject!: TestProjectFormGroup;
 }

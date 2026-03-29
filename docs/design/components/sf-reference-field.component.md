@@ -14,3 +14,5 @@ its display property and stores the selected record's id.
 |------|------|----------|-------------|
 | control | `SchemaFormControl` | Always | Control |
 | label | `string` | No | Label - Label passed from sf-field, overrides derived label |
+| placeholder | `string` | No | Placeholder |
+| hideHelpText | `boolean` | No | Hide Help Text |

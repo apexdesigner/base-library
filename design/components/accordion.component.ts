@@ -147,9 +147,9 @@ applyTemplate(AccordionComponent, [
                 element: 'mat-expansion-panel-header',
                 contains: [
                   {
-                    if: 'sortable',
+                    if: 'sortable && expandedIndex === -1',
                     name: 'dragHandle',
-                    contains: [{ 'mat-icon': 'drag_indicator', attributes: { style: 'cursor: grab; margin-right: 8px; color: rgba(0,0,0,0.38)' } }],
+                    contains: [{ 'mat-icon': 'drag_indicator', attributes: { cdkDragHandle: null, style: 'cursor: grab; margin-right: 8px; color: rgba(0,0,0,0.38)' } }],
                   },
                   { element: 'mat-panel-title', text: '{{getDisplayName(item)}}' },
                 ],
