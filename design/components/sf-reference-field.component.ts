@@ -15,7 +15,7 @@ const debug = createDebug('SfReferenceFieldComponent');
  * Displays a mat-autocomplete that searches the referenced entity by
  * its display property and stores the selected record's id.
  */
-@component({ metadata: { schemaFormField: true } })
+@component({ fieldFormat: 'reference' })
 export class SfReferenceFieldComponent extends Component {
   /** Control */
   @property({ isInput: true })

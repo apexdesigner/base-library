@@ -230,7 +230,7 @@ applyStyles(
     display: block;
   }
 
-  sf-fields {
+  sf-section {
     margin-bottom: var(--accordion-content-gap);
   }
 `

@@ -8,7 +8,7 @@ import { SchemaFormControl } from '@apexdesigner/schema-forms';
  * Schema form field that displays a dropdown of roles.
  * The control value is the role id.
  */
-@component({ metadata: { schemaFormsField: true } })
+@component({ fieldFormat: 'select-role' })
 export class SelectRoleFieldComponent extends Component {
   /** Control - The schema form control bound to this field */
   @property({ isInput: true })
