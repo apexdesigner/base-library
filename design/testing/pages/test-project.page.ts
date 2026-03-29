@@ -70,6 +70,8 @@ applyTemplate(TestProjectPage, [
                     element: 'accordion',
                     attributes: {
                       array: '<- testProject.controls.testTasks',
+                      includeLaunch: '<- true',
+                      routePrefix: '/test-tasks',
                     },
                   },
                 ],
