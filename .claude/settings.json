@@ -48,11 +48,12 @@
       "Bash(.claude/skills/typescript-test-management/scripts/replace-test-body.cjs:*)",
       "Bash(.claude/skills/typescript-test-management/scripts/toggle-skip.cjs:*)",
       "Skill(apex-designer)",
-      "Bash(.claude/skills/apex-designer/scripts/dev.sh:*)",
       "Bash(.claude/skills/apex-designer/scripts/resolve.cjs:*)",
       "Bash(npx es *)",
       "Bash(.claude/skills/apex-designer/scripts/api.cjs:*)",
-      "Skill(envisioning-studio-cli)"
+      "Skill(envisioning-studio-cli)",
+      "Bash(bash .claude/skills/apex-designer/scripts/dev-server.sh:*)",
+      "Bash(bash .claude/skills/apex-designer/scripts/dev-client.sh:*)"
     ],
     "deny": [
       "Read(**/.env)",

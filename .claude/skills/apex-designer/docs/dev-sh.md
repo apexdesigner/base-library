@@ -1,40 +1,45 @@
-# dev.sh
+# Dev Server Scripts
 
-Development server startup script. Located at `.claude/skills/apex-designer/scripts/dev.sh`.
+Separate scripts for starting the generated app server and client. Located at `.claude/skills/apex-designer/scripts/`.
 
-## Usage
+## Server
 
 ```bash
-# Start server and client
-bash .claude/skills/apex-designer/scripts/dev.sh
+# Start the app server
+bash .claude/skills/apex-designer/scripts/dev-server.sh
 
 # Start with debug output
-bash .claude/skills/apex-designer/scripts/dev.sh --debug "AppName:*"
+bash .claude/skills/apex-designer/scripts/dev-server.sh --debug "AppName:*"
+
+# Stop the app server
+bash .claude/skills/apex-designer/scripts/dev-server.sh --stop
+```
+
+## Client
+
+```bash
+# Start the Angular client
+bash .claude/skills/apex-designer/scripts/dev-client.sh
+
+# Stop the client
+bash .claude/skills/apex-designer/scripts/dev-client.sh --stop
 ```
 
 ## Behavior
 
-- Starts both the server (port 3000) and client (port 4200) in the background, then exits
-- Running it again automatically kills existing processes on the ports — no need to manually kill anything
-- The server uses `tsx --watch`, so it auto-restarts when generated code changes (e.g., after `ad3 gen`). If the server fails on initial startup (e.g., before code is generated), it will keep retrying — run `ad3 gen` and check `logs/server.log` rather than re-running dev.sh
+- Each script manages only its own process using PID files (`logs/server.pid`, `logs/client.pid`)
+- Running a script again automatically stops the existing process before starting a new one
+- The server uses `tsx --watch`, so it auto-restarts when generated code changes
+- These scripts do NOT affect the design server (`ad3 start`) — they only manage the generated app
 
 ## Logs
 
 - Server: `logs/server.log`
 - Client: `logs/client.log`
 
-## Checking Status
-
-Check if the processes are running:
-
-```bash
-lsof -ti :3000   # Server
-lsof -ti :4200   # Client
-```
-
 ## Port Configuration
 
-Ports can be pinned per project in `.workspace.json`:
+Ports are read from `.workspace.json`:
 
 ```json
 {

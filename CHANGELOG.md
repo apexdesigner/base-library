@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.161] - 2026-03-29
+
+- 9931698 chore: update skills and deps
+- c47bcd6 fix: auto-set parent foreign key when adding to nested form arrays
+
+
 ## [1.0.160] - 2026-03-28
 
 - 5a6a0d0 chore: format and update deps

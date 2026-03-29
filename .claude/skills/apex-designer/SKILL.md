@@ -137,14 +137,15 @@ The server must be running before login. The script reads the server port from `
 
 ## Dev Server
 
-See `.claude/skills/apex-designer/docs/dev-sh.md` for usage. The script is at `.claude/skills/apex-designer/scripts/dev.sh` (relative to the project root).
+See `.claude/skills/apex-designer/docs/dev-sh.md` for usage.
 
-- `bash .claude/skills/apex-designer/scripts/dev.sh` — starts server and client in background, then exits
-- `bash .claude/skills/apex-designer/scripts/dev.sh --server-only` — starts only the server (faster, useful for API testing)
-- `bash .claude/skills/apex-designer/scripts/dev.sh --stop` — stops all dev processes
-- `bash .claude/skills/apex-designer/scripts/dev.sh --debug "AppName:*"` — enables debug output
-- Running it again automatically kills existing processes on the ports
-- Fire-and-forget: the server uses `tsx --watch` and will auto-restart as files change. If startup fails or times out, check `logs/server.log` and fix the issue (e.g., run `ad3 gen`) — do NOT re-run dev.sh
+- `bash .claude/skills/apex-designer/scripts/dev-server.sh` — starts the app server in background
+- `bash .claude/skills/apex-designer/scripts/dev-server.sh --stop` — stops the app server
+- `bash .claude/skills/apex-designer/scripts/dev-server.sh --debug "AppName:*"` — enables debug output
+- `bash .claude/skills/apex-designer/scripts/dev-client.sh` — starts the Angular client in background
+- `bash .claude/skills/apex-designer/scripts/dev-client.sh --stop` — stops the client
+- These scripts use PID files and do NOT affect the design server
+- Fire-and-forget: the server uses `tsx --watch` and will auto-restart as files change. If startup fails or times out, check `logs/server.log` and fix the issue (e.g., run `ad3 gen`) — do NOT re-run the script
 - Ports can be pinned per project via `.workspace.json`:
   ```json
   { "ports": { "server": 3000, "client": 4200 } }
