@@ -251,7 +251,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ autoFormat: 'camelCase' })
             variableName?: string;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -267,7 +267,7 @@ describe('businessObjectSchemaGenerator', () => {
           import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class VariableName extends BaseType<string> {}
           setPropertyDefaults(VariableName, { autoFormat: 'camelCase' });
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Task', {
         sourceCode: `
@@ -276,7 +276,7 @@ describe('businessObjectSchemaGenerator', () => {
           export class Task extends BusinessObject {
             name?: VariableName;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
@@ -292,7 +292,7 @@ describe('businessObjectSchemaGenerator', () => {
           import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
           export class VariableName extends BaseType<string> {}
           setPropertyDefaults(VariableName, { autoFormat: 'camelCase' });
-        `,
+        `
       });
       workspace.addMetadata('BusinessObject', 'Task', {
         sourceCode: `
@@ -302,7 +302,7 @@ describe('businessObjectSchemaGenerator', () => {
             @property({ autoFormat: 'pascalCase' })
             name?: VariableName;
           }
-        `,
+        `
       });
 
       const metadata = workspace.context.listMetadata('BusinessObject')[0];
