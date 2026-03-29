@@ -313,6 +313,129 @@ describe('businessObjectSchemaGenerator', () => {
     });
   });
 
+  describe('foreign key visibility', () => {
+    it('should hide FK for belongs-to relationships', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Department', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Department extends BusinessObject {
+            name?: string;
+          }
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Employee', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Department } from '@business-objects';
+          export class Employee extends BusinessObject {
+            name?: string;
+            @relationship({ type: 'Belongs To' })
+            department?: Department;
+            departmentId!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('departmentId');
+      expect(result).toContain('.hidden()');
+    });
+
+    it('should NOT hide FK for references relationships', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Department', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Department extends BusinessObject {
+            name?: string;
+          }
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Employee', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Department } from '@business-objects';
+          export class Employee extends BusinessObject {
+            name?: string;
+            @relationship({ type: 'References' })
+            department?: Department;
+            departmentId!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('departmentId');
+      const fkLine = result.split('\n').find(l => l.includes('departmentId'));
+      expect(fkLine).not.toContain('.hidden()');
+    });
+
+    it('should default presentAs to foreignKey for references relationships', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Department', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Department extends BusinessObject {
+            name?: string;
+          }
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Employee', {
+        sourceCode: `
+          import { BusinessObject, relationship } from '@apexdesigner/dsl';
+          import { Department } from '@business-objects';
+          export class Employee extends BusinessObject {
+            name?: string;
+            @relationship({ type: 'References' })
+            department?: Department;
+            departmentId!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.presentAs("reference")');
+    });
+
+    it('should respect explicit presentAs on references FK', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Department', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          export class Department extends BusinessObject {
+            name?: string;
+          }
+        `
+      });
+      workspace.addMetadata('BusinessObject', 'Employee', {
+        sourceCode: `
+          import { BusinessObject, property, relationship } from '@apexdesigner/dsl';
+          import { Department } from '@business-objects';
+          export class Employee extends BusinessObject {
+            name?: string;
+            @relationship({ type: 'References' })
+            department?: Department;
+            @property({ presentAs: 'select' })
+            departmentId!: number;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject').find(m => m.name === 'Employee')!;
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.presentAs("select")');
+      expect(result).not.toContain('.presentAs("reference")');
+    });
+  });
+
   describe('base type valid values', () => {
     it('should generate z.enum() for base type with simple string valid values', async () => {
       const workspace = createSimpleMockWorkspace();

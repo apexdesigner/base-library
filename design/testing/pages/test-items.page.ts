@@ -44,7 +44,6 @@ applyTemplate(TestItemsPage, [
   {
     element: 'flex-column',
     contains: [
-      { element: 'pre', name: 'summariesOutput', text: '{{summaries | json}}' },
       {
         element: 'flex-row',
         attributes: { alignCenter: true },
