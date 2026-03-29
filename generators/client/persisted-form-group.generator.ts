@@ -173,6 +173,10 @@ export class PersistedFormGroup extends SchemaFormGroup {
             debug('set parent FK %s=%o on array %s', relMeta.foreignKey, data[this._idProperty], name);
           }
         }
+        // Propagate autoSave to the array before adding items
+        if (this._autoSaveDestroyRef) {
+          control.autoSave(this._autoSaveDestroyRef, this._autoSaveDebounceMs);
+        }
         control.clear();
         for (const item of data[name]) {
           control.addItem(item);
@@ -290,6 +294,8 @@ export class PersistedFormArray extends SchemaFormArray {
   readonly entityName: string = '';
   _parentForeignKey: string | null = null;
   _parentId: any = null;
+  _autoSaveDestroyRef: DestroyRef | null = null;
+  _autoSaveDebounceMs = 300;
 
   private _filter: Record<string, any> = {};
   private _entityClass: EntityArrayClass;
@@ -319,9 +325,24 @@ export class PersistedFormArray extends SchemaFormArray {
       } else if (data) {
         group.patchValue(data);
       }
+      if (this._autoSaveDestroyRef && group instanceof PersistedFormGroup) {
+        group.autoSave(this._autoSaveDestroyRef, this._autoSaveDebounceMs);
+        group.updateOriginalValue();
+      }
       this.push(group);
     } else {
       super.addItem(data);
+    }
+  }
+
+  autoSave(destroyRef: DestroyRef, debounceMs = 300): void {
+    this._autoSaveDestroyRef = destroyRef;
+    this._autoSaveDebounceMs = debounceMs;
+    for (const control of this.controls) {
+      if (control instanceof PersistedFormGroup) {
+        control.autoSave(destroyRef, debounceMs);
+        control.updateOriginalValue();
+      }
     }
   }
 
@@ -496,6 +517,7 @@ export declare class PersistedFormArray extends SchemaFormArray {
   read(filter?: Record<string, any>): Promise<void>;
   add(data?: Record<string, any>): Promise<any>;
   remove(indexOrItem: number | Record<string, any>): Promise<void>;
+  autoSave(destroyRef: any, debounceMs?: number): void;
 }
 
 export interface PersistedArrayOptions {

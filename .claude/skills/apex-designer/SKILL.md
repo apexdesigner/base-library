@@ -146,6 +146,8 @@ See `.claude/skills/apex-designer/docs/dev-sh.md` for usage.
 - `bash .claude/skills/apex-designer/scripts/dev-client.sh` — starts the Angular client in background
 - `bash .claude/skills/apex-designer/scripts/dev-client.sh --stop` — stops the client
 - These scripts use PID files and do NOT affect the design server
+- Running the start script again automatically stops and restarts the existing process — no need to run `--stop` first
+- Only use `--stop` if the user explicitly asks you to stop the server or client
 - Fire-and-forget: the server uses `tsx --watch` and will auto-restart as files change. If startup fails or times out, check `logs/server.log` and fix the issue (e.g., run `ad3 gen`) — do NOT re-run the script
 - Ports can be pinned per project via `.workspace.json`:
   ```json
