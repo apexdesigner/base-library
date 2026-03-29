@@ -76,14 +76,10 @@ export class AccordionComponent extends Component {
 
 applyTemplate(AccordionComponent, [
   {
-    if: 'items.length > 0',
-    name: 'accordionSection',
+    element: 'mat-accordion',
     contains: [
       {
-        element: 'mat-accordion',
-        contains: [
-          {
-            for: 'item',
+        for: 'item',
         of: 'items',
         trackBy: 'item.id || $index',
         contains: [
@@ -129,8 +125,6 @@ applyTemplate(AccordionComponent, [
         ],
       },
     ],
-      },
-    ],
   },
   {
     if: '!hideAdd',
@@ -138,7 +132,12 @@ applyTemplate(AccordionComponent, [
     contains: [
       {
         element: 'add-field',
-        attributes: { array: '<- array', defaults: '<- defaults', added: '-> array.read()' },
+        attributes: {
+          array: '<- array',
+          defaults: '<- defaults',
+          added: '-> array.read()',
+          'style.margin-top': "<- items.length > 0 ? 'var(--accordion-add-gap)' : '0'",
+        },
       },
     ],
   },
@@ -153,16 +152,17 @@ applyStyles(
     --accordion-shadow-padding: 3px;
   }
 
-  mat-accordion {
+  :host > mat-accordion {
+    display: block;
     padding: 0 var(--accordion-shadow-padding) var(--accordion-shadow-padding);
+  }
+
+  :host > add-field {
+    display: block;
   }
 
   sf-fields {
     margin-bottom: var(--accordion-content-gap);
-  }
-
-  mat-accordion + add-field {
-    margin-top: var(--accordion-add-gap);
   }
 `
 );
