@@ -241,6 +241,78 @@ describe('businessObjectSchemaGenerator', () => {
     });
   });
 
+  describe('autoFormat', () => {
+    it('should apply autoFormat from @property options', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject, property } from '@apexdesigner/dsl';
+          export class Task extends BusinessObject {
+            @property({ autoFormat: 'camelCase' })
+            variableName?: string;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.meta({ format: "camelCase" })');
+    });
+
+    it('should apply autoFormat from setPropertyDefaults on a base type', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'VariableName', {
+        sourceCode: `
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
+          export class VariableName extends BaseType<string> {}
+          setPropertyDefaults(VariableName, { autoFormat: 'camelCase' });
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject } from '@apexdesigner/dsl';
+          import { VariableName } from '@base-types';
+          export class Task extends BusinessObject {
+            name?: VariableName;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.meta({ format: "camelCase" })');
+    });
+
+    it('should allow property-level autoFormat to override base type default', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BaseType', 'VariableName', {
+        sourceCode: `
+          import { BaseType, setPropertyDefaults } from '@apexdesigner/dsl';
+          export class VariableName extends BaseType<string> {}
+          setPropertyDefaults(VariableName, { autoFormat: 'camelCase' });
+        `,
+      });
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject, property } from '@apexdesigner/dsl';
+          import { VariableName } from '@base-types';
+          export class Task extends BusinessObject {
+            @property({ autoFormat: 'pascalCase' })
+            name?: VariableName;
+          }
+        `,
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.meta({ format: "pascalCase" })');
+      expect(result).not.toContain('.meta({ format: "camelCase" })');
+    });
+  });
+
   describe('base type valid values', () => {
     it('should generate z.enum() for base type with simple string valid values', async () => {
       const workspace = createSimpleMockWorkspace();
