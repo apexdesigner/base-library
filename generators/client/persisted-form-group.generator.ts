@@ -163,6 +163,16 @@ export class PersistedFormGroup extends SchemaFormGroup {
     for (const [name, control] of Object.entries(this.controls)) {
       if (control instanceof PersistedFormArray && Array.isArray(data[name])) {
         debug('populating array', name, 'with', data[name].length, 'items');
+        // Set parent context so add() can inject the foreign key
+        const fieldSchema = this.schema?.shape?.[name];
+        if (fieldSchema) {
+          const relMeta = getRelationshipMetadata(fieldSchema as any);
+          if (relMeta?.foreignKey && data[this._idProperty]) {
+            control._parentForeignKey = relMeta.foreignKey;
+            control._parentId = data[this._idProperty];
+            debug('set parent FK %s=%o on array %s', relMeta.foreignKey, data[this._idProperty], name);
+          }
+        }
         control.clear();
         for (const item of data[name]) {
           control.addItem(item);
@@ -278,6 +288,8 @@ export class PersistedFormArray extends SchemaFormArray {
   reading = false;
   afterRead: (() => void) | null = null;
   readonly entityName: string = '';
+  _parentForeignKey: string | null = null;
+  _parentId: any = null;
 
   private _filter: Record<string, any> = {};
   private _entityClass: EntityArrayClass;
@@ -338,7 +350,11 @@ export class PersistedFormArray extends SchemaFormArray {
   }
 
   async add(data?: Record<string, any>): Promise<any> {
-    const result = await this._entityClass.create(data || {});
+    const payload = { ...data };
+    if (this._parentForeignKey && this._parentId != null) {
+      payload[this._parentForeignKey] = this._parentId;
+    }
+    const result = await this._entityClass.create(payload);
     this.addItem(result);
     return result;
   }

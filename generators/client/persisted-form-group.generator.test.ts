@@ -254,4 +254,26 @@ describe('persistedFormGroupGenerator', () => {
     const formArraySection = code.split('export class PersistedFormArray')[1];
     expect(formArraySection).toContain('readonly entityName: string');
   });
+
+  it('should track parent foreign key and id on PersistedFormArray', async () => {
+    const code = await generateRuntime();
+    const formArraySection = code.split('export class PersistedFormArray')[1];
+    expect(formArraySection).toContain('_parentForeignKey');
+    expect(formArraySection).toContain('_parentId');
+  });
+
+  it('should merge parent foreign key into data in PersistedFormArray.add()', async () => {
+    const code = await generateRuntime();
+    const formArraySection = code.split('export class PersistedFormArray')[1];
+    const addMethod = formArraySection.split('async add(')[1];
+    expect(addMethod).toContain('_parentForeignKey');
+    expect(addMethod).toContain('_parentId');
+  });
+
+  it('should set parent context on PersistedFormArray during _populate', async () => {
+    const code = await generateRuntime();
+    const populateMethod = code.split('_populate(data: Record<string, any>)')[1];
+    expect(populateMethod).toContain('_parentForeignKey');
+    expect(populateMethod).toContain('_parentId');
+  });
 });
