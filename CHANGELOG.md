@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.167] - 2026-03-29
+
+- ccb33c2 chore: regenerate docs
+- 39668d9 fix: pin @angular/material-luxon-adapter to ~19.2.0
+
+
 ## [1.0.166] - 2026-03-29
 
 - ca5bd02 chore: format tests and update deps
