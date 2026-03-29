@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.169] - 2026-03-29
+
+- 37e1e50 chore: format design and test files
+- 6e194c4 feat: extract arrow function body for conditional rules in schema generator
+- b172680 feat: accordion drag handle, hidden sequence, and task ordering
+- dbe2c06 feat: accordion drag-and-drop reorder with sequence auto-detection
+
+
 ## [1.0.168] - 2026-03-29
 
 - 5bfdca9 chore: format and update deps

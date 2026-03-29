@@ -436,6 +436,69 @@ describe('businessObjectSchemaGenerator', () => {
     });
   });
 
+  describe('conditional rules', () => {
+    it('should extract arrow function body for excludeWhen', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Project', {
+        sourceCode: `
+          import { BusinessObject, property } from '@apexdesigner/dsl';
+          export class Project extends BusinessObject {
+            name?: string;
+            @property({ excludeWhen: (project) => project.name?.startsWith('A') })
+            description?: string;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.excludeWhen("name?.startsWith(');
+      expect(result).not.toContain('(project) =>');
+    });
+
+    it('should extract arrow function body for requiredWhen with message', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Invoice', {
+        sourceCode: `
+          import { BusinessObject, property } from '@apexdesigner/dsl';
+          export class Invoice extends BusinessObject {
+            total?: number;
+            @property({ requiredWhen: { condition: (invoice) => invoice.total > 1000, message: 'Required for large orders' } })
+            approval?: string;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.requiredWhen("total > 1000"');
+      expect(result).toContain('Required for large orders');
+      expect(result).not.toContain('(invoice) =>');
+    });
+
+    it('should extract arrow function body for disabledWhen', async () => {
+      const workspace = createSimpleMockWorkspace();
+      workspace.addMetadata('BusinessObject', 'Task', {
+        sourceCode: `
+          import { BusinessObject, property } from '@apexdesigner/dsl';
+          export class Task extends BusinessObject {
+            status?: string;
+            @property({ disabledWhen: (task) => task.status === 'complete' })
+            name?: string;
+          }
+        `
+      });
+
+      const metadata = workspace.context.listMetadata('BusinessObject')[0];
+      const result = serverContent((await businessObjectSchemaGenerator.generate(metadata, workspace.context)) as Map<string, string>);
+
+      expect(result).toContain('.disabledWhen("status === \'complete\'")');
+      expect(result).not.toContain('(task) =>');
+    });
+  });
+
   describe('base type valid values', () => {
     it('should generate z.enum() for base type with simple string valid values', async () => {
       const workspace = createSimpleMockWorkspace();

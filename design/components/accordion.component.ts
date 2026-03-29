@@ -1,6 +1,8 @@
 import { Component, property, method, applyTemplate, applyStyles } from '@apexdesigner/dsl/component';
 import { PersistedArray, PersistedFormArray } from '@business-objects-client';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { AddFieldComponent } from '@components';
+import { BusinessObjectService } from '@services';
 import { EventEmitter } from '@angular/core';
 import createDebug from 'debug';
 
@@ -43,6 +45,49 @@ export class AccordionComponent extends Component {
   @property({ isOutput: true })
   deleted!: EventEmitter<any>;
 
+  /** Business Object Service */
+  businessObjectService!: BusinessObjectService;
+
+  /** Sortable - Whether drag-and-drop reorder is enabled (auto-detected from sequence property) */
+  sortable = false;
+
+  /** Expanded Index - Track which panel is expanded to disable drag */
+  expandedIndex = -1;
+
+  /** Initialize - Auto-detect sortable from sequence property */
+  @method({ callOnLoad: true })
+  initialize(): void {
+    const metadata = this.businessObjectService.getMetadata(this.array.entityName);
+    if (metadata) {
+      this.sortable = metadata.properties.some(p => p.name === 'sequence');
+      debug('sortable %o for %s', this.sortable, this.array.entityName);
+    }
+  }
+
+  /** On Drop - Reorder items and update sequence values */
+  async onDrop(event: CdkDragDrop<any>): Promise<void> {
+    if (event.previousIndex === event.currentIndex) return;
+
+    const items = this.items;
+    const movedItem = items[event.previousIndex];
+    items.splice(event.previousIndex, 1);
+    items.splice(event.currentIndex, 0, movedItem);
+
+    // Update sequence values and save
+    for (let i = 0; i < items.length; i++) {
+      const obj = items[i].value || items[i];
+      if (obj.sequence !== i) {
+        obj.sequence = i;
+        if (items[i].patchValue) {
+          items[i].patchValue({ sequence: i });
+          items[i].markAsDirty();
+        }
+      }
+    }
+
+    debug('reordered %d items', items.length);
+  }
+
   /** Items - Resolve the iterable list from the array */
   get items(): any[] {
     if ('controls' in this.array) {
@@ -77,18 +122,42 @@ export class AccordionComponent extends Component {
 applyTemplate(AccordionComponent, [
   {
     element: 'mat-accordion',
+    attributes: {
+      cdkDropList: null,
+      cdkDropListDisabled: '<- !sortable',
+      cdkDropListDropped: '-> onDrop($event)'
+    },
     contains: [
       {
         for: 'item',
         of: 'items',
         trackBy: 'item.id || $index',
+        index: 'i',
         contains: [
           {
             element: 'mat-expansion-panel',
+            attributes: {
+              cdkDrag: null,
+              cdkDragDisabled: '<- expandedIndex === i',
+              opened: '-> expandedIndex = i',
+              closed: '-> expandedIndex = -1'
+            },
             contains: [
               {
                 element: 'mat-expansion-panel-header',
-                contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }]
+                contains: [
+                  {
+                    if: 'sortable && expandedIndex === -1',
+                    name: 'dragHandle',
+                    contains: [
+                      {
+                        'mat-icon': 'drag_indicator',
+                        attributes: { cdkDragHandle: null, style: 'cursor: grab; margin-right: 8px; color: rgba(0,0,0,0.38)' }
+                      }
+                    ]
+                  },
+                  { element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }
+                ]
               },
               {
                 element: 'ng-template',
