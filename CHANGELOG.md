@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.170] - 2026-03-29
+
+- bcd2829 chore: regenerate add-button docs
+- 747adc1 fix: nested form array read filter and auto-sequence on add
+- a085fa5 fix: PersistedFormArray.read() includes parent FK where clause
+
+
 ## [1.0.169] - 2026-03-29
 
 - 37e1e50 chore: format design and test files

@@ -173,6 +173,12 @@ export class PersistedFormGroup extends SchemaFormGroup {
             debug('set parent FK %s=%o on array %s', relMeta.foreignKey, data[this._idProperty], name);
           }
         }
+        // Propagate the include sub-filter to the child array's readFilter
+        const includeFilter = this._filter?.include?.[name];
+        if (includeFilter && typeof includeFilter === 'object') {
+          control.readFilter = { ...control.readFilter, ...includeFilter };
+          debug('set readFilter on array %s: %j', name, control.readFilter);
+        }
         // Propagate autoSave to the array before adding items
         if (this._autoSaveDestroyRef) {
           control.autoSave(this._autoSaveDestroyRef, this._autoSaveDebounceMs);
@@ -355,8 +361,8 @@ export class PersistedFormArray extends SchemaFormArray {
   }
 
   async read(filter?: Record<string, any>): Promise<void> {
-    const mergedFilter = { ...this._filter, ...filter };
-    if (filter) this._filter = mergedFilter;
+    const mergedFilter = this._buildFilterWithParentFK({ ...this._filter, ...filter });
+    if (filter) this._filter = { ...this._filter, ...filter };
     this.reading = true;
     try {
       const items = await this._entityClass.find(mergedFilter);
@@ -368,6 +374,13 @@ export class PersistedFormArray extends SchemaFormArray {
       this.reading = false;
     }
     if (this.afterRead) this.afterRead();
+  }
+
+  private _buildFilterWithParentFK(filter: Record<string, any>): Record<string, any> {
+    if (this._parentForeignKey && this._parentId != null) {
+      return { ...filter, where: { ...filter.where, [this._parentForeignKey]: this._parentId } };
+    }
+    return filter;
   }
 
   async add(data?: Record<string, any>): Promise<any> {

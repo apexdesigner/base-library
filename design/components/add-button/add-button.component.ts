@@ -23,6 +23,10 @@ export class AddButtonComponent extends Component {
   @property({ isInput: true })
   label?: string;
 
+  /** Default values for new records. */
+  @property({ isInput: true })
+  defaults?: Record<string, any>;
+
   /** Custom width for the add dialog. Defaults to '400px'. */
   @property({ isInput: true })
   dialogWidth?: string;
@@ -95,6 +99,7 @@ applyTemplate(AddButtonComponent, [
     attributes: {
       array: '<- array',
       label: '<- label || defaultLabel',
+      defaults: '<- defaults',
       options: "<- { autoFocus: true, width: dialogWidth || '400px' }",
       added: '-> added.emit($event)'
     }

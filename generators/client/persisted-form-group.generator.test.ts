@@ -276,4 +276,11 @@ describe('persistedFormGroupGenerator', () => {
     expect(populateMethod).toContain('_parentForeignKey');
     expect(populateMethod).toContain('_parentId');
   });
+
+  it('should include parent FK where clause in PersistedFormArray.read()', async () => {
+    const code = await generateRuntime();
+    const formArraySection = code.split('export class PersistedFormArray')[1];
+    const readMethod = formArraySection.split('async read(')[1];
+    expect(readMethod).toContain('_buildFilterWithParentFK');
+  });
 });
