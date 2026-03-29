@@ -542,11 +542,20 @@ const businessObjectSchemaGenerator: DesignGenerator = {
 
           // Check for @property() options on the FK field
           const fkOpts = fkProp ? getPropertyDecorator(fkProp, 'property') || {} : {};
-          const fkHidden = fkOpts.hidden === false ? '' : '\n      .hidden()';
+          const isReferences = rel.relationshipType === 'References';
+          // Belongs To FKs are hidden by default; References FKs are visible
+          const fkHidden = fkOpts.hidden === true ? '\n      .hidden()'
+            : fkOpts.hidden === false ? ''
+            : isReferences ? ''
+            : '\n      .hidden()';
           let fkExtras = '';
           for (const key of ['displayName', 'placeholder', 'helpText', 'presentAs'] as const) {
             const val = fkOpts[key];
             if (val) fkExtras += `\n      .${key}("${String(val).replace(/"/g, '\\"')}")`;
+          }
+          // Default presentAs to foreignKey for References relationships
+          if (isReferences && !fkOpts.presentAs) {
+            fkExtras += `\n      .presentAs("foreignKey")`;
           }
           if (fkOpts.autoFormat) fkExtras += `\n      .meta({ format: "${fkOpts.autoFormat}" })`;
 
