@@ -43,7 +43,7 @@
     "@apexdesigner/claude-skills": "^1.0.48",
     "@apexdesigner/dsl": "^0.8.77",
     "@apexdesigner/generator": "^0.8.54",
-    "@apexdesigner/server": "^0.8.52",
+    "@apexdesigner/server": "^0.8.53",
     "@apexdesigner/utilities": "^0.1.27",
     "@apexdesigner/validator": "^0.8.59",
     "@types/debug": "^4.1.12",
