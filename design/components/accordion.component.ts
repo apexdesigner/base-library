@@ -76,72 +76,72 @@ export class AccordionComponent extends Component {
 
 applyTemplate(AccordionComponent, [
   {
-    element: 'flex-column',
-    attributes: { style: 'gap: var(--accordion-add-gap)' },
+    if: 'items.length > 0',
+    name: 'accordionSection',
     contains: [
       {
         element: 'mat-accordion',
         contains: [
           {
             for: 'item',
-            of: 'items',
-            trackBy: 'item.id || $index',
-            contains: [
-              {
-                element: 'mat-expansion-panel',
-                contains: [
-                  {
-                    element: 'mat-expansion-panel-header',
-                    contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }]
-                  },
-                  {
-                    element: 'ng-template',
-                    attributes: { matExpansionPanelContent: null },
-                    contains: [
-                      { element: 'sf-fields', attributes: { group: '<- item' } },
-                      {
-                        element: 'mat-action-row',
-                        contains: [
-                          {
-                            if: 'includeLaunch',
-                            name: 'launchSection',
-                            contains: [
-                              {
-                                element: 'a',
-                                name: 'launchButton',
-                                attributes: { 'mat-icon-button': null, matTooltip: 'Open', routerLink: '<- getRoute(item)' },
-                                contains: [{ 'mat-icon': 'launch' }]
-                              }
-                            ]
-                          },
-                          {
-                            element: 'button',
-                            name: 'deleteButton',
-                            attributes: { 'mat-icon-button': null, color: 'warn', matTooltip: 'Delete', click: '-> deleteItem(item)' },
-                            contains: [{ 'mat-icon': 'delete_outline' }]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        if: '!hideAdd',
-        name: 'addSection',
+        of: 'items',
+        trackBy: 'item.id || $index',
         contains: [
           {
-            element: 'add-field',
-            attributes: { array: '<- array', defaults: '<- defaults', added: '-> array.read()' }
-          }
-        ]
-      }
-    ]
-  }
+            element: 'mat-expansion-panel',
+            contains: [
+              {
+                element: 'mat-expansion-panel-header',
+                contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }],
+              },
+              {
+                element: 'ng-template',
+                attributes: { matExpansionPanelContent: null },
+                contains: [
+                  { element: 'sf-fields', attributes: { group: '<- item' } },
+                  {
+                    element: 'mat-action-row',
+                    contains: [
+                      {
+                        if: 'includeLaunch',
+                        name: 'launchSection',
+                        contains: [
+                          {
+                            element: 'a',
+                            name: 'launchButton',
+                            attributes: { 'mat-icon-button': null, matTooltip: 'Open', routerLink: '<- getRoute(item)' },
+                            contains: [{ 'mat-icon': 'launch' }],
+                          },
+                        ],
+                      },
+                      {
+                        element: 'button',
+                        name: 'deleteButton',
+                        attributes: { 'mat-icon-button': null, color: 'warn', matTooltip: 'Delete', click: '-> deleteItem(item)' },
+                        contains: [{ 'mat-icon': 'delete_outline' }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+      },
+    ],
+  },
+  {
+    if: '!hideAdd',
+    name: 'addSection',
+    contains: [
+      {
+        element: 'add-field',
+        attributes: { array: '<- array', defaults: '<- defaults', added: '-> array.read()' },
+      },
+    ],
+  },
 ]);
 
 applyStyles(
@@ -159,6 +159,10 @@ applyStyles(
 
   sf-fields {
     margin-bottom: var(--accordion-content-gap);
+  }
+
+  mat-accordion + add-field {
+    margin-top: var(--accordion-add-gap);
   }
 `
 );
