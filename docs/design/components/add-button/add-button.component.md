@@ -14,6 +14,7 @@ AddDialog that dynamically loads a schema-driven form for the array's entity typ
 |------|------|----------|-------------|
 | array | `PersistedArray<any> \| PersistedFormArray` | Always | The persisted array or form array to add new records to. |
 | label | `string` | No | Custom label for the button and dialog title. Defaults to "Add {EntityName}". |
+| defaults | `Record<string, any>` | No | Default values for new records. |
 | dialogWidth | `string` | No | Custom width for the add dialog. Defaults to '400px'. |
 
 ## Outputs
