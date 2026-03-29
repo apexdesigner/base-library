@@ -79,6 +79,18 @@ const PERSISTENCE_METHODS = new Set(['column', 'unique', 'index', 'view', 'onDel
  * using ts-morph AST manipulation. Removes .column(), .unique(), .index(), .view()
  * calls and the schema-persistence/extensions import.
  */
+/**
+ * Extract the body of an arrow function condition, stripping the parameter and `=>`.
+ * e.g. "(project) => project.name?.startsWith('A')" → "name?.startsWith('A')"
+ */
+function extractConditionBody(source: string): string {
+  const arrowMatch = source.match(/^\s*\(?\s*(\w+)\s*\)?\s*=>\s*(.+)$/s);
+  if (!arrowMatch) return source;
+  const [, param, body] = arrowMatch;
+  // Replace param references (param. or param?.) with empty string
+  return body.replace(new RegExp(`\\b${param}\\??\\.`, 'g'), '').trim();
+}
+
 function stripPersistenceExtensions(content: string): string {
   const project = new Project({ useInMemoryFileSystem: true });
   const sourceFile = project.createSourceFile('temp.ts', content);
@@ -408,16 +420,16 @@ const businessObjectSchemaGenerator: DesignGenerator = {
         if (!val) continue;
 
         if (typeof val === 'string') {
-          // Direct arrow function source text
-          chain.push(`.${rule}("${val.replace(/"/g, '\\"')}")`);
+          chain.push(`.${rule}("${extractConditionBody(val).replace(/"/g, '\\"')}")`);
         } else if (typeof val === 'object' && val !== null) {
           const obj = val as Record<string, unknown>;
           const condition = obj.condition as string | undefined;
           const message = obj.message as string | undefined;
-          if (condition && message) {
-            chain.push(`.${rule}("${condition.replace(/"/g, '\\"')}", "${message.replace(/"/g, '\\"')}")`);
-          } else if (condition) {
-            chain.push(`.${rule}("${condition.replace(/"/g, '\\"')}")`);
+          const condExpr = condition ? extractConditionBody(condition) : undefined;
+          if (condExpr && message) {
+            chain.push(`.${rule}("${condExpr.replace(/"/g, '\\"')}", "${message.replace(/"/g, '\\"')}")`);
+          } else if (condExpr) {
+            chain.push(`.${rule}("${condExpr.replace(/"/g, '\\"')}")`);
           }
         }
       }
@@ -501,15 +513,16 @@ const businessObjectSchemaGenerator: DesignGenerator = {
           if (!val) continue;
 
           if (typeof val === 'string') {
-            chain.push(`.${rule}("${val.replace(/"/g, '\\"')}")`);
+            chain.push(`.${rule}("${extractConditionBody(val).replace(/"/g, '\\"')}")`);
           } else if (typeof val === 'object' && val !== null) {
             const obj = val as Record<string, unknown>;
             const condition = obj.condition as string | undefined;
             const message = obj.message as string | undefined;
-            if (condition && message) {
-              chain.push(`.${rule}("${condition.replace(/"/g, '\\"')}", "${message.replace(/"/g, '\\"')}")`);
-            } else if (condition) {
-              chain.push(`.${rule}("${condition.replace(/"/g, '\\"')}")`);
+            const condExpr = condition ? extractConditionBody(condition) : undefined;
+            if (condExpr && message) {
+              chain.push(`.${rule}("${condExpr.replace(/"/g, '\\"')}", "${message.replace(/"/g, '\\"')}")`);
+            } else if (condExpr) {
+              chain.push(`.${rule}("${condExpr.replace(/"/g, '\\"')}")`);
             }
           }
         }
