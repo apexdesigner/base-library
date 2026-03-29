@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.165] - 2026-03-29
+
+- 066c43b chore: format design files
+- f1cbd7b chore: update docs and persisted-form-group generator
+- e2679cc feat: add test-task detail page and accordion launch links
+- f841291 feat: add TestProject/TestTask BOs with list and detail pages
+
+
 ## [1.0.164] - 2026-03-29
 
 - 4ac34ac chore: regenerate refresh-button doc
