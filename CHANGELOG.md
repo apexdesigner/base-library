@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.163] - 2026-03-29
+
+- b9fda83 chore: add logs/ to gitignore
+- e39e6f9 chore: format accordion
+- a4df781 fix: accordion gap conditional on items, proper CSS scoping
+- b680fb8 fix: accordion gap only when items exist, no flex-column wrapper
+
+
 ## [1.0.162] - 2026-03-29
 
 - c6b0671 chore: format accordion and update skill

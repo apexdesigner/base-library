@@ -76,51 +76,45 @@ export class AccordionComponent extends Component {
 
 applyTemplate(AccordionComponent, [
   {
-    element: 'flex-column',
-    attributes: { style: 'gap: var(--accordion-add-gap)' },
+    element: 'mat-accordion',
     contains: [
       {
-        element: 'mat-accordion',
+        for: 'item',
+        of: 'items',
+        trackBy: 'item.id || $index',
         contains: [
           {
-            for: 'item',
-            of: 'items',
-            trackBy: 'item.id || $index',
+            element: 'mat-expansion-panel',
             contains: [
               {
-                element: 'mat-expansion-panel',
+                element: 'mat-expansion-panel-header',
+                contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }]
+              },
+              {
+                element: 'ng-template',
+                attributes: { matExpansionPanelContent: null },
                 contains: [
+                  { element: 'sf-fields', attributes: { group: '<- item' } },
                   {
-                    element: 'mat-expansion-panel-header',
-                    contains: [{ element: 'mat-panel-title', text: '{{getDisplayName(item)}}' }]
-                  },
-                  {
-                    element: 'ng-template',
-                    attributes: { matExpansionPanelContent: null },
+                    element: 'mat-action-row',
                     contains: [
-                      { element: 'sf-fields', attributes: { group: '<- item' } },
                       {
-                        element: 'mat-action-row',
+                        if: 'includeLaunch',
+                        name: 'launchSection',
                         contains: [
                           {
-                            if: 'includeLaunch',
-                            name: 'launchSection',
-                            contains: [
-                              {
-                                element: 'a',
-                                name: 'launchButton',
-                                attributes: { 'mat-icon-button': null, matTooltip: 'Open', routerLink: '<- getRoute(item)' },
-                                contains: [{ 'mat-icon': 'launch' }]
-                              }
-                            ]
-                          },
-                          {
-                            element: 'button',
-                            name: 'deleteButton',
-                            attributes: { 'mat-icon-button': null, color: 'warn', matTooltip: 'Delete', click: '-> deleteItem(item)' },
-                            contains: [{ 'mat-icon': 'delete_outline' }]
+                            element: 'a',
+                            name: 'launchButton',
+                            attributes: { 'mat-icon-button': null, matTooltip: 'Open', routerLink: '<- getRoute(item)' },
+                            contains: [{ 'mat-icon': 'launch' }]
                           }
                         ]
+                      },
+                      {
+                        element: 'button',
+                        name: 'deleteButton',
+                        attributes: { 'mat-icon-button': null, color: 'warn', matTooltip: 'Delete', click: '-> deleteItem(item)' },
+                        contains: [{ 'mat-icon': 'delete_outline' }]
                       }
                     ]
                   }
@@ -129,16 +123,21 @@ applyTemplate(AccordionComponent, [
             ]
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    if: '!hideAdd',
+    name: 'addSection',
+    contains: [
       {
-        if: '!hideAdd',
-        name: 'addSection',
-        contains: [
-          {
-            element: 'add-field',
-            attributes: { array: '<- array', defaults: '<- defaults', added: '-> array.read()' }
-          }
-        ]
+        element: 'add-field',
+        attributes: {
+          array: '<- array',
+          defaults: '<- defaults',
+          added: '-> array.read()',
+          'style.margin-top': "<- items.length > 0 ? 'var(--accordion-add-gap)' : '0'"
+        }
       }
     ]
   }
@@ -153,8 +152,13 @@ applyStyles(
     --accordion-shadow-padding: 3px;
   }
 
-  mat-accordion {
+  :host > mat-accordion {
+    display: block;
     padding: 0 var(--accordion-shadow-padding) var(--accordion-shadow-padding);
+  }
+
+  :host > add-field {
+    display: block;
   }
 
   sf-fields {
