@@ -4,11 +4,12 @@ generated-by: design-docs.component.doc.md
 ---
 # Refresh Button Component
 
-An icon button that re-reads a business object array. Provides a
-one-click way to reload data using the array's current read configuration.
+An icon button that re-reads a business object array or single object.
+Provides a one-click way to reload data using the current read configuration.
 
 ## Inputs
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| array | `PersistedArray<any> \| PersistedFormArray` | Always | The persisted array to refresh. |
+| array | `PersistedArray<any> \| PersistedFormArray` | No | The persisted array to refresh. |
+| object | `PersistedFormGroup` | No | The persisted form group to refresh. |
